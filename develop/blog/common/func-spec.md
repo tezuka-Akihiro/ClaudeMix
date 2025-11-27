@@ -1,0 +1,141 @@
+# common - 機能設計書
+
+## 📋 機能概要
+
+### 機能名
+**Common Components (共通コンポーネント)**
+
+### 所属サービス
+**blog** の **common** セクションに配置
+
+### 機能の目的・価値
+- **解決する課題**: ブログサービス全体で統一されたレイアウトとナビゲーションを提供する
+- **提供する価値**: サービス全体のUI一貫性を保ち、ユーザーが迷わず記事を閲覧できる導線を提供する
+- **ビジネス効果**: ブランディングの統一、ユーザー体験の向上
+
+### 実装優先度
+**HIGH** - 他のセクション（posts、post-detail）が依存するため、最優先で実装する
+
+## 🎯 機能要件
+
+### 基本機能
+
+#### Header Components
+1. **BlogHeader**: ブログ全体のヘッダー
+   - 左側: ブログタイトル表示（ホームリンク機能付き）
+   - 右側: menuボタン
+   - 配置: `app/components/blog/common/BlogHeader.tsx`
+
+2. **NavigationMenu**: メニュー表示コンポーネント
+   - menuボタンクリック時に表示
+   - メニュー項目:
+     - 挨拶記事へのリンク
+     - Articlesへのリンク
+   - 配置: `app/components/blog/common/NavigationMenu.tsx`
+
+#### Footer Components
+1. **BlogFooter**: ブログ全体のフッター
+   - コピーライト表示
+   - 配置: `app/components/blog/common/BlogFooter.tsx`
+
+#### Layout Components
+1. **BlogLayout**: ページ全体のレイアウトコンテナ
+   - ヘッダーとフッターを含む全体構造
+   - 子コンポーネント（記事一覧、記事詳細）を表示するエリア
+   - 配置: `app/components/blog/common/BlogLayout.tsx`
+
+### 開発戦略: 段階的強化 (Progressive Enhancement)
+1. **ステップ1: モック実装 (UIの確立)**
+   - UI層はまず、固定値や単純なPropsを用いて「ガワ」を実装します。この段階では、`loader`や`action`からの実データ連携は行いません。
+2. **ステップ2: 機能強化 (ロジックの接続)**
+   - モック実装されたUIに、`loader`からの実データや`action`の処理を接続し、完全な機能として仕上げます。
+
+## 🔄 データフロー・処理（3大層分離アーキテクチャ）
+
+### 入力データ
+~~~typescript
+// Header Components
+interface BlogHeaderProps {
+  title: string // ブログタイトル
+  menuItems: MenuItem[] // メニュー項目
+}
+
+interface MenuItem {
+  label: string // メニュー項目のラベル（例: "挨拶記事", "Articles"）
+  path: string // リンク先（例: "/blog/welcome", "/blog"）
+}
+
+// Navigation Menu
+interface NavigationMenuProps {
+  items: MenuItem[]
+  isOpen: boolean // メニューの開閉状態
+  onClose: () => void // メニューを閉じる処理
+}
+
+// Footer Components
+interface BlogFooterProps {
+  copyright: string // コピーライト表記
+}
+
+// Layout Components
+interface BlogLayoutProps {
+  children: React.ReactNode // 子コンポーネント（記事一覧、記事詳細など）
+}
+~~~
+
+### 出力データ
+~~~typescript
+// loaderがUIに返すデータ（Routeレベル）
+interface CommonData {
+  blogTitle: string // ブログタイトル: "ClaudeMix Blog"
+  menuItems: MenuItem[] // メニュー項目リスト
+  copyright: string // コピーライト: "© 2025 ClaudeMix"
+}
+~~~
+
+### app/components要件（app/routes, app/components）
+~~~
+1. [UI層の責務]
+   Header Components:
+   - BlogHeader:
+     - 左側: ブログタイトルをクリックで `/blog` へ遷移
+     - 右側: menuボタン（クリックでNavigationMenuを開く）
+     - レイアウト: 左右配置（justify-between）
+     - デザイントークンを使用したスタイリング
+
+   - NavigationMenu:
+     - menuボタンクリック時に表示されるメニュー
+     - メニュー項目は動的に生成（propsから受け取る）
+     - 各項目クリックで対応するページへ遷移
+     - メニュー外クリックで閉じる
+     - モバイル対応（ドロップダウンまたはモーダル形式）
+
+   Footer Components:
+   - BlogFooter: コピーライト表記を表示
+     - デザイントークンを使用したスタイリング
+
+   Layout Components:
+   - BlogLayout: ヘッダー、フッター、メインコンテンツエリアを配置
+     - 構造: [BlogHeader] [children] [BlogFooter]
+     - レスポンシブ対応
+~~~
+
+### 🧠 純粋ロジック要件（app/lib/blog/common）
+~~~
+2. [純粋ロジック層の責務]
+   このセクションには複雑なビジネスロジックは不要です。
+   必要に応じて、以下のような軽微な処理のみ実装します：
+
+   - copyrightFormatter.ts: コピーライト文字列のフォーマット
+     - 年の自動更新など
+~~~
+
+### 🔌 副作用要件（app/data-io/blog/common）
+~~~
+3. [副作用層の責務]
+   このセクションには外部データ取得は不要です。
+   必要に応じて、以下のような処理のみ実装します：
+
+   - loadBlogConfig.server.ts: ブログ設定情報の読み込み
+     - ブログタイトルやコピーライト情報を定数として管理
+~~~

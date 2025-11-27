@@ -1,0 +1,219 @@
+# spec.yaml - 外部変数仕様書
+# 実装・テスト・仕様書で共通参照するリテラル値定義
+
+# ==========================================
+# メタデータ
+# ==========================================
+metadata:
+  feature_name: "記事詳細表示"
+  slug: "post-detail"
+  created_date: "2025-11-14"
+  last_updated: "2025-11-14"
+  version: "1.0.0"
+
+# ==========================================
+# サーバー処理設定 (Loader/Action)
+# ==========================================
+server_io:
+  loader:
+    # loader処理のタイムアウト設定 (ms)
+    timeout: 5000
+  # このセクションではactionは存在しない（閲覧のみ）
+  action: null
+
+# ==========================================
+# メッセージ定数
+# ==========================================
+messages:
+  error:
+    not_found: "記事が見つかりませんでした"
+    network: "記事の読み込みに失敗しました"
+    server: "サーバーエラーが発生しました"
+    markdown_conversion: "記事の変換処理でエラーが発生しました"
+    external_file_not_found: "参照元ファイルが見つかりませんでした"
+    invalid_source_path: "無効な参照パスが指定されています"
+
+# ==========================================
+# UI要素セレクタ（テスト用）
+# ==========================================
+ui_selectors:
+  article:
+    container: "[data-testid='post-detail-section']"
+    title: "[data-testid='article-title']"
+    published_date: "[data-testid='article-published-date']"
+    author: "[data-testid='article-author']"
+    content: "[data-testid='article-content']"
+
+  table_of_contents:
+    container: "[data-testid='table-of-contents']"
+    item: "[data-testid='toc-item']"
+    link: "[data-testid='toc-link']"
+
+  loading:
+    spinner: "[data-testid='loading-spinner']"
+
+  error:
+    message: "[data-testid='error-message']"
+
+# ==========================================
+# テストデータ
+# ==========================================
+test_data:
+  sample_post:
+    slug: "sample-remix-tips-2024"
+    title: "Remixで始めるモダンWeb開発"
+    description: "Remixフレームワークの基本概念とモダンWeb開発の実践ガイド"
+    author: "技術太郎"
+    publishedAt: "2024-11-14T09:00:00Z"
+    tags: ["Remix", "TypeScript", "Web Development"]
+    content: |
+      # Remixの基本
+
+      Remixはモダンなフルスタックフレームワークです。
+
+      ## 主な特徴
+
+      - サーバーサイドレンダリング
+      - ネストされたルーティング
+      - プログレッシブエンハンスメント
+
+      ![サンプル画像](/images/sample.jpg)
+
+      ```typescript
+      export const loader = async () => {
+        return json({ message: "Hello Remix" });
+      };
+      ```
+
+      ```mermaid
+      graph TD
+        A[Browser] --> B[Remix Route]
+        B --> C[Loader]
+        C --> D[Database]
+      ```
+
+  invalid_slug: "non-existent-article-xyz"
+
+  # 参照機能用テストデータ
+  reference_post:
+    slug: "sample-reference-post"
+    title: "README参照記事"
+    description: "プロジェクトのREADMEファイルを参照する記事の例"
+    author: "技術太郎"
+    publishedAt: "2024-11-15T10:00:00Z"
+    tags: ["Documentation", "Reference"]
+    source: "/README.md"
+
+  # meta関数のテストデータ
+  meta:
+    title: "Remixで始めるモダンWeb開発 | ClaudeMix Blog"
+    description: "Remixフレームワークの基本概念とモダンWeb開発の実践ガイド"
+    og_title: "Remixで始めるモダンWeb開発"
+    og_description: "Remixフレームワークの基本概念とモダンWeb開発の実践ガイド"
+    og_type: "article"
+    twitter_card: "summary_large_image"
+    twitter_title: "Remixで始めるモダンWeb開発"
+    twitter_description: "Remixフレームワークの基本概念とモダンWeb開発の実践ガイド"
+
+  invalid_source_cases:
+    - path: "../../etc/passwd"        # ディレクトリトラバーサル
+      reason: "ディレクトリトラバーサル攻撃"
+    - path: "/etc/passwd"             # システムファイルへのアクセス
+      reason: "システムファイルへの不正アクセス"
+    - path: "C:\\Windows\\System32"   # Windowsシステムパス
+      reason: "Windowsシステムパスへの不正アクセス"
+    - path: "/README.txt"             # 不正な拡張子
+      reason: "許可されていない拡張子"
+
+# ==========================================
+# マークダウン処理設定
+# ==========================================
+markdown:
+  supported_features:
+    - "見出し (h1-h6)"
+    - "段落 (p)"
+    - "リスト (ul, ol)"
+    - "コードブロック (pre, code)"
+    - "引用 (blockquote)"
+    - "リンク (a)"
+    - "画像 (img)"
+    - "Mermaid図"
+    - "シンタックスハイライト"
+
+  security:
+    # XSS対策のためサニタイズを実施
+    sanitize_html: true
+    allowed_tags:
+      - "h1"
+      - "h2"
+      - "h3"
+      - "h4"
+      - "h5"
+      - "h6"
+      - "p"
+      - "ul"
+      - "ol"
+      - "li"
+      - "pre"
+      - "code"
+      - "blockquote"
+      - "a"
+      - "img"
+      - "div"
+      - "span"
+      - "strong"
+      - "em"
+
+# ==========================================
+# パスバリデーション設定（参照機能用）
+# ==========================================
+source_file_validation:
+  allowed_extensions: [".md"]
+  forbidden_patterns: ["../", "..\\", "/etc/", "C:\\", "\\\\"]
+  base_path: "/"  # プロジェクトルートからの相対パス
+
+# ==========================================
+# 基本テスト確認項目
+# ==========================================
+basic_tests:
+  - name: "記事詳細画面表示確認"
+    description: "指定されたslugの記事が正常に表示されること"
+
+  - name: "マークダウン変換確認"
+    description: "マークダウン形式の記事がHTMLに正しく変換されること"
+
+  - name: "画像表示確認"
+    description: "マークダウン内の画像が正しく表示されること"
+
+  - name: "Mermaid図レンダリング確認"
+    description: "Mermaidコードブロックが図として正しくレンダリングされること"
+
+  - name: "404エラー処理確認"
+    description: "存在しないslugにアクセスした際、404エラーが表示されること"
+
+  - name: "リンク動作確認"
+    description: "記事本文内のリンクが正しく動作すること（外部リンクは新しいタブで開く）"
+
+  - name: "外部ファイル参照確認"
+    description: "sourceプロパティ指定時、外部マークダウンファイルが記事本文として表示されること"
+
+  - name: "参照元ファイル不存在エラー処理確認"
+    description: "sourceで指定されたファイルが存在しない場合、適切なエラーが表示されること"
+
+  - name: "パスバリデーション確認"
+    description: "不正なパス（ディレクトリトラバーサル、不正拡張子）が拒否されること"
+
+  - name: "目次表示確認"
+    description: "記事本文の見出し（階層定義はfunc-spec.md参照）が目次として表示されること"
+
+  - name: "アンカーリンク動作確認"
+    description: "目次項目クリックで該当見出しへスムーススクロールすること"
+
+  - name: "見出しID付与確認"
+    description: "マークダウン変換後の見出しにID属性が付与されていること"
+
+  - name: "meta関数動作確認"
+    description: "meta関数が正しいメタデータ（title, description, OGP, Twitterカード）を返すこと"
+
+  - name: "meta関数フォールバック確認"
+    description: "dataが存在しない場合（404等）、meta関数が空配列を返すこと"

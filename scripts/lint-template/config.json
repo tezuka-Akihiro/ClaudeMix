@@ -1,0 +1,205 @@
+{
+  "version": "1.0.0",
+  "description": "Content linting configuration for template validation",
+
+  "globalSettings": {
+    "maxFileSize": "1MB",
+    "encoding": "utf-8",
+    "parallel": true,
+    "reportFormat": "detailed"
+  },
+
+  "commonRules": {
+    "banned-words": {
+      "enabled": true,
+      "severity": "error",
+      "description": "AIガードレール: プロジェクト範囲外の提案を検出",
+      "words": [
+        "MVP", "将来", "フェーズ2", "フェーズ１", "phase", "ロードマップ", "roadmap",
+        "CI/CD", "deploy", "デプロイ", "パイプライン", "pipeline", "ビルド",
+        "本格運用", "プロダクション", "production", "スケーラビリティ", "scalability"
+      ],
+      "externalServiceNames": [
+        "AWS", "Azure", "GCP", "Google Cloud", "Firebase", "Vercel", "Netlify",
+        "Stripe", "PayPal", "Slack", "Discord", "Zoom", "Teams", "Gmail",
+        "MongoDB", "PostgreSQL", "MySQL", "Redis", "Elasticsearch",
+        "Docker", "Kubernetes", "GitHub", "GitLab", "Bitbucket",
+        "Shopify", "WooCommerce", "Magento", "Salesforce",
+        "React", "Vue", "Angular", "Next.js", "Nuxt.js", "Gatsby"
+      ],
+      "projectSpecificNames": [
+        "TBD: プロジェクト固有名をここに追加予定"
+      ],
+      "exceptions": {
+        "fileTypes": [".md", ".txt"],
+        "contexts": ["comments", "imports"]
+      }
+    },
+
+    "line-limit": {
+      "enabled": true,
+      "severity": "warning",
+      "maxLines": 400,
+      "exceptions": {
+        "templates": ["外部変数仕様書", "作業手順書"],
+        "fileTypes": [".json", ".yaml"]
+      }
+    },
+
+    "design-tokens": {
+      "enabled": true,
+      "severity": "error",
+      "description": "Ensure design tokens are used instead of hardcoded values",
+      "patterns": {
+        "prohibited": [
+          "#[0-9a-fA-F]{3,8}",
+          "\\d+px",
+          "rgba?\\(",
+          "['\"]\\d+pt['\"]"
+        ],
+        "allowed": [
+          "var\\(--[\\w-]+\\)",
+          "colors\\.[\\w.]+",
+          "spacing\\.[\\w.]+",
+          "typography\\.[\\w.]+",
+          "radius\\.[\\w.]+"
+        ]
+      },
+      "fileTypes": [".css", ".tsx", ".jsx", ".ts", ".js"]
+    },
+
+    "file-structure": {
+      "enabled": true,
+      "severity": "error",
+      "rules": {
+        "maxDepth": 6,
+        "namingConvention": "kebab-case",
+        "requiredFiles": ["README.md"]
+      }
+    }
+  },
+
+  "templateRules": {
+    "作業手順書": {
+      "workflow-structure": {
+        "enabled": true,
+        "severity": "error",
+        "requiredFlows": [
+          "Phase 1: E2Eファースト",
+          "Phase 2: CSS実装",
+          "Phase 3: 層別TDD",
+          "Phase 4: E2E拡張"
+        ],
+        "flowOrder": {
+          "Phase 1: E2Eファースト": 1,
+          "Phase 2: CSS実装": 2,
+          "Phase 3: 層別TDD": 3,
+          "Phase 4: E2E拡張": 4
+        },
+        "requiredCommands": ["@GeneratorOperator"]
+      }
+    },
+
+    "外部変数仕様書": {
+      "yaml-structure": {
+        "enabled": true,
+        "severity": "error",
+        "requiredFields": ["metadata", "server_io"],
+        "schema": "schemas/external-vars.schema.json"
+      },
+      "variable-naming": {
+        "enabled": true,
+        "severity": "warning",
+        "convention": "SCREAMING_SNAKE_CASE",
+        "prefix": ["APP_", "API_", "DB_"]
+      }
+    },
+
+    "コンポーネントテスト": {
+      "test-coverage": {
+        "enabled": true,
+        "severity": "warning",
+        "minCoverage": 80,
+        "requiredTests": ["render", "interaction", "error-handling"]
+      },
+      "design-tokens-usage": {
+        "enabled": true,
+        "severity": "error",
+        "requireTokens": true,
+        "allowedHardcoded": ["data-testid", "aria-label"]
+      }
+    },
+
+    "ユニットテスト": {
+      "test-structure": {
+        "enabled": true,
+        "severity": "error",
+        "requiredSections": ["describe", "it", "expect"],
+        "namingPattern": "^test|spec$"
+      }
+    },
+
+    "機能設計書": {
+      "requirement-completeness": {
+        "enabled": true,
+        "severity": "error",
+        "requiredSections": [
+          "概要",
+          "機能要件",
+          "非機能要件",
+          "制約事項",
+          "受入基準"
+        ]
+      },
+      "acceptance-criteria": {
+        "enabled": true,
+        "severity": "warning",
+        "format": "gherkin",
+        "keywords": ["Given", "When", "Then", "And", "But"]
+      }
+    }
+  },
+
+  "severity": {
+    "error": {
+      "exitCode": 1,
+      "color": "red",
+      "symbol": "❌"
+    },
+    "warning": {
+      "exitCode": 0,
+      "color": "yellow",
+      "symbol": "⚠️"
+    },
+    "info": {
+      "exitCode": 0,
+      "color": "blue",
+      "symbol": "ℹ️"
+    }
+  },
+
+  "output": {
+    "verbose": false,
+    "showPassedRules": false,
+    "groupByFile": true,
+    "summary": true
+  },
+
+  "ignore": {
+    "files": [
+      "node_modules/**",
+      ".git/**",
+      "build/**",
+      "dist/**",
+      "coverage/**",
+      "**/archive/**",
+      "**/_archive/**",
+      "**/generate-requests.md",
+      "**/REQUIREMENTS_ANALYSIS_PIPE.md"
+    ],
+    "rules": {
+      "line-limit": ["*.json", "*.lock"],
+      "design-tokens": ["*.md", "*.txt", "*.json"]
+    }
+  }
+}

@@ -1,0 +1,79 @@
+# spec.yaml - 外部変数仕様書
+# 実装・テスト・仕様書で共通参照するリテラル値定義
+
+# ==========================================
+# メタデータ
+# ==========================================
+metadata:
+  feature_name: "{{FEATURE_NAME}}"
+  slug: "{{SLUG}}"
+  created_date: "{{CREATED_DATE}}"
+  last_updated: "{{UPDATED_DATE}}"
+  version: "1.0.0"
+
+# ==========================================
+# サーバー処理設定 (Loader/Action)
+# ==========================================
+server_io:
+  loader:
+    # loader処理のタイムアウト設定 (ms)
+    timeout: 5000
+  action:
+    # action内で処理を分岐するためのintent名
+    intents:
+      create: "create_{{SLUG}}"
+      update: "update_{{SLUG}}"
+      delete: "delete_{{SLUG}}"
+
+# ==========================================
+# メッセージ定数
+# ==========================================
+messages:
+  success:
+    create: "作成が完了しました"
+    update: "更新が完了しました"
+    delete: "削除が完了しました"
+
+  error:
+    validation: "入力値を確認してください"
+    network: "通信エラーが発生しました"
+    server: "サーバーエラーが発生しました"
+
+# ==========================================
+# UI要素セレクタ
+# ==========================================
+ui_selectors:
+  form:
+    submit_button: "[data-testid='submit-button']"
+    cancel_button: "[data-testid='cancel-button']"
+
+  messages:
+    success: "[data-testid='success-message']"
+    error: "[data-testid='error-message']"
+
+  loading:
+    spinner: "[data-testid='loading-spinner']"
+
+# ==========================================
+# バリデーションルール
+# ==========================================
+validation:
+  field_limits:
+    title_max_length: 100
+    description_max_length: 500
+    email_pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+
+  error_messages:
+    required: "{フィールド名}は必須です"
+    max_length: "{フィールド名}は{最大文字数}文字以内で入力してください"
+    invalid_format: "正しい形式で入力してください"
+
+# ==========================================
+# 基本テスト確認項目
+# ==========================================
+basic_tests:
+  - name: "画面表示確認"
+    description: "コンポーネントが正常にレンダリングされること"
+
+  - name: "API通信確認"
+    description: "基本的なCRUD操作が動作すること"

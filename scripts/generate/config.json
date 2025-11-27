@@ -1,0 +1,152 @@
+{
+  "layers": {
+    "route": {
+      "description": "app/components: ルート (app/routes)",
+      "pathPattern": "app/routes/{{service}}._index.tsx",
+      "templateFile": "code/route.template.tsx",
+      "placeholders": {
+        "{{LOADER_DATA_TYPE}}": "{{service}}LoaderData"
+      }
+    },
+    "component": {
+      "description": "app/components: コンポーネント (app/components)",
+      "pathPattern": "app/components/{{service}}/{{section}}/{{name}}.tsx",
+      "templateFile": "code/component.template.tsx",
+      "test": {
+        "pathPattern": "app/components/{{service}}/{{section}}/{{name}}.test.tsx",
+        "templateFile": "test/component-test.template.tsx"
+      },
+      "placeholders": {
+        "{{COMPONENT_DESCRIPTION}}": "A reusable UI component."
+      }
+    },
+    "lib": {
+      "description": "🧠 純粋ロジック層 (app/lib)",
+      "pathPattern": "app/lib/{{service}}/{{section}}/{{name}}.ts",
+      "templateFile": "code/logic.template.ts",
+      "test": {
+        "pathPattern": "app/lib/{{service}}/{{section}}/{{name}}.test.ts",
+        "templateFile": "test/logic-test.template.ts"
+      },
+      "placeholders": {
+        "{{FUNCTION_DESCRIPTION}}": "A pure function for business logic."
+      }
+    },
+    "data-io": {
+      "description": "🔌 副作用層 (app/data-io)",
+      "pathPattern": "app/data-io/{{service}}/{{section}}/{{name}}.ts",
+      "templateFile": "code/data-io.template.ts",
+      "test": {
+        "pathPattern": "app/data-io/{{service}}/{{section}}/{{name}}.test.ts",
+        "templateFile": "test/data-io-test.template.ts"
+      },
+      "placeholders": {
+        "{{FUNCTION_DESCRIPTION}}": "A function with side-effects."
+      }
+    }
+  },
+  "documents": {
+    "requirements-analysis-pipe": {
+      "description": "プロジェクト基本方針",
+      "pathPattern": "develop/{{service}}/REQUIREMENTS_ANALYSIS_PIPE.md",
+      "templateFile": "workflow/REQUIREMENTS_ANALYSIS_PIPE.md"
+    },
+    "guiding-principles": {
+      "description": "プロジェクト基本方針",
+      "pathPattern": "develop/{{service}}/GUIDING_PRINCIPLES.md",
+      "templateFile": "workflow/GUIDING_PRINCIPLES.md"
+    },
+    "tdd-workflow": {
+      "description": "TDD作業手順書",
+      "pathPattern": "develop/{{service}}/{{section}}/TDD_WORK_FLOW.md",
+      "templateFile": "workflow/TDD_WORK_FLOW.md"
+    },
+    "implementation-enhancement": {
+      "description": "🚀 モック計画書",
+      "pathPattern": "develop/{{service}}/{{section}}/MOCK_POLICY.md",
+      "templateFile": "workflow/MOCK_POLICY.md"
+    },
+    "func-spec": {
+      "description": "機能設計書",
+      "pathPattern": "develop/{{service}}/{{section}}/func-spec.md",
+      "templateFile": "docs/func-spec.template.md"
+    },
+    "uiux-spec": {
+      "description": "画面仕様書",
+      "pathPattern": "develop/{{service}}/{{section}}/uiux-spec.md",
+      "templateFile": "docs/uiux-spec.template.md"
+    },
+    "spec-yaml": {
+      "description": "外部変数仕様書",
+      "pathPattern": "develop/{{service}}/{{section}}/spec.yaml",
+      "templateFile": "docs/spec.yaml"
+    },
+    "e2e-screen-test": {
+      "description": "E2Eテスト (画面レベル)",
+      "pathPattern": "tests/e2e/screen/{{service}}.screen.spec.ts",
+      "templateFile": "test/e2e-screen-test.template.ts",
+      "placeholders": {}
+    },
+    "e2e-section-test": {
+      "description": "E2Eテスト (セクションレベル)",
+      "pathPattern": "tests/e2e/section/{{service}}/{{section}}.spec.ts",
+      "templateFile": "test/e2e-section-test.template.ts",
+      "placeholders": {}
+    },
+    "file-list": {
+      "description": "ファイル構成リスト",
+      "pathPattern": "develop/{{service}}/{{section}}/file-list.md",
+      "templateFile": "workflow/file-list.template.md"
+    }
+  },
+  "flowAuditor": {
+    "designFlow": {
+      "commonCheckpoints": [
+        {
+          "id": "requirements-analysis",
+          "name": "REQUIREMENTS_ANALYSIS_PIPE.md",
+          "pathTemplate": "develop/{service}/REQUIREMENTS_ANALYSIS_PIPE.md"
+        },
+        {
+          "id": "guiding-principles",
+          "name": "GUIDING_PRINCIPLES.md",
+          "pathTemplate": "develop/{service}/GUIDING_PRINCIPLES.md"
+        }
+      ],
+      "sectionCheckpoints": [
+        {
+          "id": "func-spec",
+          "name": "func-spec.md",
+          "pathTemplate": "develop/{service}/{section}/func-spec.md"
+        },
+        {
+          "id": "uiux-spec",
+          "name": "uiux-spec.md",
+          "pathTemplate": "develop/{service}/{section}/uiux-spec.md"
+        },
+        {
+          "id": "spec-yaml",
+          "name": "spec.yaml",
+          "pathTemplate": "develop/{service}/{section}/spec.yaml"
+        },
+        {
+          "id": "file-list",
+          "name": "file-list.md",
+          "pathTemplate": "develop/{service}/{section}/file-list.md"
+        },
+        {
+          "id": "tdd-workflow",
+          "name": "TDD_WORK_FLOW.md",
+          "pathTemplate": "develop/{service}/{section}/TDD_WORK_FLOW.md"
+        }
+      ]
+    },
+    "implementationFlow": {
+      "layerDisplayNames": {
+        "lib": "app/lib",
+        "data-io": "app/data-io",
+        "ui": "app/components"
+      }
+    }
+  }
+}

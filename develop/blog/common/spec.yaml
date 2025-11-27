@@ -1,0 +1,140 @@
+# spec.yaml - 外部変数仕様書
+# 実装・テスト・仕様書で共通参照するリテラル値定義
+
+# ==========================================
+# メタデータ
+# ==========================================
+metadata:
+  feature_name: "blog-common"
+  slug: "common"
+  created_date: "2025-11-14"
+  last_updated: "2025-11-14"
+  version: "1.0.0"
+
+# ==========================================
+# サーバー処理設定 (Loader/Action)
+# ==========================================
+server_io:
+  loader:
+    # loader処理のタイムアウト設定 (ms)
+    timeout: 5000
+  action:
+    # このセクションではactionは不要（共通コンポーネントは表示のみ）
+    intents: {}
+
+# ==========================================
+# ブログ設定定数
+# ==========================================
+blog_config:
+  title: "ClaudeMix Blog"
+  copyright: "© 2025 ClaudeMix"
+  home_path: "/blog"
+
+# ==========================================
+# ナビゲーションメニュー設定
+# ==========================================
+navigation:
+  menu_items:
+    - label: "挨拶記事"
+      path: "/blog/welcome"
+    - label: "Articles"
+      path: "/blog"
+
+  # メニューアニメーション設定
+  animation:
+    fade_duration_ms: 200
+    transition_timing: "ease-in-out"
+
+# ==========================================
+# UI要素セレクタ
+# ==========================================
+ui_selectors:
+  layout:
+    blog_layout: "[data-testid='blog-layout']"
+    main_content: "[data-testid='main-content']"
+
+  header:
+    blog_header: "[data-testid='blog-header']"
+    title_area: "[data-testid='title-area']"
+    title_link: "[data-testid='title-link']"
+    menu_button: "[data-testid='menu-button']"
+
+  navigation:
+    navigation_menu: "[data-testid='navigation-menu']"
+    menu_item: "[data-testid='menu-item']"
+    menu_overlay: "[data-testid='menu-overlay']"
+
+  footer:
+    blog_footer: "[data-testid='blog-footer']"
+    copyright: "[data-testid='copyright']"
+
+# ==========================================
+# レスポンシブ設定
+# ==========================================
+responsive:
+  breakpoints:
+    mobile: 768 # px
+    tablet: 1024 # px
+
+  menu_display_mode:
+    mobile: "modal" # 全画面モーダル形式
+    tablet: "dropdown" # ドロップダウン形式
+    desktop: "dropdown" # ドロップダウン形式
+
+# ==========================================
+# アクセシビリティ (ARIA)
+# ==========================================
+accessibility:
+  aria_labels:
+    menu_button: "メニューを開く"
+    menu_button_open: "メニューを閉じる"
+    navigation_menu: "ナビゲーションメニュー"
+    close_menu: "メニューを閉じる"
+    home_link: "ホームに戻る"
+
+  keyboard_shortcuts:
+    close_menu: "Escape"
+
+# ==========================================
+# テストデータ
+# ==========================================
+test_data:
+  blog_header:
+    title: "ClaudeMix Blog"
+    menu_items:
+      - label: "挨拶記事"
+        path: "/blog/welcome"
+      - label: "Articles"
+        path: "/blog"
+
+  blog_footer:
+    copyright: "© 2025 ClaudeMix"
+
+  navigation_menu:
+    default_items:
+      - label: "挨拶記事"
+        path: "/blog/welcome"
+      - label: "Articles"
+        path: "/blog"
+
+# ==========================================
+# 基本テスト確認項目
+# ==========================================
+basic_tests:
+  - name: "BlogLayout表示確認"
+    description: "BlogLayoutが正常にレンダリングされ、Header/Footer/Contentエリアが配置されること"
+
+  - name: "BlogHeader表示確認"
+    description: "ブログタイトルとmenuボタンが左右に配置されること"
+
+  - name: "NavigationMenu開閉確認"
+    description: "menuボタンクリックでNavigationMenuが開閉すること"
+
+  - name: "NavigationMenuナビゲーション確認"
+    description: "メニュー項目クリックで対応するページへ遷移すること"
+
+  - name: "BlogFooter表示確認"
+    description: "コピーライト表記が正常に表示されること"
+
+  - name: "レスポンシブ対応確認"
+    description: "モバイル/タブレット/デスクトップで適切なレイアウトが適用されること"

@@ -1,0 +1,31 @@
+# dependencies
+/node_modules/
+
+# production
+/build/
+/public/build/
+
+# generated content (prebuild)
+/app/generated/
+
+# local env files
+.env*
+!.env.example
+
+# test
+tests/e2e/test-results/
+tests/e2e/playwright-report/
+tests\e2e\playwright.config.ts
+tests/unit/test-results.json
+tests/unit/coverage/
+tests/unit/node_modules
+tests/lint/
+.cache/
+coverage-output.txt
+
+chat.md
+scripts/_local/
+.claude/key
+tests/scripts/generation.log
+.wrangler/tmp/
+test-results/.last-run.json

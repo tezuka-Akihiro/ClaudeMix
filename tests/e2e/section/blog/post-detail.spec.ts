@@ -1,0 +1,316 @@
+import { test, expect } from '@playwright/test';
+
+// ---
+// Post Detail Section: Outside-In TDD Tests
+// ---
+test.describe('E2E Test for Blog - Post Detail', () => {
+
+  /**
+   * Post Detail Phase 1: Happy Path E2E Test
+   * @description
+   * 記事詳細ページの基本表示と主要機能の正常フローを検証
+   * TDD_WORK_FLOW.md Phase 1 のゴール定義
+   */
+  test('Post Detail: 記事詳細の表示（タイトル、メタデータ、マークダウン変換、画像、Mermaid図）', async ({ page }) => {
+    // テストデータ（実際に存在する記事を使用）
+    const TEST_SLUG = 'about-claudemix';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. PostDetailSectionが表示されること
+    await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
+
+    // 3. 記事タイトルが表示される
+    const titleElement = page.locator('[data-testid="post-title"]');
+    await expect(titleElement).toBeVisible();
+    // タイトルが空でないことを確認（実際のタイトルは記事ファイルによって異なる）
+    await expect(titleElement).not.toBeEmpty();
+
+    // 4. 記事メタデータ（著者）が表示される
+    const authorElement = page.locator('[data-testid="post-author"]');
+    await expect(authorElement).toBeVisible();
+    // 著者名が空でないことを確認（実際の著者は記事ファイルによって異なる）
+    await expect(authorElement).not.toBeEmpty();
+
+    // 5. 記事メタデータ（投稿日）が表示される
+    const publishedDateElement = page.locator('[data-testid="post-published-date"]');
+    await expect(publishedDateElement).toBeVisible();
+    // 日付が表示されていることを確認
+    await expect(publishedDateElement).not.toBeEmpty();
+
+    // 6. マークダウン変換後のHTML本文が表示される
+    const contentElement = page.locator('[data-testid="post-content"]');
+    await expect(contentElement).toBeVisible();
+    // 本文が空でないことを確認
+    await expect(contentElement).not.toBeEmpty();
+  });
+
+  /**
+   * Post Detail: Mermaid図のレンダリング
+   * @description
+   * Mermaidコードブロックが正しくSVG図表にレンダリングされることを検証
+   */
+  test('Post Detail: Mermaidコードブロックが正しくSVG図表にレンダリングされる', async ({ page }) => {
+    const TEST_SLUG = 'sample-remix-tips-2024';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. Mermaid図が含まれているか確認（preタグにmermaidクラス）
+    const mermaidElement = page.locator('pre.mermaid');
+    if (await mermaidElement.count() > 0) {
+      // 3. Mermaid.jsがクライアント側でSVGに変換されることを確認
+      // 注: クライアント側のMermaid.js実行後にSVGが生成される
+      const svgElement = mermaidElement.locator('svg');
+      await expect(svgElement).toBeVisible({ timeout: 5000 });
+    }
+  });
+
+  /**
+   * Post Detail: シンタックスハイライト
+   * @description
+   * コードブロックがShikiによって正しくハイライトされることを検証
+   */
+  test('Post Detail: コードブロックがShikiでハイライトされる', async ({ page }) => {
+    const TEST_SLUG = 'sample-remix-tips-2024';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. コードブロックが存在するか確認
+    const codeBlock = page.locator('pre code');
+    if (await codeBlock.count() > 0) {
+      // 3. Shikiが生成するインラインスタイルが含まれていることを確認
+      const firstCodeBlock = codeBlock.first();
+      const styleAttr = await firstCodeBlock.getAttribute('style');
+
+      // Shikiはインラインスタイルで色を指定する
+      expect(styleAttr).toBeTruthy();
+    }
+  });
+
+  /**
+   * Post Detail: 画像の遅延読み込み
+   * @description
+   * 画像にloading="lazy"属性が付与されていることを検証
+   */
+  test('Post Detail: 画像に遅延読み込み属性が付与される', async ({ page }) => {
+    const TEST_SLUG = 'sample-remix-tips-2024';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. 画像が存在するか確認
+    const image = page.locator('img').first();
+    if (await image.count() > 0) {
+      // 3. loading="lazy"属性が付与されていることを確認
+      await expect(image).toHaveAttribute('loading', 'lazy');
+    }
+  });
+
+  /**
+   * Post Detail: 画像のレスポンシブ対応
+   * @description
+   * 画像にmax-width: 100%スタイルが適用されていることを検証
+   */
+  test('Post Detail: 画像がレスポンシブ対応される', async ({ page }) => {
+    const TEST_SLUG = 'sample-remix-tips-2024';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. 画像が存在するか確認
+    const image = page.locator('img').first();
+    if (await image.count() > 0) {
+      // 3. style属性にmax-widthが含まれていることを確認
+      const styleAttr = await image.getAttribute('style');
+      expect(styleAttr).toContain('max-width');
+    }
+  });
+
+  /**
+   * Post Detail Error Path: 404エラー処理
+   * @description
+   * 存在しないslugでアクセスした場合、適切に404エラーが表示されることを検証
+   */
+  test('Post Detail: 存在しないslugで404エラーが表示される', async ({ page }) => {
+    const NON_EXISTENT_SLUG = 'non-existent-article-slug-12345';
+    const TARGET_URL = `/blog/${NON_EXISTENT_SLUG}`;
+
+    // 1. 存在しない記事にアクセス
+    const response = await page.goto(TARGET_URL);
+
+    // 2. HTTPステータスコードが404であること
+    expect(response?.status()).toBe(404);
+
+    // 3. 404エラーメッセージまたはエラーページが表示される
+    // Remixのデフォルトエラーバウンダリーまたはカスタムエラーページを確認
+    const errorElement = page.locator('body');
+    await expect(errorElement).toContainText(/404|Not Found|ページが見つかりません/i);
+  });
+
+  /**
+   * Post Detail Reference Feature: 外部ファイル参照
+   * @description
+   * sourceプロパティで指定された外部マークダウンファイル（README.md）が
+   * 記事本文として正しく表示されることを検証
+   */
+  test('Post Detail: sourceプロパティで外部ファイルを参照して表示される', async ({ page }) => {
+    const TEST_SLUG = 'readme';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 参照記事にアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. 記事が正常に表示される
+    await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
+
+    // 3. タイトルが表示される
+    const titleElement = page.locator('[data-testid="post-title"]');
+    await expect(titleElement).toBeVisible();
+    await expect(titleElement).toContainText('README参照記事');
+
+    // 4. 本文が表示される（README.mdの内容が含まれている）
+    const contentElement = page.locator('[data-testid="post-content"]');
+    await expect(contentElement).toBeVisible();
+
+    // 5. README.mdの特徴的な文字列が含まれていることを確認
+    await expect(contentElement).toContainText('AI開発ガードレール・ボイラープレート');
+    await expect(contentElement).toContainText('Remix');
+  });
+
+  /**
+   * Post Detail Reference Feature Error Path: 参照ファイル不存在
+   * @description
+   * sourceで指定されたファイルが存在しない場合、
+   * 適切に500エラーが表示されることを検証
+   */
+  test('Post Detail: 参照ファイルが存在しない場合500エラーが表示される', async ({ page }) => {
+    const TEST_SLUG = 'test-invalid-source-missing';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 存在しないファイルを参照する記事にアクセス
+    const response = await page.goto(TARGET_URL);
+
+    // 2. HTTPステータスコードが500であること
+    expect(response?.status()).toBe(500);
+
+    // 3. エラーメッセージが表示される
+    const errorElement = page.locator('body');
+    await expect(errorElement).toContainText(/500|エラー|Error/i);
+  });
+
+  /**
+   * Post Detail Reference Feature Error Path: 不正なパス
+   * @description
+   * sourceで不正なパス（ディレクトリトラバーサル）が指定された場合、
+   * パスバリデーションエラーにより500エラーが表示されることを検証
+   */
+  test('Post Detail: 不正なパス指定の場合バリデーションエラーが表示される', async ({ page }) => {
+    const TEST_SLUG = 'test-invalid-source-traversal';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 不正なパスを参照する記事にアクセス
+    const response = await page.goto(TARGET_URL);
+
+    // 2. HTTPステータスコードが500であること
+    expect(response?.status()).toBe(500);
+
+    // 3. エラーメッセージが表示される
+    const errorElement = page.locator('body');
+    await expect(errorElement).toContainText(/500|エラー|Error/i);
+  });
+
+  /**
+   * Post Detail TOC Feature: 目次の表示
+   * @description
+   * 記事本文の見出しが目次として表示されることを検証
+   * 階層定義: develop/blog/post-detail/func-spec.md の「目次階層の定義」参照
+   */
+  test('Post Detail: 目次（Table of Contents）が表示される', async ({ page }) => {
+    const TEST_SLUG = 'about-claudemix';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. 目次コンテナが表示される
+    const tocContainer = page.locator('[data-testid="table-of-contents"]');
+    await expect(tocContainer).toBeVisible();
+
+    // 3. 目次アイテムが1つ以上存在する
+    const tocItems = page.locator('[data-testid="toc-item"]');
+    await expect(tocItems.first()).toBeVisible();
+    expect(await tocItems.count()).toBeGreaterThan(0);
+
+    // 4. 目次リンクが存在する
+    const tocLinks = page.locator('[data-testid="toc-link"]');
+    await expect(tocLinks.first()).toBeVisible();
+  });
+
+  /**
+   * Post Detail TOC Feature: アンカーリンク動作
+   * @description
+   * 目次項目をクリックすると該当の見出しにスクロールすることを検証
+   */
+  test('Post Detail: 目次リンククリックで該当見出しへスクロールする', async ({ page }) => {
+    const TEST_SLUG = 'about-claudemix';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. 目次リンクを取得
+    const tocLink = page.locator('[data-testid="toc-link"]').first();
+    await expect(tocLink).toBeVisible();
+
+    // 3. リンクのhref属性を取得（#で始まるアンカーリンク）
+    const href = await tocLink.getAttribute('href');
+    expect(href).toMatch(/^#.+/);
+
+    // 4. 対応する見出し要素のIDを取得
+    const headingId = href?.substring(1);
+
+    // 5. リンクをクリック
+    await tocLink.click();
+
+    // 6. 対応する見出し要素が表示領域内にあることを確認
+    const headingElement = page.locator(`[id="${headingId}"]`);
+    await expect(headingElement).toBeInViewport({ timeout: 3000 });
+  });
+
+  /**
+   * Post Detail TOC Feature: 見出しID付与
+   * @description
+   * マークダウン変換後の見出しにID属性が付与されていることを検証
+   */
+  test('Post Detail: 見出しにID属性が付与される', async ({ page }) => {
+    const TEST_SLUG = 'about-claudemix';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL);
+
+    // 2. 記事コンテンツ内の見出し要素を取得（階層定義: func-spec.md参照）
+    const contentElement = page.locator('[data-testid="post-content"]');
+    const headings = contentElement.locator('h2');
+
+    // 3. 見出しが存在する場合、ID属性が付与されていることを確認
+    const headingCount = await headings.count();
+    if (headingCount > 0) {
+      for (let i = 0; i < Math.min(headingCount, 3); i++) {
+        const heading = headings.nth(i);
+        const id = await heading.getAttribute('id');
+        expect(id).toBeTruthy();
+        expect(id).not.toBe('');
+      }
+    }
+  });
+
+});

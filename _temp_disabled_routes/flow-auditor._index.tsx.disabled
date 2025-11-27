@@ -1,0 +1,431 @@
+// flow-auditor - app/components: ルート
+// データフローとページ構成を担当
+
+import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData, useNavigate } from "@remix-run/react";
+import Header from "~/components/flow-auditor/common/Header";
+import Footer from "~/components/flow-auditor/common/Footer";
+import DesignFlowSection from "~/components/flow-auditor/design-flow/DesignFlowSection";
+import ImplementationFlowSection from "~/components/flow-auditor/implementation-flow/ImplementationFlowSection";
+import { loadServiceList } from "~/data-io/flow-auditor/common/loadServiceList.server";
+import { loadSectionList } from "~/data-io/flow-auditor/common/loadSectionList.server";
+import { executeRetry } from "~/data-io/flow-auditor/common/executeRetry.server";
+import { checkDesignFiles } from "~/data-io/flow-auditor/design-flow/checkDesignFiles";
+import { loadProjectSections } from "~/data-io/flow-auditor/design-flow/loadProjectSections.server";
+import { getCommonCheckpointDefinitions, getSectionCheckpointDefinitions } from "~/data-io/flow-auditor/design-flow/loadCheckpointDefinitions.server";
+import { checkImplementationFiles } from "~/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server";
+import { readFileListMd } from "~/data-io/flow-auditor/implementation-flow/readFileListMd.server";
+import { loadLayerDisplayNames } from "~/data-io/flow-auditor/implementation-flow/loadLayerDisplayNames.server";
+import { buildFlowGroups, type Checkpoint, ValidationError } from "~/lib/flow-auditor/design-flow/flowGroupBuilder";
+import { determineCheckpointStatus } from "~/lib/flow-auditor/design-flow/checkpointStatus";
+import { parseFileListMarkdown } from "~/lib/flow-auditor/implementation-flow/implementationFlowDefinition";
+import { buildImplementationFlow } from "~/lib/flow-auditor/implementation-flow/implementationFlowBuilder";
+import type { ImplementationFlowOutput } from "~/lib/flow-auditor/implementation-flow/implementationFlowTypes";
+
+export interface FlowAuditorLoaderData {
+  services: string[];
+  selectedService: string;
+  sections: string[];
+  selectedSection: string;
+  lastUpdated: string;
+  selectedCheckpointId: string | null;
+  designFlow?: {
+    checkpoints: ReturnType<typeof buildFlowGroups>;
+    sections: Array<{ name: string }>;
+    error?: string;
+  };
+  implementationFlow?: ImplementationFlowOutput;
+}
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  // URL SearchParamsから状態取得
+  const url = new URL(request.url);
+  const selectedCheckpointId = url.searchParams.get('selectedCheckpoint');
+
+  // Common components用データ取得
+  const services = await loadServiceList();
+
+  // URL SearchParamsから取得、デフォルトは最初のサービス
+  const serviceParam = url.searchParams.get('service');
+  const selectedService = serviceParam || services[0] || '';
+
+  const sections = await loadSectionList(selectedService);
+
+  // URL SearchParamsから取得、デフォルトは最初のセクションの表示名
+  const sectionParam = url.searchParams.get('section');
+  const selectedSectionName = sectionParam || sections[0]?.name || '';
+
+  // パラメータが不足している場合はリダイレクト
+  if (!serviceParam || !sectionParam) {
+    const redirectUrl = new URL(url);
+    redirectUrl.searchParams.set('service', selectedService);
+    redirectUrl.searchParams.set('section', selectedSectionName);
+    return redirect(redirectUrl.pathname + redirectUrl.search);
+  }
+
+  // 選択されたセクションの情報を取得
+  const selectedSectionInfo = sections.find(s => s.name === selectedSectionName) || sections[0];
+  const selectedSectionKey = selectedSectionInfo?.key || '';
+
+  const lastUpdated = new Date().toISOString();
+
+  // Design Flow データ取得
+  let designFlowData;
+  try {
+    // セクション一覧を取得
+    const projectSectionsResult = await loadProjectSections({ service: selectedService });
+    // commonセクションを最優先にソート
+    const projectSections = projectSectionsResult.sections.sort((a, b) => {
+      if (a.name === 'common') return -1;
+      if (b.name === 'common') return 1;
+      return 0;
+    });
+
+    // チェックポイント定義を取得
+    const commonDefs = getCommonCheckpointDefinitions();
+    const sectionDefs = getSectionCheckpointDefinitions();
+
+    // ファイルの存在確認を一度にまとめて行う
+    const fileCheckResults = await Promise.all([
+      checkDesignFiles({ service: selectedService, section: '' }), // 共通ファイル
+      ...projectSections.map(section => checkDesignFiles({ service: selectedService, section: section.name }))
+    ]);
+
+    const commonFileResults = fileCheckResults[0];
+    const sectionFileResults = fileCheckResults.slice(1);
+
+    const allFileStatus = new Map<string, boolean>();
+    [...commonFileResults.commonFiles, ...commonFileResults.sectionFiles].forEach(f => allFileStatus.set(f.path, f.exists));
+    sectionFileResults.forEach(result => {
+      [...result.commonFiles, ...result.sectionFiles].forEach(f => allFileStatus.set(f.path, f.exists));
+    });
+
+    // 各チェックポイントの存在確認とCheckpoint配列の構築
+    const checkpoints: Checkpoint[] = [];
+
+    // 共通チェックポイントの処理
+    for (const def of commonDefs) {
+      const path = def.pathTemplate.replace('{service}', selectedService);
+      const exists = allFileStatus.get(path) ?? false;
+      checkpoints.push({
+        id: def.id,
+        name: def.name,
+        path,
+        exists,
+        status: determineCheckpointStatus(exists, def.id, selectedCheckpointId),
+        flowType: 'common',
+      });
+    }
+
+    // セクション別チェックポイントの処理
+    projectSections.forEach((section, index) => {
+      for (const def of sectionDefs) {
+        const path = def.pathTemplate
+          .replace('{service}', selectedService)
+          .replace('{section}', section.name);
+        const exists = allFileStatus.get(path) ?? false;
+        checkpoints.push({
+          id: `${section.name}-${def.id}`,
+          name: def.name,
+          path,
+          exists,
+          status: determineCheckpointStatus(exists, `${section.name}-${def.id}`, selectedCheckpointId),
+          flowType: 'branched',
+          section: section.name,
+        });
+      }
+    });
+
+    // フローグループを構築
+    const groupedCheckpoints = buildFlowGroups(checkpoints, projectSections);
+
+    // Design Flowは常に全セクションを表示（サービス全体の設計フロー全貌を表示）
+    designFlowData = {
+      checkpoints: groupedCheckpoints,
+      sections: projectSections,
+    };
+  } catch (error) {
+    console.error('Design flow data fetch error:', error);
+
+    const errorMessage = error instanceof ValidationError
+      ? error.message
+      : 'Failed to load design flow data';
+
+    designFlowData = {
+      checkpoints: { common: [], commonSection: [], branched: [] },
+      sections: [],
+      error: errorMessage,
+    };
+  }
+
+  // Implementation Flow データ取得
+  let implementationFlowData: ImplementationFlowOutput;
+  try {
+    // 1. file-list.mdを読み込んでパース（selectedSectionKeyに応じたセクションのfile-list.md）
+    const fileListMarkdown = readFileListMd(selectedService, selectedSectionKey);
+    const fileDefinitions = parseFileListMarkdown(fileListMarkdown);
+
+    // 2. ファイル存在確認
+    const filePaths = fileDefinitions.map(f => f.path);
+    const existsResults = checkImplementationFiles(filePaths);
+
+    // 3. 層の表示名を取得
+    const layerDisplayNames = loadLayerDisplayNames();
+
+    // 4. UI表示用データを構築
+    implementationFlowData = buildImplementationFlow({
+      fileDefinitions,
+      existsResults,
+      layerDisplayNames,
+    });
+  } catch (error) {
+    console.error('Implementation flow data fetch error:', error);
+    implementationFlowData = { layerGroups: [] };
+  }
+
+  return json<FlowAuditorLoaderData>({
+    services,
+    selectedService,
+    sections: sections.map(s => s.name), // 表示名の配列に変換
+    selectedSection: selectedSectionName,
+    lastUpdated,
+    selectedCheckpointId,
+    designFlow: designFlowData,
+    implementationFlow: implementationFlowData,
+  });
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const intent = formData.get('intent');
+
+  // URL SearchParamsから現在の状態を取得
+  const url = new URL(request.url);
+  const services = await loadServiceList();
+  const selectedService = url.searchParams.get('service') || services[0] || '';
+
+  if (intent === 'refresh') {
+    // 更新アクション: loaderを再実行（現在のURL状態を保持）
+    return redirect(url.pathname + url.search);
+  }
+
+  if (intent === 'retry') {
+    // リトライアクション: 選択されたチェックポイント以降のファイルをアーカイブ
+    const checkpointId = formData.get('checkpointId') as string | null;
+    const checkpointIdsStr = formData.get('checkpointIds') as string | null;
+
+    // checkpointIdsが存在する場合はパース（Implementation Flow用）
+    let checkpointIds: string[] | undefined;
+    if (checkpointIdsStr) {
+      try {
+        checkpointIds = JSON.parse(checkpointIdsStr);
+      } catch {
+        return json({ error: 'Invalid checkpointIds format' }, { status: 400 });
+      }
+    }
+
+    // どちらも存在しない場合はエラー
+    if (!checkpointId && !checkpointIds) {
+      return json({ error: 'checkpointId or checkpointIds is required' }, { status: 400 });
+    }
+
+    try {
+      // チェックポイント一覧を再構築（loaderと同じロジック）
+      const projectSectionsResult = await loadProjectSections({ service: selectedService });
+      // commonセクションを最優先にソート
+      const projectSections = projectSectionsResult.sections.sort((a, b) => {
+        if (a.name === 'common') return -1;
+        if (b.name === 'common') return 1;
+        return 0;
+      });
+
+      const commonDefs = getCommonCheckpointDefinitions();
+      const sectionDefs = getSectionCheckpointDefinitions();
+
+      const fileCheckResults = await Promise.all([
+        checkDesignFiles({ service: selectedService, section: '' }),
+        ...projectSections.map(section => checkDesignFiles({ service: selectedService, section: section.name }))
+      ]);
+
+      const commonFileResults = fileCheckResults[0];
+      const sectionFileResults = fileCheckResults.slice(1);
+
+      const allFileStatus = new Map<string, boolean>();
+      [...commonFileResults.commonFiles, ...commonFileResults.sectionFiles].forEach(f => allFileStatus.set(f.path, f.exists));
+      sectionFileResults.forEach(result => {
+        [...result.commonFiles, ...result.sectionFiles].forEach(f => allFileStatus.set(f.path, f.exists));
+      });
+
+      const allCheckpoints: Checkpoint[] = [];
+
+      // 共通チェックポイント
+      for (const def of commonDefs) {
+        const path = def.pathTemplate.replace('{service}', selectedService);
+        const exists = allFileStatus.get(path) ?? false;
+        allCheckpoints.push({
+          id: def.id,
+          name: def.name,
+          path,
+          exists,
+          status: determineCheckpointStatus(exists, def.id, checkpointId ?? null),
+          flowType: 'common',
+        });
+      }
+
+      // セクション別チェックポイント
+      projectSections.forEach((section) => {
+        for (const def of sectionDefs) {
+          const path = def.pathTemplate
+            .replace('{service}', selectedService)
+            .replace('{section}', section.name);
+          const exists = allFileStatus.get(path) ?? false;
+          allCheckpoints.push({
+            id: `${section.name}-${def.id}`,
+            name: def.name,
+            path,
+            exists,
+            status: determineCheckpointStatus(exists, `${section.name}-${def.id}`, checkpointId ?? null),
+            flowType: 'branched',
+            section: section.name,
+          });
+        }
+      });
+
+      // executeRetryを実行
+      const result = await executeRetry({
+        checkpointId: checkpointId ?? undefined,
+        checkpointIds,
+        allCheckpoints,
+      });
+
+      if (result.success) {
+        // 成功: 現在のURL状態を保持してリダイレクト（selectedCheckpointのみクリア）
+        const redirectUrl = new URL(url);
+        redirectUrl.searchParams.delete('selectedCheckpoint');
+        return redirect(redirectUrl.pathname + redirectUrl.search);
+      } else {
+        // 失敗: エラーメッセージを返す
+        return json({ error: result.errorMessage }, { status: 500 });
+      }
+    } catch (error) {
+      console.error('Retry action error:', error);
+      return json(
+        { error: error instanceof Error ? error.message : 'Unknown error' },
+        { status: 500 }
+      );
+    }
+  }
+
+  return json({ error: 'Invalid intent' }, { status: 400 });
+}
+
+export default function FlowAuditorPage() {
+  const data = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
+
+  const handleServiceChange = (serviceName: string) => {
+    // サービス変更時にURL SearchParamsを更新
+    const params = new URLSearchParams();
+    params.set('service', serviceName);
+    // sectionとselectedCheckpointはクリア（サービス切り替え時にリセット）
+    navigate(`/flow-auditor?${params.toString()}`);
+  };
+
+  const handleSectionChange = (sectionName: string) => {
+    // セクション変更時にURL SearchParamsを更新
+    const params = new URLSearchParams();
+    // 現在のserviceパラメータを保持
+    const currentService = new URL(window.location.href).searchParams.get('service');
+    if (currentService) {
+      params.set('service', currentService);
+    }
+    params.set('section', sectionName);
+    // selectedCheckpointはクリア（セクション切り替え時にリセット）
+    navigate(`/flow-auditor?${params.toString()}`);
+  };
+
+  const handleRefresh = () => {
+    // 更新ボタンの処理
+    window.location.reload();
+  };
+
+  const handleRetry = () => {
+    // リトライボタンクリック時の処理
+    // Formをsubmitしてaction関数を実行する
+    const form = document.getElementById('retry-form') as HTMLFormElement;
+    if (form) {
+      // selectedCheckpointIdから複数のIDを取得
+      const checkpointIds = data.selectedCheckpointId?.split(',').filter(id => id.trim()) || [];
+
+      // checkpointIdsをJSON形式でフォームに設定
+      const checkpointIdsInput = form.querySelector('input[name="checkpointIds"]') as HTMLInputElement;
+      if (checkpointIdsInput && checkpointIds.length > 1) {
+        checkpointIdsInput.value = JSON.stringify(checkpointIds);
+      }
+
+      // 単一の場合はcheckpointIdを設定
+      const checkpointIdInput = form.querySelector('input[name="checkpointId"]') as HTMLInputElement;
+      if (checkpointIdInput && checkpointIds.length === 1) {
+        checkpointIdInput.value = checkpointIds[0];
+      }
+
+      form.requestSubmit();
+    }
+  };
+
+  return (
+    <>
+      <Header
+        services={data.services}
+        selectedService={data.selectedService}
+        sections={data.sections}
+        selectedSection={data.selectedSection}
+        lastUpdated={new Date(data.lastUpdated)}
+        onServiceChange={handleServiceChange}
+        onSectionChange={handleSectionChange}
+      />
+
+      <main style={{
+        marginTop: 'var(--layout-header-height)',
+        marginBottom: 'var(--layout-footer-height)',
+        minHeight: 'calc(100vh - var(--layout-header-height) - var(--layout-footer-height))'
+      }}>
+        <div className="page-container">
+          {/* Design Flow Section - 常に表示 */}
+          {data.designFlow && (
+            <div className="section-group">
+              <h3 className="group-header">{data.selectedService} design flow</h3>
+              <DesignFlowSection
+                checkpoints={data.designFlow.checkpoints}
+                sections={data.designFlow.sections}
+                error={data.designFlow.error}
+              />
+            </div>
+          )}
+          {/* Implementation Flow Section - 常に表示 */}
+          {data.implementationFlow && (
+            <div>
+              <h3 className="group-header">{data.selectedSection} implementation flow</h3>
+              <ImplementationFlowSection data={data.implementationFlow} />
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Hidden form for retry action */}
+      <form id="retry-form" method="post" style={{ display: 'none' }}>
+        <input type="hidden" name="intent" value="retry" />
+        <input type="hidden" name="checkpointId" value="" />
+        <input type="hidden" name="checkpointIds" value="" />
+      </form>
+
+      <Footer
+        selectedCheckpointId={data.selectedCheckpointId}
+        isRefreshing={false}
+        onRefresh={handleRefresh}
+        onRetry={handleRetry}
+      />
+    </>
+  );
+}

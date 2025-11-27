@@ -1,0 +1,294 @@
+import fs from 'fs';
+import path from 'path';
+
+/**
+ * ルールエンジン - プラグイン型Lintシステムの核
+ */
+class RuleEngine {
+  constructor() {
+    this.rules = new Map();
+    this.config = null;
+    this.results = [];
+  }
+
+  /**
+   * 設定ファイルを読み込む
+   */
+  loadConfig(configPath) {
+    try {
+      const configContent = fs.readFileSync(configPath, 'utf8');
+      this.config = JSON.parse(configContent);
+      return this.config;
+    } catch (error) {
+      throw new Error(`設定ファイルの読み込みに失敗しました: ${configPath} - ${error.message}`);
+    }
+  }
+
+  /**
+   * ルールを登録する
+   */
+  registerRule(rule) {
+    if (!rule.name || typeof rule.check !== 'function') {
+      throw new Error('ルールには name と check メソッドが必要です');
+    }
+
+    this.rules.set(rule.name, {
+      ...rule,
+      enabled: true,
+      severity: rule.severity || 'error'
+    });
+  }
+
+  /**
+   * ファイルに対して適用すべきルールを決定
+   */
+  getApplicableRules(filePath, templateType = null) {
+    const applicableRules = [];
+    const fileExt = path.extname(filePath);
+    const fileName = path.basename(filePath);
+
+    // 共通ルールをチェック
+    if (this.config?.commonRules) {
+      for (const [ruleName, ruleConfig] of Object.entries(this.config.commonRules)) {
+        if (!ruleConfig.enabled) continue;
+
+        // ファイルタイプの除外チェック
+        if (ruleConfig.exceptions?.fileTypes?.includes(fileExt)) {
+          continue;
+        }
+
+        // テンプレートの除外チェック
+        if (ruleConfig.exceptions?.templates?.includes(templateType)) {
+          continue;
+        }
+
+        // ファイルタイプ制限チェック
+        if (ruleConfig.fileTypes && !ruleConfig.fileTypes.includes(fileExt)) {
+          continue;
+        }
+
+        const rule = this.rules.get(ruleName);
+        if (rule) {
+          applicableRules.push({
+            ...rule,
+            config: ruleConfig
+          });
+        }
+      }
+    }
+
+    // テンプレート固有ルールをチェック
+    if (templateType && this.config?.templateRules?.[templateType]) {
+      for (const [ruleName, ruleConfig] of Object.entries(this.config.templateRules[templateType])) {
+        if (!ruleConfig.enabled) continue;
+
+        const rule = this.rules.get(ruleName);
+        if (rule) {
+          applicableRules.push({
+            ...rule,
+            config: ruleConfig
+          });
+        }
+      }
+    }
+
+    return applicableRules;
+  }
+
+  /**
+   * 単一ファイルをチェック
+   */
+  async checkFile(filePath, templateType = null) {
+    if (!fs.existsSync(filePath)) {
+      return [];
+    }
+
+    const content = fs.readFileSync(filePath, 'utf8');
+    const applicableRules = this.getApplicableRules(filePath, templateType);
+    const fileResults = [];
+
+    for (const rule of applicableRules) {
+      try {
+        const ruleResults = await rule.check(content, filePath, rule.config);
+
+        if (Array.isArray(ruleResults)) {
+          fileResults.push(...ruleResults.map(result => ({
+            ...result,
+            rule: rule.name,
+            severity: rule.config.severity || rule.severity,
+            file: filePath
+          })));
+        } else if (ruleResults) {
+          fileResults.push({
+            ...ruleResults,
+            rule: rule.name,
+            severity: rule.config.severity || rule.severity,
+            file: filePath
+          });
+        }
+      } catch (error) {
+        console.error(`❌ ルール「${rule.name}」の実行に失敗: ${filePath} - ${error.message}`);
+        fileResults.push({
+          rule: rule.name,
+          severity: 'error',
+          message: `ルール実行エラー: ${error.message}`,
+          file: filePath,
+          line: 0,
+          column: 0
+        });
+      }
+    }
+
+    return fileResults;
+  }
+
+  /**
+   * 複数ファイルを並列でチェック
+   */
+  async checkFiles(files) {
+    const promises = files.map(async ({ filePath, templateType }) => {
+      return await this.checkFile(filePath, templateType);
+    });
+
+    const allResults = await Promise.all(promises);
+    this.results = allResults.flat();
+    return this.results;
+  }
+
+  /**
+   * 結果の集計
+   */
+  getSummary() {
+    const summary = {
+      total: this.results.length,
+      errors: 0,
+      warnings: 0,
+      info: 0,
+      files: new Set(),
+      rules: new Set()
+    };
+
+    this.results.forEach(result => {
+      summary[result.severity + 's']++;
+      summary.files.add(result.file);
+      summary.rules.add(result.rule);
+    });
+
+    return {
+      ...summary,
+      files: summary.files.size,
+      rules: summary.rules.size
+    };
+  }
+
+  /**
+   * 結果をフォーマットして出力
+   */
+  formatResults(format = 'console') {
+    if (format === 'markdown') {
+      return this.formatMarkdown();
+    }
+    return this.formatConsole();
+  }
+
+  /**
+   * コンソール形式でフォーマット
+   */
+  formatConsole() {
+    if (this.results.length === 0) {
+      return '✅ すべてのチェックが正常です';
+    }
+
+    const output = [];
+    const groupedByFile = {};
+
+    // ファイルごとにグループ化
+    this.results.forEach(result => {
+      if (!groupedByFile[result.file]) {
+        groupedByFile[result.file] = [];
+      }
+      groupedByFile[result.file].push(result);
+    });
+
+    // ファイルごとに出力
+    for (const [file, results] of Object.entries(groupedByFile)) {
+      output.push(`\n📄 ${file}`);
+
+      results.forEach(result => {
+        const symbol = this.config?.severity?.[result.severity]?.symbol || '•';
+        const line = result.line ? `:${result.line}` : '';
+        const column = result.column ? `:${result.column}` : '';
+
+        output.push(`  ${symbol} ${result.message} [${result.rule}]${line}${column}`);
+      });
+    }
+
+    // サマリーを追加
+    const summary = this.getSummary();
+    output.push('\n📊 Summary:');
+    output.push(`  Files: ${summary.files}`);
+    output.push(`  Rules: ${summary.rules}`);
+    output.push(`  Errors: ${summary.errors}`);
+    output.push(`  Warnings: ${summary.warnings}`);
+
+    return output.join('\n');
+  }
+
+  /**
+   * Markdown形式でフォーマット
+   */
+  formatMarkdown() {
+    if (this.results.length === 0) {
+      return '# ✅ Content Linter 結果\n\nすべてのチェックに合格しました！';
+    }
+
+    const output = ['# 🛡️ Content Linter 結果'];
+    const groupedByFile = {};
+
+    // ファイルごとにグループ化
+    this.results.forEach(result => {
+      if (!groupedByFile[result.file]) {
+        groupedByFile[result.file] = [];
+      }
+      groupedByFile[result.file].push(result);
+    });
+
+    // ファイルごとに出力
+    for (const [file, results] of Object.entries(groupedByFile)) {
+      output.push(`\n---\n`);
+      output.push(`### 📄 \`${file}\``);
+
+      results.forEach(result => {
+        const symbol = this.config?.severity?.[result.severity]?.symbol || '•';
+        const line = result.line ? `L${result.line}` : '';
+        const column = result.column ? `:${result.column}` : '';
+
+        output.push(`- **[${line}${column}]** ${symbol} ${result.message} (\`${result.rule}\`)`);
+        if (result.suggestion) {
+          output.push(`  - **Suggestion**: ${result.suggestion}`);
+        }
+      });
+    }
+
+    // サマリーを追加
+    const summary = this.getSummary();
+    output.push('\n---\n');
+    output.push('## 📊 実行サマリー');
+    output.push(`- **検査ファイル数**: ${summary.files}`);
+    output.push(`- **検出問題数**: ${summary.total}`);
+    output.push(`  - **エラー**: ${summary.errors}`);
+    output.push(`  - **警告**: ${summary.warnings}`);
+
+    return output.join('\n');
+  }
+
+  /**
+   * 終了コードを決定
+   */
+  getExitCode() {
+    const hasErrors = this.results.some(result => result.severity === 'error');
+    return hasErrors ? 1 : 0;
+  }
+}
+
+export default RuleEngine;

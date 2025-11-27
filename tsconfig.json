@@ -1,0 +1,42 @@
+{
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "test/**/*.ts",
+    "test/**/*.js",
+    "scripts/**/*.ts",
+    "scripts/**/*.js"
+, "run-retry-manually.ts"  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "**/*.yaml",
+    "**/*.yml",
+    "scripts/templates/**/*",
+    "scripts/generate/templates/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ],
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "target": "ES2022",
+    "strict": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"]
+    },
+    "noEmit": true,
+    "types": ["@remix-run/dev", "vite/client"]
+  }
+}

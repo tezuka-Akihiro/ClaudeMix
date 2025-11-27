@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Token Preview - Cyberpunk Terminal Theme</title>
+  <style>
+    /* Inline embedded globals.css for standalone preview */
+    :root {
+      /* Application Tokens */
+      --foundation-color-neutral-900: #111111;
+      --foundation-color-neutral-800: #1a1a1a;
+      --foundation-color-neutral-700: #262626;
+      --foundation-color-neutral-600: #333333;
+      --foundation-color-neutral-500: #666666;
+      --foundation-color-neutral-400: #999999;
+      --foundation-color-neutral-100: #ffffff;
+      --foundation-color-gold-500: #BFA978;
+      --foundation-color-gold-400: #d4c08a;
+
+      /* Gray Scale */
+      --foundation-color-gray-950: #0a0a0a;
+      --foundation-color-gray-900: #1a1a1a;
+      --foundation-color-gray-800: #2a2a2a;
+      --foundation-color-gray-700: #3a3a3a;
+      --foundation-color-gray-600: #4a4a4a;
+      --foundation-color-gray-500: #6b7280;
+      --foundation-color-gray-400: #9ca3af;
+
+      /* Cyan */
+      --foundation-color-cyan-500: #06b6d4;
+      --foundation-color-cyan-400: #22d3ee;
+      --foundation-color-cyan-300: #67e8f9;
+
+      /* Green */
+      --foundation-color-green-950: rgba(5, 46, 22, 0.5);
+      --foundation-color-green-500: #22c55e;
+      --foundation-color-green-400: #4ade80;
+      --foundation-color-green-300: #86efac;
+
+      /* Red/Pink */
+      --foundation-color-red-400: #f87171;
+      --foundation-color-red-300: #fca5a5;
+      --foundation-color-pink-500: #ec4899;
+
+      /* Blue */
+      --foundation-color-blue-950: rgba(30, 58, 138, 0.5);
+      --foundation-color-blue-500: #3b82f6;
+      --foundation-color-blue-400: #60a5fa;
+      --foundation-color-blue-300: #93c5fd;
+
+      /* Yellow */
+      --foundation-color-yellow-400: #facc15;
+      --foundation-color-yellow-300: #fde047;
+      --foundation-color-yellow-amber: #fbbf24;
+
+      /* Error */
+      --foundation-color-error-500: #ef4444;
+
+      /* Opacity Variants */
+      --foundation-opacity-black-80: rgba(0, 0, 0, 0.8);
+      --foundation-opacity-black-50: rgba(0, 0, 0, 0.5);
+      --foundation-opacity-black-30: rgba(0, 0, 0, 0.3);
+      --foundation-opacity-black-15: rgba(0, 0, 0, 0.15);
+      --foundation-opacity-gray-900-95: rgba(26, 26, 26, 0.95);
+      --foundation-opacity-cyan-400-30: rgba(34, 211, 238, 0.3);
+      --foundation-opacity-cyan-400-20: rgba(34, 211, 238, 0.2);
+      --foundation-opacity-cyan-400-15: rgba(34, 211, 238, 0.15);
+      --foundation-opacity-green-400-50: rgba(74, 222, 128, 0.5);
+      --foundation-opacity-red-400-50: rgba(248, 113, 113, 0.5);
+      --foundation-opacity-yellow-amber-60: rgba(251, 191, 36, 0.6);
+      --foundation-opacity-yellow-amber-40: rgba(251, 191, 36, 0.4);
+      --foundation-opacity-yellow-amber-25: rgba(251, 191, 36, 0.25);
+      --foundation-opacity-yellow-amber-15: rgba(251, 191, 36, 0.15);
+      --foundation-opacity-error-500-40: rgba(239, 68, 68, 0.4);
+      --foundation-opacity-error-500-15: rgba(239, 68, 68, 0.15);
+
+      /* Spacing */
+      --foundation-spacing-1: 8px;
+      --foundation-spacing-2: 12px;
+      --foundation-spacing-3: 16px;
+      --foundation-spacing-4: 24px;
+      --foundation-spacing-5: 32px;
+      --foundation-spacing-6: 48px;
+      --foundation-spacing-7: 64px;
+
+      /* Typography */
+      --foundation-font-size-xs: 12px;
+      --foundation-font-size-sm: 14px;
+      --foundation-font-size-base: 16px;
+      --foundation-font-size-lg: 18px;
+      --foundation-font-size-xl: 20px;
+      --foundation-font-size-2xl: 24px;
+      --foundation-font-size-3xl: 32px;
+      --foundation-font-weight-normal: 400;
+      --foundation-font-weight-medium: 500;
+      --foundation-font-weight-semibold: 600;
+      --foundation-font-weight-bold: 700;
+      --foundation-font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      --foundation-font-family-heading: 'Oswald', sans-serif;
+      --foundation-line-height-tight: 1.2;
+      --foundation-line-height-normal: 1.6;
+      --foundation-line-height-relaxed: 1.8;
+
+      /* Application Tokens */
+      --bg-primary: var(--foundation-color-neutral-900);
+      --bg-secondary: var(--foundation-color-neutral-800);
+      --bg-surface: var(--foundation-color-neutral-800);
+      --text-primary: var(--foundation-color-neutral-100);
+      --text-secondary: var(--foundation-color-neutral-400);
+      --text-muted: var(--foundation-color-neutral-500);
+      --text-accent: var(--foundation-color-gold-500);
+      --border-default: var(--foundation-color-neutral-600);
+      --border-accent: var(--foundation-color-gold-500);
+      --button-bg-primary: var(--foundation-color-gold-500);
+      --button-bg-hover: var(--foundation-color-gold-400);
+      --button-text: var(--foundation-color-neutral-900);
+
+      /* Service Tokens: flow-auditor */
+      --flow-auditor-container-bg: var(--foundation-color-gray-950);
+      --flow-auditor-container-border: var(--foundation-color-cyan-400);
+      --flow-auditor-container-shadow-1: var(--foundation-opacity-cyan-400-30);
+      --flow-auditor-container-shadow-2: var(--foundation-opacity-cyan-400-15);
+      --flow-auditor-checkpoint-bg: var(--foundation-opacity-black-30);
+      --flow-auditor-checkpoint-completed-border: var(--foundation-color-green-400);
+      --flow-auditor-checkpoint-completed-text: var(--foundation-color-green-400);
+      --flow-auditor-checkpoint-completed-shadow: var(--foundation-opacity-green-400-50);
+      --flow-auditor-checkpoint-pending-border: var(--foundation-color-red-400);
+      --flow-auditor-checkpoint-pending-text: var(--foundation-color-red-400);
+      --flow-auditor-checkpoint-pending-shadow: var(--foundation-opacity-red-400-50);
+      --flow-auditor-checkpoint-selected-border: var(--foundation-color-blue-400);
+      --flow-auditor-checkpoint-selected-text: var(--foundation-color-blue-400);
+      --flow-auditor-font-family: 'Courier New', 'Monaco', 'Consolas', monospace;
+    }
+
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--foundation-font-family-sans);
+      line-height: 1.6;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-family: var(--foundation-font-family-heading);
+      font-size: var(--foundation-font-size-3xl);
+      font-weight: var(--foundation-font-weight-bold);
+      color: var(--foundation-color-cyan-400);
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-bottom: 2px solid var(--foundation-color-cyan-400);
+      padding-bottom: 1rem;
+      box-shadow: 0 2px 10px var(--foundation-opacity-cyan-400-30);
+    }
+
+    h2 {
+      font-family: var(--flow-auditor-font-family);
+      font-size: var(--foundation-font-size-xl);
+      font-weight: var(--foundation-font-weight-semibold);
+      color: var(--foundation-color-cyan-300);
+      margin-top: 3rem;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h3 {
+      font-family: var(--flow-auditor-font-family);
+      font-size: var(--foundation-font-size-base);
+      font-weight: var(--foundation-font-weight-medium);
+      color: var(--foundation-color-green-400);
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    .section {
+      background-color: var(--foundation-color-gray-900);
+      border: 2px solid var(--foundation-color-gray-700);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 0;
+    }
+
+    /* Color swatches */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .color-swatch {
+      border: 2px solid var(--foundation-color-gray-600);
+      background-color: var(--foundation-color-gray-800);
+      padding: 0;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .color-swatch:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .color-preview {
+      height: 80px;
+      width: 100%;
+      position: relative;
+    }
+
+    .color-info {
+      padding: 0.75rem;
+    }
+
+    .token-name {
+      font-family: var(--flow-auditor-font-family);
+      font-size: var(--foundation-font-size-xs);
+      color: var(--foundation-color-cyan-300);
+      margin-bottom: 0.25rem;
+      word-break: break-all;
+    }
+
+    .color-value {
+      font-family: var(--flow-auditor-font-family);
+      font-size: var(--foundation-font-size-xs);
+      color: var(--foundation-color-gray-400);
+    }
+
+    /* Typography samples */
+    .typography-sample {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background-color: var(--foundation-color-gray-800);
+      border-left: 4px solid var(--foundation-color-cyan-400);
+    }
+
+    .typography-label {
+      font-family: var(--flow-auditor-font-family);
+      font-size: var(--foundation-font-size-xs);
+      color: var(--foundation-color-gray-400);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Spacing visualization */
+    .spacing-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .spacing-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      background-color: var(--foundation-color-gray-800);
+    }
+
+    .spacing-label {
+      font-family: var(--flow-auditor-font-family);
+      font-size: var(--foundation-font-size-sm);
+      color: var(--foundation-color-cyan-300);
+      min-width: 200px;
+    }
+
+    .spacing-visual {
+      background: linear-gradient(to right, var(--foundation-color-green-400), var(--foundation-color-cyan-400));
+      height: 24px;
+      box-shadow: 0 0 8px var(--foundation-opacity-cyan-400-30);
+    }
+
+    /* Component examples */
+    .component-example {
+      margin: 1rem 0;
+      padding: 1.5rem;
+      background-color: var(--flow-auditor-container-bg);
+      border: 2px solid var(--flow-auditor-container-border);
+      box-shadow:
+        0 0 10px var(--flow-auditor-container-shadow-1),
+        0 0 20px var(--flow-auditor-container-shadow-2);
+    }
+
+    .checkpoint-demo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background-color: var(--flow-auditor-checkpoint-bg);
+      font-family: var(--flow-auditor-font-family);
+      font-size: var(--foundation-font-size-sm);
+      margin: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .checkpoint-demo.completed {
+      border: 2px solid var(--flow-auditor-checkpoint-completed-border);
+      color: var(--flow-auditor-checkpoint-completed-text);
+      box-shadow: 0 0 10px var(--flow-auditor-checkpoint-completed-shadow);
+    }
+
+    .checkpoint-demo.pending {
+      border: 2px solid var(--flow-auditor-checkpoint-pending-border);
+      color: var(--flow-auditor-checkpoint-pending-text);
+      box-shadow: 0 0 10px var(--flow-auditor-checkpoint-pending-shadow);
+    }
+
+    .checkpoint-demo.selected {
+      border: 2px solid var(--flow-auditor-checkpoint-selected-border);
+      color: var(--flow-auditor-checkpoint-selected-text);
+      box-shadow: 0 0 15px var(--flow-auditor-checkpoint-selected-border);
+    }
+
+    .note {
+      background-color: var(--foundation-color-gray-800);
+      border-left: 4px solid var(--foundation-color-yellow-400);
+      padding: 1rem;
+      margin: 1rem 0;
+      font-size: var(--foundation-font-size-sm);
+      color: var(--foundation-color-gray-400);
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Design Token Preview</h1>
+    <div class="note">
+      <strong>Theme:</strong> Cyberpunk Terminal<br>
+      <strong>Services:</strong> ai-tdd-manifest, flow-auditor<br>
+      <strong>Purpose:</strong> Visual review of design token implementation
+    </div>
+
+    <!-- Application Tokens: Colors -->
+    <section class="section">
+      <h2>Application Tokens: Color Palette</h2>
+
+      <h3>Neutral Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-neutral-900);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-neutral-900</div>
+            <div class="color-value">#111111</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-neutral-800);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-neutral-800</div>
+            <div class="color-value">#1a1a1a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-neutral-700);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-neutral-700</div>
+            <div class="color-value">#262626</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-neutral-600);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-neutral-600</div>
+            <div class="color-value">#333333</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-neutral-500);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-neutral-500</div>
+            <div class="color-value">#666666</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-neutral-400);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-neutral-400</div>
+            <div class="color-value">#999999</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-neutral-100);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-neutral-100</div>
+            <div class="color-value">#ffffff</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Gray Scale (Flow Auditor)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gray-950);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gray-950</div>
+            <div class="color-value">#0a0a0a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gray-900);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gray-900</div>
+            <div class="color-value">#1a1a1a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gray-800);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gray-800</div>
+            <div class="color-value">#2a2a2a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gray-700);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gray-700</div>
+            <div class="color-value">#3a3a3a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gray-600);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gray-600</div>
+            <div class="color-value">#4a4a4a</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gray-500);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gray-500</div>
+            <div class="color-value">#6b7280</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gray-400);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gray-400</div>
+            <div class="color-value">#9ca3af</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Cyan (Structure)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-cyan-500);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-cyan-500</div>
+            <div class="color-value">#06b6d4</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-cyan-400);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-cyan-400</div>
+            <div class="color-value">#22d3ee</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-cyan-300);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-cyan-300</div>
+            <div class="color-value">#67e8f9</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Green (Positive)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-green-500);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-green-500</div>
+            <div class="color-value">#22c55e</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-green-400);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-green-400</div>
+            <div class="color-value">#4ade80</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-green-300);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-green-300</div>
+            <div class="color-value">#86efac</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Red/Pink (Negative)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-red-400);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-red-400</div>
+            <div class="color-value">#f87171</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-red-300);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-red-300</div>
+            <div class="color-value">#fca5a5</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-pink-500);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-pink-500</div>
+            <div class="color-value">#ec4899</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-error-500);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-error-500</div>
+            <div class="color-value">#ef4444</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Blue (Interaction)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-blue-500);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-blue-500</div>
+            <div class="color-value">#3b82f6</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-blue-400);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-blue-400</div>
+            <div class="color-value">#60a5fa</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-blue-300);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-blue-300</div>
+            <div class="color-value">#93c5fd</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Yellow (Attention)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-yellow-400);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-yellow-400</div>
+            <div class="color-value">#facc15</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-yellow-300);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-yellow-300</div>
+            <div class="color-value">#fde047</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-yellow-amber);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-yellow-amber</div>
+            <div class="color-value">#fbbf24</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Gold (Accent)</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gold-500);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gold-500</div>
+            <div class="color-value">#BFA978</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--foundation-color-gold-400);"></div>
+          <div class="color-info">
+            <div class="token-name">--foundation-color-gold-400</div>
+            <div class="color-value">#d4c08a</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Application Tokens: Typography -->
+    <section class="section">
+      <h2>Application Tokens: Typography</h2>
+
+      <h3>Font Sizes</h3>
+      <div class="typography-sample" style="font-size: var(--foundation-font-size-3xl);">
+        <div class="typography-label">--foundation-font-size-3xl (32px)</div>
+        The quick brown fox jumps over the lazy dog
+      </div>
+      <div class="typography-sample" style="font-size: var(--foundation-font-size-2xl);">
+        <div class="typography-label">--foundation-font-size-2xl (24px)</div>
+        The quick brown fox jumps over the lazy dog
+      </div>
+      <div class="typography-sample" style="font-size: var(--foundation-font-size-xl);">
+        <div class="typography-label">--foundation-font-size-xl (20px)</div>
+        The quick brown fox jumps over the lazy dog
+      </div>
+      <div class="typography-sample" style="font-size: var(--foundation-font-size-lg);">
+        <div class="typography-label">--foundation-font-size-lg (18px)</div>
+        The quick brown fox jumps over the lazy dog
+      </div>
+      <div class="typography-sample" style="font-size: var(--foundation-font-size-base);">
+        <div class="typography-label">--foundation-font-size-base (16px)</div>
+        The quick brown fox jumps over the lazy dog
+      </div>
+      <div class="typography-sample" style="font-size: var(--foundation-font-size-sm);">
+        <div class="typography-label">--foundation-font-size-sm (14px)</div>
+        The quick brown fox jumps over the lazy dog
+      </div>
+      <div class="typography-sample" style="font-size: var(--foundation-font-size-xs);">
+        <div class="typography-label">--foundation-font-size-xs (12px)</div>
+        The quick brown fox jumps over the lazy dog
+      </div>
+
+      <h3>Font Weights</h3>
+      <div class="grid-2col">
+        <div class="typography-sample" style="font-weight: var(--foundation-font-weight-normal);">
+          <div class="typography-label">--foundation-font-weight-normal (400)</div>
+          The quick brown fox jumps over the lazy dog
+        </div>
+        <div class="typography-sample" style="font-weight: var(--foundation-font-weight-medium);">
+          <div class="typography-label">--foundation-font-weight-medium (500)</div>
+          The quick brown fox jumps over the lazy dog
+        </div>
+        <div class="typography-sample" style="font-weight: var(--foundation-font-weight-semibold);">
+          <div class="typography-label">--foundation-font-weight-semibold (600)</div>
+          The quick brown fox jumps over the lazy dog
+        </div>
+        <div class="typography-sample" style="font-weight: var(--foundation-font-weight-bold);">
+          <div class="typography-label">--foundation-font-weight-bold (700)</div>
+          The quick brown fox jumps over the lazy dog
+        </div>
+      </div>
+
+      <h3>Font Families</h3>
+      <div class="typography-sample" style="font-family: var(--foundation-font-family-heading);">
+        <div class="typography-label">--foundation-font-family-heading (Oswald)</div>
+        THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG
+      </div>
+      <div class="typography-sample" style="font-family: var(--flow-auditor-font-family);">
+        <div class="typography-label">--flow-auditor-font-family (Monospace)</div>
+        The quick brown fox jumps over the lazy dog
+      </div>
+    </section>
+
+    <!-- Application Tokens: Spacing -->
+    <section class="section">
+      <h2>Application Tokens: Spacing</h2>
+      <div class="spacing-grid">
+        <div class="spacing-item">
+          <div class="spacing-label">--foundation-spacing-1 (8px)</div>
+          <div class="spacing-visual" style="width: var(--foundation-spacing-1);"></div>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-label">--foundation-spacing-2 (12px)</div>
+          <div class="spacing-visual" style="width: var(--foundation-spacing-2);"></div>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-label">--foundation-spacing-3 (16px)</div>
+          <div class="spacing-visual" style="width: var(--foundation-spacing-3);"></div>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-label">--foundation-spacing-4 (24px)</div>
+          <div class="spacing-visual" style="width: var(--foundation-spacing-4);"></div>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-label">--foundation-spacing-5 (32px)</div>
+          <div class="spacing-visual" style="width: var(--foundation-spacing-5);"></div>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-label">--foundation-spacing-6 (48px)</div>
+          <div class="spacing-visual" style="width: var(--foundation-spacing-6);"></div>
+        </div>
+        <div class="spacing-item">
+          <div class="spacing-label">--foundation-spacing-7 (64px)</div>
+          <div class="spacing-visual" style="width: var(--foundation-spacing-7);"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Application Tokens -->
+    <section class="section">
+      <h2>Application Tokens: Semantic Aliases</h2>
+
+      <h3>Background Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--bg-primary);"></div>
+          <div class="color-info">
+            <div class="token-name">--bg-primary</div>
+            <div class="color-value">→ --foundation-color-neutral-900</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--bg-secondary);"></div>
+          <div class="color-info">
+            <div class="token-name">--bg-secondary</div>
+            <div class="color-value">→ --foundation-color-neutral-800</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--bg-surface);"></div>
+          <div class="color-info">
+            <div class="token-name">--bg-surface</div>
+            <div class="color-value">→ --foundation-color-neutral-800</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Text Colors</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--text-primary);"></div>
+          <div class="color-info">
+            <div class="token-name">--text-primary</div>
+            <div class="color-value">→ --foundation-color-neutral-100</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--text-secondary);"></div>
+          <div class="color-info">
+            <div class="token-name">--text-secondary</div>
+            <div class="color-value">→ --foundation-color-neutral-400</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--text-muted);"></div>
+          <div class="color-info">
+            <div class="token-name">--text-muted</div>
+            <div class="color-value">→ --foundation-color-neutral-500</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--text-accent);"></div>
+          <div class="color-info">
+            <div class="token-name">--text-accent</div>
+            <div class="color-value">→ --foundation-color-gold-500</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Interactive Elements</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--button-bg-primary);"></div>
+          <div class="color-info">
+            <div class="token-name">--button-bg-primary</div>
+            <div class="color-value">→ --foundation-color-gold-500</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--button-bg-hover);"></div>
+          <div class="color-info">
+            <div class="token-name">--button-bg-hover</div>
+            <div class="color-value">→ --foundation-color-gold-400</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--border-accent);"></div>
+          <div class="color-info">
+            <div class="token-name">--border-accent</div>
+            <div class="color-value">→ --foundation-color-gold-500</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Service Tokens: flow-auditor -->
+    <section class="section">
+      <h2>Service Tokens: flow-auditor</h2>
+      <div class="note">
+        <strong>Theme:</strong> Cyberpunk Terminal<br>
+        <strong>Purpose:</strong> Development flow progress auditing dashboard
+      </div>
+
+      <h3>Component Examples</h3>
+
+      <div class="component-example">
+        <h4 style="color: var(--foundation-color-cyan-400); margin-bottom: 1rem; font-family: var(--flow-auditor-font-family);">
+          Checkpoint States
+        </h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+          <div class="checkpoint-demo completed">
+            <span>✓</span>
+            <span>COMPLETED CHECKPOINT</span>
+          </div>
+          <div class="checkpoint-demo pending">
+            <span>○</span>
+            <span>PENDING CHECKPOINT</span>
+          </div>
+          <div class="checkpoint-demo selected">
+            <span>◉</span>
+            <span>SELECTED CHECKPOINT</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Container Tokens</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--flow-auditor-container-bg);"></div>
+          <div class="color-info">
+            <div class="token-name">--flow-auditor-container-bg</div>
+            <div class="color-value">→ --foundation-color-gray-950</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--flow-auditor-container-border);"></div>
+          <div class="color-info">
+            <div class="token-name">--flow-auditor-container-border</div>
+            <div class="color-value">→ --foundation-color-cyan-400</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Checkpoint State Tokens</h3>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--flow-auditor-checkpoint-completed-border);"></div>
+          <div class="color-info">
+            <div class="token-name">--flow-auditor-checkpoint-completed-border</div>
+            <div class="color-value">→ --foundation-color-green-400</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--flow-auditor-checkpoint-pending-border);"></div>
+          <div class="color-info">
+            <div class="token-name">--flow-auditor-checkpoint-pending-border</div>
+            <div class="color-value">→ --foundation-color-red-400</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-preview" style="background-color: var(--flow-auditor-checkpoint-selected-border);"></div>
+          <div class="color-info">
+            <div class="token-name">--flow-auditor-checkpoint-selected-border</div>
+            <div class="color-value">→ --foundation-color-blue-400</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Review Checklist -->
+    <section class="section">
+      <h2>Review Checklist</h2>
+      <div style="font-family: var(--flow-auditor-font-family); font-size: var(--foundation-font-size-sm); line-height: 2;">
+        <div style="margin-bottom: 1rem;">
+          <input type="checkbox" id="check1" style="margin-right: 0.5rem;">
+          <label for="check1">色のトーンがCyberpunk/Terminalの世界観と一致している</label>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <input type="checkbox" id="check2" style="margin-right: 0.5rem;">
+          <label for="check2">コントラスト比がWCAG AA基準を満たしている（特にStatus色）</label>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <input type="checkbox" id="check3" style="margin-right: 0.5rem;">
+          <label for="check3">フォントサイズのスケールが視覚的に自然な階層を形成している</label>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <input type="checkbox" id="check4" style="margin-right: 0.5rem;">
+          <label for="check4">flow-auditor固有の色が、意図した世界観を表現している</label>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <input type="checkbox" id="check5" style="margin-right: 0.5rem;">
+          <label for="check5">Checkpoint状態（Completed/Pending/Selected）が視覚的に明確に区別できる</label>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top: 2rem;">
+        <strong>フィードバック方法:</strong><br>
+        修正が必要な場合は、<code>docs/CSS_structure/design-token/flow-auditor-concept.md</code> や <code>docs/CSS_structure/design-token/flow-auditor-style-guide.md</code> を参照しながら、
+        具体的にフィードバックしてください。<br>
+        例: 「concept.mdのキーワード『Hologram』に対してcyanが薄すぎる。もっと鮮やかな#00ffff系に変更してほしい」
+      </div>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "layer1": ["!important"],
+  "layer2": [
+    "display", "flex", "grid", "gap",
+    "flexDirection", "alignItems", "justifyContent", "flexWrap", "flexGrow", "flexShrink",
+    "!important"
+  ],
+  "layer3": [
+    "color", "backgroundColor", "borderColor", "boxShadow",
+    "backgroundImage", "fill", "stroke",
+    "width", "height", "padding", "margin",
+    "minWidth", "min-width", "maxWidth", "max-width", "minHeight", "min-height", "maxHeight", "max-height",
+    "fontFamily", "font-family", "fontSize", "font-size", "fontWeight", "font-weight",
+    "borderRadius", "border-radius", "borderWidth", "border-width", "borderStyle", "border-style",
+    "transition", "textAlign", "cursor",
+    "!important"
+  ],
+  "layer4": [
+    "@keyframes", "animation", "animationName", "animationDuration",
+    "animationTimingFunction", "animationDelay", "animationIterationCount",
+    "::before", "::after"
+  ],
+  "layer5": []
+}

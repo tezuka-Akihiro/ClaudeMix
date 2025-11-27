@@ -1,0 +1,63 @@
+/**
+ * 夜間アクセス不可ページ
+ * SERVER_FLAGS.AUTOSHUTDOWN_NIGHT有効時の表示
+ * Cyberpunk-terminalテーマ
+ */
+
+import { json } from "@remix-run/node";
+import { Link } from "@remix-run/react";
+import { SERVER_FLAGS } from "~/lib/constants/server-flags";
+
+export async function loader() {
+  // フラグが無効の場合はトップページへリダイレクト
+  if (!SERVER_FLAGS.AUTOSHUTDOWN_NIGHT) {
+    return json({ message: "Service is available" });
+  }
+  return json({ message: "Service closed for night" });
+}
+
+export default function Closed() {
+  return (
+    <div>
+      <div>
+        <div>
+          <div>
+            <h1>[ SYSTEM OFFLINE ]</h1>
+            <p>&gt; Service Temporarily Unavailable</p>
+          </div>
+
+          <div>
+            <div>
+              <p>&gt; STATUS:</p>
+              <p>サービスは夜間メンテナンス中です</p>
+            </div>
+
+            <div>
+              <p>&gt; AVAILABILITY:</p>
+              <p>営業時間: 6:00 - 22:00 (JST)</p>
+            </div>
+
+            <div>
+              <p>&gt; MESSAGE:</p>
+              <p>
+                サービスは自動シャットダウン時間帯です。<br />
+                朝6時以降に再度アクセスしてください。
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <Link to="/">
+              [ RETURN TO TOP ]
+            </Link>
+          </div>
+
+          <div>
+            <p>AUTOSHUTDOWN_NIGHT: {SERVER_FLAGS.AUTOSHUTDOWN_NIGHT ? "ENABLED" : "DISABLED"}</p>
+            <p>Current Time: {new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,254 @@
+#!/usr/bin/env node
+
+/**
+ * プリビルドスクリプト: ブログ記事のバンドル生成
+ *
+ * このスクリプトは、ビルド時に実行され、Markdownファイルから
+ * TypeScriptモジュールを生成します。Cloudflare Workersでは
+ * ファイルシステムアクセスができないため、ビルド時にコンテンツを
+ * バンドルする必要があります。
+ */
+
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import matter from 'gray-matter';
+import yaml from 'js-yaml';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.join(__dirname, '../..');
+
+/**
+ * ブログ記事を生成する
+ */
+async function generateBlogPosts() {
+  try {
+    console.log('🚀 Starting blog posts generation...');
+
+    // 1. Markdownファイルを読み込む
+    const postsDir = path.join(rootDir, 'content/blog/posts');
+    const files = await fs.readdir(postsDir);
+    const markdownFiles = files.filter(file => file.endsWith('.md'));
+
+    console.log(`📝 Found ${markdownFiles.length} markdown files`);
+
+    // 2. 各ファイルを解析
+    const posts = await Promise.all(
+      markdownFiles.map(async (file) => {
+        const slug = file.replace(/\.md$/, '');
+        const filePath = path.join(postsDir, file);
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+
+        // gray-matterでフロントマターを解析
+        const { data, content } = matter(fileContent);
+
+        // publishedAtを正規化
+        const publishedAt = data.publishedAt instanceof Date
+          ? data.publishedAt.toISOString().split('T')[0]
+          : typeof data.publishedAt === 'string'
+          ? data.publishedAt
+          : String(data.publishedAt);
+
+        // 必須フィールドの検証
+        if (!data.title || typeof data.title !== 'string') {
+          throw new Error(`Invalid frontmatter in ${file}: missing or invalid 'title'`);
+        }
+
+        if (!publishedAt) {
+          throw new Error(`Invalid frontmatter in ${file}: missing 'publishedAt'`);
+        }
+
+        // 外部ファイル参照機能: sourceフィールドがある場合、外部ファイルを読み込む
+        let finalContent = content;
+        if (data.source && typeof data.source === 'string') {
+          try {
+            const externalFilePath = path.join(rootDir, data.source);
+            const externalContent = await fs.readFile(externalFilePath, 'utf-8');
+            finalContent = externalContent;
+            console.log(`   ✅ Loaded external file: ${data.source}`);
+          } catch (error) {
+            console.warn(`   ⚠️  Warning: Failed to load external file "${data.source}" for post "${slug}". Using empty content.`);
+            console.warn(`   Error: ${error.message}`);
+            // 外部ファイルが見つからない場合は空のcontentを使用
+            finalContent = '';
+          }
+        }
+
+        return {
+          slug,
+          frontmatter: {
+            title: data.title,
+            publishedAt,
+            summary: data.summary || '',
+            author: data.author || 'Unknown',
+            tags: Array.isArray(data.tags) ? data.tags : [],
+            category: data.category || '',
+            source: data.source || null,
+            description: data.description || undefined,
+            testOnly: data.testOnly === true,
+          },
+          content: finalContent,
+        };
+      })
+    );
+
+    console.log(`✅ Parsed ${posts.length} posts`);
+
+    // 本番環境ではテスト専用記事を除外
+    const isProduction = process.env.NODE_ENV === 'production';
+    const filteredPosts = isProduction
+      ? posts.filter(post => !post.frontmatter.testOnly)
+      : posts;
+
+    if (isProduction && filteredPosts.length < posts.length) {
+      console.log(`🔒 Excluded ${posts.length - filteredPosts.length} test-only posts in production`);
+    }
+
+    console.log(`✅ Final post count: ${filteredPosts.length}`);
+
+    // 3. カテゴリ定義を読み込む
+    const specPath = path.join(rootDir, 'develop/blog/posts/spec.yaml');
+    const specContent = await fs.readFile(specPath, 'utf-8');
+    const spec = yaml.load(specContent);
+
+    if (!spec.categories || !Array.isArray(spec.categories)) {
+      throw new Error('Invalid spec.yaml: missing or invalid categories');
+    }
+
+    const categories = spec.categories.map((cat, index) => {
+      if (typeof cat.id !== 'number' || typeof cat.name !== 'string' || typeof cat.emoji !== 'string') {
+        throw new Error(`Invalid category at index ${index}: must have id (number), name (string), and emoji (string)`);
+      }
+      return {
+        id: cat.id,
+        name: cat.name,
+        emoji: cat.emoji,
+      };
+    });
+
+    console.log(`✅ Loaded ${categories.length} categories`);
+
+    // 4. TypeScriptモジュールを生成
+    const output = `// Auto-generated by scripts/prebuild/generate-blog-posts.js
+// Do not edit manually - this file is regenerated on every build
+
+/**
+ * ブログ記事データ（ビルド時生成）
+ *
+ * このファイルは、ビルド時にMarkdownファイルから自動生成されます。
+ * Cloudflare Workersではファイルシステムアクセスができないため、
+ * ビルド時にすべてのコンテンツをバンドルしています。
+ */
+
+export interface BlogPostFrontmatter {
+  title: string;
+  publishedAt: string; // ISO format "YYYY-MM-DD"
+  summary: string;
+  author: string;
+  tags: string[];
+  category: string;
+  source: string | null; // 外部マークダウンファイルへの参照
+  description?: string; // オプション: 記事の説明
+  testOnly: boolean; // テスト専用記事フラグ（本番環境では除外）
+}
+
+export interface BlogPost {
+  slug: string;
+  frontmatter: BlogPostFrontmatter;
+  content: string; // マークダウン形式
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  emoji: string;
+}
+
+// ==========================================
+// カテゴリデータ
+// ==========================================
+
+export const categories: Category[] = ${JSON.stringify(categories, null, 2)};
+
+// ==========================================
+// ブログ記事データ
+// ==========================================
+
+export const posts: BlogPost[] = ${JSON.stringify(filteredPosts, null, 2)};
+
+// ==========================================
+// ヘルパー関数
+// ==========================================
+
+/**
+ * slugから記事を取得する
+ */
+export function getPostBySlug(slug: string): BlogPost | undefined {
+  return posts.find(post => post.slug === slug);
+}
+
+/**
+ * すべての記事を取得する（投稿日降順）
+ */
+export function getAllPosts(): BlogPost[] {
+  return posts.sort((a, b) =>
+    new Date(b.frontmatter.publishedAt).getTime() -
+    new Date(a.frontmatter.publishedAt).getTime()
+  );
+}
+
+/**
+ * カテゴリ名から絵文字を取得する
+ */
+export function getCategoryEmoji(categoryName: string): string {
+  const category = categories.find(cat => cat.name === categoryName);
+  return category?.emoji || '📄';
+}
+
+/**
+ * カテゴリIDからカテゴリを取得する
+ */
+export function getCategoryById(id: number): Category | undefined {
+  return categories.find(cat => cat.id === id);
+}
+
+/**
+ * カテゴリ名からカテゴリを取得する
+ */
+export function getCategoryByName(name: string): Category | undefined {
+  return categories.find(cat => cat.name === name);
+}
+`;
+
+    // 5. 出力ディレクトリを作成
+    const outputDir = path.join(rootDir, 'app/generated');
+    await fs.mkdir(outputDir, { recursive: true });
+
+    // 6. ファイルを書き込む
+    const outputPath = path.join(outputDir, 'blog-posts.ts');
+    await fs.writeFile(outputPath, output, 'utf-8');
+
+    console.log(`✅ Generated ${outputPath}`);
+    console.log(`📦 Bundle contains ${filteredPosts.length} posts and ${categories.length} categories`);
+    console.log('✨ Blog posts generation completed successfully!');
+
+    return { posts: filteredPosts.length, categories: categories.length };
+  } catch (error) {
+    console.error('❌ Error generating blog posts:', error);
+    throw error;
+  }
+}
+
+// スクリプトを実行
+generateBlogPosts()
+  .then(({ posts, categories }) => {
+    console.log(`\n📊 Summary:`);
+    console.log(`   - Posts: ${posts}`);
+    console.log(`   - Categories: ${categories}`);
+    process.exit(0);
+  })
+  .catch(error => {
+    console.error('\n💥 Fatal error:', error.message);
+    process.exit(1);
+  });
