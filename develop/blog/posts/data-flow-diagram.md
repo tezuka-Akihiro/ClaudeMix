@@ -34,6 +34,7 @@ graph TD
         FormatDate["formatPublishedDate<br/>(日付フォーマット)"]
         FilterPosts["filterPosts<br/>(記事フィルタリング)"]
         CalcPagination["calculatePagination<br/>(ページネーション計算)"]
+        GroupTags["groupTagsByCategory<br/>(タググループ化)"]
     end
 
     subgraph "副作用層 (data-io)"
@@ -45,7 +46,9 @@ graph TD
     FS -->|マークダウンファイル読み込み| FetchPosts
     FS -->|カテゴリ・タグ抽出| FetchFilters
     FetchPosts -->|PostSummary[]| Route
-    FetchFilters -->|AvailableFilters| Route
+    FetchFilters -->|availableTags| GroupTags
+    GroupTags -->|tagGroups| FetchFilters
+    FetchFilters -->|AvailableFilters<br/>(categories, tags, tagGroups)| Route
     Route -->|クエリパラメータ| FilterPosts
     FilterPosts -->|filtered posts| Route
     Route -->|posts, pagination| CalcPagination
@@ -104,12 +107,13 @@ graph TD
 | **formatPublishedDate** | 投稿日フォーマット処理。ISO形式（"2024-05-01"）を日本語形式（"2024年5月1日"）に変換 | - |
 | **filterPosts** | 記事フィルタリング処理。記事一覧を指定された条件（category, tags）でフィルタリング。タグ条件はAND条件 | - |
 | **calculatePagination** | ページネーション計算処理。総記事数と現在ページから、ページネーション情報（currentPage, totalPages, totalPosts, postsPerPage）を計算 | - |
+| **groupTagsByCategory** | タググループ化処理。利用可能なタグリストとspec.yamlのタグ定義から、グループ別タグ情報（{ group: string; tags: string[] }[]）を生成する純粋関数 | - |
 
 ### 副作用層（data-io）
 | 関数 | 責務 | 依存先 |
 |:---|:---|:---|
 | **fetchPosts.server** | 記事一覧データの取得。ファイルシステムから記事メタデータを読み込み、category/tagsパラメータによるフィルタリング、limit/offsetパラメータによるページネーション対応。PostSummary[]とtotalを返す | ファイルシステム |
-| **fetchAvailableFilters.server** | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、重複なくソート済みで返す | ファイルシステム |
+| **fetchAvailableFilters.server** | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、タググループ情報も生成して返す。AvailableFilters（categories: string[], tags: string[], tagGroups: { group: string; tags: string[] }[]）を返す | ファイルシステム、groupTagsByCategory |
 
 ---
 

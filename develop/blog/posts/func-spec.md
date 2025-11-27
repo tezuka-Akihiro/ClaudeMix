@@ -31,7 +31,7 @@
 2. **記事フィルタリング**: カテゴリとタグによる記事の絞り込み
    - **FilterPanel**: モーダル/オーバーレイ形式（初期非表示、FilterToggleButtonで開閉）
    - **カテゴリフィルタ**: ドロップダウンセレクター、単一選択、デフォルト値は全カテゴリ表示（空文字列）
-   - **タグフィルタ**: グリッドレイアウトのトグルボタン、複数選択可能、AND条件。列数はspec.yamlで管理
+   - **タグフィルタ**: 技術グループ（Remix, Cloudflare, Claude Code, その他）ごとにグループ分けされて表示。グリッドレイアウトのトグルボタン、複数選択可能、AND条件。列数はspec.yamlで管理
    - **FilterSubmitButton**: 選択されたフィルタ条件を適用する決定ボタン
    - フィルタ状態はURLクエリパラメータで管理（例: `?category=Tutorials&tags=Remix,AI`）
      - カテゴリが全カテゴリ表示の場合、categoryパラメータは省略
@@ -96,6 +96,7 @@ interface PaginationData {
 interface FilterData {
   availableCategories: string[] // 利用可能なカテゴリ一覧
   availableTags: string[] // 利用可能なタグ一覧
+  tagGroups: { group: string; tags: string[] }[] // タググループ情報（グループ名とそのグループに属するタグの配列）
   selectedCategory?: string // 現在選択されているカテゴリ（空文字列の場合は全カテゴリ表示）
   selectedTags?: string[] // 現在選択されているタグ
 }
@@ -130,8 +131,9 @@ interface FilterData {
        - **CategorySelector.tsx**: カテゴリフィルタ（ドロップダウンセレクター、単一選択）
          - `<select>` 要素を使用
          - デフォルトオプション: `<option value="">All Categories</option>`
-       - **TagGrid.tsx**: タグフィルタ（グリッドレイアウト）
-         - タグボタン（`<button type="button">` × N）
+       - **TagGrid.tsx**: タグフィルタ（グループ化されたグリッドレイアウト）
+         - **グループヘッダー**（例: "Remix", "Cloudflare", "Claude Code", "その他"）とそのグループに属するタグボタン群を表示
+         - 各グループ内でタグボタン（`<button type="button">` × N）をグリッド配置
          - 選択/非選択を視覚的に表現（背景色・ボーダー変化）
          - aria-pressed属性でアクセシビリティ対応
          - 複数選択可能、AND条件
@@ -252,15 +254,17 @@ interface FilterData {
      - サーバー専用ファイル（`.server.ts`）
 
    - fetchAvailableFilters.server.ts: 利用可能なフィルタ情報の取得【新規】
-     - すべての記事から利用可能なカテゴリとタグを抽出
+     - すべての記事から利用可能なカテゴリとタグを抽出し、タググループ情報も生成
      - 入力: なし
      - 出力: AvailableFilters
        - categories: string[] (利用可能なカテゴリ一覧、重複なし、ソート済み)
        - tags: string[] (利用可能なタグ一覧、重複なし、ソート済み)
+       - tagGroups: { group: string; tags: string[] }[] (グループ名とそのグループに属するタグの配列)
      - 処理フロー:
        1. getAllPosts()から全記事を取得
        2. Set<string>を使ってカテゴリとタグを重複なく抽出
        3. アルファベット順にソート
-       4. categories[]とtags[]を返す
+       4. groupTagsByCategory()を呼び出してtagGroups情報を生成
+       5. categories[], tags[], tagGroups[]を返す
      - サーバー専用ファイル（`.server.ts`）
 ~~~

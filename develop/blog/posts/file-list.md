@@ -60,6 +60,8 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 | categoryUtils.test.ts | app/lib/blog/posts/categoryUtils.test.ts | ユニットテスト |
 | filterPosts.ts | app/lib/blog/posts/filterPosts.ts | 記事フィルタリング処理。記事一覧を指定された条件（category, tags）でフィルタリングする純粋関数。タグ条件はAND条件（指定されたすべてのタグを含む記事のみ抽出） |
 | filterPosts.test.ts | app/lib/blog/posts/filterPosts.test.ts | ユニットテスト |
+| groupTagsByCategory.ts | app/lib/blog/posts/groupTagsByCategory.ts | タググループ化処理。利用可能なタグリストとspec.yamlのタグ定義から、グループ別タグ情報（{ group: string; tags: string[] }[]）を生成する純粋関数 |
+| groupTagsByCategory.test.ts | app/lib/blog/posts/groupTagsByCategory.test.ts | ユニットテスト |
 
 ---
 
@@ -69,8 +71,8 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 |:---|:---|:---|
 | fetchPosts.server.ts | app/data-io/blog/posts/fetchPosts.server.ts | 記事一覧データの取得。ファイルシステムから記事メタデータを読み込み、**category/tagsパラメータによるフィルタリング対応**、**limit/offsetパラメータによるページネーション対応**。FetchPostsResult（posts: PostSummary[], total: number）を返す |
 | fetchPosts.server.test.ts | app/data-io/blog/posts/fetchPosts.server.test.ts | ユニットテスト（フィルタリング、limit/offset対応の検証を含む） |
-| fetchAvailableFilters.server.ts | app/data-io/blog/posts/fetchAvailableFilters.server.ts | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、重複なくソート済みで返す。AvailableFilters（categories: string[], tags: string[]）を返す |
-| fetchAvailableFilters.server.test.ts | app/data-io/blog/posts/fetchAvailableFilters.server.test.ts | ユニットテスト |
+| fetchAvailableFilters.server.ts | app/data-io/blog/posts/fetchAvailableFilters.server.ts | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、タググループ情報（tagGroups）も生成して返す。AvailableFilters（categories: string[], tags: string[], tagGroups: { group: string; tags: string[] }[]）を返す |
+| fetchAvailableFilters.server.test.ts | app/data-io/blog/posts/fetchAvailableFilters.server.test.ts | ユニットテスト（tagGroupsフィールドの検証を含む） |
 | loadPostsSpec.ts | app/data-io/blog/posts/loadPostsSpec.ts | spec.yamlからカテゴリ定義を読み込む。PostsSpec（categories: Category[]）を返す |
 | loadPostsSpec.test.ts | app/data-io/blog/posts/loadPostsSpec.test.ts | ユニットテスト |
 

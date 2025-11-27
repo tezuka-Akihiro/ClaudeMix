@@ -107,6 +107,7 @@ graph TD
 | OGP | Open Graph Protocol | SNSシェア時に表示されるメタデータの規格 |
 | Filter | フィルタ | ユーザーが指定した条件に基づいて記事一覧を絞り込む機能 |
 | Filter Panel | フィルタパネル | カテゴリとタグを選択するためのUIコンポーネント |
+| Tag Group | タググループ | タグを技術領域（Remix, Cloudflare, Claude Code）ごとに分類したグループ。フィルタパネルでグループ別に表示し、UXとコンテンツの発見性を向上させる |
 | Query Parameter | クエリパラメータ | URLの`?category=...&tags=...`のようなパラメータ。フィルタ状態を永続化する |
 
 ---

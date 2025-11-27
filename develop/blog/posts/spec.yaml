@@ -60,6 +60,11 @@ categories:
 #   - nature: troubleshooting, refactoringなど、記事の起因や性質
 # - YAGNI原則: 実際に記事を書いてからタグを追加
 # - ソフトホワイトリスト方式: spec.yamlに登録してから使用（推奨）
+#
+# タググループ化方針:
+# - UIでは、タグを技術グループ（Remix, Cloudflare, Claude Code, その他）ごとに表示
+# - 各タグの`group`プロパティに基づいて動的にグループ表示を構築
+# - グループ順序: 1) Remix, 2) Cloudflare, 3) Claude Code, 4) other
 tags:
   # 現在使用中のタグ（既存記事で扱っている主要技術）
   current:
@@ -215,6 +220,7 @@ ui_selectors:
     filter_panel: "[data-testid='filter-panel']"
     category_selector: "[data-testid='category-selector']"
     tag_grid: "[data-testid='tag-grid']"
+    tag_group_header: "[data-testid='tag-group-header']"
     tag_button: "[data-testid='tag-button']"
     filter_submit_button: "[data-testid='filter-submit-button']"
 
