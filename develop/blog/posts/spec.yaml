@@ -381,65 +381,33 @@ test_data:
 # テスト専用記事定義
 # ==========================================
 # E2Eテストで使用する専用記事の定義
-# これらの記事は testOnly: true フラグを持ち、本番環境では除外される
+# 本番タグマスタ（spec.yaml tags.recommended）に準拠したタグを使用
+# 注: 外部参照エラーのテスト記事は削除済み（ビルド時品質保証の方針）
 test_articles:
-  - slug: "test-article-category-1"
-    title: "【テスト記事】カテゴリ1: 初心者向けガイド"
-    category_id: 1
-    category_name: "Claude Best Practices"
-    tags: ["guide", "beginner"]
-    publishedAt: "2025-12-01"
+  - slug: "test-e2e-filter"
+    title: "Playwrightによるフィルター機能のE2Eテスト実装"
+    category_id: 3
+    category_name: "Tutorials & Use Cases"
+    tags: ["Playwright", "testing"]
+    publishedAt: "2025-01-15"
+    description: "ブログのカテゴリ・タグフィルター機能をPlaywrightでテストする実装例"
     # フィルタテスト: この記事が表示される条件
     expected_in_filters:
-      category_1: true
-      tag_guide: true
-      tag_beginner: true
-      category_1_and_tag_guide: true
-
-  - slug: "test-article-category-2"
-    title: "【テスト記事】カテゴリ2: 設計思想"
-    category_id: 2
-    category_name: "ClaudeMix Philosophy"
-    tags: ["philosophy", "architecture"]
-    publishedAt: "2025-12-02"
-    expected_in_filters:
-      category_2: true
-      tag_philosophy: true
-      tag_architecture: true
-
-  - slug: "test-article-no-tags"
-    title: "【テスト記事】カテゴリ3: タグなし記事"
-    category_id: 3
-    category_name: "Tutorials & Use Cases"
-    tags: []
-    publishedAt: "2025-12-03"
-    expected_in_filters:
       category_3: true
-      any_tag_filter: false  # タグフィルタでは表示されない
+      tag_Playwright: true
+      tag_testing: true
+      category_3_and_tag_Playwright: true
 
-  - slug: "test-article-multi-tags"
-    title: "【テスト記事】複数タグでANDフィルタテスト"
+  - slug: "test-e2e-no-tags"
+    title: "タグなし記事のエッジケーステスト"
     category_id: 1
     category_name: "Claude Best Practices"
-    tags: ["guide", "testing", "advanced"]
-    publishedAt: "2025-12-04"
+    tags: []
+    publishedAt: "2025-01-16"
+    description: "タグを持たない記事の表示とフィルタリング動作のテスト実装"
     expected_in_filters:
-      tag_guide: true
-      tag_testing: true
-      tag_advanced: true
-      tag_guide_and_testing: true  # AND条件
-      tag_guide_and_beginner: false  # beginnerタグを持たない
-
-  - slug: "test-article-unique-tag"
-    title: "【テスト記事】ユニークタグ記事"
-    category_id: 3
-    category_name: "Tutorials & Use Cases"
-    tags: ["e2e-test-only"]
-    publishedAt: "2025-12-05"
-    expected_in_filters:
-      category_3: true
-      tag_e2e_test_only: true
-      category_3_and_tag_e2e: true
+      category_1: true
+      any_tag_filter: false  # タグフィルタでは表示されない
 
 # ==========================================
 # 基本テスト確認項目

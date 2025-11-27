@@ -60,18 +60,16 @@ async function generateBlogPosts() {
         }
 
         // 外部ファイル参照機能: sourceフィールドがある場合、外部ファイルを読み込む
+        // エラー時はビルドを失敗させる（ビルド時品質保証）
         let finalContent = content;
         if (data.source && typeof data.source === 'string') {
+          const externalFilePath = path.join(rootDir, data.source);
           try {
-            const externalFilePath = path.join(rootDir, data.source);
             const externalContent = await fs.readFile(externalFilePath, 'utf-8');
             finalContent = externalContent;
             console.log(`   ✅ Loaded external file: ${data.source}`);
           } catch (error) {
-            console.warn(`   ⚠️  Warning: Failed to load external file "${data.source}" for post "${slug}". Using empty content.`);
-            console.warn(`   Error: ${error.message}`);
-            // 外部ファイルが見つからない場合は空のcontentを使用
-            finalContent = '';
+            throw new Error(`Failed to load external file "${data.source}" for post "${slug}": ${error.message}`);
           }
         }
 

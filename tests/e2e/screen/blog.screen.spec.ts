@@ -350,7 +350,7 @@ test.describe('E2E Section Test for blog posts - Filter Feature (Happy Path)', (
    */
   test('should filter posts by tags when tags are selected with "All Categories"', async ({ page }) => {
     // spec.yamlからテストデータを読み込む
-    const testTag = 'guide'; // テスト記事で使用しているタグ
+    const testTag = 'Playwright'; // テスト記事で使用しているタグ
     const testArticles = await getTestArticlesByTag(testTag);
 
     // テスト用記事が存在することを確認
