@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { FilterPanel } from './FilterPanel';
 
 describe('FilterPanel', () => {
@@ -156,6 +156,33 @@ describe('FilterPanel', () => {
       const claudeButton = screen.getByRole('button', { name: 'Claude' });
       expect(aiButton).toHaveAttribute('aria-pressed', 'true');
       expect(claudeButton).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('should pass tagGroups to TagGrid and render grouped tags', () => {
+      // Arrange
+      const mockTagGroups = [
+        { group: 'Remix', tags: ['SSR', 'Vite'] },
+        { group: 'Cloudflare', tags: ['Workers'] },
+      ];
+
+      // Act
+      render(
+        <FilterPanel
+          availableCategories={availableCategories}
+          availableTags={[]} // availableTags is not used when tagGroups is provided
+          tagGroups={mockTagGroups}
+          isOpen={true}
+          onClose={mockOnClose}
+        />
+      );
+
+      // Assert
+      // The effect of passing tagGroups is that TagGrid will render group headers.
+      expect(screen.getByText('Remix')).toBeInTheDocument();
+      expect(screen.getByText('Cloudflare')).toBeInTheDocument();
+
+      const remixGroup = screen.getByText('Remix').closest('[data-testid="tag-group-container"]');
+      expect(within(remixGroup!).getByText('SSR')).toBeInTheDocument();
     });
   });
 });

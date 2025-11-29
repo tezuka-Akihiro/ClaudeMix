@@ -71,19 +71,8 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 |:---|:---|:---|
 | fetchPosts.server.ts | app/data-io/blog/posts/fetchPosts.server.ts | 記事一覧データの取得。ファイルシステムから記事メタデータを読み込み、**category/tagsパラメータによるフィルタリング対応**、**limit/offsetパラメータによるページネーション対応**。FetchPostsResult（posts: PostSummary[], total: number）を返す |
 | fetchPosts.server.test.ts | app/data-io/blog/posts/fetchPosts.server.test.ts | ユニットテスト（フィルタリング、limit/offset対応の検証を含む） |
-| fetchAvailableFilters.server.ts | app/data-io/blog/posts/fetchAvailableFilters.server.ts | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、タググループ情報（tagGroups）も生成して返す。AvailableFilters（categories: string[], tags: string[], tagGroups: { group: string; tags: string[] }[]）を返す |
+| fetchAvailableFilters.server.ts | app/data-io/blog/posts/fetchAvailableFilters.server.ts | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、タググループ情報（tagGroups）も生成して返す。 |
 | fetchAvailableFilters.server.test.ts | app/data-io/blog/posts/fetchAvailableFilters.server.test.ts | ユニットテスト（tagGroupsフィールドの検証を含む） |
-| loadPostsSpec.ts | app/data-io/blog/posts/loadPostsSpec.ts | spec.yamlからカテゴリ定義を読み込む。PostsSpec（categories: Category[]）を返す |
-| loadPostsSpec.test.ts | app/data-io/blog/posts/loadPostsSpec.test.ts | ユニットテスト |
+| loadPostsSpec.server.ts | app/data-io/blog/posts/loadPostsSpec.server.ts | spec.yamlからカテゴリ定義を読み込む。PostsSpec（categories: Category[]）を返す |
 
 ---
-
-## 7. 実装順序（Outside-In TDD）
-
-1. **Phase 1**: E2Eテスト作成（posts.spec.ts）
-2. **Phase 2.1**: data-io層実装（fetchPosts.server.ts）
-3. **Phase 2.2**: lib層実装（formatPublishedDate.ts）
-4. **Phase 2.3**: UI層実装（PostsSection.tsx、PostCard.tsx）
-5. **Phase 2.4**: Route層実装（blog._index.tsx）
-
-**注**: Outside-In TDDに従い、E2Eテストから開始し、外側から内側へ順次実装を進めます。

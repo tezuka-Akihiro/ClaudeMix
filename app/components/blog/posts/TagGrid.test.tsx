@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { TagGrid } from './TagGrid';
 
 describe('TagGrid', () => {
@@ -153,6 +153,52 @@ describe('TagGrid', () => {
       fireEvent.click(aiButton);
       hiddenInputs = document.querySelectorAll('input[type="hidden"][name="tags"]');
       expect(hiddenInputs).toHaveLength(0);
+    });
+  });
+
+  describe('Grouped Rendering', () => {
+    const mockTagGroups = [
+      { group: 'Remix', tags: ['SSR', 'Vite'] },
+      { group: 'Cloudflare', tags: ['Workers'] },
+      { group: 'その他', tags: ['testing'] },
+    ];
+
+    it('should display tags organized by groups if tagGroups are provided', () => {
+      // Act
+      render(<TagGrid tagGroups={mockTagGroups} />);
+
+      // Assert for group headers
+      const groupHeaders = screen.getAllByTestId('tag-group-header');
+      expect(groupHeaders).toHaveLength(3);
+      expect(screen.getByText('Remix')).toBeInTheDocument();
+      expect(screen.getByText('Cloudflare')).toBeInTheDocument();
+      expect(screen.getByText('その他')).toBeInTheDocument();
+
+      // Assert for tags within each group
+      const remixGroup = screen.getByText('Remix').closest('[data-testid="tag-group-container"]');
+      expect(remixGroup).not.toBeNull();
+      if (remixGroup) {
+        expect(within(remixGroup).getByText('SSR')).toBeInTheDocument();
+        expect(within(remixGroup).getByText('Vite')).toBeInTheDocument();
+      }
+
+      const cloudflareGroup = screen.getByText('Cloudflare').closest('[data-testid="tag-group-container"]');
+      expect(cloudflareGroup).not.toBeNull();
+      if (cloudflareGroup) {
+        expect(within(cloudflareGroup).getByText('Workers')).toBeInTheDocument();
+      }
+    });
+
+    it('should not display group headers if tagGroups is not provided', () => {
+      // Arrange
+      const availableTags = ['AI', 'Claude'];
+
+      // Act
+      render(<TagGrid availableTags={availableTags} />);
+
+      // Assert
+      const groupHeaders = screen.queryAllByTestId('tag-group-header');
+      expect(groupHeaders).toHaveLength(0);
     });
   });
 });

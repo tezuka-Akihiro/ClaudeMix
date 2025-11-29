@@ -1,15 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { fetchAvailableFilters } from './fetchAvailableFilters.server';
 import { getAllPosts } from '~/generated/blog-posts';
+import { loadPostsSpec } from './loadPostsSpec.server';
+import { groupTags } from '~/lib/blog/posts/groupTagsByCategory';
 
-// Mock getAllPosts
+// Mock dependencies
 vi.mock('~/generated/blog-posts', () => ({
   getAllPosts: vi.fn(),
+}));
+vi.mock('./loadPostsSpec.server', () => ({
+  loadPostsSpec: vi.fn(),
+}));
+vi.mock('~/lib/blog/posts/groupTagsByCategory', () => ({
+  groupTags: vi.fn(),
 }));
 
 describe('fetchAvailableFilters - Side Effects Layer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset mocks to a default behavior
+    vi.mocked(loadPostsSpec).mockReturnValue({ tags: { current: [] } } as any);
+    vi.mocked(groupTags).mockReturnValue([]);
   });
 
   describe('fetchAvailableFilters function', () => {
@@ -131,6 +142,37 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
       // Assert
       expect(result.categories).toEqual([]);
       expect(result.tags).toEqual([]);
+    });
+
+    it('should call groupTagsByCategory and return its result as tagGroups', async () => {
+      // Arrange
+      const mockPosts = [
+        { frontmatter: { tags: ['Remix', 'SSR'] } },
+      ];
+      const mockTagsSpec = [
+        { name: 'Remix', group: 'Remix' },
+        { name: 'SSR', group: 'Remix' },
+      ];
+      const mockGroupedTags = [{ group: 'Remix', tags: ['Remix', 'SSR'] }];
+
+      vi.mocked(getAllPosts).mockReturnValue(mockPosts as any);
+      vi.mocked(loadPostsSpec).mockReturnValue({ tags: { current: mockTagsSpec } } as any);
+      vi.mocked(groupTags).mockReturnValue(mockGroupedTags);
+
+      // Act
+      const result = await fetchAvailableFilters();
+
+      // Assert
+      // Verify that dependencies were called correctly
+      expect(loadPostsSpec).toHaveBeenCalled();
+      expect(groupTags).toHaveBeenCalledWith(
+        ['Remix', 'SSR'], // Note: sorted alphabetically
+        mockTagsSpec,
+      );
+
+      // Verify the final output
+      expect(result.tagGroups).toEqual(mockGroupedTags);
+      expect(result.tagGroups).toHaveLength(1);
     });
 
     it('should throw error when getAllPosts throws', async () => {

@@ -596,6 +596,13 @@
     /* This class only defines appearance, not layout */
   }
 
+  /* TagGroupHeader - Header for a group of tags */
+  .tag-group-header {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+  }
+
   /* TagButton - Individual toggle button for tags */
   .tag-button {
     background-color: var(--color-interactive-primary-bg-faint);

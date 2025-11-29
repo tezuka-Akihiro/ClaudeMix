@@ -207,6 +207,47 @@ test.describe('E2E Screen Test for blog', () => {
     // NavigationMenuが閉じること
     await expect(navigationMenu).not.toBeVisible();
   });
+
+  /**
+   * テスト7: タググループのインタラクション確認
+   * @description 特定のグループ（Remix）内のタグ（SSR）を選択してフィルタを適用し、結果が正しく表示されること
+   */
+  test('should filter posts by selecting a tag from a specific group', async ({ page }) => {
+    const testTag = 'SSR';
+    const testGroupName = 'Remix';
+    const testArticles = await getTestArticlesByTag(testTag);
+
+    // テスト用記事が存在することを確認
+    expect(testArticles.length).toBeGreaterThan(0);
+    const testArticle = testArticles[0];
+
+    await page.goto(TARGET_URL);
+
+    // FilterToggleButtonをクリックしてパネルを開く
+    const filterToggleButton = page.getByTestId('filter-toggle-button');
+    await filterToggleButton.click();
+
+    // FilterPanelが表示されること
+    const filterPanel = page.getByTestId('filter-panel');
+    await expect(filterPanel).toBeVisible();
+
+    // "Remix" グループコンテナを特定
+    const remixGroupContainer = page.getByTestId('tag-group-container').filter({ hasText: testGroupName });
+    await expect(remixGroupContainer).toBeVisible();
+
+    // "Remix" グループ内の "SSR" タグボタンをクリック
+    const tagButton = remixGroupContainer.getByTestId('tag-button').filter({ hasText: testTag });
+    await tagButton.click();
+    await expect(tagButton).toHaveAttribute('aria-pressed', 'true');
+
+    // FilterSubmitButtonをクリック
+    const filterSubmitButton = page.getByTestId('filter-submit-button');
+    await filterSubmitButton.click({ force: true });
+
+    // テスト用記事が表示されることを確認
+    const testArticleCard = page.locator(`[data-testid="post-card"][data-slug="${testArticle.slug}"]`);
+    await expect(testArticleCard).toBeVisible();
+  });
 });
 
 /**
@@ -422,5 +463,37 @@ test.describe('E2E Section Test for blog posts - Filter Feature (Happy Path)', (
 
     // FilterPanelが閉じること
     await expect(filterPanel).not.toBeVisible();
+  });
+
+  /**
+   * テスト6: タググループ表示確認
+   * @description FilterPanel内でタグがグループごとに表示され、グループヘッダーが存在すること
+   */
+  test('should display tags organized by groups in FilterPanel', async ({ page }) => {
+    await page.goto(TARGET_URL);
+
+    // FilterToggleButtonをクリックしてパネルを開く
+    const filterToggleButton = page.getByTestId('filter-toggle-button');
+    await filterToggleButton.click();
+
+    // FilterPanelが表示されること
+    const filterPanel = page.getByTestId('filter-panel');
+    await expect(filterPanel).toBeVisible();
+
+    // グループヘッダーが表示されること
+    const groupHeaders = page.getByTestId('tag-group-header');
+    await expect(groupHeaders.first()).toBeVisible();
+
+    // グループヘッダーの数が4つであること（Remix, Cloudflare, Claude Code, その他）
+    await expect(groupHeaders).toHaveCount(4);
+
+    // 最初のグループヘッダーのテキストが "Remix" であること
+    await expect(groupHeaders.first()).toHaveText('Remix');
+
+    // 各グループコンテナ内にタグボタンが存在すること
+    const groupContainers = page.getByTestId('tag-group-container');
+    const firstGroupContainer = groupContainers.first();
+    const tagButtonsInGroup = firstGroupContainer.getByTestId('tag-button');
+    await expect(tagButtonsInGroup.first()).toBeVisible();
   });
 });
