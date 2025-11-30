@@ -11,11 +11,6 @@ export default defineConfig({
         // React Router v7のSplatルートの挙動をオプトインし、警告を解消
         v3_relativeSplatPath: true,
       },
-      ignoredRouteFiles: [
-        "**/*.yaml", "**/*.yml", "**/*.md", "**/*.test.*", "**/*.spec.*", "**/test.*", "**/spec.*",
-        // ブログ以外のルートを一時的に無視（React Hooks問題の調査のため）
-        "_auth.*.tsx", "_protected.tsx", "closed.tsx", "flow-auditor.*.tsx"
-      ],
       serverModuleFormat: "esm",
     }),
     tsconfigPaths(),
