@@ -2,7 +2,7 @@
 
 **対象読者**: commonセクションを実装する開発者
 **前提知識**: セッション管理の基本 ([session-management-guide.md](./session-management-guide.md))
-**関連文書**: [commonセクション責務決定ログ](../develop/flow-auditor/common/2025-10-13-common-section-responsibility-for-page-container.md)
+**関連文書**: [commonセクション責務決定ログ](../develop/service-name/common/2025-10-13-common-section-responsibility-for-page-container.md)
 
 ---
 
@@ -27,7 +27,7 @@
 
 ### 2.1. ページコンテナの実装
 
-各セクションを統合するルートファイル（例: `app/routes/flow-auditor.tsx`）のレイアウトを実装します。
+各セクションを統合するルートファイル（例: `app/routes/service-name.tsx`）のレイアウトを実装します。
 
 **成果物**:
 - ルートファイル: `app/routes/{service-name}.tsx`
@@ -35,9 +35,9 @@
 
 **実装例**:
 ~~~tsx
-// app/routes/flow-auditor.tsx
-import { Header } from "~/components/flow-auditor/common/Header";
-import { Footer } from "~/components/flow-auditor/common/Footer";
+// app/routes/service-name.tsx
+import { Header } from "~/components/service-name/common/Header";
+import { Footer } from "~/components/service-name/common/Footer";
 
 export default function FlowAuditor() {
   return (
@@ -65,7 +65,7 @@ export default function FlowAuditor() {
 
 **実装例**:
 ~~~tsx
-// app/components/flow-auditor/common/Header.tsx
+// app/components/service-name/common/Header.tsx
 import { useSession } from "~/components/providers/SessionProvider";
 
 export function Header() {
@@ -75,7 +75,7 @@ export function Header() {
     <header className="bg-[#1a1f3a] border-b-2 border-[#00ff41] p-4">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-[#00ff41] font-mono text-xl">
-          Flow Auditor
+          service name
         </h1>
 
         {/* セッション情報の表示 */}
@@ -139,7 +139,7 @@ export function Header() {
 サービスが認証を必要とする場合、ページコンテナを`_protected`レイアウトに配置することを検討してください。
 
 ~~~tsx
-// app/routes/_protected.flow-auditor.tsx (セッション保護が必要な場合)
+// app/routes/_protected.service-name.tsx (セッション保護が必要な場合)
 export default function FlowAuditor() {
   // 未認証ユーザーは自動的に /login にリダイレクトされる
   return <div>...</div>;
@@ -162,16 +162,16 @@ export default function FlowAuditor() {
 
 **実装例**:
 ~~~typescript
-// tests/e2e/screen/flow-auditor.screen.spec.ts
+// tests/e2e/screen/service-name.screen.spec.ts
 import { test, expect } from "@playwright/test";
 
-test.describe("Flow Auditor Screen", () => {
+test.describe("service name Screen", () => {
   test("should display page container with Header and Footer", async ({ page }) => {
-    await page.goto("/flow-auditor");
+    await page.goto("/service-name");
 
     // Header の表示確認
     await expect(page.getByRole("banner")).toBeVisible();
-    await expect(page.getByText("Flow Auditor")).toBeVisible();
+    await expect(page.getByText("service name")).toBeVisible();
 
     // Footer の表示確認
     await expect(page.getByRole("contentinfo")).toBeVisible();
@@ -179,7 +179,7 @@ test.describe("Flow Auditor Screen", () => {
 
   // セッション保護のテスト（サービスが認証必須の場合）
   test("should redirect to login when accessing protected page without auth", async ({ page }) => {
-    await page.goto("/flow-auditor");
+    await page.goto("/service-name");
 
     // ログインページにリダイレクトされることを確認
     await expect(page).toHaveURL(/\/login/);
@@ -204,7 +204,7 @@ commonセクションで実装すべきテストケース:
 // 同じファイル内に追記
 test.describe("Design Flow Section", () => {
   test("should display design flow section", async ({ page }) => {
-    await page.goto("/flow-auditor");
+    await page.goto("/service-name");
     // design-flowセクションのテスト
   });
 });
@@ -250,7 +250,7 @@ commonセクション完了前に、以下を確認してください:
 ## 7. 参考資料
 
 - [セッション管理ガイド](./session-management-guide.md) - セッション機能の詳細
-- [commonセクション責務決定ログ](../develop/flow-auditor/common/2025-10-13-common-section-responsibility-for-page-container.md) - 設計判断の背景
+- [commonセクション責務決定ログ](../develop/service-name/common/2025-10-13-common-section-responsibility-for-page-container.md) - 設計判断の背景
 
 
 ---

@@ -253,7 +253,7 @@ progressCalculator のユニットテストが失敗。total が 0 の場合に 
 
 ## 📍 エラー詳細
 
-**ファイル**: app/lib/flow-auditor/roadmap/progressCalculator.ts:18
+**ファイル**: app/lib/service-name/roadmap/progressCalculator.ts:18
 **テストケース**: "should return 0 when total is 0"
 
 **エラーメッセージ**:
@@ -397,7 +397,7 @@ describe('progressCalculator edge cases', () => {
   - app/components/roadmap/ProgressSummary.tsx（UI層）
 
 - **関連ドキュメント**:
-  - [TDD_WORK_FLOW.md](../../develop/flow-auditor/roadmap/TDD_WORK_FLOW.md)
+  - [TDD_WORK_FLOW.md](../../develop/service-name/roadmap/TDD_WORK_FLOW.md)
   - [ユニットテストの最低基準.md](../ユニットテストの最低基準.md)
 
 ---
@@ -421,7 +421,7 @@ describe('progressCalculator edge cases', () => {
 TypeError: Cannot read property 'length' of undefined
 
 **発生箇所**:
-app/lib/flow-auditor/roadmap/stepStatusEvaluator.ts:25
+app/lib/service-name/roadmap/stepStatusEvaluator.ts:25
 
 **再現手順**:
 1. npm test を実行
@@ -539,7 +539,7 @@ npm run lint
 Debuggerが常に参照すべきドキュメント:
 
 1. **[ARCHITECTURE_MANIFESTO2.md](../ARCHITECTURE_MANIFESTO2.md)** - レイヤー判定のため
-2. **[TDD_WORK_FLOW.md](../../develop/flow-auditor/*/TDD_WORK_FLOW.md)** - テスト戦略のため
+2. **[TDD_WORK_FLOW.md](../../develop/service-name/*/TDD_WORK_FLOW.md)** - テスト戦略のため
 3. **[E2E_TEST_CRITERIA.md](../E2E_TEST_CRITERIA.md)** - E2Eデバッグのため
 4. **[ユニットテストの最低基準.md](../ユニットテストの最低基準.md)** - ユニットテストデバッグのため
 
