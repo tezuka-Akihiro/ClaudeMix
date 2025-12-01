@@ -152,7 +152,6 @@ html {
   --z-index-menu: 1000;
   --z-index-modal-overlay: 1500;
   --z-index-modal: 1510;
-  --z-index-modal-controls: 1520;
 
   /* --- Opacity (不透明度) --- */
   --opacity-disabled: 0.5;
