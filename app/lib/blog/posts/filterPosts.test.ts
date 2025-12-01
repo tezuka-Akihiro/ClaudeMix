@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { filterPosts, type FilterOptions } from './filterPosts';
-import type { PostSummary } from '~/data-io/blog/posts/fetchPosts.server';
-import { loadBlogPostsSpec, type BlogPostsSpec } from '../../../../tests/e2e/utils/loadSpec';
+import type { PostSummary } from '../../../data-io/blog/posts/fetchPosts.server';
+import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 describe('filterPosts - Pure Logic Layer', () => {
   let spec: BlogPostsSpec;
   let mockPosts: PostSummary[];
 
   beforeAll(async () => {
-    spec = await loadBlogPostsSpec();
+    spec = await loadSpec('blog','posts');
     // spec.yamlのtest_dataを使用
     mockPosts = spec.test_data.posts.map(post => ({
       slug: post.slug,

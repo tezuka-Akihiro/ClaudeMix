@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { fetchPosts } from '~/data-io/blog/posts/fetchPosts.server';
 import { getAllPosts } from '~/generated/blog-posts';
-import { loadBlogPostsSpec, type BlogPostsSpec } from '../../../../tests/e2e/utils/loadSpec';
+import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 // Mock getAllPosts
 vi.mock('~/generated/blog-posts', () => ({
@@ -12,7 +12,7 @@ describe('fetchPosts - Side Effects Layer', () => {
   let spec: BlogPostsSpec;
 
   beforeAll(async () => {
-    spec = await loadBlogPostsSpec();
+    spec = await loadSpec('blog','posts');
   });
 
   beforeEach(() => {

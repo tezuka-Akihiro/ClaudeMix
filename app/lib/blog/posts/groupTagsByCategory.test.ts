@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { groupTags, type TagGroup } from './groupTagsByCategory';
-import type { TagSpec } from '~/types/blog.types';
+import type { TagSpec } from '../../../specs/blog/types';
 
 interface TestInput {
   availableTags: string[];

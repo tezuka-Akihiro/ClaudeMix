@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { getCategoryEmoji } from '~/lib/blog/posts/categoryUtils';
-import { loadBlogPostsSpec, type BlogPostsSpec } from '../../../../tests/e2e/utils/loadSpec';
+import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 describe('categoryUtils', () => {
   let spec: BlogPostsSpec;
 
   beforeAll(async () => {
-    spec = await loadBlogPostsSpec();
+    spec = await loadSpec('blog','posts');
   });
 
   describe('getCategoryEmoji', () => {

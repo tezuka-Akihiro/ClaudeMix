@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loadBlogPostsSpec, getTestArticlesByCategory, getTestArticlesByTag } from '../utils/loadSpec';
+import { loadSpec, getTestArticlesByCategory, getTestArticlesByTag } from '../../utils/loadSpec';
 
 const TARGET_URL = '/blog';
 
@@ -347,7 +347,7 @@ test.describe('E2E Section Test for blog posts - Filter Feature (Happy Path)', (
    */
   test('should filter posts by category when category is selected and submit button is clicked', async ({ page }) => {
     // spec.yamlからテストデータを読み込む
-    const spec = await loadBlogPostsSpec();
+    const spec = await loadSpec('blog','posts');
     const categoryToTest = spec.categories[2]; // カテゴリ3: "Tutorials & Use Cases"
     const testArticles = await getTestArticlesByCategory(categoryToTest.id);
 

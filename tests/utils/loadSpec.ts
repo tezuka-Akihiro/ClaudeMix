@@ -62,10 +62,12 @@ export interface BlogPostsSpec {
 /**
  * ブログ記事セクションのspec.yamlを読み込む
  *
+ * @param service
+ * @param section
  * @returns spec.yamlの内容
  */
-export async function loadBlogPostsSpec(): Promise<BlogPostsSpec> {
-  const specPath = join(process.cwd(), 'app/specs/blog/posts-spec.yaml');
+export async function loadSpec(service: string ,section: string): Promise<BlogPostsSpec> {
+  const specPath = join(process.cwd(), 'app/specs/',service,'/',section + '-spec.yaml');
   const content = await readFile(specPath, 'utf-8');
   const spec = yaml.load(content) as BlogPostsSpec;
 
@@ -79,7 +81,7 @@ export async function loadBlogPostsSpec(): Promise<BlogPostsSpec> {
  * @returns テスト記事の情報
  */
 export async function getTestArticleBySlug(slug: string) {
-  const spec = await loadBlogPostsSpec();
+  const spec = await loadSpec('blog','posts');
   const article = spec.test_articles.find(a => a.slug === slug);
 
   if (!article) {
@@ -96,7 +98,7 @@ export async function getTestArticleBySlug(slug: string) {
  * @returns 該当カテゴリのテスト記事の配列
  */
 export async function getTestArticlesByCategory(categoryId: number) {
-  const spec = await loadBlogPostsSpec();
+  const spec = await loadSpec('blog','posts');
   return spec.test_articles.filter(a => a.category_id === categoryId);
 }
 
@@ -107,7 +109,7 @@ export async function getTestArticlesByCategory(categoryId: number) {
  * @returns 該当タグを持つテスト記事の配列
  */
 export async function getTestArticlesByTag(tag: string) {
-  const spec = await loadBlogPostsSpec();
+  const spec = await loadSpec('blog','posts');
   return spec.test_articles.filter(a => a.tags.includes(tag));
 }
 
@@ -118,7 +120,7 @@ export async function getTestArticlesByTag(tag: string) {
  * @returns カテゴリ情報
  */
 export async function getCategoryById(categoryId: number) {
-  const spec = await loadBlogPostsSpec();
+  const spec = await loadSpec('blog','posts');
   const category = spec.categories.find(c => c.id === categoryId);
 
   if (!category) {
