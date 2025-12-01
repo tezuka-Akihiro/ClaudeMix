@@ -1,6 +1,6 @@
 // app/lib/blog/posts/groupTagsByCategory.ts
 
-import type { TagSpec } from '~/types/blog.types';
+import type { TagSpec } from '~/specs/blog/types';
 
 export type TagGroup = {
   group: string;

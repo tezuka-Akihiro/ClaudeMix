@@ -1,7 +1,7 @@
 // app/data-io/blog/posts/loadPostsSpec.server.ts
 
 import { loadSpec } from '~/spec-loader/specLoader.server';
-import type { BlogPostsSpec } from '~/types/blog.types';
+import type { BlogPostsSpec } from '~/specs/blog/types';
 
 /**
  * ブログ記事機能のspecをロードする

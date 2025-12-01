@@ -40,18 +40,19 @@
 4. ワイヤーフレーム、UIコンポーネント構成、インタラクションなどを定義します。
 5. `node scripts/lint-template/engine.js develop/{{service}}/<section>/uiux-spec.md` を実行して内容を検証します。
 
-## spec.yaml（外部変数仕様書）
+## <section>-spec.yaml（外部変数仕様書）
 1. **@GeneratorOperator** に依頼してテンプレートを生成します。
    ~~~
-   @GeneratorOperator "spec.yamlを生成してください。service: {{service}}, section: {section}"
+   @GeneratorOperator "<section>-spec.yamlを生成してください。service: {{service}}, section: <section>"
    ~~~
-2. **出力先**: `develop/{{service}}/<section>/spec.yaml`（設計ドキュメントとして集約管理）
+2. **出力先**: `app/specs/{{service}}/<section>-spec.yaml`（設計ドキュメントとして集約管理）
 3. `GUIDING_PRINCIPLES.md` を参考に、**UIに依存しない設定値**として以下を記述します：
    - API仕様、エンドポイント定義
    - データ型定義、バリデーションルール
    - 定数、メッセージテキスト
 4. **注意**: 最終的に `app/lib/` への統合プロセスを別途検討します。
-5. `node scripts/lint-template/engine.js develop/{{service}}/<section>/spec.yaml` を実行して内容を検証します。
+5. `node scripts/lint-template/engine.js app/specs/{{service}}/<section>-spec.yaml` を実行して内容を検証します。
+6. インターフェース定義を `func-spec.yaml` をみて `app/specs/{{service}}/types.ts` に作成します。
 
 ## file-list.md（実装ファイルリスト）
 **目的**: 機能設計書と画面仕様書を分析し、3大層分離アーキテクチャに準拠した実装ファイルとテストファイルのリストを作成する。
@@ -97,5 +98,5 @@
 4. `node scripts/lint-template/engine.js develop/{{service}}/<section>/data-flow-diagram.md` を実行して内容を検証します。
 
 ## TDD_WORK_FLOW.md（開発手順書）
-1. `docs\boilerplate_architecture\DESIGN_BLUEPRINT_FLOW.md` に従って中間データを用意する。
+1. `docs/boilerplate_architecture/DESIGN_BLUEPRINT_FLOW.md` に従って中間データを用意する。
 2. **出力先**: `develop/{{service}}/<section>/TDD_WORK_FLOW.md`

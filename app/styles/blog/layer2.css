@@ -598,7 +598,7 @@
 
   /* TagGroupHeader - Header for a group of tags */
   .tag-group-header {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-secondary);
   }
@@ -609,8 +609,7 @@
     border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
     color: var(--color-text-secondary);
     cursor: pointer;
-
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-1) var(--spacing-1);
     text-align: center;
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
   }
@@ -667,9 +666,9 @@
   .tag-badge {
     background-color: var(--color-interactive-primary-bg-subtle);
     border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
-    color: var(--color-text-secondary);
-    font-family: var(--font-heading-primary);
-    font-size: var(--font-size-xs);
+    color: var(--color-text-primary);
+    font-family: var(--font-weight-normal);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-normal);
     padding: var(--spacing-inline-code-vertical) var(--spacing-2);
     border-radius: var(--border-radius-full);
@@ -681,8 +680,11 @@
     color: var(--color-text-disabled);
     font-size: var(--font-size-sm);
     line-height: var(--line-height-relaxed);
+    max-height: calc(var(--line-height-relaxed) * var(--text-line-clamp));
     overflow: hidden;
-    text-overflow: ellipsis;
+    padding-right: var(--spacing-inline-code-horizontal);
+    padding-left: var(--spacing-inline-code-horizontal);
+    border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
     display: -webkit-box;
     -webkit-line-clamp: var(--text-line-clamp);
     -webkit-box-orient: vertical;
