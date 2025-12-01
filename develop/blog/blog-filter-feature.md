@@ -391,7 +391,7 @@ Consは存在するものの、**ユーザー体験の向上**と**スケーラ�
       → 利用可能なカテゴリとタグの一覧を取得する関数
 
     #### 🎨 **CSS実装**:
-    - `app/styles/flow-auditor/layer3.ts`
+    - `app/styles/servicename/layer3.ts`
       → `filter-panel`, `filter-section`のスタイル定義を追加
 
     #### 📝 **ドキュメント**:

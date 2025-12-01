@@ -52,13 +52,13 @@ node scripts/lint-file-list/check-diff.js <develop-section-path>
 **例**:
 ```bash
 # implementation-flowセクションを検証
-node scripts/lint-file-list/check-diff.js develop/flow-auditor/implementation-flow/
+node scripts/lint-file-list/check-diff.js develop/servicename/implementation-flow/
 
 # design-flowセクションを検証
-node scripts/lint-file-list/check-diff.js develop/flow-auditor/design-flow/
+node scripts/lint-file-list/check-diff.js develop/servicename/design-flow/
 
 # commonセクションを検証
-node scripts/lint-file-list/check-diff.js develop/flow-auditor/common/
+node scripts/lint-file-list/check-diff.js develop/servicename/common/
 ```
 
 ### コマンドライン引数
@@ -84,15 +84,15 @@ node scripts/lint-file-list/check-diff.js develop/flow-auditor/common/
 ```
 ❌ file-list.mdに未定義のファイルが3件検出されました:
 
-  📄 app/components/flow-auditor/implementation-flow/UnexpectedComponent.tsx
-  📄 app/lib/flow-auditor/implementation-flow/unexpectedLogic.ts
-  📄 app/data-io/flow-auditor/implementation-flow/unexpectedApi.server.ts
+  📄 app/components/servicename/implementation-flow/UnexpectedComponent.tsx
+  📄 app/lib/servicename/implementation-flow/unexpectedLogic.ts
+  📄 app/data-io/servicename/implementation-flow/unexpectedApi.server.ts
 
 対処方法:
   1. 不要なファイルの場合 → 削除してください
   2. 必要なファイルの場合 → file-list.mdに追加してください
 
-file-list.md: develop/flow-auditor/implementation-flow/file-list.md
+file-list.md: develop/servicename/implementation-flow/file-list.md
 ```
 
 - **Exit Code**: 1
@@ -104,8 +104,8 @@ file-list.md: develop/flow-auditor/implementation-flow/file-list.md
 ```
 ℹ️  file-list.mdに定義されているが実在しないファイルが2件あります:
 
-  📄 app/components/flow-auditor/implementation-flow/PlannedComponent.tsx
-  📄 app/lib/flow-auditor/implementation-flow/plannedLogic.ts
+  📄 app/components/servicename/implementation-flow/PlannedComponent.tsx
+  📄 app/lib/servicename/implementation-flow/plannedLogic.ts
 ```
 
 - **Exit Code**: 0（未定義ファイルがない場合）
@@ -189,7 +189,7 @@ npx vitest run scripts/lint-file-list/tests/ --config scripts/lint-file-list/vit
 1. パスが正しいか確認してください
 2. `file-list.md`が存在するか確認してください
    ```bash
-   ls develop/flow-auditor/implementation-flow/file-list.md
+   ls develop/servicename/implementation-flow/file-list.md
    ```
 
 ### 「app/ディレクトリが見つかりません」エラー
@@ -203,7 +203,7 @@ npx vitest run scripts/lint-file-list/tests/ --config scripts/lint-file-list/vit
 **対処法**: プロジェクトルートディレクトリで実行してください。
 ```bash
 cd /path/to/Remix-boilerplate
-node scripts/lint-file-list/check-diff.js develop/flow-auditor/implementation-flow/
+node scripts/lint-file-list/check-diff.js develop/servicename/implementation-flow/
 ```
 
 ### パス正規化の問題（Windows環境）
@@ -216,20 +216,20 @@ Windowsのパス区切り文字（`\`）は自動的にスラッシュ（`/`）�
 
 **対処法**: これは正常な動作です。`file-list.md`は特定のセクションに関連するファイルのみを定義します。プロジェクト全体のファイルが検出される場合は、以下のいずれかの対処を行ってください。
 
-1. **共通ファイルを別のfile-list.mdに分離**: `develop/flow-auditor/common/file-list.md`を作成し、共通ファイルを定義
+1. **共通ファイルを別のfile-list.mdに分離**: `develop/servicename/common/file-list.md`を作成し、共通ファイルを定義
 2. **スコープの明確化**: 各セクションの`file-list.md`で管理するファイルのスコープを明確にする
 
 ## 10. 今後の拡張予定
 
 ### Phase 2: UI統合
 
-運用開始後、以下の条件が確認された場合、UI統合（flow-auditorへの統合）を検討します。
+運用開始後、以下の条件が確認された場合、UI統合（servicenameへの統合）を検討します。
 
 - lintコマンドの実行忘れが頻発
-- flow-auditorのUIで一元管理したいという強い要望
+- servicenameのUIで一元管理したいという強い要望
 - リアルタイム可視化の必要性が確認される
 
-UI統合時は、`scripts/lint-file-list/lib/*.js`を`app/lib/flow-auditor/`へ移植し、Remixの`loader`から呼び出す形で実装します。
+UI統合時は、`scripts/lint-file-list/lib/*.js`を`app/lib/servicename/`へ移植し、Remixの`loader`から呼び出す形で実装します。
 
 ---
 

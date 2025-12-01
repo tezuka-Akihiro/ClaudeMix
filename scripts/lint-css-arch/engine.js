@@ -53,7 +53,7 @@ Options:
 
 Examples:
   npm run lint:css-arch
-  npm run lint:css-arch -- --service flow-auditor
+  npm run lint:css-arch -- --service servicename
 `);
 }
 

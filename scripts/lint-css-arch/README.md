@@ -80,7 +80,7 @@ npm run lint:css-arch -- --service <サービス名>
 
 **例**:
 ```bash
-npm run lint:css-arch -- --service flow-auditor
+npm run lint:css-arch -- --service servicename
 ```
 
 ### コマンドラインオプション

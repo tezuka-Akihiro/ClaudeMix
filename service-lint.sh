@@ -8,8 +8,8 @@ set -o pipefail # パイプラインの途中でエラーが発生したら終�
 # --- ヘルプメッセージ ---
 print_usage() {
   echo "Usage: $0 <service_name>"
-  echo "  <service_name>: The name of the service to run the linter on (e.g., flow-auditor)."
-  echo "Example: $0 flow-auditor"
+  echo "  <service_name>: The name of the service to run the linter on (e.g., servicename)."
+  echo "Example: $0 servicename"
 }
 
 # --- 引数チェック ---

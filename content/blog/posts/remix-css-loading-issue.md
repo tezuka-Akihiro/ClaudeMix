@@ -38,7 +38,7 @@ git show 0c1c665 --stat
 **問題のコード** (`app/entry.client.tsx`):
 ```typescript
 import "~/styles/globals.css";
-import "~/styles/flow-auditor/layer2.css";
+import "~/styles/servicename/layer2.css";
 import "~/styles/blog/layer2.css";
 ```
 
@@ -50,7 +50,7 @@ import "~/styles/blog/layer2.css";
 **正しいアプローチ:**
 ```typescript
 import "./styles/globals.css";
-import "./styles/flow-auditor/layer2.css";
+import "./styles/servicename/layer2.css";
 import "./styles/blog/layer2.css";
 ```
 
@@ -116,10 +116,10 @@ export default async function handleRequest(
 
 ```diff
 - import "~/styles/globals.css";
-- import "~/styles/flow-auditor/layer2.css";
+- import "~/styles/servicename/layer2.css";
 - import "~/styles/blog/layer2.css";
 + import "./styles/globals.css";
-+ import "./styles/flow-auditor/layer2.css";
++ import "./styles/servicename/layer2.css";
 + import "./styles/blog/layer2.css";
 ```
 
@@ -179,7 +179,7 @@ CSSの内容:
 - Googleフォント
 - Tailwind CSS
 - `globals.css`のカスタム変数
-- `flow-auditor/layer2.css`
+- `servicename/layer2.css`
 - `blog/layer2.css`
 
 すべてのCSSが含まれています！
@@ -193,7 +193,7 @@ Remixには複数のスタイリング方法があります:
 **方法A: entry.client.tsxでインポート** (今回の解決策)
 ```typescript
 import "./styles/globals.css";
-import "./styles/flow-auditor/layer2.css";
+import "./styles/servicename/layer2.css";
 import "./styles/blog/layer2.css";
 ```
 
@@ -225,7 +225,7 @@ export const links: LinksFunction = () => [
 
 **方法C: globals.cssで@import** (最初に試したがエラー)
 ```css
-@import './flow-auditor/layer2.css';
+@import './servicename/layer2.css';
 @import './blog/layer2.css';
 ```
 

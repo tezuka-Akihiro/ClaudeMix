@@ -11,7 +11,7 @@
 |:---|:---|
 | **エラー種別** | Vitestユニットテスト - モック機能不全 |
 | **発生日時** | 2025-10-24 |
-| **発生箇所** | `app/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server.test.ts` |
+| **発生箇所** | `app/data-io/servicename/implementation-flow/checkImplementationFiles.server.test.ts` |
 | **影響範囲** | Phase 2.1.1: checkImplementationFiles.server のTDD実装 |
 | **ステータス** | ✅ **解決済み** - 実ファイルシステムを使用するテストアプローチに変更 |
 
@@ -21,7 +21,7 @@
 
 ### エラー1: exists値の不一致
 ~~~
-FAIL app/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server.test.ts >
+FAIL app/data-io/servicename/implementation-flow/checkImplementationFiles.server.test.ts >
   checkImplementationFiles - Side Effects Layer > 正常系テスト >
   ファイルが存在する場合、exists: true を返す
 
@@ -36,12 +36,12 @@ AssertionError: expected { path: 'app/test.ts', exists: false } to deeply equal 
     "path": "app/test.ts",
   }
 
-❯ app/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server.test.ts:30:25
+❯ app/data-io/servicename/implementation-flow/checkImplementationFiles.server.test.ts:30:25
 ~~~
 
 ### エラー2: モック関数が呼ばれていない
 ~~~
-FAIL app/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server.test.ts >
+FAIL app/data-io/servicename/implementation-flow/checkImplementationFiles.server.test.ts >
   checkImplementationFiles - Side Effects Layer > 正常系テスト >
   ファイルが存在しない場合、exists: false を返す
 
@@ -49,7 +49,7 @@ AssertionError: expected "spy" to be called with arguments: [ 'app/missing.ts' ]
 
 Number of calls: 0
 
-❯ app/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server.test.ts:52:26
+❯ app/data-io/servicename/implementation-flow/checkImplementationFiles.server.test.ts:52:26
 ~~~
 
 ### テスト結果サマリ
@@ -79,7 +79,7 @@ vi.mock('node:fs', async (importOriginal) => {
   };
 });
 
-import { checkImplementationFiles } from '~/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server';
+import { checkImplementationFiles } from '~/data-io/servicename/implementation-flow/checkImplementationFiles.server';
 
 describe('checkImplementationFiles - Side Effects Layer', () => {
   const mockExistsSync = vi.mocked(fs.existsSync);
@@ -182,9 +182,9 @@ vi.mock('fs', async (importOriginal) => {
 
 ~~~bash
 # 検索結果
-app/data-io/flow-auditor/checkFileExistence.test.ts
-app/data-io/flow-auditor/design-flow/checkDesignFiles.test.ts
-app/data-io/flow-auditor/common/executeRetry.server.test.ts
+app/data-io/servicename/checkFileExistence.test.ts
+app/data-io/servicename/design-flow/checkDesignFiles.test.ts
+app/data-io/servicename/common/executeRetry.server.test.ts
 ~~~
 
 #### 重要な発見
@@ -245,7 +245,7 @@ Tests       5 failed | 4 passed (9)
 ~~~typescript
 // checkImplementationFiles.server.test.ts（完全版）
 import { describe, it, expect } from 'vitest';
-import { checkImplementationFiles, type FileExistsResult } from '~/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server';
+import { checkImplementationFiles, type FileExistsResult } from '~/data-io/servicename/implementation-flow/checkImplementationFiles.server';
 
 describe('checkImplementationFiles - Side Effects Layer', () => {
   describe('正常系テスト', () => {
@@ -317,7 +317,7 @@ describe('checkImplementationFiles - Side Effects Layer', () => {
 ### 6.3 テスト結果（成功）
 
 ~~~
-✓ app/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server.test.ts (4 tests) 5ms
+✓ app/data-io/servicename/implementation-flow/checkImplementationFiles.server.test.ts (4 tests) 5ms
 
 Test Files  1 passed (1)
 Tests       4 passed (4)
@@ -361,10 +361,10 @@ Duration    882ms
 
 | ファイル | 役割 | 状態 |
 |:---|:---|:---|
-| [checkImplementationFiles.server.ts](app/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server.ts) | 実装ファイル | ✅ 完成 |
-| [checkImplementationFiles.server.test.ts](app/data-io/flow-auditor/implementation-flow/checkImplementationFiles.server.test.ts) | テストファイル | ✅ 全テストパス |
-| [TDD_WORK_FLOW.md](develop/flow-auditor/implementation-flow/TDD_WORK_FLOW.md) | 進捗管理 | ✅ 更新済み |
-| [checkDesignFiles.test.ts](app/data-io/flow-auditor/design-flow/checkDesignFiles.test.ts) | 参考（同じ問題あり） | ⚠️ 5 tests failing |
+| [checkImplementationFiles.server.ts](app/data-io/servicename/implementation-flow/checkImplementationFiles.server.ts) | 実装ファイル | ✅ 完成 |
+| [checkImplementationFiles.server.test.ts](app/data-io/servicename/implementation-flow/checkImplementationFiles.server.test.ts) | テストファイル | ✅ 全テストパス |
+| [TDD_WORK_FLOW.md](develop/servicename/implementation-flow/TDD_WORK_FLOW.md) | 進捗管理 | ✅ 更新済み |
+| [checkDesignFiles.test.ts](app/data-io/servicename/design-flow/checkDesignFiles.test.ts) | 参考（同じ問題あり） | ⚠️ 5 tests failing |
 
 ---
 

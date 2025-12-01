@@ -11,7 +11,7 @@ import { calculateFileDiff } from './lib/calculateFileDiff.js';
  * file-list.mdと実際のファイルシステムの差分を検出
  *
  * Usage: node scripts/lint-file-list/check-diff.js <develop-section-path>
- * Example: node scripts/lint-file-list/check-diff.js develop/flow-auditor/implementation-flow/
+ * Example: node scripts/lint-file-list/check-diff.js develop/servicename/implementation-flow/
  */
 
 function main() {
@@ -25,7 +25,7 @@ function main() {
     console.error('  node scripts/lint-file-list/check-diff.js <develop-section-path>');
     console.error('');
     console.error('例:');
-    console.error('  node scripts/lint-file-list/check-diff.js develop/flow-auditor/implementation-flow/');
+    console.error('  node scripts/lint-file-list/check-diff.js develop/servicename/implementation-flow/');
     process.exit(1);
   }
 
@@ -50,7 +50,7 @@ function main() {
   }
 
   // sectionPathからserviceとsectionを抽出
-  // 例: develop/flow-auditor/implementation-flow/ → service: flow-auditor, section: implementation-flow
+  // 例: develop/servicename/implementation-flow/ → service: servicename, section: implementation-flow
   // OS間のパス区切り文字の違いを吸収するため、'develop'を基準にパスを分割する
   const developIndex = sectionPath.replace(/\\/g, '/').lastIndexOf('develop/');
 

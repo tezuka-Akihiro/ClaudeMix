@@ -273,7 +273,7 @@ export async function loadSpec<T>(specPath: string): Promise<T> {
 
 // 使用例
 const blogSpec = await loadSpec<BlogSpec>('develop/blog/posts/spec.yaml');
-const flowSpec = await loadSpec<FlowSpec>('develop/flow-auditor/spec.yaml');
+const flowSpec = await loadSpec<FlowSpec>('develop/servicename/spec.yaml');
 ```
 
 ## まとめ
