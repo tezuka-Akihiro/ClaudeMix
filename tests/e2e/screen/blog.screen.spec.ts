@@ -210,10 +210,10 @@ test.describe('E2E Screen Test for blog', () => {
 
   /**
    * テスト7: タググループのインタラクション確認
-   * @description 特定のグループ（Remix）内のタグ（SSR）を選択してフィルタを適用し、結果が正しく表示されること
+   * @description 特定のグループ（Remix）内のタグ（Playwright）を選択してフィルタを適用し、結果が正しく表示されること
    */
-  test('should filter posts by selecting a tag from a specific group', async ({ page }) => {
-    const testTag = 'SSR';
+test('should filter posts by selecting a tag from a specific group', async ({ page }) => {
+    const testTag = 'Playwright';
     const testGroupName = 'Remix';
     const testArticles = await getTestArticlesByTag(testTag);
 
@@ -235,7 +235,7 @@ test.describe('E2E Screen Test for blog', () => {
     const remixGroupContainer = page.getByTestId('tag-group-container').filter({ hasText: testGroupName });
     await expect(remixGroupContainer).toBeVisible();
 
-    // "Remix" グループ内の "SSR" タグボタンをクリック
+    // "Remix" グループ内の "Playwright" タグボタンをクリック
     const tagButton = remixGroupContainer.getByTestId('tag-button').filter({ hasText: testTag });
     await tagButton.click();
     await expect(tagButton).toHaveAttribute('aria-pressed', 'true');

@@ -8,6 +8,11 @@ import { FilterToggleButton } from '~/components/blog/posts/FilterToggleButton';
 import { FilterPanel } from '~/components/blog/posts/FilterPanel';
 import type { PostSummary } from '~/data-io/blog/posts/fetchPosts.server';
 
+interface TagGroup {
+  group: string;
+  tags: string[];
+}
+
 interface PostsSectionProps {
   posts: PostSummary[];
   pagination: {
@@ -16,6 +21,7 @@ interface PostsSectionProps {
   };
   availableCategories: string[];
   availableTags: string[];
+  tagGroups?: TagGroup[]; // tagGroups を props として受け取る
   selectedCategory?: string;
   selectedTags?: string[];
 }
@@ -26,6 +32,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
   availableCategories,
   availableTags,
   selectedCategory,
+  tagGroups,
   selectedTags,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -42,6 +49,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
       <FilterPanel
         availableCategories={availableCategories}
         availableTags={availableTags}
+        tagGroups={tagGroups} // FilterPanel に tagGroups を渡す
         selectedCategory={selectedCategory}
         selectedTags={selectedTags}
         isOpen={isFilterOpen}

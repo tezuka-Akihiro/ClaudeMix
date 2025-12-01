@@ -65,7 +65,7 @@ export interface BlogPostsSpec {
  * @returns spec.yamlの内容
  */
 export async function loadBlogPostsSpec(): Promise<BlogPostsSpec> {
-  const specPath = join(process.cwd(), 'develop/blog/posts/spec.yaml');
+  const specPath = join(process.cwd(), 'app/specs/blog/posts-spec.yaml');
   const content = await readFile(specPath, 'utf-8');
   const spec = yaml.load(content) as BlogPostsSpec;
 

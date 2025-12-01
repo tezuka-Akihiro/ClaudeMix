@@ -19,7 +19,9 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset mocks to a default behavior
-    vi.mocked(loadPostsSpec).mockReturnValue({ tags: { current: [] } } as any);
+    vi.mocked(loadPostsSpec).mockReturnValue({
+      tags: { current: [], recommended: [] },
+    } as any);
     vi.mocked(groupTags).mockReturnValue([]);
   });
 
@@ -156,7 +158,9 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
       const mockGroupedTags = [{ group: 'Remix', tags: ['Remix', 'SSR'] }];
 
       vi.mocked(getAllPosts).mockReturnValue(mockPosts as any);
-      vi.mocked(loadPostsSpec).mockReturnValue({ tags: { current: mockTagsSpec } } as any);
+      vi.mocked(loadPostsSpec).mockReturnValue({
+        tags: { current: mockTagsSpec, recommended: [] },
+      } as any);
       vi.mocked(groupTags).mockReturnValue(mockGroupedTags);
 
       // Act
@@ -167,7 +171,7 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
       expect(loadPostsSpec).toHaveBeenCalled();
       expect(groupTags).toHaveBeenCalledWith(
         ['Remix', 'SSR'], // Note: sorted alphabetically
-        mockTagsSpec,
+        mockTagsSpec
       );
 
       // Verify the final output
