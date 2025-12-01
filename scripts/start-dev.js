@@ -1,8 +1,9 @@
 /**
  * scripts/start-dev.js
  * 役割: 新規サービス開発の初期環境をセットアップする。
- * 動作: project.toml を参照し、指定されたサービス(--slug)に属する
- *      全セクションのディレクトリを <ルート>/<サービス>/<セクション> 形式で一括生成する。
+ * 動作: project.toml を参照し、指定されたサービス(--slug)のディレクトリを生成する。
+ *      - セクションフォルダ: <ルート>/<サービス>/<セクション>
+ *      - サービスフォルダ: <ルート>/<サービス>
  */
 
 import fs from 'fs';
@@ -15,6 +16,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const { argv } = process;
 
+// --- 設定 ---
+
+// ディレクトリ生成設定
+// type: 'section': <ルート>/<サービス>/<セクション> 形式で生成
+// type: 'service': <ルート>/<サービス> 形式で生成
+const DIR_STRUCTURE_CONFIG = [
+    { path: path.join('..', 'develop'), type: 'section' },
+    { path: path.join('..', 'app', 'components'), type: 'section' },
+    { path: path.join('..', 'app', 'lib'), type: 'section' },
+    { path: path.join('..', 'app', 'data-io'), type: 'section' },
+    { path: path.join('..', 'app', 'styles'), type: 'service' },
+    { path: path.join('..', 'tests', 'e2e', 'section'), type: 'service' },
+];
 // コピーするフローファイル名 (あなたの定義に基づく)
 const FLOW_FILES = [
     { type: 'guiding-principles', name: 'GUIDING_PRINCIPLES.md' },
@@ -128,37 +142,23 @@ async function main() {
         const sectionKeys = Object.keys(serviceSections);
         if (sectionKeys.length === 0) console.warn(`⚠️ 警告: サービス "${slug}" にセクションが定義されていません。`);
 
-        // セクションを持つディレクトリのベースパス
-        const baseRootsWithSections = [
-            path.join(__dirname, '..', 'develop'),
-            path.join(__dirname, '..', 'app', 'components'),
-            path.join(__dirname, '..', 'app', 'lib'),
-            path.join(__dirname, '..', 'app', 'data-io')
-        ];
-
-        // セクションを持たないディレクトリのベースパス
-        const baseRootsWithoutSections = [
-            path.join(__dirname, '..', 'app', 'styles'),
-        ];
-
         const targetDirs = [];
 
-        // セクションを持つディレクトリを生成
-        for (const rootPath of baseRootsWithSections) {
+        // 設定に基づいてディレクトリパスを生成
+        for (const config of DIR_STRUCTURE_CONFIG) {
+            const rootPath = path.join(__dirname, config.path);
             const serviceDir = path.join(rootPath, slug);
-            targetDirs.push(serviceDir); // {root}/{slug} を作成
-            for (const sectionKey of sectionKeys) {
-                targetDirs.push(path.join(serviceDir, sectionKey)); // {root}/{slug}/{section} を作成
+
+            // 常に <ルート>/<サービス> は作成対象
+            targetDirs.push(serviceDir);
+
+            // typeが'section'の場合、セクションフォルダも作成対象に追加
+            if (config.type === 'section') {
+                for (const sectionKey of sectionKeys) {
+                    targetDirs.push(path.join(serviceDir, sectionKey));
+                }
             }
         }
-
-        // セクションを持たないディレクトリを生成
-        for (const rootPath of baseRootsWithoutSections) {
-            targetDirs.push(path.join(rootPath, slug)); // {root}/{slug} を作成
-        }
-
-        // E2Eテスト用のディレクトリを個別に追加 (tests/e2e/section/{service})
-        targetDirs.push(path.join(__dirname, '..', 'tests', 'e2e', 'section', slug));
 
         createDirectories([...new Set(targetDirs)]);
         copyWorkflowFiles(slug);

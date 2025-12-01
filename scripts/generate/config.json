@@ -78,7 +78,7 @@
     },
     "spec-yaml": {
       "description": "外部変数仕様書",
-      "pathPattern": "develop/{{service}}/{{section}}/spec.yaml",
+      "pathPattern": "app/specs/{{service}}/{{section}}-spec.yaml",
       "templateFile": "docs/spec.yaml"
     },
     "e2e-screen-test": {
@@ -127,7 +127,7 @@
         {
           "id": "spec-yaml",
           "name": "spec.yaml",
-          "pathTemplate": "develop/{service}/{section}/spec.yaml"
+          "pathTemplate": "app/specs/{service}/{section}-spec.yaml"
         },
         {
           "id": "file-list",

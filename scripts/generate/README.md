@@ -61,9 +61,9 @@ npm run generate -- --category lib --service sales --section summary --name Prof
 npm run generate -- --category ui --ui-type component --service sales --section summary --name SalesChart
 ~~~
 
-**例3 (ドキュメント):** `develop/sales/summary/func-spec.md` を生成する場合
+**例3 (ドキュメント - spec.yaml):** `app/specs/sales/summary-spec.yaml` を生成する場合
 ~~~bash
-npm run generate -- --category documents --document-type func-spec --service sales --section summary
+npm run generate -- --category documents --document-type spec-yaml --service sales --section summary
 ~~~
 
 ### 生成されるファイル
