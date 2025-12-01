@@ -57,7 +57,7 @@ scripts/generate/
 ~~~
 必須情報:
 1. テンプレート名（例: "api-spec"）
-2. カテゴリ（layers or documents）
+2. カテゴリ（layers or documents） 
 3. パスパターン（例: "develop/{{service}}/{{section}}/api-spec.md"）
 4. テンプレート内容（どんな内容のファイルを生成するか）
 
@@ -75,7 +75,7 @@ scripts/generate/
    - layers（コード: route/component/lib/data-io）
    - documents（ドキュメント）
 3. 生成されるファイルのパスは？
-   例: develop/{{service}}/{{section}}/api-spec.md
+   例: app/specs/{{service}}/{{section}}-spec.yaml
 4. ファイルの内容はどのようなものですか？
 ~~~
 
@@ -126,7 +126,7 @@ const uiChecks = [
     // 既存のエントリ...
     "api-spec": {
       "description": "API仕様書",
-      "pathPattern": "develop/{{service}}/{{section}}/api-spec.md",
+      "pathPattern": "app/specs/{{service}}/{{section}}-spec.yaml",
       "templateFile": "api-spec.template.md",
       "placeholders": {
         "{{API_TITLE}}": "API Title"
@@ -195,12 +195,12 @@ npm run generate -- \
 
 期待される出力:
 ~~~
-develop/test-service/test-section/api-spec.md が生成される
+app/specs/test-service/test-section-spec.yaml が生成される
 ~~~
 
 生成されたファイルを確認:
 ~~~bash
-cat develop/test-service/test-section/api-spec.md
+cat app/specs/test-service/test-section-spec.yaml
 ~~~
 
 プレースホルダーが正しく置換されているかチェック。

@@ -55,35 +55,35 @@ graph TD;
 
 ~~~
 # UIコンポーネント（新規作成）
-@GeneratorOperator "flow-auditorサービスのimplementation-flowセクションに、FileCardという名前のUIコンポーネントを作成してください。
+@GeneratorOperator "service-nameサービスのimplementation-flowセクションに、FileCardという名前のUIコンポーネントを作成してください。
 - 個別ファイル表示カード
 - ファイル存在状態に応じたスタイル（緑グロー: 完成、デフォルト: 未実装、青グロー: 選択中）
 - ノードクリック時に選択状態をトグル
 
-service: flow-auditor
+service: service-name
 section: implementation-flow
 name: FileCard
 category: ui
 ui-type: component"
 
 # lib層（新規作成）
-@GeneratorOperator "flow-auditorサービスのimplementation-flowセクションに、filePairMatcherという名前のlibファイルを作成してください。
+@GeneratorOperator "service-nameサービスのimplementation-flowセクションに、filePairMatcherという名前のlibファイルを作成してください。
 - ファイル選択時にペアを自動選択する純粋関数
 - テストファイル選択時、対応する実装ファイルを返す
 - .test.ts/.test.tsx の命名規則に基づくペアマッチング
 
-service: flow-auditor
+service: service-name
 section: implementation-flow
 name: filePairMatcher
 category: lib"
 
 # E2Eテスト（新規作成）
-@GeneratorOperator "flow-auditorサービスのimplementation-flowセクションのE2Eテストを生成してください。
+@GeneratorOperator "service-nameサービスのimplementation-flowセクションのE2Eテストを生成してください。
 - file-list.mdベースの実装ファイル表示確認
 - ノードクリック選択確認
 - Surgical Retry実行確認
 
-service: flow-auditor
+service: service-name
 section: implementation-flow
 category: documents
 document-type: e2e-section-test"

@@ -78,14 +78,14 @@ cat scripts/generate/config.json
 npm run generate -- \
   --category ui \
   --ui-type component \
-  --service flow-auditor \
+  --service service-name \
   --section roadmap \
   --name ProgressSummary
 
 # 純粋ロジック層の例
 npm run generate -- \
   --category lib \
-  --service flow-auditor \
+  --service service-name \
   --section roadmap \
   --name calculateProgress
 
@@ -93,7 +93,7 @@ npm run generate -- \
 npm run generate -- \
   --category documents \
   --document-type requirements \
-  --service flow-auditor \
+  --service service-name \
   --section roadmap
 ~~~
 
@@ -116,8 +116,8 @@ npm run generate -- [options]
 
 ~~~bash
 # 生成されたファイルの存在確認（例）
-ls app/components/flow-auditor/roadmap/ProgressSummary.tsx
-ls app/components/flow-auditor/roadmap/ProgressSummary.test.tsx
+ls app/components/service-name/roadmap/ProgressSummary.tsx
+ls app/components/service-name/roadmap/ProgressSummary.test.tsx
 ~~~
 
 **成功時のフィードバック**:
@@ -125,8 +125,8 @@ ls app/components/flow-auditor/roadmap/ProgressSummary.test.tsx
 ✅ ProgressSummary.tsx とそのテストファイルを生成しました。
 
 生成されたファイル:
-- app/components/flow-auditor/roadmap/ProgressSummary.tsx
-- app/components/flow-auditor/roadmap/ProgressSummary.test.tsx
+- app/components/service-name/roadmap/ProgressSummary.tsx
+- app/components/service-name/roadmap/ProgressSummary.test.tsx
 
 次のステップ:
 1. コンポーネントの実装を進めてください
@@ -139,7 +139,7 @@ ls app/components/flow-auditor/roadmap/ProgressSummary.test.tsx
 
 エラー: サービス名 'ai-td-manifest' が見つかりません。
 
-💡 もしかして 'flow-auditor' ですか？
+💡 もしかして 'service-name' ですか？
 
 もう一度、正しいサービス名で実行しますか？
 ~~~
@@ -245,7 +245,7 @@ GeneratorMaintainerの対応をお待ちください...
 Template file 'api-spec.template.md' not found
 
 【ユーザーの依頼】
-API仕様書を作成して（develop/flow-auditor/roadmap/api-spec.md）
+API仕様書を作成して（develop/service-name/roadmap/api-spec.md）
 
 【診断結果】
 - config.jsonには定義あり（documents.api-spec）
@@ -317,22 +317,22 @@ cat app/components/{{service}}/{{section}}/{{name}}.tsx
 
 あなた: 了解しました。いくつか確認させてください。
 
-1. サービス名は何ですか？（例: flow-auditor）
+1. サービス名は何ですか？（例: service-name）
 2. セクション名は何ですか？（例: roadmap）
 
-ユーザー: flow-auditorのroadmapです
+ユーザー: service-nameのroadmapです
 
 あなた: 承知しました。以下のコマンドを実行します：
 
-`npm run generate -- --category ui --ui-type component --service flow-auditor --section roadmap --name ProgressSummary`
+`npm run generate -- --category ui --ui-type component --service service-name --section roadmap --name ProgressSummary`
 
 [コマンド実行]
 
 ✅ ProgressSummary.tsx とそのテストファイルを生成しました。
 
 生成されたファイル:
-- app/components/flow-auditor/roadmap/ProgressSummary.tsx
-- app/components/flow-auditor/roadmap/ProgressSummary.test.tsx
+- app/components/service-name/roadmap/ProgressSummary.tsx
+- app/components/service-name/roadmap/ProgressSummary.test.tsx
 ~~~
 
 ### 例2: エラー対応
@@ -363,7 +363,7 @@ GeneratorMaintainerの対応をお待ちください...
 あなた: [コマンド実行]
 
 ⚠️ 警告: 以下のファイルが既に存在します：
-- app/components/flow-auditor/roadmap/ProgressSummary.tsx
+- app/components/service-name/roadmap/ProgressSummary.tsx
 
 上書きしますか？（y/n）
 

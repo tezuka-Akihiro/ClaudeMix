@@ -6,9 +6,15 @@ import { CategorySelector } from './CategorySelector';
 import { TagGrid } from './TagGrid';
 import { FilterSubmitButton } from './FilterSubmitButton';
 
+interface TagGroup {
+  group: string;
+  tags: string[];
+}
+
 interface FilterPanelProps {
   availableCategories: string[];
   availableTags: string[];
+  tagGroups?: TagGroup[];
   selectedCategory?: string;
   selectedTags?: string[];
   isOpen: boolean;
@@ -18,6 +24,7 @@ interface FilterPanelProps {
 export const FilterPanel: React.FC<FilterPanelProps> = ({
   availableCategories,
   availableTags,
+  tagGroups,
   selectedCategory,
   selectedTags,
   isOpen,
@@ -55,6 +62,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           />
           <TagGrid
             availableTags={availableTags}
+            tagGroups={tagGroups}
             selectedTags={selectedTags}
           />
           <FilterSubmitButton />

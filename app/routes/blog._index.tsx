@@ -56,6 +56,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     },
     availableCategories: availableFilters.categories,
     availableTags: availableFilters.tags,
+    tagGroups: availableFilters.tagGroups,
     selectedCategory: category,
     selectedTags: tags,
   });
@@ -68,6 +69,7 @@ export default function BlogIndex() {
     pagination,
     availableCategories,
     availableTags,
+    tagGroups,
     selectedCategory,
     selectedTags,
   } = useLoaderData<typeof loader>();
@@ -79,6 +81,7 @@ export default function BlogIndex() {
         pagination={pagination}
         availableCategories={availableCategories}
         availableTags={availableTags}
+        tagGroups={tagGroups}
         selectedCategory={selectedCategory}
         selectedTags={selectedTags}
       />

@@ -16,13 +16,6 @@ export default function Index() {
         <h2>Available Features</h2>
         <ul>
           <li>
-            <Link to="/flow-auditor" style={{ color: "#1976d2", textDecoration: "underline" }}>
-              flow auditor
-            </Link>
-          </li>
-        </ul>
-        <ul>
-          <li>
             <Link to="/blog" style={{ color: "#1976d2", textDecoration: "underline" }}>
               blog
             </Link>

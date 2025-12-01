@@ -142,7 +142,7 @@
 **必須ドキュメント**:
 - ✅ `README.md`, `CLAUDE.md` (基本原則)
 - ✅ `docs/ARCHITECTURE_MANIFESTO2.md` (3大層アーキテクチャ)
-- ✅ `develop/flow-auditor/GUIDING_PRINCIPLES.md` (Outside-In TDD)
+- ✅ `develop/service-name/GUIDING_PRINCIPLES.md` (Outside-In TDD)
 - ✅ `docs/design-token-specification.md` (デザイントークン)
 - ✅ `docs/E2E_TEST_CRITERIA.md` (E2Eテストの基準)
 - ✅ `docs/ユニットテストの最低基準.md` (ユニットテストの基準)

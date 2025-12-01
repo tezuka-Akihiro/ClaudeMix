@@ -186,46 +186,10 @@ test.describe('E2E Test for Blog - Post Detail', () => {
   });
 
   /**
-   * Post Detail Reference Feature Error Path: 参照ファイル不存在
-   * @description
-   * sourceで指定されたファイルが存在しない場合、
-   * 適切に500エラーが表示されることを検証
+   * 注: 外部参照エラーのテストは削除済み
+   * 理由: ビルド時品質保証により、外部参照エラーはビルド失敗となる
+   * エッジランタイムでのエラーハンドリングは不要
    */
-  test('Post Detail: 参照ファイルが存在しない場合500エラーが表示される', async ({ page }) => {
-    const TEST_SLUG = 'test-invalid-source-missing';
-    const TARGET_URL = `/blog/${TEST_SLUG}`;
-
-    // 1. 存在しないファイルを参照する記事にアクセス
-    const response = await page.goto(TARGET_URL);
-
-    // 2. HTTPステータスコードが500であること
-    expect(response?.status()).toBe(500);
-
-    // 3. エラーメッセージが表示される
-    const errorElement = page.locator('body');
-    await expect(errorElement).toContainText(/500|エラー|Error/i);
-  });
-
-  /**
-   * Post Detail Reference Feature Error Path: 不正なパス
-   * @description
-   * sourceで不正なパス（ディレクトリトラバーサル）が指定された場合、
-   * パスバリデーションエラーにより500エラーが表示されることを検証
-   */
-  test('Post Detail: 不正なパス指定の場合バリデーションエラーが表示される', async ({ page }) => {
-    const TEST_SLUG = 'test-invalid-source-traversal';
-    const TARGET_URL = `/blog/${TEST_SLUG}`;
-
-    // 1. 不正なパスを参照する記事にアクセス
-    const response = await page.goto(TARGET_URL);
-
-    // 2. HTTPステータスコードが500であること
-    expect(response?.status()).toBe(500);
-
-    // 3. エラーメッセージが表示される
-    const errorElement = page.locator('body');
-    await expect(errorElement).toContainText(/500|エラー|Error/i);
-  });
 
   /**
    * Post Detail TOC Feature: 目次の表示

@@ -203,6 +203,26 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
      * - Responsive: adjusts based on container width
      */
     ".tag-grid-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-4)", // グループ間のマージン
+    },
+
+    /**
+     * TagGroupContainer Structure
+     * - Vertical stack of group header and tag grid
+     */
+    ".tag-group-container-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-2)", // ヘッダーとグリッドの間隔
+    },
+
+    /**
+     * TagGroupGrid Structure
+     * - Grid layout for tags within a group
+     */
+    ".tag-group-grid-structure": {
       display: "grid",
       gridTemplateColumns: "repeat(var(--tag-grid-columns, 3), minmax(0, 1fr))",
       gap: "var(--spacing-2)",

@@ -94,8 +94,13 @@ graph TD
     C --> H["PostCardGrid (記事カードグリッドコンテナ)"]
 
     F --> I["CategorySelector (カテゴリセレクター: ドロップダウン)"]
-    F --> J["TagGrid (タググリッド: 列数調整可能)"]
+    F --> J["TagGrid (タググリッド: グループ化対応)"]
     F --> K["FilterSubmitButton (決定ボタン)"]
+
+    J --> J1["TagGroupContainer × N (各技術グループのコンテナ)"]
+    J1 --> J2["TagGroupHeader (グループ見出し)"]
+    J1 --> J3["TagGroupGrid (グループ内タググリッド)"]
+    J3 --> J4["TagButton × N (タグボタン)"]
 
     H --> L["PostCard × N (記事カード)"]
 
@@ -112,7 +117,10 @@ graph TD
 | **FilterToggleButton** | フィルタパネルを表示/非表示するトグルボタン。記事一覧の一番上に配置 |
 | **FilterPanel** | フィルタUIコンポーネント（モーダル/オーバーレイ形式）。初期状態は非表示。カテゴリセレクターとタググリッドを提供 |
 | **CategorySelector** | カテゴリフィルタ（ドロップダウンセレクター、単一選択）。デフォルト値は全カテゴリ表示 |
-| **TagGrid** | タグフィルタ（グリッドレイアウト、列数調整可能、複数選択可能）。列数の具体値はspec.yamlで管理 |
+| **TagGrid** | タグフィルタの全体コンテナ。技術グループごとにタグを整理して表示し、UXとコンテンツの発見性を向上させる。グループ情報はspec.yamlで管理 |
+| **TagGroupContainer** | 各技術グループのコンテナ。グループヘッダーとグループ内タググリッドを縦配置 |
+| **TagGroupHeader** | 技術グループの見出しを表示。グループ名はspec.yamlから動的に取得 |
+| **TagGroupGrid** | グループ内のタグをグリッド配置（列数調整可能、複数選択可能）。列数の具体値はspec.yamlで管理 |
 | **FilterSubmitButton** | 選択されたフィルタ条件を適用するための決定ボタン |
 | **PageTitleArea** | ページタイトル（"Articles"）を表示するエリア |
 | **PostCardGrid** | 記事カードを格納するグリッドレイアウトコンテナ。レスポンシブ対応 |
@@ -174,14 +182,39 @@ graph TD
 
 ---
 
-### 5. TagGrid内のタグボタン配置
+### 5-1. TagGrid内のグループコンテナ配置
 
 | 設計項目 | 定義 | 備考 |
 | :--- | :--- | :--- |
-| **対象コンテナ** | `TagGrid` | タググリッドコンテナ（複数列グリッドレイアウト） |
-| **対象アイテム** | タグボタン（`button × N`） | 利用可能なタグ一覧（トグル可能） |
-| **想定アイテム数** | `可変: 通常5～15個` | タグ数に応じて動的に変化 |
-| **レイアウトの意図** | `グリッドレイアウト、列数は調整可能、行は自動生成` | タグをグリッドで表示。選択時は視覚的にハイライト。列数はpropsまたはCSS変数（`--tag-grid-columns`）で柔軟に調整可能。**具体的な列数はspec.yamlで管理** |
+| **対象コンテナ** | `TagGrid` | タググリッド全体のコンテナ |
+| **対象アイテム** | `TagGroupContainer × N` | 各技術グループのコンテナ |
+| **想定アイテム数** | `可変` | グループ数はspec.yamlで管理 |
+| **レイアウトの意図** | `縦方向のFlexbox配置、グループ間にマージンを設ける` | グループを上から下へ順番に配置。グループ間の視覚的な分離を明確にする |
+| **Layer 3 CSS指定** | `display: flex; flex-direction: column; gap: var(--spacing-4);` | 既存のgrid指定を削除し、flex指定に変更。gapはLayer 1トークンを参照 |
+
+---
+
+### 5-2. TagGroupContainer内の構造
+
+| 設計項目 | 定義 | 備考 |
+| :--- | :--- | :--- |
+| **対象コンテナ** | `TagGroupContainer` | 各技術グループのコンテナ |
+| **対象アイテム** | `TagGroupHeader`（見出し）+ `TagGroupGrid`（タググリッド） | 固定2要素 |
+| **想定アイテム数** | `固定: 2個` | ヘッダー1つ + グリッド1つ |
+| **レイアウトの意図** | `縦方向のFlexbox配置、ヘッダーとグリッドを縦に並べる` | グループ名を表示した後、そのグループのタグを表示 |
+| **Layer 3 CSS指定** | `display: flex; flex-direction: column; gap: var(--spacing-2);` | gapはLayer 1トークンを参照 |
+
+---
+
+### 5-3. TagGroupGrid内のタグボタン配置
+
+| 設計項目 | 定義 | 備考 |
+| :--- | :--- | :--- |
+| **対象コンテナ** | `TagGroupGrid` | 各グループ内のタググリッド |
+| **対象アイテム** | タグボタン（`button × N`） | 各グループに属するタグ |
+| **想定アイテム数** | `可変: グループごとに異なる` | タグ数はspec.yamlで管理 |
+| **レイアウトの意図** | `グリッドレイアウト、列数は調整可能、行は自動生成` | 既存のTagGridのグリッド指定を継承。タグをグリッドで表示。選択時は視覚的にハイライト。列数はCSS変数（`--tag-grid-columns`）で柔軟に調整可能。具体的な列数はspec.yamlで管理 |
+| **Layer 3 CSS指定** | `display: grid; grid-template-columns: repeat(var(--tag-grid-columns), 1fr); gap: var(--spacing-2);` | 既存のTagGridから移動。gapはLayer 1トークンを参照 |
 
 ---
 

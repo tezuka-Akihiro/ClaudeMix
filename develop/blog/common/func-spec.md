@@ -52,36 +52,12 @@
 
 ## 🔄 データフロー・処理（3大層分離アーキテクチャ）
 
-### 入力データ
-~~~typescript
-// Header Components
-interface BlogHeaderProps {
-  title: string // ブログタイトル
-  menuItems: MenuItem[] // メニュー項目
-}
+### 必要なデータ要件
+- **ブログタイトル**: ヘッダーに表示するための文字列。
+- **メニュー項目**: ナビゲーションメニューに表示するためのリスト。各項目は「表示ラベル」と「リンク先のパス」を持つ。
+- **コピーライト情報**: フッターに表示するための文字列。
 
-interface MenuItem {
-  label: string // メニュー項目のラベル（例: "挨拶記事", "Articles"）
-  path: string // リンク先（例: "/blog/welcome", "/blog"）
-}
-
-// Navigation Menu
-interface NavigationMenuProps {
-  items: MenuItem[]
-  isOpen: boolean // メニューの開閉状態
-  onClose: () => void // メニューを閉じる処理
-}
-
-// Footer Components
-interface BlogFooterProps {
-  copyright: string // コピーライト表記
-}
-
-// Layout Components
-interface BlogLayoutProps {
-  children: React.ReactNode // 子コンポーネント（記事一覧、記事詳細など）
-}
-~~~
+> **注意**: これらのデータの具体的な構造（キー名、型など）は `spec.yaml` で定義します。このドキュメントでは、機能を実現するために「どのようなデータが必要か」という要件のみを記述します。
 
 ### 出力データ
 ~~~typescript
