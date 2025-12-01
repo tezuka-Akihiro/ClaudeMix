@@ -106,7 +106,7 @@ async function generateBlogPosts() {
     console.log(`✅ Final post count: ${filteredPosts.length}`);
 
     // 3. カテゴリ定義を読み込む
-    const specPath = path.join(rootDir, 'develop/blog/posts/spec.yaml');
+    const specPath = path.join(rootDir, 'app/specs/blog/posts-spec.yaml');
     const specContent = await fs.readFile(specPath, 'utf-8');
     const spec = yaml.load(specContent);
 
