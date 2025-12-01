@@ -23,9 +23,9 @@
 
 ### 1.2. 具体的な問題の発生状況
 
-**問題例**: servicenameサービスの開発時
+**問題例**: flow-auditorサービスの開発時
 ~~~
-app/routes/servicename.tsx  ← このファイルの実装手順が不明確
+app/routes/flow-auditor.tsx  ← このファイルの実装手順が不明確
 ├── DesignFlowSection        ← 明確に定義されている
 ├── ImplementationFlowSection ← 明確に定義されている
 └── Header/Footer            ← commonセクションの責務と認識されていたが、
@@ -58,11 +58,11 @@ app/routes/servicename.tsx  ← このファイルの実装手順が不明確
 
 **実装例**:
 ~~~tsx
-// app/routes/servicename.tsx
-import { Header } from "~/components/servicename/common/Header";
-import { Footer } from "~/components/servicename/common/Footer";
-import { DesignFlowSection } from "~/components/servicename/design-flow/DesignFlowSection";
-import { ImplementationFlowSection } from "~/components/servicename/implementation-flow/ImplementationFlowSection";
+// app/routes/flow-auditor.tsx
+import { Header } from "~/components/flow-auditor/common/Header";
+import { Footer } from "~/components/flow-auditor/common/Footer";
+import { DesignFlowSection } from "~/components/flow-auditor/design-flow/DesignFlowSection";
+import { ImplementationFlowSection } from "~/components/flow-auditor/implementation-flow/ImplementationFlowSection";
 
 export default function FlowAuditor() {
   return (
@@ -150,7 +150,7 @@ export default function FlowAuditor() {
 
 1.  **最優先実装**: `common`セクションは、他のどのセクションよりも**先に実装**してください。
 2.  **責務範囲**:
-    -   **ページコンテナの実装**: 各セクションを統合し、サービス全体のレイアウトを定義するルートファイル（例: `app/routes/servicename.tsx`）の実装を担当します。
+    -   **ページコンテナの実装**: 各セクションを統合し、サービス全体のレイアウトを定義するルートファイル（例: `app/routes/flow-auditor.tsx`）の実装を担当します。
     -   **共通コンポーネントの実装**: ヘッダーやフッターなど、サービス全体で共有されるコンポーネントの実装を担当します。
 ~~~
 
@@ -189,7 +189,7 @@ if (isCommonSection) {
 ~~~markdown
 ## Phase 1: E2Eファースト
 
-1. `tests/e2e/screen/servicename.screen.spec.ts` を新規作成
+1. `tests/e2e/screen/flow-auditor.screen.spec.ts` を新規作成
 2. ページ全体の基本的な表示をテスト
 ~~~
 
@@ -197,7 +197,7 @@ if (isCommonSection) {
 ~~~markdown
 ## Phase 1: E2Eファースト
 
-前提: `tests/e2e/screen/servicename.screen.spec.ts` は実装済み
+前提: `tests/e2e/screen/flow-auditor.screen.spec.ts` は実装済み
 
 1. 既存ファイルにテストケースを追記
 2. 新しいセクションの表示をテスト
@@ -208,10 +208,10 @@ if (isCommonSection) {
 `common`セクションの目的に、ページコンテナの責務が明記された。
 
 ~~~toml
-[services.servicename.sections.common]
+[services.flow-auditor.sections.common]
 name = "Common Components"
 abstract_purpose = "サービス全体のページレイアウトと、共有コンポーネント（ヘッダー、フッターなど）の設計・実装を管理する。"
-specific_purpose = "サービス全体のページコンテナ（例: app/routes/servicename.tsx）のレイアウトを定義し、その中に配置されるヘッダーとフッターの機能とUIを実装する。"
+specific_purpose = "サービス全体のページコンテナ（例: app/routes/flow-auditor.tsx）のレイアウトを定義し、その中に配置されるヘッダーとフッターの機能とUIを実装する。"
 ~~~
 
 ## 5. 実装結果と成果
@@ -225,8 +225,8 @@ specific_purpose = "サービス全体のページコンテナ（例: app/routes
 | **テンプレート** | `docs/REQUIREMENTS_ANALYSIS_PIPE.md` | ✅ 更新済み |
 | **テンプレート** | `scripts/generate/templates/workflow/TDD_WORK_FLOW.md` | ✅ 更新済み |
 | **設定** | `scripts/project.toml` | ✅ 更新済み |
-| **実装例** | `app/routes/servicename.tsx` | ✅ 実装済み |
-| **テスト例** | `tests/e2e/screen/servicename.screen.spec.ts` | ✅ 実装済み |
+| **実装例** | `app/routes/flow-auditor.tsx` | ✅ 実装済み |
+| **テスト例** | `tests/e2e/screen/flow-auditor.screen.spec.ts` | ✅ 実装済み |
 
 ### 5.2. 開発プロセスへの影響
 

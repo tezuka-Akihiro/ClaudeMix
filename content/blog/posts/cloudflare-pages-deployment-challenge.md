@@ -146,7 +146,7 @@ $ grep -r "fs/promises" app/ --include="*.ts" --include="*.tsx"
 
 **影響範囲:**
 - `app/data-io/blog/*` - Markdown ファイルの読み込み（`fs/promises`）
-- `app/data-io/servicename/*` - TOML ファイルの読み込み（`fs`）
+- `app/data-io/flow-auditor/*` - TOML ファイルの読み込み（`fs`）
 - `@iarna/toml` パッケージ - 内部で `stream` を使用
 - `gray-matter` パッケージ - 内部で Node.js API を使用
 
@@ -314,6 +314,10 @@ app/generated/
 - `app/data-io/blog/post-detail/fetchPostBySlug.server.ts`
 - `app/data-io/blog/post-detail/fetchExternalMarkdown.server.ts`
 
+**Flow Auditor 関連:**
+- `app/data-io/flow-auditor/common/loadSectionList.server.ts`
+- `app/data-io/flow-auditor/common/loadServiceList.server.ts`
+- `app/data-io/flow-auditor/design-flow/loadProjectSections.server.ts`
 - その他 TOML/FS を使用するファイル（約15-20ファイル）
 
 **合計**: 約 **20-25 ファイル** の変更が必要

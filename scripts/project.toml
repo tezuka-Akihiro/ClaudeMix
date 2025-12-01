@@ -10,6 +10,42 @@ value_proposition = "このプロジェクトが提供する価値を記述し�
 world_view_site_url = "https://remix.run"
 app_url = "https://zenn.dev/topics/blog"
 
+# --- Flow Auditor サービスの定義 ---
+[services.flow-auditor]
+name = "Flow Auditor"
+description = "開発フローの進捗を「テンプレートファイルの存在確認」で監査する、シンプルで本質的なダッシュボード。"
+doc_path = "develop/flow-auditor/GUIDING_PRINCIPLES.md"
+
+  # --- セクション 1: 共通コンポーネント ---
+  [services.flow-auditor.sections.common]
+  name = "Common Components"
+  abstract_purpose = "サービス全体のページレイアウトと、共有コンポーネント（ヘッダー、フッターなど）の設計・実装を管理する。"
+  specific_purpose = "サービス全体のページコンテナ（例: app/routes/flow-auditor.tsx）のレイアウトを定義し、その中に配置されるヘッダーとフッターの機能とUIを実装する。"
+  input = "ワイヤーフレームで定義された全体レイアウト構造"
+  processing = "共通コンポーネントの詳細設計を行い、TDDプロセスに従って実装する。"
+  output = "app/components/flow-auditor/配下に配置された共通UIコンポーネント"
+  doc_path = "develop/flow-auditor/common/func-spec.md"
+
+  # --- セクション 2: 設計フロー ---
+  [services.flow-auditor.sections.design-flow]
+  name = "設計フロービュー"
+  abstract_purpose = "設計フェーズの成果物が正しく作成されているかを監査する。"
+  specific_purpose = "開発フローで定義された設計ドキュメント（func-spec.md, uiux-spec.mdなど）が所定の場所に存在するかをチェックし、設計プロセスの完了度を可視化する。"
+  input = "各セクションの`develop`ディレクトリパス"
+  processing = "定義された設計ドキュメントテンプレートのファイル存在を確認する。"
+  output = "各設計ドキュメントの存在有無（完了/未完了）のリスト表示"
+  doc_path = "develop/flow-auditor/design-flow/func-spec.md"
+
+  # --- セクション 3: 実装フロー ---
+  [services.flow-auditor.sections.implementation-flow]
+  name = "実装フロービュー"
+  abstract_purpose = "実装フェーズの成果物がTDDフローに従って作成されているかを監査する。"
+  specific_purpose = "TDD_WORK_FLOW.mdや各層（ui, lib, data-io）のソースファイルとテストファイルが所定の場所に存在するかをチェックし、実装プロセスの完了度を可視化する。"
+  input = "各セクションの`app`および`tests`ディレクトリパス"
+  processing = "定義された実装成果物テンプレートのファイル存在を確認する。"
+  output = "各実装成果物の存在有無（完了/未完了）のリスト表示"
+  doc_path = "develop/flow-auditor/implementation-flow/func-spec.md"
+
 # --- 開発ブログ サービスの定義---
 [services.blog]
 name = "開発ブログ"

@@ -1,0 +1,14 @@
+// copyrightFormatter - 🧠 純粋ロジック層
+// コピーライト文字列をフォーマットする純粋関数
+// 年の自動更新機能
+
+/**
+ * コピーライト文字列をフォーマットする
+ *
+ * @param projectName
+ * @returns フォーマットされたコピーライト文字列
+ */
+export function formatCopyright(projectName: string = "ClaudeMix"): string {
+  const currentYear = new Date().getFullYear();
+  return `© ${currentYear} ${projectName}`;
+}

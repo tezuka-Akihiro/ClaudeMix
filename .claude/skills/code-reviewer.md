@@ -158,7 +158,7 @@ const generatorChecks = [
 # Code Review Report
 
 **レビュー日時**: 2025-10-02 14:30
-**レビュー対象**: app/lib/servicename/roadmap/progressCalculator.ts
+**レビュー対象**: app/lib/flow-auditor/roadmap/progressCalculator.ts
 
 ---
 
@@ -258,8 +258,8 @@ return Math.min(progress, MAX_PROGRESS);
 @CodeReviewer
 
 以下のファイルのレビューをお願いします:
-- app/lib/servicename/roadmap/progressCalculator.ts
-- app/lib/servicename/roadmap/progressCalculator.test.ts
+- app/lib/flow-auditor/roadmap/progressCalculator.ts
+- app/lib/flow-auditor/roadmap/progressCalculator.test.ts
 ~~~
 
 ### PRレビューの場合
@@ -270,7 +270,7 @@ return Math.min(progress, MAX_PROGRESS);
 PR #42 のコードレビューをお願いします。
 変更ファイル一覧:
 - app/components/roadmap/ProgressSummary.tsx
-- app/lib/servicename/roadmap/progressCalculator.ts
+- app/lib/flow-auditor/roadmap/progressCalculator.ts
 - tests/e2e/roadmap.spec.ts
 ~~~
 
@@ -315,7 +315,7 @@ CodeReviewer: レビュー実行
 CodeReviewerが常に参照すべきドキュメント:
 
 1. **[ARCHITECTURE_MANIFESTO2.md](../ARCHITECTURE_MANIFESTO2.md)** - 3大層アーキテクチャの定義
-2. **[TDD_WORK_FLOW.md](../../develop/servicename/*/TDD_WORK_FLOW.md)** - TDDワークフロー（機能ごと）
+2. **[TDD_WORK_FLOW.md](../../develop/flow-auditor/*/TDD_WORK_FLOW.md)** - TDDワークフロー（機能ごと）
 3. **[E2E_TEST_CRITERIA.md](../E2E_TEST_CRITERIA.md)** - E2Eテスト基準
 4. **[ユニットテストの最低基準.md](../ユニットテストの最低基準.md)** - ユニットテスト基準
 5. **[design-token-specification.md](../design-token-specification.md)** - デザイントークン仕様
@@ -373,7 +373,7 @@ const reviewConfig = {
 
 CodeReviewで以下の問題を発見しました:
 
-**ファイル**: app/lib/servicename/roadmap/progressCalculator.ts
+**ファイル**: app/lib/flow-auditor/roadmap/progressCalculator.ts
 **問題**: テスト実行時にNaN が返される
 **テストケース**: "should return 0 when total is 0"
 

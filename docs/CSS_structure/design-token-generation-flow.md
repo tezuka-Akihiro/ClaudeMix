@@ -45,8 +45,8 @@ graph TD
 **実行者**: AIエージェント
 **入力**:
 - `project.toml` の **world_view_url**（世界観の参考URL）
-- `app\styles\servicename\ワイヤーフレーム.png`（Figmaで作成したレイアウト設計図）
-**出力**: `docs/CSS_structure/design-token/{サービス名}-concept.md`（例: `servicename-concept.md`）
+- `app\styles\flow-auditor\ワイヤーフレーム.png`（Figmaで作成したレイアウト設計図）
+**出力**: `docs/CSS_structure/design-token/{サービス名}-concept.md`（例: `flow-auditor-concept.md`）
 
 **内容**:
 - **キーワード抽出**: 世界観を表現する感情的なキーワード（例: "Cyberpunk", "Terminal", "Hologram"）
@@ -107,7 +107,7 @@ graph TD
   "application": {
     "bg": { "primary": { "value": "{foundation.color.neutral.900}", "type": "color" } }
   },
-  "service-servicename": {
+  "service-flow-auditor": {
     "checkpoint": { "completed": { "border": { "value": "{foundation.color.green.400}", "type": "color" } } }
   }
 }

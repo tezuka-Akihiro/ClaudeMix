@@ -1,0 +1,77 @@
+# flow-auditor - design-flow - 外部変数仕様書
+
+# API仕様
+api:
+  endpoints:
+    - name: getDesignFlowStatus
+      method: GET
+      path: /flow-auditor?index
+      description: 設計フローの全チェックポイント状態を取得する（loader経由）
+
+# データ型定義
+types:
+  DesignFlowLoaderData:
+    checkpoints: CheckpointStatus[] # 全チェックポイントの状態
+    sections: SectionCheckpoints[] # セクション別チェックポイント
+
+  SectionCheckpoints:
+    name: string # セクション名（例: "operation"）
+    checkpoints: CheckpointStatus[] # チェックポイント一覧
+
+  CheckpointStatus:
+    id: string # チェックポイントID（リトライ用、例: "design-flow-requirements"）
+    name: string # チェックポイント名（例: "func-spec.md"）
+    path: string # ファイルパス（例: "develop/flow-auditor/operation/func-spec.md"）
+    exists: boolean # 存在するか（true: 完了, false: 未完了）
+    status: string # ノードの状態（"pending" | "completed" | "selected"）
+    flowType: string # フロータイプ（"common" | "branched"）
+    section: string # セクション名（branched時のみ、例: "operation"）
+    category: string # ドキュメント種別（"guiding-principles" | "requirements" | "uiux-spec" | "spec"）
+
+# バリデーションルール
+validation:
+  serviceName:
+    required: true
+    type: string
+    # project.tomlに登録済みのサービス名のみ許可
+
+  sectionName:
+    required: false
+    type: string
+    # project.tomlに登録済みのセクション名のみ許可（オプション）
+
+  category:
+    required: true
+    type: string
+    enum: ["guiding-principles", "requirements", "uiux-spec", "spec"]
+
+  status:
+    required: true
+    type: string
+    enum: ["pending", "completed", "selected"]
+
+  flowType:
+    required: true
+    type: string
+    enum: ["common", "branched"]
+
+# 定数
+constants:
+  DESIGN_FILE_TIMEOUT_MS: 300 # ファイル存在確認のタイムアウト（ms）
+  CHECKPOINT_CATEGORIES: ["guiding-principles", "requirements", "uiux-spec", "spec"]
+  MAX_SECTIONS_PER_SERVICE: 6 # サービスあたりの最大セクション数（ボイラープレート仕様）
+  MIN_SECTIONS_PER_SERVICE: 1 # サービスあたりの最小セクション数
+
+# メッセージテキスト
+messages:
+  success:
+    path_copied: "パスをコピーしました: {path}"
+    all_completed: "全ての設計ドキュメントが完成しています！"
+  error:
+    load_failed: "設計フロー状態の取得に失敗しました。再試行してください。"
+    invalid_service: "無効なサービス名が指定されました"
+    invalid_section: "無効なセクション名が指定されました"
+  warning:
+    incomplete_design: "未完了の設計ドキュメントがあります。実装前に完成させてください。"
+    guiding_principles_missing: "GUIDING_PRINCIPLES.md が作成されていません。まずは基本方針を定義してください。"
+    too_many_sections: "セクション数が最大値（6）を超えています。project.tomlを見直してください。"

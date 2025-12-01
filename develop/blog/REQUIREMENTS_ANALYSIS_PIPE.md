@@ -70,18 +70,18 @@
     ## 2. UI層（Phase 2）
     | ファイル名 | パス |
     |:---|:---|
-    | OperationSection.tsx | app/components/servicename/operation/OperationSection.tsx |
-    | RetryModal.tsx | app/components/servicename/operation/RetryModal.tsx |
+    | OperationSection.tsx | app/components/flow-auditor/operation/OperationSection.tsx |
+    | RetryModal.tsx | app/components/flow-auditor/operation/RetryModal.tsx |
     
     ## 3. 純粋ロジック層（lib層、Phase 2）
     | ファイル名 | パス |
     |:---|:---|
-    | retryTargetCalculator.ts | app/lib/servicename/operation/retryTargetCalculator.ts |
+    | retryTargetCalculator.ts | app/lib/flow-auditor/operation/retryTargetCalculator.ts |
     
     ## 4. 副作用層（data-io層、Phase 2）
     | ファイル名 | パス |
     |:---|:---|
-    | archiveFiles.server.ts | app/data-io/servicename/operation/archiveFiles.server.ts |
+    | archiveFiles.server.ts | app/data-io/flow-auditor/operation/archiveFiles.server.ts |
     ~~~
    - このファイルが、後述する「設計レビュー図」の元データとなります。
 6. `node scripts/lint-template/engine.js develop/blog/<section>/file-list.md` を実行して内容を検証します。
