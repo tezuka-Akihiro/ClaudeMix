@@ -3,14 +3,13 @@ slug: "best-practices"
 title: "claude 公式まとめ"
 description: "Claudeを効果的に活用するための公式ベストプラクティス集。Skills, Prompts, Projects, MCPの4本柱を軸に、具体的な実装パターンや推奨技術階層を解説します。"
 author: "ClaudeMix Team"
-publishedAt: "2025-01-16"
+publishedAt: "2025-11-16"
 category: "Claude Best Practices"
 tags: ["Skills", "Prompts", "Projects", "MCP"]
-originalSource: "docs/official/best-practices.md"
 ---
 # Claude 公式ベストプラクティス総まとめ
 
-**収集日**: 2025-01-18
+
 **統合ソース**: Skills, Prompts, Projects, MCP公式ガイド
 
 ## 1. 全体像

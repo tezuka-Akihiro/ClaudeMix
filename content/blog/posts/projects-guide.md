@@ -2,12 +2,14 @@
 slug: "projects-guide"
 title: "claude projects 公式まとめ"
 author: "ClaudeMix Team"
-publishedAt: "2025-01-16"
+publishedAt: "2025-11-16"
 category: "Claude Best Practices"
+description: "Claudeがプロジェクト全体の文脈を理解するための共有メカニズム「Projects」の公式ガイドを要約。CLAUDE.mdの理想的な構成や、コンテキスト管理のベストプラクティスを解説します。"
+tags: ["Projects", "architecture"]
 ---
 # Claude Projects 公式ガイド要約
 
-**収集日**: 2025-01-18
+
 **ソース**: https://www.anthropic.com/engineering/claude-code-best-practices
 
 ## 1. Claude Projectsとは
