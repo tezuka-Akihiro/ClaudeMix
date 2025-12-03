@@ -1,9 +1,11 @@
 ---
-slug: "your-unique-slug-here"
-title: "ここに記事のタイトルを記入"
+slug: "how-to-blog-internal-tech-doc"
+title: "【解説】内部技術ドキュメントをブログ記事にする公式ベストプラクティステンプレート"
+description: "社内向け技術リファレンスを外部向けブログ記事に変換するためのテンプレートです。Claudeの公式ベストプラクティスを例に、読者を引きつける構成とSEOに配慮したメタデータの活用方法を解説します。"
 author: "ClaudeMix Team"
 publishedAt: "YYYY-MM-DD"
-category: "カテゴリ名をここに記入"
+category: "ClaudeMix Philosophy"
+tags: [] # app\specs\blog\posts-spec.yaml
 ---
 ルール：
 - **文体**：ですます調で統一してください。

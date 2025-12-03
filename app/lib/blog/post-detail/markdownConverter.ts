@@ -2,75 +2,87 @@
 // マークダウン形式の文字列をHTML形式に変換する純粋関数
 // 副作用なし、テスタブルなビジネスロジック
 
-import { marked } from 'marked';
+import { marked, type Tokens, type RendererObject } from 'marked';
 import sanitizeHtml from 'sanitize-html';
+import { createHighlighter, type Highlighter } from 'shiki/bundle/full';
 import { slugify } from './slugify';
+
+let highlighter: Highlighter | undefined;
+const theme = 'github-dark';
+/**
+ * Shikiハイライターを初期化する（シングルトン）
+ */
+async function getHighlighter() {
+  if (!highlighter) {
+    highlighter = await createHighlighter({
+      themes: [theme],
+      langs: ['javascript', 'typescript', 'html', 'css', 'markdown', 'bash', 'json', 'tsx', 'diff', 'yaml', 'xml'],
+    });
+  }
+  return highlighter;
+}
 
 /**
  * マークダウンをHTMLに変換する
  *
  * @param markdown - マークダウン形式の文字列
- * @returns HTML形式の文字列（サニタイズ済み）
+ * @returns Promise<string> - HTML形式の文字列（サニタイズ済み）
  */
-export function convertMarkdownToHtml(markdown: string): string {
-  // marked の設定
+export async function convertMarkdownToHtml(markdown: string): Promise<string> {
+  const highlighter = await getHighlighter();
+
   marked.setOptions({
     gfm: true, // GFM (GH-Flavored Markdown)
     breaks: true, // 改行を<br>に変換
   });
 
   // カスタムレンダラーの設定
-  const renderer = new marked.Renderer();
+  const renderer: RendererObject = {
 
-  // 画像レンダラーのカスタマイズ（遅延読み込み + レスポンシブ対応）
-  renderer.image = function(token: any): string {
-    const src = token.href;
-    const alt = token.text || '';
-    const title = token.title || '';
-
-    return `<img
+    image({ href, title, text }) {
+      const src = href ?? '';
+      const alt = text || '';
+      const titleAttr = title ? `title="${title}"` : '';
+      return `<img
       src="${src}"
       alt="${alt}"
-      ${title ? `title="${title}"` : ''}
+      ${titleAttr}
       loading="lazy"
       style="max-width: 100%; height: auto;"
     />`;
+    },
+
+    heading({ text, depth: level }) {
+      const id = slugify(text);
+      return `<h${level} id="${id}">${text}</h${level}>\n`;
+    },
+
+    code({ text }) {
+      // walkTokensでshikiによって変換されたHTMLがtextに入ってくるので、そのまま返す
+      return text;
+    },
   };
 
-  // 見出しレンダラーのカスタマイズ（ID属性を付与）
-  renderer.heading = function(token: any): string {
-    const text = token.text;
-    const depth = token.depth;
-    const id = slugify(text);
-    return `<h${depth} id="${id}">${text}</h${depth}>\n`;
-  };
-
-  // カスタムレンダラーでコードブロックを処理
-  renderer.code = function(token: any): string {
-    const code = token.text;
-    const lang = token.lang || 'text';
-
-    // Mermaidコードブロックは特別扱い
-    if (lang === 'mermaid') {
-      return `<pre class="mermaid">${code}</pre>`;
+  // markedの非同期プラグインとしてshikiを統合
+  const walkTokens = (token: Tokens.Generic) => {
+    if (token.type === 'code') {
+      const lang = token.lang || 'text';
+      // Mermaidコードブロックは特別扱い
+      if (lang === 'mermaid') {
+        // markedはデフォルトでエスケープするので、ここではエスケープされたコードを戻す
+        const unescapedCode = token.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        token.text = `<pre class="mermaid">${unescapedCode}</pre>`;
+        token.escaped = true; // markedに再エスケープさせない
+      } else {
+        token.text = highlighter.codeToHtml(token.text, { lang, theme });
+        token.escaped = true; // shikiがHTMLを生成したので、markedに再エスケープさせない
+      }
     }
-
-    // 基本的なHTMLエスケープ処理
-    const escaped = code
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-
-    return `<pre><code class="language-${lang}">${escaped}</code></pre>`;
   };
-
-  // marked.use()でレンダラーを設定
-  marked.use({ renderer });
+  marked.use({ renderer, walkTokens, async: true });
 
   // マークダウンをHTMLに変換
-  const rawHtml = marked.parse(markdown) as string;
+  const rawHtml = await marked.parse(markdown) as string;
 
   // XSS対策のためHTMLをサニタイズ
   const cleanHtml = sanitizeHtml(rawHtml, {
@@ -101,10 +113,10 @@ export function convertMarkdownToHtml(markdown: string): string {
       'h6': ['id'],
     },
     allowedClasses: {
-      'pre': ['mermaid', 'language-*', 'shiki', '*'],
-      'code': ['language-*', '*'],
-      'span': ['*'],
-      'div': ['*'],
+      'pre': ['mermaid', 'shiki', theme], // shikiが生成するクラスを許可
+      'code': ['language-*', 'has-line-numbers'],
+      'span': ['line'],
+      'div': ['class'],
     },
     allowedStyles: {
       '*': {

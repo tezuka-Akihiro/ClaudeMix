@@ -137,7 +137,7 @@ test_articles:
 // ✅ 修正後: spec.yaml参照、存在確認
 it('should filter posts by category', async ({ page }) => {
   // spec.yamlからテストデータを読み込む
-  const spec = await loadBlogPostsSpec();
+  const spec = await loadSpec('blog','posts');
   const categoryToTest = spec.categories[2]; // カテゴリ3
   const testArticles = await getTestArticlesByCategory(categoryToTest.id);
 
@@ -181,7 +181,7 @@ it('should filter posts by category', async ({ page }) => {
 import yaml from 'yaml';
 import fs from 'fs/promises';
 
-export async function loadBlogPostsSpec() {
+export async function loadSpec('blog','posts') {
   const content = await fs.readFile(
     'develop/blog/posts/spec.yaml',
     'utf-8'
@@ -190,14 +190,14 @@ export async function loadBlogPostsSpec() {
 }
 
 export async function getTestArticlesByCategory(categoryId: number) {
-  const spec = await loadBlogPostsSpec();
+  const spec = await loadSpec('blog','posts');
   return spec.test_articles.filter(
     (article) => article.category_id === categoryId
   );
 }
 
 export async function getTestArticlesByTag(tag: string) {
-  const spec = await loadBlogPostsSpec();
+  const spec = await loadSpec('blog','posts');
   return spec.test_articles.filter(
     (article) => article.tags?.includes(tag)
   );

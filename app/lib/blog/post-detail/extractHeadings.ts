@@ -2,13 +2,8 @@
 // Pure Logic層 - 副作用なし
 // 階層定義: develop/blog/post-detail/func-spec.md の「目次階層の定義」参照
 
-import { slugify } from "./slugify";
-
-export interface Heading {
-  level: 2;
-  text: string;
-  id: string;
-}
+import { slugify } from './slugify';
+import type { Heading } from '~/specs/blog/types';
 
 /**
  * マークダウンテキストから目次用の見出しを抽出する

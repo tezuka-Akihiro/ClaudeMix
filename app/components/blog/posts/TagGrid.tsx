@@ -1,12 +1,8 @@
 // TagGrid - Component (components層)
 // タグ選択用のグリッド表示
 
-import React, { Fragment, useState } from 'react';
-
-interface TagGroup {
-  group: string;
-  tags: string[];
-}
+import React, { useState } from 'react';
+import type { TagGroup } from '~/specs/blog/types';
 
 interface TagGridProps {
   availableTags?: string[];

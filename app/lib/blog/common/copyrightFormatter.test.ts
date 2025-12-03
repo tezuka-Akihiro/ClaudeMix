@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { formatCopyright } from '~/lib/blog/common/copyrightFormatter';
-import { loadBlogPostsSpec, type BlogPostsSpec } from '../../../../tests/e2e/utils/loadSpec';
+import { formatCopyright } from './copyrightFormatter';
+import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 describe('formatCopyright - Pure Logic Layer', () => {
   let spec: BlogPostsSpec;
 
   beforeAll(async () => {
-    spec = await loadBlogPostsSpec();
+    spec = await loadSpec('blog','posts');
   });
 
   describe('formatCopyright function', () => {

@@ -108,7 +108,15 @@
       "Bash(Select-String -Pattern \"(refactoring|single|source|truth|spec)\")",
       "Bash(Get-ChildItem -Path \"content/blog/posts/*.md\")",
       "Bash(Select-String -Pattern \"^tags:\" -Context 0,0)",
-      "Bash(ForEach-Object { $_ine })"
+      "Bash(ForEach-Object { $_ine })",
+      "Bash(Select-String -Pattern \"(PASS|FAIL|TimeoutError|page\\.goto|Error:|tests)\" -Context 0,2)",
+      "Bash(PORT=3001 npm run dev:*)",
+      "Bash(Select-String -Pattern \"(Test Files|Tests|passed|failed|Timeout)\" -Context 0,2)",
+      "Bash(Get-Process -Name node -ErrorAction SilentlyContinue)",
+      "Bash(Stop-Process -Force)",
+      "Bash(PORT=3001 npm run start:*)",
+      "Bash(Get-ChildItem -Path \"content/blog/posts/refactoring-typescript-*.md\")",
+      "Bash(ForEach-Object { Select-String -Path $_ullName -Pattern \"^publishedAt:\" -Context 0,0)"
     ],
     "deny": [],
     "ask": []
