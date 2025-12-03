@@ -4,6 +4,8 @@ title: "Remix + Cloudflare WorkersでCSS読み込み問題を解決: パスエ�
 author: "ClaudeMix Team"
 publishedAt: "2025-11-21"
 category: "Tutorials & Use Cases"
+description: "RemixとCloudflare Workers環境で発生したCSS読み込み問題を解決するデバッグプロセスを解説。パスエイリアス、SSRレンダリングの不整合、開発環境設定の誤りといった複数の原因を特定し、`wrangler pages dev`とViteプラグインを使った正しい開発方法を明らかにします。"
+tags: ["SSR", "Vite", "Workers", "troubleshooting"]
 ---
 
 # Remix + Cloudflare WorkersでCSS読み込み問題を解決: パスエイリアスとSSRの落とし穴

@@ -4,6 +4,8 @@ title: "Cloudflare Pages デプロイの挑戦: ファイルシステム依存�
 author: "ClaudeMix Team"
 publishedAt: "2025-11-20"
 category: "Tutorials & Use Cases"
+description: "RemixアプリをCloudflare Pagesにデプロイする過程で遭遇したファイルシステム非互換の問題を、「ビルド時バンドル」というアプローチで解決する全プロセスを記録。サーバーレスの制約をパフォーマンス向上の機会に変えるアーキテクチャ設計を解説します。"
+tags: ["Workers", "Vite", "troubleshooting"]
 ---
 
 今回のテーマは **RemixアプリのCloudflare Pagesデプロイ** です。

@@ -1,11 +1,11 @@
 ---
 slug: "about-claudemix"
 title: "このプロジェクトについて"
+description: "ClaudeMixプロジェクトの名前の由来と開発哲学。ClaudeとRemixを組み合わせた協調開発の思想と、AIを専門パートナーとして扱う次世代の開発スタイルを解説します。"
 author: "ClaudeMix Team"
-publishedAt: "2025-01-16"
+publishedAt: "2025-11-16"
 category: "ClaudeMix Philosophy"
-description: "ClaudeMixプロジェクトの名前の由来と開発哲学。ClaudeとRemixを組み合わせた協調開発の思想を解説します。"
-tags: ["Workers", "MCP"]
+tags: ["Workers", "MCP", "architecture"]
 ---
 
 # このプロジェクトについて
