@@ -116,7 +116,10 @@
       "Bash(Stop-Process -Force)",
       "Bash(PORT=3001 npm run start:*)",
       "Bash(Get-ChildItem -Path \"content/blog/posts/refactoring-typescript-*.md\")",
-      "Bash(ForEach-Object { Select-String -Path $_ullName -Pattern \"^publishedAt:\" -Context 0,0)"
+      "Bash(ForEach-Object { Select-String -Path $_ullName -Pattern \"^publishedAt:\" -Context 0,0)",
+      "Bash(wrangler pages deployment list:*)",
+      "Bash(Select-String -Pattern \"(stg|blog)\" -Context 0,2)",
+      "Bash(wrangler pages dev:*)"
     ],
     "deny": [],
     "ask": []
