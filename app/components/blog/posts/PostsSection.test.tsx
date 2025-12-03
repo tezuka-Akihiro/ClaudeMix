@@ -3,11 +3,21 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import PostsSection from '~/components/blog/posts/PostsSection';
 import type { PostSummary } from '~/data-io/blog/posts/fetchPosts.server';
+import type { AvailableFilters, FilterOptions } from '~/specs/blog/types';
 
 // Helper function to render component with Router context
 const renderWithRouter = (ui: React.ReactElement) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
 };
+
+// Default test data
+const defaultAvailableFilters: AvailableFilters = {
+  categories: [],
+  tags: [],
+  tagGroups: [],
+};
+
+const defaultSelectedFilters: FilterOptions = {};
 
 describe('PostsSection', () => {
   describe('Rendering', () => {
@@ -17,7 +27,14 @@ describe('PostsSection', () => {
       const pagination = { currentPage: 1, totalPages: 1 };
 
       // Act
-      renderWithRouter(<PostsSection posts={posts} pagination={pagination} />);
+      renderWithRouter(
+        <PostsSection
+          posts={posts}
+          pagination={pagination}
+          availableFilters={defaultAvailableFilters}
+          selectedFilters={defaultSelectedFilters}
+        />
+      );
 
       // Assert
       const titleElement = screen.getByTestId('posts-section-title');
@@ -35,7 +52,14 @@ describe('PostsSection', () => {
       const pagination = { currentPage: 1, totalPages: 1 };
 
       // Act
-      renderWithRouter(<PostsSection posts={posts} pagination={pagination} />);
+      renderWithRouter(
+        <PostsSection
+          posts={posts}
+          pagination={pagination}
+          availableFilters={defaultAvailableFilters}
+          selectedFilters={defaultSelectedFilters}
+        />
+      );
 
       // Assert
       const postCards = screen.getAllByTestId('post-card');
@@ -53,7 +77,14 @@ describe('PostsSection', () => {
       const pagination = { currentPage: 1, totalPages: 1 };
 
       // Act
-      renderWithRouter(<PostsSection posts={posts} pagination={pagination} />);
+      renderWithRouter(
+        <PostsSection
+          posts={posts}
+          pagination={pagination}
+          availableFilters={defaultAvailableFilters}
+          selectedFilters={defaultSelectedFilters}
+        />
+      );
 
       // Assert
       const emptyMessage = screen.getByTestId('posts-section-empty');
@@ -69,7 +100,14 @@ describe('PostsSection', () => {
       const pagination = { currentPage: 1, totalPages: 1 };
 
       // Act
-      renderWithRouter(<PostsSection posts={posts} pagination={pagination} />);
+      renderWithRouter(
+        <PostsSection
+          posts={posts}
+          pagination={pagination}
+          availableFilters={defaultAvailableFilters}
+          selectedFilters={defaultSelectedFilters}
+        />
+      );
 
       // Assert
       const emptyMessage = screen.queryByTestId('posts-section-empty');
@@ -86,7 +124,14 @@ describe('PostsSection', () => {
       const pagination = { currentPage: 1, totalPages: 1 };
 
       // Act
-      renderWithRouter(<PostsSection posts={posts} pagination={pagination} />);
+      renderWithRouter(
+        <PostsSection
+          posts={posts}
+          pagination={pagination}
+          availableFilters={defaultAvailableFilters}
+          selectedFilters={defaultSelectedFilters}
+        />
+      );
 
       // Assert
       const sectionElement = screen.getByTestId('posts-section');
@@ -109,7 +154,14 @@ describe('PostsSection', () => {
       const pagination = { currentPage: 1, totalPages: 1 };
 
       // Act
-      renderWithRouter(<PostsSection posts={posts} pagination={pagination} />);
+      renderWithRouter(
+        <PostsSection
+          posts={posts}
+          pagination={pagination}
+          availableFilters={defaultAvailableFilters}
+          selectedFilters={defaultSelectedFilters}
+        />
+      );
 
       // Assert
       const postCardLink = screen.getByTestId('post-card');
@@ -131,7 +183,14 @@ describe('PostsSection', () => {
       const pagination = { currentPage: 1, totalPages: 1 };
 
       // Act
-      renderWithRouter(<PostsSection posts={posts} pagination={pagination} />);
+      renderWithRouter(
+        <PostsSection
+          posts={posts}
+          pagination={pagination}
+          availableFilters={defaultAvailableFilters}
+          selectedFilters={defaultSelectedFilters}
+        />
+      );
 
       // Assert
       const postCardLinks = screen.getAllByTestId('post-card');
@@ -146,16 +205,19 @@ describe('PostsSection', () => {
       // Arrange
       const posts: PostSummary[] = [];
       const pagination = { currentPage: 1, totalPages: 1 };
-      const availableCategories = ['Tech', 'Design'];
-      const availableTags = ['AI', 'Claude'];
+      const availableFilters: AvailableFilters = {
+        categories: ['Tech', 'Design'],
+        tags: ['AI', 'Claude'],
+        tagGroups: [],
+      };
 
       // Act
       renderWithRouter(
         <PostsSection
           posts={posts}
           pagination={pagination}
-          availableCategories={availableCategories}
-          availableTags={availableTags}
+          availableFilters={availableFilters}
+          selectedFilters={defaultSelectedFilters}
         />
       );
 
@@ -168,16 +230,19 @@ describe('PostsSection', () => {
       // Arrange
       const posts: PostSummary[] = [];
       const pagination = { currentPage: 1, totalPages: 1 };
-      const availableCategories = ['Tech'];
-      const availableTags = ['AI'];
+      const availableFilters: AvailableFilters = {
+        categories: ['Tech'],
+        tags: ['AI'],
+        tagGroups: [],
+      };
 
       // Act
       renderWithRouter(
         <PostsSection
           posts={posts}
           pagination={pagination}
-          availableCategories={availableCategories}
-          availableTags={availableTags}
+          availableFilters={availableFilters}
+          selectedFilters={defaultSelectedFilters}
         />
       );
 
@@ -198,16 +263,19 @@ describe('PostsSection', () => {
       // Arrange
       const posts: PostSummary[] = [];
       const pagination = { currentPage: 1, totalPages: 1 };
-      const availableCategories = ['Tech'];
-      const availableTags = ['AI'];
+      const availableFilters: AvailableFilters = {
+        categories: ['Tech'],
+        tags: ['AI'],
+        tagGroups: [],
+      };
 
       // Act
       renderWithRouter(
         <PostsSection
           posts={posts}
           pagination={pagination}
-          availableCategories={availableCategories}
-          availableTags={availableTags}
+          availableFilters={availableFilters}
+          selectedFilters={defaultSelectedFilters}
         />
       );
 
@@ -230,16 +298,19 @@ describe('PostsSection', () => {
       // Arrange
       const posts: PostSummary[] = [];
       const pagination = { currentPage: 1, totalPages: 1 };
-      const availableCategories = ['Tech'];
-      const availableTags = ['AI'];
+      const availableFilters: AvailableFilters = {
+        categories: ['Tech'],
+        tags: ['AI'],
+        tagGroups: [],
+      };
 
       // Act
       renderWithRouter(
         <PostsSection
           posts={posts}
           pagination={pagination}
-          availableCategories={availableCategories}
-          availableTags={availableTags}
+          availableFilters={availableFilters}
+          selectedFilters={defaultSelectedFilters}
         />
       );
 
@@ -261,18 +332,23 @@ describe('PostsSection', () => {
       // Arrange
       const posts: PostSummary[] = [];
       const pagination = { currentPage: 1, totalPages: 1 };
-      const availableCategories = ['Tech', 'Design'];
-      const availableTags = ['AI', 'Claude', 'TDD'];
+      const availableFilters: AvailableFilters = {
+        categories: ['Tech', 'Design'],
+        tags: ['AI', 'Claude', 'TDD'],
+        tagGroups: [],
+      };
+      const selectedFilters: FilterOptions = {
+        category: 'Tech',
+        tags: ['AI'],
+      };
 
       // Act
       renderWithRouter(
         <PostsSection
           posts={posts}
           pagination={pagination}
-          availableCategories={availableCategories}
-          availableTags={availableTags}
-          selectedCategory="Tech"
-          selectedTags={['AI']}
+          availableFilters={availableFilters}
+          selectedFilters={selectedFilters}
         />
       );
 
@@ -306,16 +382,19 @@ describe('PostsSection', () => {
         },
       ];
       const pagination = { currentPage: 1, totalPages: 1 };
-      const availableCategories = ['Tech'];
-      const availableTags = ['AI', 'Claude'];
+      const availableFilters: AvailableFilters = {
+        categories: ['Tech'],
+        tags: ['AI', 'Claude'],
+        tagGroups: [],
+      };
 
       // Act
       renderWithRouter(
         <PostsSection
           posts={posts}
           pagination={pagination}
-          availableCategories={availableCategories}
-          availableTags={availableTags}
+          availableFilters={availableFilters}
+          selectedFilters={defaultSelectedFilters}
         />
       );
 
