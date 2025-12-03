@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { TableOfContents } from './TableOfContents';
-import type { Heading } from '~/lib/blog/post-detail/extractHeadings';
+import type { Heading, RenderedPost } from '~/specs/blog/types';
 
 // Mermaid.jsのグローバル型定義を拡張
 declare global {
@@ -15,20 +15,7 @@ declare global {
   }
 }
 
-export interface PostDetailSectionProps {
-  post: {
-    slug: string;
-    title: string;
-    author: string;
-    publishedAt: string;
-    htmlContent: string; // マークダウン変換後のHTML
-    description?: string;
-    tags?: string[];
-  };
-  headings: Heading[];
-}
-
-export function PostDetailSection({ post, headings }: PostDetailSectionProps) {
+export function PostDetailSection({ post, headings }: { post: RenderedPost, headings: Heading[] }) {
   // publishedAtをフォーマット
   const formattedDate = new Date(post.publishedAt).toLocaleDateString('ja-JP', {
     year: 'numeric',

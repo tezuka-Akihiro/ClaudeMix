@@ -6,36 +6,18 @@ import PostCard from '~/components/blog/posts/PostCard';
 import Pagination from '~/components/blog/posts/Pagination';
 import { FilterToggleButton } from '~/components/blog/posts/FilterToggleButton';
 import { FilterPanel } from '~/components/blog/posts/FilterPanel';
-import type { PostSummary } from '~/data-io/blog/posts/fetchPosts.server';
+import type { PostsPageData } from '~/specs/blog/types';
 
-interface TagGroup {
-  group: string;
-  tags: string[];
-}
-
-interface PostsSectionProps {
-  posts: PostSummary[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-  };
-  availableCategories: string[];
-  availableTags: string[];
-  tagGroups?: TagGroup[]; // tagGroups を props として受け取る
-  selectedCategory?: string;
-  selectedTags?: string[];
-}
-
-const PostsSection: React.FC<PostsSectionProps> = ({
+const PostsSection: React.FC<PostsPageData> = ({
   posts,
   pagination,
-  availableCategories,
-  availableTags,
-  selectedCategory,
-  tagGroups,
-  selectedTags,
+  availableFilters,
+  selectedFilters,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const { categories: availableCategories, tags: availableTags, tagGroups } = availableFilters;
+  const { category: selectedCategory, tags: selectedTags } = selectedFilters;
 
   return (
     <section className="posts-section" data-testid="posts-section">

@@ -4,15 +4,7 @@
 import { groupTags } from '~/lib/blog/posts/groupTagsByCategory';
 import { getAllPosts } from '~/generated/blog-posts';
 import { loadPostsSpec } from './loadPostsSpec.server';
-
-/**
- * 利用可能なフィルタオプション
- */
-export interface AvailableFilters {
-  categories: string[];
-  tags: string[];
-  tagGroups: { group: string; tags: string[] }[];
-}
+import type { AvailableFilters } from '~/specs/blog/types';
 
 /**
  * 利用可能なフィルタ（カテゴリとタグ）の一覧を取得する
