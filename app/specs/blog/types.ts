@@ -35,6 +35,7 @@ export interface Post {
   description?: string;
   testOnly: boolean;
   content: string;
+  headings: Heading[];
 }
 
 /**

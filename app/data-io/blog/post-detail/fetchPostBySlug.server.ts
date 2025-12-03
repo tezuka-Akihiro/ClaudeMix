@@ -26,11 +26,12 @@ export async function fetchPostBySlug(slug: string): Promise<Post | null> {
 
     // NOTE: 外部ファイル参照機能はビルド時に解決されるため、
     // ランタイムでの外部ファイル読み込みは不要になりました。
-    // すべてのコンテンツはビルド時にバンドルされています。
+    // すべてのコンテンツとメタデータはビルド時にバンドルされています。
     const post: Post = {
       slug: blogPost.slug,
       ...blogPost.frontmatter,
       content: blogPost.content,
+      headings: blogPost.headings,
     };
 
     // Postオブジェクトを返す

@@ -35,7 +35,8 @@ describe('fetchPostBySlug - Data-IO Layer', () => {
         expect(result.title).toBe('このプロジェクトについて');
         expect(result.author).toBe('ClaudeMix Team');
         expect(result.publishedAt).toBe('2025-01-16');
-        expect(result.content).toContain('# このプロジェクトについて');
+        // contentはビルド時にHTML変換済み
+        expect(result.content).toContain('<h1 id="このプロジェクトについて">このプロジェクトについて</h1>');
       }
     });
   });
