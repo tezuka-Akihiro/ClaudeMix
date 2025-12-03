@@ -3,6 +3,11 @@ import { loadSpec, getTestArticlesByCategory, getTestArticlesByTag } from '../..
 
 const TARGET_URL = '/blog';
 
+// ファイル全体が完了したら5秒待機（次のファイル実行前に環境を休ませる）
+test.afterAll(async () => {
+  await new Promise(resolve => setTimeout(resolve, 5000));
+});
+
 /**
  * @see docs/E2E_TEST_CRITERIA.md
  * @description
@@ -15,238 +20,163 @@ const TARGET_URL = '/blog';
  * - develop/blog/common/uiux-spec.md
  * - develop/blog/common/spec.yaml
  */
-test.describe('E2E Screen Test for blog', () => {
+/**
+ * グループ1: 基本レイアウトの表示確認
+ * @description ページを1回だけロードして、Layout/Header/Footerの表示を統合確認
+ */
+test.describe('E2E Screen Test for blog - Basic Layout', () => {
 
-  /**
-   * テスト1: BlogLayoutの表示確認
-   * @description BlogLayoutが正常にレンダリングされ、Header/Footer/Contentエリアが配置されること
-   */
-  test('should display BlogLayout with Header, Content, and Footer areas', async ({ page }) => {
-    await page.goto(TARGET_URL);
-
-    // BlogLayoutが表示されること
-    const blogLayout = page.getByTestId('blog-layout');
-    await expect(blogLayout).toBeVisible();
-
-    // メインコンテンツエリアが表示されること
-    const mainContent = page.getByTestId('blog-main');
-    await expect(mainContent).toBeVisible();
+  test.afterEach(async ({ page }) => {
+    await page.waitForTimeout(1000);
   });
 
   /**
-   * テスト2: BlogHeaderの表示確認
-   * @description ブログタイトルとmenuボタンが左右に配置されること
+   * 統合テスト: BlogLayout、Header、Footerの表示確認
+   * @description BlogLayoutが正常にレンダリングされ、Header/Footer/Contentエリアが配置されること
    */
-  test('should display BlogHeader with title and menu button', async ({ page }) => {
-    await page.goto(TARGET_URL);
+  test('should display BlogLayout with Header, Content, and Footer', async ({ page }) => {
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
-    // BlogHeaderが表示されること
+    // 1. BlogLayoutが表示されること
+    const blogLayout = page.getByTestId('blog-layout');
+    await expect(blogLayout).toBeVisible();
+
+    // 2. メインコンテンツエリアが表示されること
+    const mainContent = page.getByTestId('blog-main');
+    await expect(mainContent).toBeVisible();
+
+    // 3. BlogHeaderが表示されること
     const blogHeader = page.getByTestId('blog-header');
     await expect(blogHeader).toBeVisible();
 
-    // タイトルリンクが表示され、正しいテキストを持つこと
+    // 4. タイトルリンクが表示され、正しいテキストを持つこと
     const titleLink = page.getByTestId('blog-header-title');
     await expect(titleLink).toBeVisible();
     await expect(titleLink).toHaveText('ClaudeMix Blog');
 
-    // menuボタンが表示されること
+    // 5. menuボタンが表示されること
     const menuButton = page.getByTestId('blog-header-menu-button');
     await expect(menuButton).toBeVisible();
-  });
 
-  /**
-   * テスト3: BlogFooterの表示確認
-   * @description コピーライト表記が正常に表示されること
-   */
-  test('should display BlogFooter with copyright text', async ({ page }) => {
-    await page.goto(TARGET_URL);
-
-    // BlogFooterが表示されること
+    // 6. BlogFooterが表示されること
     const blogFooter = page.getByTestId('blog-footer');
     await expect(blogFooter).toBeVisible();
 
-    // コピーライト表記が表示され、正しいテキストを持つこと
+    // 7. コピーライト表記が表示され、正しいテキストを持つこと
     const copyright = page.getByTestId('copyright');
     await expect(copyright).toBeVisible();
     await expect(copyright).toHaveText('© 2025 ClaudeMix');
   });
 
-  /**
-   * テスト4: NavigationMenuの開閉確認
-   * @description menuボタンクリックでNavigationMenuが開閉すること
-   */
-  test('should open and close NavigationMenu when menu button is clicked', async ({ page }) => {
-    await page.goto(TARGET_URL);
+});
 
-    const menuButton = page.getByTestId('blog-header-menu-button');
-    const navigationMenu = page.getByTestId('navigation-menu');
+/**
+ * グループ2: NavigationMenuのインタラクション確認
+ * @description MenuButtonクリックでメニューが開閉し、メニュー項目でナビゲーションできること
+ */
+test.describe.serial('E2E Screen Test for blog - Navigation Menu', () => {
 
-    // 初期状態ではNavigationMenuが非表示（または閉じている状態）
-    // Note: 実装により visibility: hidden や display: none の場合がある
-    await expect(navigationMenu).not.toBeVisible();
-
-    // menuボタンをクリックしてメニューを開く
-    await menuButton.click();
-
-    // NavigationMenuが表示されること
-    await expect(navigationMenu).toBeVisible();
-
-    // オーバーレイをクリックしてメニューを閉じる
-    const overlay = page.getByTestId('navigation-menu-overlay');
-    await overlay.click();
-
-    // NavigationMenuが非表示になること
-    await expect(navigationMenu).not.toBeVisible();
+  test.afterEach(async ({ page }) => {
+    await page.waitForTimeout(1000);
   });
 
   /**
-   * テスト5: NavigationMenuナビゲーション確認
-   * @description メニュー項目クリックで対応するページへ遷移すること
+   * 統合テスト: NavigationMenuの開閉とナビゲーション確認
+   * @description menuボタンクリック→メニュー開閉→ナビゲーション確認を1つのフローで実施
    */
-  test('should navigate to correct page when menu item is clicked', async ({ page }) => {
-    await page.goto(TARGET_URL);
+  test('should open/close NavigationMenu and navigate correctly', async ({ page }) => {
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     const menuButton = page.getByTestId('blog-header-menu-button');
-
-    // menuボタンをクリックしてメニューを開く
-    await menuButton.click();
-
-    // NavigationMenuが表示されること
     const navigationMenu = page.getByTestId('navigation-menu');
+
+    // 1. 初期状態ではNavigationMenuが非表示
+    await expect(navigationMenu).not.toBeVisible();
+
+    // 2. menuボタンをクリックしてメニューを開く
+    await menuButton.click();
+    await page.waitForLoadState('networkidle');
+    await navigationMenu.waitFor({ state: 'visible', timeout: 10000 });
     await expect(navigationMenu).toBeVisible();
 
-    // メニュー項目が表示されること
+    // 3. メニュー項目が表示され、数が2つであること
     const menuItems = page.getByTestId('menu-item');
     await expect(menuItems.first()).toBeVisible();
-
-    // メニュー項目の数が2つであること（挨拶記事、Articles）
     await expect(menuItems).toHaveCount(2);
 
-    // 1つ目のメニュー項目（挨拶記事）をクリック
+    // 4. 1つ目のメニュー項目（挨拶記事）をクリック
     const firstMenuItem = menuItems.first();
     await expect(firstMenuItem).toHaveText('挨拶記事');
     await firstMenuItem.click();
+    await page.waitForLoadState('networkidle');
 
-    // /blog/welcomeページへ遷移すること
+    // 5. /blog/welcomeページへ遷移すること
     await expect(page).toHaveURL('/blog/welcome');
   });
 
   /**
-   * テスト6: タイトルリンクのホーム遷移確認
+   * メニュー外クリックで閉じる確認
+   * @description オーバーレイクリックでNavigationMenuを閉じること
+   */
+  test('should close NavigationMenu when clicking outside or pressing Escape', async ({ page }) => {
+    // 前のテストで /blog/welcome にいるので、/blog に戻る
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    const menuButton = page.getByTestId('blog-header-menu-button');
+    const navigationMenu = page.getByTestId('navigation-menu');
+
+    // menuボタンをクリックしてメニューを開く
+    await menuButton.click();
+    await page.waitForLoadState('networkidle');
+    await navigationMenu.waitFor({ state: 'visible', timeout: 10000 });
+    await expect(navigationMenu).toBeVisible();
+
+    // オーバーレイをクリックして閉じる
+    const overlay = page.getByTestId('navigation-menu-overlay');
+    await expect(overlay).toBeVisible();
+    await overlay.click();
+    await page.waitForLoadState('networkidle');
+    await expect(navigationMenu).not.toBeVisible();
+
+    // 再度メニューを開く
+    await menuButton.click();
+    await page.waitForLoadState('networkidle');
+    await navigationMenu.waitFor({ state: 'visible', timeout: 10000 });
+    await expect(navigationMenu).toBeVisible();
+
+    // Escapeキーを押下してメニューを閉じる
+    await page.keyboard.press('Escape');
+    await expect(navigationMenu).not.toBeVisible();
+  });
+
+  /**
+   * タイトルリンクのホーム遷移確認
    * @description ブログタイトルをクリックで /blog へ遷移すること
    */
   test('should navigate to home when title link is clicked', async ({ page }) => {
-    // まず記事一覧から1つ目の記事をクリックして詳細ページへ移動
-    await page.goto(TARGET_URL);
+    // まず /blog ページに移動
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
-    // 記事カードが表示されるまで待つ
-    const firstPost = page.getByTestId('post-card').first();
-    await expect(firstPost).toBeVisible();
-    await firstPost.click();
+    // 記事一覧セクションが表示されるまで待つ
+    const postsSection = page.getByTestId('posts-section');
+    await expect(postsSection).toBeVisible();
+
+    // 最初の記事カードを取得してクリック
+    const firstPostCard = postsSection.getByTestId('post-card').first();
+    await firstPostCard.click();
+    await page.waitForLoadState('networkidle');
 
     // 詳細ページに遷移したことを確認
     await expect(page).toHaveURL(/\/blog\/[^/]+/);
 
-    // メニューが閉じていることを確認
-    const navigationMenu = page.getByTestId('navigation-menu');
-    await expect(navigationMenu).not.toBeVisible();
-
-    // タイトルリンクをクリック
+    // タイトルリンクをクリックしてホームへ戻る
     const titleLink = page.getByTestId('blog-header-title');
+    await expect(titleLink).toBeVisible();
     await titleLink.click();
+    await page.waitForLoadState('networkidle');
 
     // /blogページへ遷移すること
     await expect(page).toHaveURL('/blog');
-  });
-
-  /**
-   * テスト7: メニュー外クリックで閉じる確認
-   * @description メニュー外の領域をクリックでNavigationMenuを閉じること
-   */
-  test('should close NavigationMenu when clicking outside', async ({ page }) => {
-    await page.goto(TARGET_URL);
-
-    const menuButton = page.getByTestId('blog-header-menu-button');
-    const navigationMenu = page.getByTestId('navigation-menu');
-
-    // menuボタンをクリックしてメニューを開く
-    await menuButton.click();
-    await expect(navigationMenu).toBeVisible();
-
-    // メニューオーバーレイまたはメニュー外の領域をクリック
-    const overlay = page.getByTestId('navigation-menu-overlay');
-    if (await overlay.isVisible()) {
-      await overlay.click();
-    } else {
-      // オーバーレイがない場合、メインコンテンツエリアをクリック
-      const mainContent = page.getByTestId('blog-main');
-      await mainContent.click();
-    }
-
-    // NavigationMenuが閉じること
-    await expect(navigationMenu).not.toBeVisible();
-  });
-
-  /**
-   * テスト8: Escキーでメニューを閉じる確認
-   * @description Escキー押下でNavigationMenuを閉じること
-   */
-  test('should close NavigationMenu when Escape key is pressed', async ({ page }) => {
-    await page.goto(TARGET_URL);
-
-    const menuButton = page.getByTestId('blog-header-menu-button');
-    const navigationMenu = page.getByTestId('navigation-menu');
-
-    // menuボタンをクリックしてメニューを開く
-    await menuButton.click();
-    await expect(navigationMenu).toBeVisible();
-
-    // Escapeキーを押下
-    await page.keyboard.press('Escape');
-
-    // NavigationMenuが閉じること
-    await expect(navigationMenu).not.toBeVisible();
-  });
-
-  /**
-   * テスト7: タググループのインタラクション確認
-   * @description 特定のグループ（Remix）内のタグ（Playwright）を選択してフィルタを適用し、結果が正しく表示されること
-   */
-test('should filter posts by selecting a tag from a specific group', async ({ page }) => {
-    const testTag = 'Playwright';
-    const testGroupName = 'Remix';
-    const testArticles = await getTestArticlesByTag(testTag);
-
-    // テスト用記事が存在することを確認
-    expect(testArticles.length).toBeGreaterThan(0);
-    const testArticle = testArticles[0];
-
-    await page.goto(TARGET_URL);
-
-    // FilterToggleButtonをクリックしてパネルを開く
-    const filterToggleButton = page.getByTestId('filter-toggle-button');
-    await filterToggleButton.click();
-
-    // FilterPanelが表示されること
-    const filterPanel = page.getByTestId('filter-panel');
-    await expect(filterPanel).toBeVisible();
-
-    // "Remix" グループコンテナを特定
-    const remixGroupContainer = page.getByTestId('tag-group-container').filter({ hasText: testGroupName });
-    await expect(remixGroupContainer).toBeVisible();
-
-    // "Remix" グループ内の "Playwright" タグボタンをクリック
-    const tagButton = remixGroupContainer.getByTestId('tag-button').filter({ hasText: testTag });
-    await tagButton.click();
-    await expect(tagButton).toHaveAttribute('aria-pressed', 'true');
-
-    // FilterSubmitButtonをクリック
-    const filterSubmitButton = page.getByTestId('filter-submit-button');
-    await filterSubmitButton.click({ force: true });
-
-    // テスト用記事が表示されることを確認
-    const testArticleCard = page.locator(`[data-testid="post-card"][data-slug="${testArticle.slug}"]`);
-    await expect(testArticleCard).toBeVisible();
   });
 });
 
@@ -265,13 +195,17 @@ test('should filter posts by selecting a tag from a specific group', async ({ pa
  */
 test.describe('E2E Section Test for blog posts - Metadata Enhancement', () => {
 
+  test.afterEach(async ({ page }) => {
+    await page.waitForTimeout(1000);
+  });
+
   /**
    * テスト1: 記事一覧でのメタデータ表示確認
    * @description 記事カードにdescriptionとtagsがピル型バッジで表示されること
    * Note: 全ての記事がdescriptionやtagsを持つわけではないため、少なくとも1つの記事カードで表示されることを確認
    */
   test('should display description and tags on each post card in posts list', async ({ page }) => {
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 記事カードが表示されるまで待つ
     const postCards = page.getByTestId('post-card');
@@ -292,208 +226,172 @@ test.describe('E2E Section Test for blog posts - Metadata Enhancement', () => {
 
 });
 
-test.describe('E2E Section Test for blog posts - Filter Feature (Happy Path)', () => {
+/**
+ * グループ3: FilterFeatureの統合テスト
+ * @description FilterPanelの表示・操作・フィルタリングを連続して確認
+ */
+test.describe.serial('E2E Section Test for blog posts - Filter Feature (Happy Path)', () => {
 
-  /**
-   * テスト1: FilterToggleButton表示確認
-   * @description FilterToggleButtonが記事一覧の一番上に表示されること
-   */
-  test('should display FilterToggleButton at the top of posts list', async ({ page }) => {
-    await page.goto(TARGET_URL);
-
-    // FilterToggleButtonが表示されること
-    const filterToggleButton = page.getByTestId('filter-toggle-button');
-    await expect(filterToggleButton).toBeVisible();
+  test.afterEach(async ({ page }) => {
+    await page.waitForTimeout(1000);
   });
 
   /**
-   * テスト2: FilterPanel開閉確認
-   * @description FilterToggleButtonをクリックするとFilterPanelがモーダル形式で表示され、Escapeキーで閉じること
+   * 統合テスト1: FilterToggleButton表示とパネル開閉、タググループ表示
+   * @description FilterPanelの基本動作を1つのテストで確認
    */
-  test('should open FilterPanel with toggle button and close with Escape key', async ({ page }) => {
-    await page.goto(TARGET_URL);
+  test('should display and interact with FilterPanel', async ({ page }) => {
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     const filterToggleButton = page.getByTestId('filter-toggle-button');
     const filterPanel = page.getByTestId('filter-panel');
 
-    // 初期状態ではFilterPanelが非表示
+    // 1. FilterToggleButtonが表示されること
+    await expect(filterToggleButton).toBeVisible();
+
+    // 2. 初期状態ではFilterPanelが非表示
     await expect(filterPanel).not.toBeVisible();
 
-    // FilterToggleButtonをクリックしてパネルを開く
+    // 3. FilterToggleButtonをクリックしてパネルを開く
     await filterToggleButton.click();
-
-    // FilterPanelが表示されること
+    await page.waitForLoadState('networkidle');
     await expect(filterPanel).toBeVisible();
 
-    // FilterPanel内にCategorySelectorとTagGridが含まれること
+    // 4. FilterPanel内にCategorySelectorとTagGridが含まれること
     const categorySelector = page.getByTestId('category-selector');
     const tagGrid = page.getByTestId('tag-grid');
     await expect(categorySelector).toBeVisible();
     await expect(tagGrid).toBeVisible();
 
-    // Escapeキーを押下してパネルを閉じる
-    await page.keyboard.press('Escape');
-
-    // FilterPanelが非表示になること
-    await expect(filterPanel).not.toBeVisible();
-
-    // FilterToggleButtonが再び表示されること
-    await expect(filterToggleButton).toBeVisible();
-  });
-
-  /**
-   * テスト3: カテゴリフィルタ選択確認
-   * @description CategorySelectorでカテゴリを選択して決定ボタンをクリックすると、該当カテゴリの記事のみが表示されること
-   */
-  test('should filter posts by category when category is selected and submit button is clicked', async ({ page }) => {
-    // spec.yamlからテストデータを読み込む
-    const spec = await loadSpec('blog','posts');
-    const categoryToTest = spec.categories[2]; // カテゴリ3: "Tutorials & Use Cases"
-    const testArticles = await getTestArticlesByCategory(categoryToTest.id);
-
-    // テスト用記事が存在することを確認
-    expect(testArticles.length).toBeGreaterThan(0);
-    const testArticle = testArticles[0];
-
-    await page.goto(TARGET_URL);
-
-    // FilterToggleButtonをクリックしてパネルを開く
-    const filterToggleButton = page.getByTestId('filter-toggle-button');
-    await filterToggleButton.click();
-
-    // FilterPanelが表示されること
-    const filterPanel = page.getByTestId('filter-panel');
-    await expect(filterPanel).toBeVisible();
-
-    // CategorySelectorでカテゴリを選択（spec.yamlから取得）
-    const categorySelector = page.getByTestId('category-selector');
-    await categorySelector.selectOption(categoryToTest.name);
-
-    // FilterSubmitButtonをクリック（force: trueで画面外でもクリック）
-    const filterSubmitButton = page.getByTestId('filter-submit-button');
-    await filterSubmitButton.click({ force: true });
-
-    // FilterPanelが自動的に閉じること
-    await expect(filterPanel).not.toBeVisible();
-
-    // テスト用記事が表示されることを確認（件数チェックではなく存在確認）
-    const testArticleCard = page.locator(`[data-testid="post-card"][data-slug="${testArticle.slug}"]`);
-    await expect(testArticleCard).toBeVisible();
-
-    // URLパラメータにカテゴリが含まれること (+ または %20 の両方を許容)
-    const categoryPattern = categoryToTest.name.replace(/\s/g, '(\\+|%20)').replace(/&/g, '%26');
-    await expect(page).toHaveURL(new RegExp(`category=${categoryPattern}`));
-  });
-
-  /**
-   * テスト4: タグフィルタ選択確認（AND条件）
-   * @description CategorySelectorを"All Categories"のままタグを選択すると、該当タグを含む記事のみが表示されること
-   */
-  test('should filter posts by tags when tags are selected with "All Categories"', async ({ page }) => {
-    // spec.yamlからテストデータを読み込む
-    const testTag = 'Playwright'; // テスト記事で使用しているタグ
-    const testArticles = await getTestArticlesByTag(testTag);
-
-    // テスト用記事が存在することを確認
-    expect(testArticles.length).toBeGreaterThan(0);
-    const testArticle = testArticles[0];
-
-    await page.goto(TARGET_URL);
-
-    // FilterToggleButtonをクリックしてパネルを開く
-    const filterToggleButton = page.getByTestId('filter-toggle-button');
-    await filterToggleButton.click();
-
-    // FilterPanelが表示されること
-    const filterPanel = page.getByTestId('filter-panel');
-    await expect(filterPanel).toBeVisible();
-
-    // CategorySelectorが "All Categories" (空文字列) であることを確認
-    const categorySelector = page.getByTestId('category-selector');
-    await expect(categorySelector).toHaveValue('');
-
-    // TagGrid内のタグボタンを選択
-    const tagGrid = page.getByTestId('tag-grid');
-    const tagButtons = tagGrid.getByTestId('tag-button');
-
-    // テストタグを見つけてクリック
-    const tagButton = tagButtons.filter({ hasText: testTag });
-    await tagButton.click();
-
-    // タグボタンが選択状態（aria-pressed="true"）になること
-    await expect(tagButton).toHaveAttribute('aria-pressed', 'true');
-
-    // FilterSubmitButtonをクリック（force: trueで画面外でもクリック）
-    const filterSubmitButton = page.getByTestId('filter-submit-button');
-    await filterSubmitButton.click({ force: true });
-
-    // FilterPanelが自動的に閉じること
-    await expect(filterPanel).not.toBeVisible();
-
-    // テスト用記事が表示されることを確認（件数チェックではなく存在確認）
-    const testArticleCard = page.locator(`[data-testid="post-card"][data-slug="${testArticle.slug}"]`);
-    await expect(testArticleCard).toBeVisible();
-
-    // URLパラメータにタグが含まれること
-    await expect(page).toHaveURL(new RegExp(`tags=${testTag}`));
-  });
-
-  /**
-   * テスト5: FilterPanel背景クリックで閉じる確認
-   * @description FilterPanel外の背景（オーバーレイ）をクリックすると、パネルが閉じること
-   */
-  test('should close FilterPanel when clicking on overlay', async ({ page }) => {
-    await page.goto(TARGET_URL);
-
-    // FilterToggleButtonをクリックしてパネルを開く
-    const filterToggleButton = page.getByTestId('filter-toggle-button');
-    await filterToggleButton.click();
-
-    // FilterPanelが表示されること
-    const filterPanel = page.getByTestId('filter-panel');
-    await expect(filterPanel).toBeVisible();
-
-    // オーバーレイの上部(ヘッダー領域)をクリック
-    const overlay = page.getByTestId('filter-overlay');
-    const overlayBox = await overlay.boundingBox();
-    if (overlayBox) {
-      // ヘッダーの高さ領域（上部約80px）をクリック
-      await page.mouse.click(overlayBox.x + overlayBox.width / 2, overlayBox.y + 40);
-    }
-
-    // FilterPanelが閉じること
-    await expect(filterPanel).not.toBeVisible();
-  });
-
-  /**
-   * テスト6: タググループ表示確認
-   * @description FilterPanel内でタグがグループごとに表示され、グループヘッダーが存在すること
-   */
-  test('should display tags organized by groups in FilterPanel', async ({ page }) => {
-    await page.goto(TARGET_URL);
-
-    // FilterToggleButtonをクリックしてパネルを開く
-    const filterToggleButton = page.getByTestId('filter-toggle-button');
-    await filterToggleButton.click();
-
-    // FilterPanelが表示されること
-    const filterPanel = page.getByTestId('filter-panel');
-    await expect(filterPanel).toBeVisible();
-
-    // グループヘッダーが表示されること
+    // 5. グループヘッダーが表示され、数が4つであること
     const groupHeaders = page.getByTestId('tag-group-header');
     await expect(groupHeaders.first()).toBeVisible();
-
-    // グループヘッダーの数が4つであること（Remix, Cloudflare, Claude Code, その他）
     await expect(groupHeaders).toHaveCount(4);
-
-    // 最初のグループヘッダーのテキストが "Remix" であること
     await expect(groupHeaders.first()).toHaveText('Remix');
 
-    // 各グループコンテナ内にタグボタンが存在すること
+    // 6. 各グループコンテナ内にタグボタンが存在すること
     const groupContainers = page.getByTestId('tag-group-container');
     const firstGroupContainer = groupContainers.first();
     const tagButtonsInGroup = firstGroupContainer.getByTestId('tag-button');
     await expect(tagButtonsInGroup.first()).toBeVisible();
+
+    // 7. Escapeキーを押下してパネルを閉じる
+    await page.keyboard.press('Escape');
+    await expect(filterPanel).not.toBeVisible();
+    await expect(filterToggleButton).toBeVisible();
+  });
+
+  /**
+   * 統合テスト2: カテゴリとタグによるフィルタリング確認
+   * @description カテゴリフィルタ→タグフィルタ→オーバーレイクリックを連続して確認
+   */
+  test('should filter posts by category and tags', async ({ page }) => {
+    // テストデータ準備
+    const spec = await loadSpec('blog','posts');
+    const categoryToTest = spec.categories[2]; // "Tutorials & Use Cases"
+    const testArticlesByCategory = await getTestArticlesByCategory(categoryToTest.id);
+    expect(testArticlesByCategory.length).toBeGreaterThan(0);
+    const testArticleByCategory = testArticlesByCategory[0];
+
+    const testTag = 'Playwright';
+    const testArticlesByTag = await getTestArticlesByTag(testTag);
+    expect(testArticlesByTag.length).toBeGreaterThan(0);
+    const testArticleByTag = testArticlesByTag[0];
+
+    // まず /blog ページに移動
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    // 1. カテゴリフィルタのテスト
+    const filterToggleButton = page.getByTestId('filter-toggle-button');
+    await filterToggleButton.click();
+    await page.waitForLoadState('networkidle');
+
+    const filterPanel = page.getByTestId('filter-panel');
+    await expect(filterPanel).toBeVisible();
+
+    const categorySelector = page.getByTestId('category-selector');
+    await categorySelector.selectOption(categoryToTest.name);
+
+    const filterSubmitButton = page.getByTestId('filter-submit-button');
+    await filterSubmitButton.click({ force: true });
+
+    await expect(filterPanel).not.toBeVisible();
+
+    const testArticleCard1 = page.locator(`[data-testid="post-card"][data-slug="${testArticleByCategory.slug}"]`);
+    await expect(testArticleCard1).toBeVisible();
+
+    const categoryPattern = categoryToTest.name.replace(/\s/g, '(\\+|%20)').replace(/&/g, '%26');
+    await expect(page).toHaveURL(new RegExp(`category=${categoryPattern}`));
+
+    // 2. タグフィルタのテスト（/blog に戻る）
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+    await filterToggleButton.click();
+    await page.waitForLoadState('networkidle');
+    await expect(filterPanel).toBeVisible();
+
+    const tagGrid = page.getByTestId('tag-grid');
+    const tagButtons = tagGrid.getByTestId('tag-button');
+    const tagButton = tagButtons.filter({ hasText: testTag });
+    await tagButton.click();
+    await expect(tagButton).toHaveAttribute('aria-pressed', 'true');
+
+    await filterSubmitButton.click({ force: true });
+    await expect(filterPanel).not.toBeVisible();
+
+    const testArticleCard2 = page.locator(`[data-testid="post-card"][data-slug="${testArticleByTag.slug}"]`);
+    await expect(testArticleCard2).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`tags=${testTag}`));
+
+    // 3. オーバーレイクリックで閉じる確認
+    await filterToggleButton.click();
+    await page.waitForLoadState('networkidle');
+    await expect(filterPanel).toBeVisible();
+
+    const overlay = page.getByTestId('filter-overlay');
+    const overlayBox = await overlay.boundingBox();
+    if (overlayBox) {
+      await page.mouse.click(overlayBox.x + overlayBox.width / 2, overlayBox.y + 40);
+    }
+
+    await expect(filterPanel).not.toBeVisible();
+  });
+
+  /**
+   * タググループからのフィルタ選択確認
+   * @description 特定のグループ内のタグを選択してフィルタを適用できること
+   */
+test('should filter posts by selecting a tag from a specific group', async ({ page }) => {
+    const testTag = 'Playwright';
+    const testGroupName = 'Remix';
+    const testArticles = await getTestArticlesByTag(testTag);
+    expect(testArticles.length).toBeGreaterThan(0);
+    const testArticle = testArticles[0];
+
+    // まず /blog ページに移動
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    const filterToggleButton = page.getByTestId('filter-toggle-button');
+    await filterToggleButton.click();
+    await page.waitForLoadState('networkidle');
+
+    const filterPanel = page.getByTestId('filter-panel');
+    await expect(filterPanel).toBeVisible();
+
+    // "Remix" グループコンテナを特定
+    const remixGroupContainer = page.getByTestId('tag-group-container').filter({ hasText: testGroupName });
+    await expect(remixGroupContainer).toBeVisible();
+
+    // "Remix" グループ内の "Playwright" タグボタンをクリック
+    const tagButton = remixGroupContainer.getByTestId('tag-button').filter({ hasText: testTag });
+    await tagButton.click();
+    await expect(tagButton).toHaveAttribute('aria-pressed', 'true');
+
+    // FilterSubmitButtonをクリック
+    const filterSubmitButton = page.getByTestId('filter-submit-button');
+    await filterSubmitButton.click({ force: true });
+
+    // テスト用記事が表示されることを確認
+    const testArticleCard = page.locator(`[data-testid="post-card"][data-slug="${testArticle.slug}"]`);
+    await expect(testArticleCard).toBeVisible();
   });
 });

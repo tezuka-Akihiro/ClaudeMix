@@ -17,7 +17,7 @@
     "test:e2e:headed": "playwright test --headed -c tests/e2e/playwright.config.ts",
     "test:e2e:debug": "playwright test --debug -c tests/e2e/playwright.config.ts",
     "test:e2e:report": "playwright show-report --config tests/e2e/playwright.config.ts",
-    "dev": "remix vite:dev",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 remix vite:dev",
     "start": "cross-env NODE_ENV=production node ./server.js",
     "typecheck": "tsc && tsc -p tests/e2e/tsconfig.json",
     "typecheck:e2e": "tsc -p tests/e2e/tsconfig.json",

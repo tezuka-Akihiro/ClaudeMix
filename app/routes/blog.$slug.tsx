@@ -48,7 +48,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 
   // マークダウンをHTMLに変換
-  const htmlContent = convertMarkdownToHtml(post.content);
+  const htmlContent = await convertMarkdownToHtml(post.content);
 
   // 見出しを抽出（目次用）
   const headings = extractHeadings(post.content);

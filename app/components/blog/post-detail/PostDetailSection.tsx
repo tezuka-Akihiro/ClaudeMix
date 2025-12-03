@@ -9,7 +9,8 @@ import type { Heading } from '~/lib/blog/post-detail/extractHeadings';
 declare global {
   interface Window {
     mermaid?: {
-      contentLoaded: () => void;
+      run: (config?: { querySelector?: string }) => Promise<void>;
+      initialize: (config: unknown) => void;
     };
   }
 }
@@ -38,10 +39,12 @@ export function PostDetailSection({ post, headings }: PostDetailSectionProps) {
   useEffect(() => {
     // window.mermaidが利用可能かチェック
     if (typeof window !== 'undefined' && window.mermaid) {
-      // Mermaid図を再レンダリング
-      window.mermaid.contentLoaded();
+      // Mermaid v11 の正しい API を使用
+      window.mermaid.run({
+        querySelector: '.mermaid',
+      });
     }
-  }, [post.htmlContent]);
+  }, []); // 空配列: コンポーネントマウント時のみ実行
 
   return (
     <article
