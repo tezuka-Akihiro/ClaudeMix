@@ -5,9 +5,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { fetchPostBySlug } from "~/data-io/blog/post-detail/fetchPostBySlug.server";
-import { convertMarkdownToHtml } from "~/lib/blog/post-detail/markdownConverter";
-import { extractHeadings } from "~/lib/blog/post-detail/extractHeadings";
-import type { Heading } from "~/lib/blog/post-detail/extractHeadings";
+import type { Heading } from "~/specs/blog/types";
 import { PostDetailSection } from "~/components/blog/post-detail/PostDetailSection";
 import BlogLayout from "~/components/blog/common/BlogLayout";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
@@ -47,11 +45,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
     throw new Response("Referenced file not found", { status: 500 });
   }
 
-  // マークダウンをHTMLに変換
-  const htmlContent = await convertMarkdownToHtml(post.content);
-
-  // 見出しを抽出（目次用）
-  const headings = extractHeadings(post.content);
+  // NOTE: コンテンツはビルド時にHTML変換済み、見出しもビルド時に抽出済み
+  const htmlContent = post.content;
+  const headings = post.headings;
 
   // ブログ設定を取得
   const config = await loadBlogConfig();
