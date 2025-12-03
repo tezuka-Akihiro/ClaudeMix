@@ -14,17 +14,175 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
 import yaml from 'js-yaml';
+import { Marked } from 'marked';
+import sanitizeHtml from 'sanitize-html';
+import { createHighlighter } from 'shiki/bundle/full';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.join(__dirname, '../..');
 
+// Shikiハイライター（グローバルシングルトン）
+let highlighter = null;
+const theme = 'github-dark';
+
 /**
- * ブログ記事を生成する
+ * slugify - 見出しテキストをURLセーフなIDに変換
+ */
+function slugify(text) {
+  if (!text) return "";
+  return text.toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/**
+ * extractHeadings - マークダウンから見出しを抽出
+ */
+function extractHeadings(markdown) {
+  const headings = [];
+  const lines = markdown.split("\n");
+  let inCodeBlock = false;
+  const codeBlockDelimiter = /^```/;
+  const headingRegex = /^(#{2})\s+(.+)$/;
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    if (codeBlockDelimiter.test(trimmedLine)) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+    if (inCodeBlock) continue;
+
+    const match = headingRegex.exec(trimmedLine);
+    if (match) {
+      const level = match[1].length;
+      const text = match[2].trim();
+      const id = slugify(text);
+      headings.push({ level, text, id });
+    }
+  }
+  return headings;
+}
+
+/**
+ * getHighlighter - Shikiハイライターを初期化（シングルトン）
+ */
+async function getHighlighter() {
+  if (!highlighter) {
+    console.log('⚡ Initializing Shiki highlighter...');
+    highlighter = await createHighlighter({
+      themes: [theme],
+      langs: ['javascript', 'typescript', 'html', 'css', 'markdown', 'bash', 'json', 'tsx', 'diff', 'yaml', 'xml'],
+    });
+    console.log('✅ Shiki highlighter ready');
+  }
+  return highlighter;
+}
+
+/**
+ * convertMarkdownToHtml - マークダウンをHTMLに変換
+ */
+async function convertMarkdownToHtml(markdown) {
+  const marked = new Marked(); // 変換ごとに新しいインスタンスを生成
+  const hl = await getHighlighter();
+
+  const renderer = {
+    image({ href, title, text }) {
+      const src = href ?? '';
+      const alt = text || '';
+      const titleAttr = title ? `title="${title}"` : '';
+      return `<img src="${src}" alt="${alt}" ${titleAttr} loading="lazy" style="max-width: 100%; height: auto;" />`;
+    },
+    heading({ text, depth: level }) {
+      const id = slugify(text);
+      return `<h${level} id="${id}">${text}</h${level}>\n`;
+    },
+    code({ text }) {
+      return text;
+    },
+  };
+
+  const walkTokens = (token) => {
+    if (token.type === 'code') {
+      const lang = token.lang || 'text';
+      if (lang === 'mermaid') {
+        const unescapedCode = token.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        token.text = `<pre class="mermaid">${unescapedCode}</pre>`;
+        token.escaped = true;
+      } else {
+        try {
+          token.text = hl.codeToHtml(token.text, { lang, theme });
+          token.escaped = true;
+        } catch (error) {
+          // サポートされていない言語はtextにフォールバック
+          console.warn(`   ⚠️  Language "${lang}" not supported, using plain text`);
+          token.text = hl.codeToHtml(token.text, { lang: 'text', theme });
+          token.escaped = true;
+        }
+      }
+    }
+  };
+
+  marked.use({ gfm: true, breaks: true, renderer, walkTokens, async: true });
+  const rawHtml = await marked.parse(markdown);
+
+  return sanitizeHtml(rawHtml, {
+    allowedTags: ['h1','h2','h3','h4','h5','h6','p','br','ul','ol','li','pre','code','blockquote','a','img','div','span','strong','em','b','i','table','thead','tbody','tr','th','td'],
+    allowedAttributes: {
+      'a': ['href','target','rel'],
+      'img': ['src','alt','title','loading','style'],
+      'code': ['class','style'],
+      'pre': ['class','style'],
+      'div': ['class','style'],
+      'span': ['class','style'],
+      'h1': ['id'], 'h2': ['id'], 'h3': ['id'], 'h4': ['id'], 'h5': ['id'], 'h6': ['id'],
+    },
+    allowedClasses: {
+      'pre': ['mermaid', 'shiki', theme],
+      'code': ['language-*', 'has-line-numbers'],
+      'span': ['line'],
+      'div': ['class'],
+    },
+    allowedStyles: {
+      '*': {
+        'color': [/^#[0-9a-fA-F]{3,6}$/],
+        'background-color': [/^#[0-9a-fA-F]{3,6}$/],
+        'background': [/^#[0-9a-fA-F]{3,6}$/],
+        'font-style': [/^(italic|normal)$/],
+        'font-weight': [/^(bold|normal|\d+)$/],
+        'text-decoration': [/.*/],
+        'max-width': [/^\d+%?$/],
+        'height': [/^auto$/],
+      },
+    },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    transformTags: {
+      'a': (tagName, attribs) => {
+        const href = attribs.href || '';
+        if (href.startsWith('http://') || href.startsWith('https://')) {
+          return {
+            tagName,
+            attribs: { ...attribs, target: '_blank', rel: 'noopener noreferrer' },
+          };
+        }
+        return { tagName, attribs };
+      },
+    },
+  });
+}
+
+/**
+ * ブログ記事を生成する（順次処理版）
  */
 async function generateBlogPosts() {
   try {
     console.log('🚀 Starting blog posts generation...');
+
+    // 並列処理の前にハイライターを一度だけ初期化する
+    await getHighlighter();
 
     // 1. Markdownファイルを読み込む
     const postsDir = path.join(rootDir, 'content/blog/posts');
@@ -73,6 +231,16 @@ async function generateBlogPosts() {
           }
         }
 
+        // ビルド時にHTML変換と見出し抽出（並列処理）
+        const startTime = Date.now();
+        console.log(`   🔄 Converting: ${slug}`);
+
+        const headings = extractHeadings(finalContent);
+        const htmlContent = await convertMarkdownToHtml(finalContent);
+
+        const duration = Date.now() - startTime;
+        console.log(`   ✅ Completed: ${slug} (${duration}ms)`);
+
         return {
           slug,
           frontmatter: {
@@ -86,7 +254,8 @@ async function generateBlogPosts() {
             description: data.description || undefined,
             testOnly: data.testOnly === true,
           },
-          content: finalContent,
+          content: htmlContent,
+          headings,
         };
       })
     );
@@ -151,10 +320,17 @@ export interface BlogPostFrontmatter {
   testOnly: boolean; // テスト専用記事フラグ（本番環境では除外）
 }
 
+export interface Heading {
+  level: number;
+  text: string;
+  id: string;
+}
+
 export interface BlogPost {
   slug: string;
   frontmatter: BlogPostFrontmatter;
-  content: string; // マークダウン形式
+  content: string; // HTML形式（ビルド時にマークダウンから変換済み）
+  headings: Heading[]; // 目次用見出し（ビルド時に抽出済み）
 }
 
 export interface Category {

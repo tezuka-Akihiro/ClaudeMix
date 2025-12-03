@@ -28,9 +28,9 @@ html {
   --color-background-muted: #666666;
 
   /* --- Text (テキスト) --- */
-  --color-text-primary: #969696;
-  --color-text-secondary: #7d7d7d;
-  --color-text-muted: #646464;
+  --color-text-primary: #b9b6b6;
+  --color-text-secondary: #d4d4d4;
+  --color-text-muted: #999999;
   --color-text-disabled: #9ca3af;
 
   /* --- Accent (アクセント) --- */
@@ -152,7 +152,6 @@ html {
   --z-index-menu: 1000;
   --z-index-modal-overlay: 1500;
   --z-index-modal: 1510;
-  --z-index-modal-controls: 1520;
 
   /* --- Opacity (不透明度) --- */
   --opacity-disabled: 0.5;

@@ -3,13 +3,9 @@
 
 import React from 'react';
 import { Link } from '@remix-run/react';
+import type { PaginationInfo } from '~/specs/blog/types';
 
-export interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-}
-
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages }) => {
+const Pagination: React.FC<Pick<PaginationInfo, 'currentPage' | 'totalPages'>> = ({ currentPage, totalPages }) => {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   // 表示するページ番号を制限（現在ページ ±2）

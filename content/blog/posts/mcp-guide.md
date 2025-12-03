@@ -2,7 +2,7 @@
 slug: "mcp-guide"
 title: "AI開発の未来を変える「MCP」とは？ Claudeと開発ツールを連携させる新常識"
 author: "ClaudeMix Team"
-publishedAt: "2024-07-27"
+publishedAt: "2025-11-16"
 category: "Claude Best Practices"
 description: "AIとの開発、まだ手作業で消耗していませんか？本記事では、AIが自律的に開発ツールを操作する未来を実現する「Model Context Protocol (MCP)」を徹底解説。ClaudeMixでの具体的な活用事例も紹介します。"
 tags: ["MCP", "architecture"]

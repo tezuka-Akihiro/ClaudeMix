@@ -23,6 +23,13 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    hmr: {
+      overlay: false,  // エラーオーバーレイを無効化（リソース削減）
+    },
+    watch: {
+      // ファイル監視の負荷を軽減
+      ignored: ['**/node_modules/**', '**/test-results/**', '**/playwright-report/**']
+    }
   },
   build: {
     rollupOptions: {

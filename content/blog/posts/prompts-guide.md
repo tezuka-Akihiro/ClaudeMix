@@ -2,12 +2,14 @@
 slug: "prompts-guide"
 title: "claude prompts 公式まとめ"
 author: "ClaudeMix Team"
-publishedAt: "2025-01-16"
+publishedAt: "2025-11-16"
 category: "Claude Best Practices"
+description: "Claudeから質の高い出力を得るための「プロンプトエンジニアリング」公式ガイドを要約。明確性の原則から思考の連鎖（CoT）、XMLタグの活用まで、推奨される技術階層を具体的な実装例と共に解説します。"
+tags: ["Prompts"]
 ---
 # Claude Prompts 公式ガイド要約
 
-**収集日**: 2025-01-18
+
 **ソース**: https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview
 
 ## 1. プロンプトエンジニアリングとは

@@ -5,7 +5,7 @@ description: "社内向け技術リファレンスを外部向けブログ記事
 author: "ClaudeMix Team"
 publishedAt: "YYYY-MM-DD"
 category: "ClaudeMix Philosophy"
-tags: ["Claude", "Remix","claudeflare"] # General tags for this template itself
+tags: [] # app\specs\blog\posts-spec.yaml
 ---
 ルール：
 - **文体**：ですます調で統一してください。

@@ -17,7 +17,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. PostDetailSectionが表示されること
     await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
@@ -57,7 +57,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. Mermaid図が含まれているか確認（preタグにmermaidクラス）
     const mermaidElement = page.locator('pre.mermaid');
@@ -79,7 +79,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. コードブロックが存在するか確認
     const codeBlock = page.locator('pre code');
@@ -103,7 +103,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. 画像が存在するか確認
     const image = page.locator('img').first();
@@ -123,7 +123,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. 画像が存在するか確認
     const image = page.locator('img').first();
@@ -144,7 +144,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${NON_EXISTENT_SLUG}`;
 
     // 1. 存在しない記事にアクセス
-    const response = await page.goto(TARGET_URL);
+    const response = await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. HTTPステータスコードが404であること
     expect(response?.status()).toBe(404);
@@ -166,7 +166,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 参照記事にアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. 記事が正常に表示される
     await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
@@ -202,7 +202,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. 目次コンテナが表示される
     const tocContainer = page.locator('[data-testid="table-of-contents"]');
@@ -228,7 +228,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. 目次リンクを取得
     const tocLink = page.locator('[data-testid="toc-link"]').first();
@@ -259,7 +259,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL);
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. 記事コンテンツ内の見出し要素を取得（階層定義: func-spec.md参照）
     const contentElement = page.locator('[data-testid="post-content"]');

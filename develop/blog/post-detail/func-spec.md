@@ -35,53 +35,26 @@
    - **制約**: 参照元ファイル内の画像（相対パス）は正しく表示されない可能性がある（画像非対応）
 
 **開発戦略: 段階的強化 (Progressive Enhancement)**:
-1. **ステップ1: モック実装 (UIの確立)** - UI層はまず、固定値や単純なPropsを用いて「ガワ」を実装します。この段階では、`loader`や`action`からの実データ連携は行いません
-2. **ステップ2: 機能強化 (ロジックの接続)** - モック実装されたUIに、`loader`からの実データや`action`の処理を接続し、完全な機能として仕上げます
+1.  **ステップ1: モック実装 (UIの確立)** - UI層はまず、固定値や単純なPropsを用いて「ガワ」を実装します。この段階では、`loader`や`action`からの実データ連携は行いません
+2.  **ステップ2: 機能強化 (ロジックの接続)** - モック実装されたUIに、`loader`からの実データや`action`の処理を接続し、完全な機能として仕上げます
 
-## 🔄 データフロー・処理（3大層分離アーキテクチャ）
 
-**入力データ**:
-~~~typescript
-// URLパラメータからslugを受け取る
-type LoaderParams = {
-  slug: string; // 記事を識別するURL識別子（例: "remix-tips-2024"）
-};
-~~~
+### 🏛️ アーキテクチャ方針: クロスランタイム対応
 
-**出力データ**:
-~~~typescript
-// frontmatterの型定義（参照機能追加により拡張）
-type PostFrontmatter = {
-  title: string;
-  description: string;  // 必須化（SEO対応）
-  publishedAt: string;
-  author: string;
-  tags: string[];       // タグ配列（多次元分類用）
-  source?: string;      // 参照元ファイルパス（プロジェクトルートからの相対パス、例: "/README.md"）
-};
+- **目的**: Remixの「Write Once, Run Anywhere」の思想に基づき、Node.js環境だけでなく、Cloudflare Workersのようなエッジランタイムでもアプリケーションが動作するよう設計する
+- **基本戦略**: 本ブログ機能においては、パフォーマンス最適化のため、マークダウンからHTMLへの変換は**ビルド時（プレビルド）**に実行されることを基本戦略とする。
+- **マークダウン変換処理**:
+  - マークダウンからHTMLへの変換処理（`app/lib`層）は、特定のランタイム（例: Node.js）に依存しない純粋なJavaScript/TypeScriptで実装する
+  - これにより、ビルド時変換、Node.jsサーバーでのリクエスト時レンダリング、エッジでのリクエスト時レンダリングなど、多様なデプロイ戦略に柔軟に対応可能となるが、**本機能ではビルド時変換を主とする**。
+  - 使用するライブラリ（例: `shiki`）は、エッジ環境での動作互換性を考慮して選定、または設定を行う
 
-// loaderがUIに返すデータの型定義
-type PostDetailData = {
-  title: string;        // 記事タイトル
-  description: string;  // 記事の要約（SEO・OGP用）
-  content: string;      // マークダウン形式の記事本文
-  publishedAt: string;  // 投稿日（ISO 8601形式）
-  author: string;       // 著者名
-  slug: string;         // URL識別子
-  tags: string[];       // タグ配列（カテゴリに対する詳細分類）
-};
-~~~
 
-**app/components要件（app/routes, app/components）**:
+### app/components要件（app/routes, app/components）
 
 *Route責務* (`app/routes/blog.$slug.tsx`):
 - URLパラメータ（slug）を取得し、loaderでデータ取得を実行
-- data-io層から記事データ（frontmatter含む）を取得
-- frontmatterの`source`プロパティをチェック
-  - **sourceが指定されていない場合**: 記事ファイル本文をそのまま使用
-  - **sourceが指定されている場合**: data-io層で外部ファイルを読み込む
-- lib層でマークダウンをHTMLに変換
-- 変換後のデータをComponentに渡す
+- data-io層を介して、**ビルド時に生成された記事データ**（HTML変換済みコンテンツ、見出し情報を含む）を取得する
+- 取得したデータをコンポーネントに渡す
 - **meta関数の実装** (`export const meta: MetaFunction<typeof loader>`):
   - loaderから返された`PostDetailData`を使用してメタデータを生成
   - 返すメタデータ:
@@ -96,7 +69,7 @@ type PostDetailData = {
   - フォールバック: `data`が存在しない場合（404エラー等）は空配列`[]`を返す
 - エラーハンドリング
   - 記事が存在しない場合は404
-  - 参照先ファイルが存在しない場合は500エラー
+  - **ビルド時エラーのハンドリング**: 外部参照ファイルが見つからないなど、コンテンツ生成時の問題はビルドプロセスで検知する。`loader`は、ビルド済みデータが存在しない場合に404を返す責務に集中する
 
 *Component責務* (`app/components/blog/post-detail/PostDetailSection.tsx`):
 - 記事詳細情報（タイトル、投稿日、著者、本文）を表示
@@ -105,11 +78,12 @@ type PostDetailData = {
 - **Mermaidクライアント側レンダリング**: useEffectでMermaid.jsライブラリを初期化し、クラス付与されたMermaidコードブロックをSVG図表に変換
 - 共通レイアウト（ヘッダー・フッター）を含む全体構成
 
-**🧠 純粋ロジック要件（app/lib）**:
+### 🧠 純粋ロジック要件（app/lib）
 
 *マークダウン変換処理* (`app/lib/blog/post-detail/markdownConverter.ts`):
 - 入力: マークダウン形式の文字列
 - 出力: HTML形式の文字列
+- **実行タイミング**: 主にビルド時（プレビルド）に実行され、マークダウンファイルをHTMLコンテンツに変換し、永続化されることを想定する。
 - 責務: マークダウンをHTMLに変換する純粋な処理（副作用なし）
 - XSS対策のため、安全なHTMLのみを生成
 - **画像データ処理**: マークダウン内の画像記法（`![alt](path)`）を適切なHTMLの`<img>`タグに変換
@@ -138,25 +112,15 @@ type PostDetailData = {
 - 出力: URLセーフなスラグ文字列
 - 責務: 日本語テキストをそのままIDとして使用可能な形式に変換
 
-**🔌 副作用要件（app/data-io）**:
+### 🔌 副作用要件（app/data-io）
 
 *記事データ取得処理* (`app/data-io/blog/post-detail/fetchPostBySlug.server.ts`):
 - 入力: slug（URL識別子）
-- 出力: 記事データ（PostDetailData型）
-- 責務: ファイルシステムから記事データ（frontmatter含む）を取得
-- **参照機能への対応**:
-  - frontmatterパース時に `source` プロパティを取得（gray-matterを使用）
-  - sourceが存在する場合、fetchExternalMarkdown.server.tsを呼び出して外部ファイルを読み込む
-  - 読み込んだ内容を `content` として返す（記事ファイル本文は無視）
-- エラーハンドリング: 記事が存在しない場合はnullを返す
+- 出力: ビルド済みの記事データ（`Post`型）
+- 責務: **ビルド時に生成されたデータバンドル**（例: `~/generated/blog-posts.ts`）から、指定されたslugに一致する記事データを取得する
+- **備考**: 外部ファイル参照（`source`プロパティ）やファイルシステムからの直接読み込みは、ビルドスクリプトの責務。この層では、すでに処理済みのデータを安全に取得することに専念する
+- エラーハンドリング: ビルド済みデータ内に記事が存在しない場合は`null`を返す
 
-*外部ファイル読み込み処理* (`app/data-io/blog/post-detail/fetchExternalMarkdown.server.ts`):
-- 入力: filePath（プロジェクトルートからの相対パス、例: `/README.md`）
-- 出力: マークダウンコンテンツ（string）
-- 責務: 指定されたパスのファイルをファイルシステムから読み込む
-- **セキュリティ（パスバリデーション）**:
-  - 許可する拡張子: `.md` のみ
-  - 禁止パターン: `../`, `..\\`, `/etc/`, `C:\\` を含むパスは拒否
-  - パスはプロジェクトルート（`process.cwd()`）配下に制限
-- 依存: Node.js標準モジュール（`fs/promises`, `path`）
-- エラーハンドリング: ファイルが存在しない場合、または不正なパスの場合はエラーをthrow
+---
+
+**Note**: `fetchExternalMarkdown.server.ts` はランタイムでは不要となり、ビルドスクリプトの一部としてその責務が移行するため、設計書から削除します。

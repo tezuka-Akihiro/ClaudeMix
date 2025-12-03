@@ -409,7 +409,7 @@ test_articles:
     category_id: 1
     category_name: "Claude Best Practices"
     tags: []
-    publishedAt: "2025-01-16"
+    publishedAt: "2025-11-16"
     description: "タグを持たない記事の表示とフィルタリング動作のテスト実装"
     expected_in_filters:
       category_1: true

@@ -1,6 +1,7 @@
 /**
  * ページネーション情報を計算する純粋関数
  *
+import type { PaginationInfo } from '~/specs/blog/types';
  * @param totalPosts - 総記事数
  * @param currentPage - 現在のページ番号（1始まり）
  * @param postsPerPage - 1ページあたりの記事数
@@ -11,19 +12,12 @@
  * calculatePagination(25, 1, 10) // => { currentPage: 1, totalPages: 3, totalPosts: 25, postsPerPage: 10, offset: 0 }
  * calculatePagination(25, 2, 10) // => { currentPage: 2, totalPages: 3, totalPosts: 25, postsPerPage: 10, offset: 10 }
  */
-export interface PaginationData {
-  currentPage: number;
-  totalPages: number;
-  totalPosts: number;
-  postsPerPage: number;
-  offset: number;
-}
 
 export function calculatePagination(
   totalPosts: number,
   currentPage: number,
   postsPerPage: number = 10
-): PaginationData {
+): PaginationInfo {
   // パラメータのバリデーション
   if (totalPosts < 0) {
     throw new Error("totalPosts must be non-negative");

@@ -54,11 +54,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
       total: paginationData.totalPosts,
       limit: paginationData.postsPerPage,
     },
-    availableCategories: availableFilters.categories,
-    availableTags: availableFilters.tags,
-    tagGroups: availableFilters.tagGroups,
-    selectedCategory: category,
-    selectedTags: tags,
+    availableFilters,
+    selectedFilters: {
+      category,
+      tags,
+    },
   });
 }
 
@@ -67,11 +67,8 @@ export default function BlogIndex() {
     config,
     posts,
     pagination,
-    availableCategories,
-    availableTags,
-    tagGroups,
-    selectedCategory,
-    selectedTags,
+    availableFilters,
+    selectedFilters,
   } = useLoaderData<typeof loader>();
 
   return (
@@ -79,11 +76,8 @@ export default function BlogIndex() {
       <PostsSection
         posts={posts}
         pagination={pagination}
-        availableCategories={availableCategories}
-        availableTags={availableTags}
-        tagGroups={tagGroups}
-        selectedCategory={selectedCategory}
-        selectedTags={selectedTags}
+        availableFilters={availableFilters}
+        selectedFilters={selectedFilters}
       />
     </BlogLayout>
   );

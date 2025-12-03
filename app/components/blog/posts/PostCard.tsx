@@ -5,17 +5,9 @@ import React from 'react';
 import { Link } from '@remix-run/react';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import { getCategoryEmoji } from '~/lib/blog/posts/categoryUtils';
+import type { PostSummary } from '~/specs/blog/types';
 
-interface PostCardProps {
-  slug: string;
-  title: string;
-  publishedAt: string;
-  category: string;
-  description?: string;
-  tags?: string[];
-}
-
-const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category, description, tags }) => {
+const PostCard: React.FC<PostSummary> = ({ slug, title, publishedAt, category, description, tags }) => {
   // 日付をフォーマット（ISO形式 → 日本語形式）
   const formattedDate = formatPublishedDate(publishedAt);
 

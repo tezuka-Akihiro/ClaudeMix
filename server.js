@@ -22,7 +22,7 @@ const build = viteDevServer
       viteDevServer.ssrLoadModule(
         "virtual:remix/server-build"
       )
-  : await import("./build/index.js");
+  : await import("./build/server/index.js");
 
 app.all("*", createRequestHandler({ build }));
 

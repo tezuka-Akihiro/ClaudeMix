@@ -2,12 +2,13 @@
 slug: "skills-guide"
 title: "claude skills 公式まとめ"
 author: "ClaudeMix Team"
-publishedAt: "2025-01-16"
+publishedAt: "2025-11-16"
 category: "Claude Best Practices"
+description: "Claudeの機能を拡張するモジュール「Skills」の公式ガイドを要約。Skillsの構造、ベストプラクティス、そしてClaudeが文脈に応じて専門知識を自動的に活用する仕組みを解説します。"
+tags: ["Skills", "architecture"]
 ---
 # Claude Skills 公式ガイド要約
 
-**収集日**: 2025-01-18
 **ソース**: https://code.claude.com/docs/en/skills
 
 ## 1. Skills とは

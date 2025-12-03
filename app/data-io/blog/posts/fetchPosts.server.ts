@@ -2,28 +2,16 @@
 // ビルド時に生成されたバンドルから記事メタデータを読み込み、PostSummary[]を返す
 
 import { getAllPosts } from '~/generated/blog-posts';
-import { filterPosts, type FilterOptions } from '~/lib/blog/posts/filterPosts';
+import { filterPosts } from '~/lib/blog/posts/filterPosts';
+import type { FilterOptions, PostSummary, FilteredPostsResult } from '~/specs/blog/types';
 
-export interface PostSummary {
-  slug: string;
-  title: string;
-  publishedAt: string; // ISO format "2024-05-01"
-  category: string;
-  description?: string;
-  tags?: string[];
-}
-
-export interface FetchPostsOptions {
+export interface PaginationOptions {
   limit?: number;
   offset?: number;
-  category?: string;
-  tags?: string[];
 }
 
-export interface FetchPostsResult {
-  posts: PostSummary[];
-  total: number;
-}
+// ページネーションとフィルターのオプションを結合
+export type FetchPostsOptions = PaginationOptions & FilterOptions;
 
 /**
  * ブログ記事の一覧を取得する
@@ -33,7 +21,7 @@ export interface FetchPostsResult {
  */
 export async function fetchPosts(
   options?: FetchPostsOptions
-): Promise<FetchPostsResult> {
+): Promise<FilteredPostsResult> {
   try {
     // ビルド時に生成されたデータから記事一覧を取得
     // getAllPosts()は既にソート済み（投稿日降順）

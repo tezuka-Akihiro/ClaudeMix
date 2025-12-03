@@ -5,11 +5,7 @@ import React, { useEffect } from 'react';
 import { CategorySelector } from './CategorySelector';
 import { TagGrid } from './TagGrid';
 import { FilterSubmitButton } from './FilterSubmitButton';
-
-interface TagGroup {
-  group: string;
-  tags: string[];
-}
+import type { TagGroup } from '~/specs/blog/types';
 
 interface FilterPanelProps {
   availableCategories: string[];
