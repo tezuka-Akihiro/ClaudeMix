@@ -114,7 +114,9 @@
       "Bash(Select-String -Pattern \"(Test Files|Tests|passed|failed|Timeout)\" -Context 0,2)",
       "Bash(Get-Process -Name node -ErrorAction SilentlyContinue)",
       "Bash(Stop-Process -Force)",
-      "Bash(PORT=3001 npm run start:*)"
+      "Bash(PORT=3001 npm run start:*)",
+      "Bash(Get-ChildItem -Path \"content/blog/posts/refactoring-typescript-*.md\")",
+      "Bash(ForEach-Object { Select-String -Path $_ullName -Pattern \"^publishedAt:\" -Context 0,0)"
     ],
     "deny": [],
     "ask": []
