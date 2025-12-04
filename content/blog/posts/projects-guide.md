@@ -9,8 +9,7 @@ tags: ["Projects", "architecture"]
 ---
 # Claude Projects 公式ガイド要約
 
-
-**ソース**: https://www.anthropic.com/engineering/claude-code-best-practices
+**ソース**: <https://www.anthropic.com/engineering/claude-code-best-practices>
 
 ## 1. Claude Projectsとは
 
@@ -52,6 +51,7 @@ Anthropic公式が推奨する記載事項:
 **原則**: CLAUDE.mdは「頻繁に使用されるプロンプト」として扱い、反復的に改善する
 
 **方法**:
+
 1. `#`キーを使用してClaudeに自動的に指示を組み込ませる
 2. プロンプト改善ツールを通してファイルを洗練させる
 3. チームでレビューし、フィードバックを反映
@@ -65,6 +65,7 @@ Anthropic公式が推奨する記載事項:
 **理由**: すべての文脈が関連性を保ち、Claudeの応答精度が向上
 
 **実践**:
+
 ```bash
 # 機能完了後、コンテキストをクリア
 /clear
@@ -76,11 +77,13 @@ Anthropic公式が推奨する記載事項:
 ### `/clear`の頻繁な使用
 
 **タイミング**:
+
 - タスク完了時
 - トピックが切り替わる時
 - 会話が長くなりすぎた時
 
 **効果**:
+
 - 文脈のノイズ除去
 - 応答速度の向上
 - 精度の向上
@@ -90,6 +93,7 @@ Anthropic公式が推奨する記載事項:
 **用途**: 複雑な多段階ワークフローの管理
 
 **例**:
+
 ```markdown
 ## タスクチェックリスト
 
@@ -107,6 +111,7 @@ Anthropic公式が推奨する記載事項:
 **理由**: 文脈を保持しつつ、明確なロードマップを確立
 
 **実践**:
+
 ```
 「まず計画を立ててください。コードは書かないでください」
 
@@ -146,6 +151,7 @@ $ARGUMENTS
 ```
 
 **使用**:
+
 ```
 /debug-error "TypeError: Cannot read property 'map' of undefined"
 ```
@@ -272,6 +278,7 @@ gh auth login
 **用途**: 会話履歴を失わずに中断・リダイレクト
 
 **使用シーン**:
+
 - Claudeが間違った方向に進んでいる時
 - 急な方向転換が必要な時
 - 現在の出力を停止して新しい指示を与える時
@@ -280,6 +287,6 @@ gh auth login
 
 ## 9. 参考リンク
 
-- **Claude Code Best Practices**: https://www.anthropic.com/engineering/claude-code-best-practices
-- **Claude Projects Guide**: https://medium.com/@Xzavior/claude-projects-a-practical-guide-807a0def71fd
-- **Claude Projects for Engineers**: https://generaitelabs.com/the-ultimate-guide-to-claude-projects-for-software-engineers/
+- **Claude Code Best Practices**: <https://www.anthropic.com/engineering/claude-code-best-practices>
+- **Claude Projects Guide**: <https://medium.com/@Xzavior/claude-projects-a-practical-guide-807a0def71fd>
+- **Claude Projects for Engineers**: <https://generaitelabs.com/the-ultimate-guide-to-claude-projects-for-software-engineers/>

@@ -42,12 +42,13 @@ MCP（Model Context Protocol）は、**AIアプリケーションが外部のデ
 
 - USB-C: デバイスと周辺機器を標準的な方法で接続
 - MCP: AIモデルと異なるデータソース/ツールを標準的な方法で接続
- 
+
 これまでのAIとのやり取りは、人間が手動で情報をコピー＆ペーストし、AIにコンテキストを「注入」する必要がありました。MCPは、このプロセスを自動化し、AIが自ら外部の世界（ファイルシステム、データベース、APIなど）と対話するための「標準語」を提供するのです。
 
 ---
- 
+
 ## 2. MCPの仕組み：クライアント・ホスト・サーバーモデル
+
 ```
 ┌─────────────────────┐
 │   MCP Host          │ ← AIアプリケーション（Claude Code, Claude Desktop等）
@@ -80,6 +81,7 @@ MCP（Model Context Protocol）は、**AIアプリケーションが外部のデ
 **定義**: JSON-RPCベースのクライアント・サーバー通信プロトコル
 
 **含まれる要素**:
+
 - ライフサイクル管理
 - コアプリミティブ:
   - **Tools**: 実行可能な機能
@@ -92,6 +94,7 @@ MCP（Model Context Protocol）は、**AIアプリケーションが外部のデ
 **定義**: データ交換を可能にする通信メカニズムとチャネル
 
 **含まれる要素**:
+
 - トランスポート固有の接続確立
 - メッセージフレーミング
 - 認証
@@ -127,9 +130,9 @@ Anthropicが提供する主要なエンタープライズシステム用サー�
 
 ### 公開リソース
 
-- **GitHub**: https://github.com/modelcontextprotocol
-- **仕様**: https://spec.modelcontextprotocol.io
-- **公式サイト**: https://modelcontextprotocol.io
+- **GitHub**: <https://github.com/modelcontextprotocol>
+- **仕様**: <https://spec.modelcontextprotocol.io>
+- **公式サイト**: <https://modelcontextprotocol.io>
 
 ## 7. Claude Code での MCP 使用
 
@@ -274,9 +277,9 @@ if __name__ == "__main__":
 
 ### 参考リンク
 
-- **MCP Documentation**: https://docs.claude.com/en/docs/mcp
-- **Official Announcement**: https://www.anthropic.com/news/model-context-protocol
-- **GitHub Repository**: https://github.com/modelcontextprotocol
-- **Specification**: https://spec.modelcontextprotocol.io
-- **Architecture Overview**: https://modelcontextprotocol.io/docs/learn/architecture
-- **Claude Code MCP Integration**: https://docs.anthropic.com/en/docs/claude-code/mcp
+- **MCP Documentation**: <https://docs.claude.com/en/docs/mcp>
+- **Official Announcement**: <https://www.anthropic.com/news/model-context-protocol>
+- **GitHub Repository**: <https://github.com/modelcontextprotocol>
+- **Specification**: <https://spec.modelcontextprotocol.io>
+- **Architecture Overview**: <https://modelcontextprotocol.io/docs/learn/architecture>
+- **Claude Code MCP Integration**: <https://docs.anthropic.com/en/docs/claude-code/mcp>

@@ -9,7 +9,6 @@ tags: ["Skills", "Prompts", "Projects", "MCP"]
 ---
 # Claude 公式ベストプラクティス総まとめ
 
-
 **統合ソース**: Skills, Prompts, Projects, MCP公式ガイド
 
 ## 1. 全体像
@@ -376,6 +375,7 @@ Host (Claude Code)
 ```
 
 **各Skillの役割**:
+
 - **requirements-clarification-expert**: 曖昧な要求を明確化（Prompts技術1: 明確性）
 - **prompt-engineering-expert**: 効果的なプロンプト作成支援（Prompts技術2: 例示）
 - **context-manager**: 段階的情報開示（Prompts技術8: 長文コンテキスト）
@@ -453,6 +453,7 @@ Host (Claude Code)
 ```
 
 **Layer 1との統合**:
+
 - Layer 1の`requirements-clarification-expert`が要件を明確化
 - Layer 2の`service-section-pattern-expert`が{service}/{section}に落とし込み
 - Layer 1の`xml-structuring-specialist`で構造化
@@ -533,8 +534,8 @@ Host (Claude Code)
 
 ## 9. 参考リンク
 
-- **Skills**: https://code.claude.com/docs/en/skills
-- **Prompts**: https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview
-- **Projects**: https://www.anthropic.com/engineering/claude-code-best-practices
-- **MCP**: https://docs.claude.com/en/docs/mcp
-- **GitHub (MCP)**: https://github.com/modelcontextprotocol
+- **Skills**: <https://code.claude.com/docs/en/skills>
+- **Prompts**: <https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview>
+- **Projects**: <https://www.anthropic.com/engineering/claude-code-best-practices>
+- **MCP**: <https://docs.claude.com/en/docs/mcp>
+- **GitHub (MCP)**: <https://github.com/modelcontextprotocol>

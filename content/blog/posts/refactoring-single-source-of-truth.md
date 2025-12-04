@@ -166,6 +166,7 @@ it('should filter posts by category', async ({ page }) => {
 ```
 
 **重要な変更点**：
+
 - 件数チェック（`toHaveCount(3)`）→ **存在確認**（`toBeVisible()`）に変更
 - ハードコードされた値 → `spec.yaml`から取得
 - 本番データ依存 → テスト専用記事を使用

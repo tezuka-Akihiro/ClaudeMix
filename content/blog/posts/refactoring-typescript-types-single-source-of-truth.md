@@ -128,4 +128,3 @@ AIとの対話を通じて、単なる重複排除に留まらず、より堅牢
 - **Part 3**: [『関心の分離』の実践](/blog/refactoring-typescript-types-separation-of-concerns)
 - **Part 4**: [ドメイン知識の集約](/blog/refactoring-typescript-types-domain-knowledge)
 - **Part 5**: [『生きた仕様書の完成』](/blog/refactoring-typescript-types-summary)
-

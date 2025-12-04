@@ -9,8 +9,7 @@ tags: ["Prompts"]
 ---
 # Claude Prompts 公式ガイド要約
 
-
-**ソース**: https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview
+**ソース**: <https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview>
 
 ## 1. プロンプトエンジニアリングとは
 
@@ -78,11 +77,13 @@ Claudeは以下の順序で技術を試すことを推奨:
 ### 例
 
 **悪い例**:
+
 ```
 このコードを改善して
 ```
 
 **良い例**:
+
 ```
 このTypeScript関数を以下の点で改善してください:
 1. 型安全性の向上（anyを排除）
@@ -282,6 +283,6 @@ Claudeにロールや行動様式を割り当て、一貫した振る舞いを�
 
 ### 参考リンク
 
-- **プロンプトエンジニアリング概要**: https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview
-- **プロンプト入門**: https://docs.anthropic.com/claude/docs/intro-to-prompting
-- **Claude 3 プロンプトガイド**: https://www.promptingguide.ai/models/claude-3
+- **プロンプトエンジニアリング概要**: <https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview>
+- **プロンプト入門**: <https://docs.anthropic.com/claude/docs/intro-to-prompting>
+- **Claude 3 プロンプトガイド**: <https://www.promptingguide.ai/models/claude-3>

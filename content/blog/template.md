@@ -60,7 +60,7 @@ tags: [] # app\specs\blog\posts-spec.yaml
 ## コード抜粋
 （解決策を示す、再現性のあるコードスニペットを挿入します。例：CSSクラス定義、Reactコンポーネントなど）
 
-```typescript:App.tsx
+```typescript
 // 必要に応じてファイル名を指定すると分かりやすいです
 const MyComponent = () => {
   return <div>Hello, World!</div>;

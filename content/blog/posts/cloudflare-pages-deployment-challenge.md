@@ -38,16 +38,19 @@ Remix v2 + Vite で構築したブログアプリケーションを Cloudflare P
 ### フェーズ1: CSS インポートエラー
 
 **エラーメッセージ:**
+
 ```
 [vite]: Rollup failed to resolve import "~/styles/globals.css"
 ```
 
 **原因:**
+
 - Remix v2 + Vite では CSS のインポート方法が変更された
 - PostCSS 設定が欠如
 - Tailwind CSS の処理設定が不完全
 
 **解決策:**
+
 1. `postcss.config.js` を作成
 2. `autoprefixer` をインストール
 3. CSS インポートを `entry.client.tsx` に移動
@@ -72,6 +75,7 @@ export default {
 ### フェーズ2: SSR 非対応による 404 エラー
 
 **問題:**
+
 - ビルドは成功したが、デプロイ後に 404 エラー
 - Cloudflare Pages が静的ファイルのみを配信
 - SSR が動作していない
@@ -80,6 +84,7 @@ export default {
 Remix は SSR フレームワークだが、Cloudflare Pages にデフォルトでデプロイすると静的サイトとして扱われる。SSR を動作させるには **Cloudflare Pages Functions** の設定が必要。
 
 **解決策:**
+
 1. `functions/[[path]].js` を作成（ワイルドカードファンクション）
 2. `@remix-run/cloudflare-pages` をインストール
 3. `wrangler.toml` で `nodejs_compat` を有効化
@@ -100,6 +105,7 @@ export const onRequest = createPagesFunctionHandler({
 ### フェーズ3: Node.js モジュール解決エラー
 
 **エラーメッセージ:**
+
 ```
 Could not resolve "fs"
 Could not resolve "path"
@@ -108,11 +114,13 @@ Could not resolve "crypto"
 ```
 
 **原因:**
+
 - `entry.server.tsx` が Node.js 用のコード（`PassThrough` stream など）
 - `session.server.ts` が `@remix-run/node` をインポート
 - Cloudflare Workers は Node.js API を直接サポートしない
 
 **解決策:**
+
 1. `entry.server.tsx` を Cloudflare 互換に書き換え
    - `renderToPipeableStream` → `renderToReadableStream`
    - Node.js streams → Web Streams API
@@ -147,12 +155,14 @@ $ grep -r "fs/promises" app/ --include="*.ts" --include="*.tsx"
 ```
 
 **影響範囲:**
+
 - `app/data-io/blog/*` - Markdown ファイルの読み込み（`fs/promises`）
 - `app/data-io/service-name/*` - TOML ファイルの読み込み（`fs`）
 - `@iarna/toml` パッケージ - 内部で `stream` を使用
 - `gray-matter` パッケージ - 内部で Node.js API を使用
 
 **Cloudflare Workers の制限:**
+
 - ファイルシステムアクセスは **完全に不可能**
 - `nodejs_compat` フラグでも FS API は提供されない
 - V8 isolate 環境のため、永続的なファイルシステムが存在しない
@@ -162,14 +172,17 @@ $ grep -r "fs/promises" app/ --include="*.ts" --include="*.tsx"
 ### 検討したオプション
 
 #### ❌ オプション1: Vercel/Netlify への移行
+
 - **メリット**: コード変更不要
 - **デメリット**: Cloudflare Pages を諦める
 
 #### ❌ オプション2: Cloudflare KV/R2 への移行
+
 - **メリット**: Cloudflare エコシステム内で完結
 - **デメリット**: 大規模なコード書き換え、ビルドプロセスの複雑化
 
 #### ✅ オプション3: ビルド時バンドル（採用）
+
 - **メリット**:
   - シンプルな実装
   - パフォーマンス向上（事前処理済み）
@@ -311,12 +324,14 @@ app/generated/
 ### 変更が必要なファイル（推定）
 
 **ブログ関連:**
+
 - `app/data-io/blog/posts/fetchPosts.server.ts`
 - `app/data-io/blog/posts/loadPostsSpec.ts`
 - `app/data-io/blog/post-detail/fetchPostBySlug.server.ts`
 - `app/data-io/blog/post-detail/fetchExternalMarkdown.server.ts`
 
 **service name 関連:**
+
 - `app/data-io/service-name/common/loadSectionList.server.ts`
 - `app/data-io/service-name/common/loadServiceList.server.ts`
 - `app/data-io/service-name/design-flow/loadProjectSections.server.ts`
@@ -337,12 +352,14 @@ app/generated/
 ### トレードオフ
 
 **メリット:**
+
 - ✅ ランタイムパフォーマンス向上
 - ✅ Cloudflare Workers 互換
 - ✅ デプロイの信頼性向上
 - ✅ エラーハンドリング不要（ビルド時にエラー検出）
 
 **デメリット:**
+
 - ❌ コンテンツ更新時に再ビルド必要
 - ❌ ビルド時間の増加（+数秒）
 - ❌ 動的コンテンツ追加には不向き
@@ -352,6 +369,7 @@ app/generated/
 ### 1. Cloudflare Workers の制約理解
 
 **V8 Isolate の特性:**
+
 - ファイルシステムなし
 - Node.js API の限定的サポート
 - ステートレス実行環境
@@ -361,23 +379,27 @@ app/generated/
 ### 2. ビルドツールの進化
 
 **Vite の強力さ:**
+
 - ビルド時処理の柔軟性
 - プラグインエコシステム
 - 高速なビルドパフォーマンス
 
 **Remix の適応性:**
+
 - 複数のランタイムサポート（Node.js, Cloudflare, Deno）
 - アダプターパターンによる柔軟性
 
 ### 3. アーキテクチャの選択基準
 
 **重要な質問:**
+
 - ✅ コンテンツは静的か動的か？
 - ✅ 更新頻度は？
 - ✅ ランタイムの制約は？
 - ✅ パフォーマンス要件は？
 
 **今回のケース:**
+
 - コンテンツ: 静的（Markdown in Git）
 - 更新頻度: 低〜中（週数回）
 - ランタイム: Cloudflare Workers（制約あり）
@@ -409,11 +431,13 @@ app/generated/
 ```
 
 **原因:**
+
 - `sanitize-html` パッケージの依存関係が ESM 専用
 - Vite が CommonJS スタイルのデフォルトインポートでバンドルしようとした
 - Cloudflare Workers 環境では特定の解決条件が必要
 
 **解決策:**
+
 ```typescript
 // vite.config.ts
 ssr: {
@@ -612,15 +636,18 @@ ssr: {
 ## 🔗 関連リソース
 
 ### 公式ドキュメント
+
 - [Remix - Cloudflare Pages](https://remix.run/docs/en/main/guides/deployment#cloudflare-pages)
 - [Cloudflare Pages Functions](https://developers.cloudflare.com/pages/functions/)
 - [Cloudflare Workers Runtime APIs](https://developers.cloudflare.com/workers/runtime-apis/)
 
 ### 参考記事
+
 - [Vite Plugin Development](https://vitejs.dev/guide/api-plugin.html)
 - [Web Streams API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API)
 
 ### このプロジェクトの関連ドキュメント
+
 - [Cloudflare Pages デプロイトラブルシューティング](../../../docs/knowledges/2025-11-20-cloudflare-pages-vite-css-import-issue.md)
 
 ---

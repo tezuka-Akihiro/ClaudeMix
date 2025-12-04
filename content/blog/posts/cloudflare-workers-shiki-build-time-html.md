@@ -13,6 +13,7 @@ tags: ["Workers", "troubleshooting", "Vite"]
 Cloudflare Pages（Workers環境）にデプロイしたRemixブログで、記事詳細ページを開くと「Application Error!」が表示される問題に遭遇しました。ローカル開発環境では正常に動作していたため、Cloudflare Workers特有の制約が原因でした。この記事では、問題の発見から原因の特定、そしてビルド時HTML変換による解決に至るまでの全プロセスを記録します。
 
 ### 発生環境
+
 - **フレームワーク**: Remix v2
 - **ホスティング**: Cloudflare Pages/Workers
 - **ビルドツール**: Vite
@@ -26,12 +27,14 @@ Cloudflare Pages（Workers環境）にデプロイしたRemixブログで、記�
 stg環境（`https://stg.claudemix.pages.dev/blog`）にデプロイ後、記事一覧ページは表示されるが、記事詳細ページ（例: `/blog/welcome`）を開くと「Application Error!」が表示される。
 
 **エラーメッセージ:**
+
 ```
 CompileError: WebAssembly.instantiate(): Wasm code generation disallowed by embedder
   at shiki/engine-oniguruma
 ```
 
 **症状:**
+
 - ✅ ホーム画面: 正常表示
 - ✅ ブログ一覧ページ: 正常表示
 - ❌ 記事詳細ページ: Application Error
@@ -64,6 +67,7 @@ async function getHighlighter() {
 まず、Cloudflare Workers環境の制約を確認しました。公式ドキュメントによると、**動的なWebAssembly生成は許可されていない**ことが判明。Shikiはシンタックスハイライトのために内部でWebAssembly（oniguruma正規表現エンジン）を使用しているため、Workers環境では動作しない。
 
 **判明した事実:**
+
 - Cloudflare Workersは事前コンパイルされたWASMのみサポート
 - ランタイムでの動的WASM生成は禁止
 - Shikiは初期化時に動的にWASMを生成
@@ -73,6 +77,7 @@ async function getHighlighter() {
 次に、マークダウンをそのまま配信し、ブラウザ側でHTMLに変換する方法を検討しました。しかし、この方法には以下の問題がありました:
 
 **問題点:**
+
 - 初回表示が遅くなる（クライアント側で毎回変換）
 - SEO的に不利（HTMLが初期状態では存在しない）
 - ユーザー体験の低下
@@ -84,6 +89,7 @@ async function getHighlighter() {
 最終的に、「ビルド時にマークダウンをHTMLに変換すれば、Workers環境ではHTMLを配信するだけでよい」というアプローチに行き着きました。
 
 **メリット:**
+
 - Workers環境でWASMを使用しない
 - 高速な初期表示（HTML配信のみ）
 - SEO最適化
@@ -179,11 +185,10 @@ async function generateBlogPosts() {
 ```
 
 **効果:**
+
 - ✅ ハング問題を完全解決
 - ✅ 並列処理の高速性を維持
 - ✅ シングルトンパターンで1つのインスタンスのみ生成
-
-
 
 ---
 
@@ -243,5 +248,6 @@ async function generateBlogPosts() {
 ---
 
 **関連記事:**
+
 - [Cloudflare Pagesデプロイで遭遇した3つの壁とその解決策](./cloudflare-pages-deployment-challenge)
 - [React HooksのCloudflare Workers互換性チャレンジ](./react-hooks-cloudflare-workers-challenge)

@@ -9,7 +9,7 @@ tags: ["Skills", "architecture"]
 ---
 # Claude Skills 公式ガイド要約
 
-**ソース**: https://code.claude.com/docs/en/skills
+**ソース**: <https://code.claude.com/docs/en/skills>
 
 ## 1. Skills とは
 
@@ -65,11 +65,13 @@ Skillの詳細な説明、使用方法、例
   - 具体的な手がかり（キーワード）
 
 **良い例**:
+
 ```yaml
 description: Extract text and tables from PDF files when user requests PDF analysis or data extraction
 ```
 
 **悪い例**:
+
 ```yaml
 description: Handles PDFs
 ```
@@ -126,6 +128,7 @@ Claudeは以下の3つのソースからSkillsを自動発見:
 **理由**: 複数機能を1つのSkillに詰め込むと、発見性が低下し、Claudeが適切なタイミングで起動できなくなる。
 
 **例**:
+
 ```
 ❌ 悪い: general-dev-helper (コード生成、テスト、レビュー全部)
 ✅ 良い:
@@ -139,6 +142,7 @@ Claudeは以下の3つのソースからSkillsを自動発見:
 **原則**: 説明に手がかりとなるキーワードを含める
 
 **例**:
+
 ```yaml
 # 良い例
 description: Extract text and tables from PDF files when user requests PDF analysis or data extraction
@@ -170,6 +174,7 @@ description: PDF処理
 ### 推奨: プラグインで配布
 
 **利点**:
+
 - バージョン管理が容易
 - 依存関係の明示
 - エンタープライズ環境での配布に適している
@@ -214,6 +219,6 @@ When a user provides unclear requirements, guide them through structured clarifi
 
 ## 9. 参考リンク
 
-- **公式ドキュメント**: https://code.claude.com/docs/en/skills
-- **公式アナウンス**: https://www.anthropic.com/news/skills
-- **API ドキュメント**: https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview
+- **公式ドキュメント**: <https://code.claude.com/docs/en/skills>
+- **公式アナウンス**: <https://www.anthropic.com/news/skills>
+- **API ドキュメント**: <https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview>

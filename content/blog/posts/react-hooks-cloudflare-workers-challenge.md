@@ -25,11 +25,13 @@ Remix v2 + Vite で構築したブログアプリケーションを Cloudflare W
 ### フェーズ1: コードブロック表示の不具合
 
 **症状:**
+
 ```
 記事本文のコードブロックが "__CODE_BLOCK_0__" のようなプレースホルダーとして表示される
 ```
 
 **原因:**
+
 - `markdownConverter.ts` がプレースホルダーベースの非同期処理を使用
 - Shiki によるシンタックスハイライトが Cloudflare Workers 環境で正しく動作しない
 
@@ -72,6 +74,7 @@ renderer.code = function(token: any): string {
 コードブロックの問題を修正後、サーバーを起動すると新たなエラーが発生しました。
 
 **エラーメッセージ:**
+
 ```
 TypeError: Cannot read properties of null (reading 'useState')
 at useState (react.development.js:1634:21)
@@ -86,11 +89,13 @@ of a function component. This could happen for one of the following reasons:
 ```
 
 **影響範囲:**
+
 - ブログ詳細ページ: 500 Internal Server Error
 - ブログインデックスページ: ページ読み込み時のハング
 - 全ての React Hooks を使用するコンポーネントが失敗
 
 **該当コンポーネント:**
+
 - `BlogHeader` - メニュー状態管理に `useState` を使用
 - `PostDetailSection` - Mermaid 図のレンダリングに `useEffect` を使用
 - `PostCard` - ルーティングに `<Link>` を使用（内部で `useHref` などの Hooks を使用）
@@ -152,6 +157,7 @@ Wrangler は独自のビルドプロセスで `.wrangler` ディレクトリに�
 ```
 
 **問題:**
+
 - SSR バンドルに React が含まれる（3,150 KB）
 - Wrangler が独自に React をバンドルする
 - 結果として React が重複する
@@ -161,6 +167,7 @@ Wrangler は独自のビルドプロセスで `.wrangler` ディレクトリに�
 ### オプション1: React の外部化（採用不可）
 
 **アプローチ:**
+
 ```typescript
 ssr: {
   external: ['react', 'react-dom']
@@ -168,10 +175,12 @@ ssr: {
 ```
 
 **メリット:**
+
 - SSR バンドルサイズが削減される
 - React の重複が理論上避けられる
 
 **デメリット:**
+
 - ❌ Cloudflare Workers 環境で実行時に React が解決できない
 - ❌ サーバーが起動しない
 - ❌ 全ページが応答不能になる
@@ -186,6 +195,7 @@ ssr: {
 Wrangler の `compatibility_flags` や `node_compat` フラグを調整して、React の解決方法を変更する
 
 **課題:**
+
 - Cloudflare Workers の制約により、完全な Node.js 互換性は提供されない
 - `nodejs_compat` フラグは既に有効化済み
 - これ以上の設定変更では解決困難
@@ -218,6 +228,7 @@ import { Link } from '@remix-run/react';
 ```
 
 **影響:**
+
 - ✅ クライアントサイドナビゲーション（SPA 的な画面遷移）が失われる
 - ✅ 各ページ遷移で完全なリロードが発生
 - ✅ パフォーマンスが若干低下
@@ -242,15 +253,18 @@ useEffect(() => {
 ```
 
 **影響:**
+
 - ❌ Mermaid 図の動的レンダリングが無効化
 - ❌ 既存の Mermaid 図が表示されない
 
 **メリット:**
+
 - ✅ React Hooks エラーが完全に回避される
 - ✅ 全ページが正常に動作する
 - ✅ 比較的シンプルな実装
 
 **デメリット:**
+
 - ❌ 機能の一部が失われる
 - ❌ ユーザー体験が低下する
 - ❌ 一時的な回避策であり、根本解決ではない
@@ -262,6 +276,7 @@ useEffect(() => {
 ### 変更したファイル
 
 1. **BlogHeader.tsx**
+
 ```typescript
 // TEMPORARY: Link コンポーネントを <a> タグに置き換え（React Hooks エラー回避）
 const BlogHeader: React.FC<BlogHeaderProps> = ({ blogTitle }) => {
@@ -276,6 +291,7 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ blogTitle }) => {
 ```
 
 2. **PostCard.tsx**
+
 ```typescript
 // TEMPORARY: Link コンポーネントを <a> タグに置き換え（React Hooks エラー回避）
 return (
@@ -289,6 +305,7 @@ return (
 ```
 
 3. **Pagination.tsx**
+
 ```typescript
 // TEMPORARY: Link コンポーネントを <a> タグに置き換え（React Hooks エラー回避）
 {currentPage > 1 && (
@@ -302,6 +319,7 @@ return (
 ```
 
 4. **PostDetailSection.tsx**
+
 ```typescript
 // TEMPORARY: useEffect削除（React Hooks エラー回避）
 // useEffect(() => {
@@ -312,6 +330,7 @@ return (
 ```
 
 5. **vite.config.ts**
+
 ```typescript
 // React の external 設定を削除（Cloudflare Workers で解決不可のため）
 ssr: {
@@ -333,6 +352,7 @@ ssr: {
 ```
 
 **SSR バンドルサイズ:**
+
 ```
 build/server/index.js: 3,150.26 kB
 ```
@@ -373,6 +393,7 @@ build/server/index.js: 3,150.26 kB
 Remix 公式ドキュメントや Cloudflare Workers 向けのベストプラクティスを再調査し、React の重複バンドルを避ける正しい設定方法を探る。
 
 **調査項目:**
+
 - Remix の `serverBuildTarget` 設定
 - Cloudflare Pages Functions の最新仕様
 - Vite SSR の `resolve.conditions` の最適化
@@ -382,6 +403,7 @@ Remix 公式ドキュメントや Cloudflare Workers 向けのベストプラク
 Wrangler がどのように依存関係をバンドルしているかを詳しく調査し、React の重複を避ける方法を見つける。
 
 **調査項目:**
+
 - Wrangler の `rules` 設定
 - `wrangler.toml` の高度な設定オプション
 - esbuild プラグインによるカスタマイズ
@@ -391,11 +413,13 @@ Wrangler がどのように依存関係をバンドルしているかを詳し�
 ブログのような静的コンテンツが中心のサイトでは、プリレンダリング（静的サイト生成）を活用し、クライアントサイドでのみ React Hooks を使用する。
 
 **利点:**
+
 - SSR 時には React Hooks を使用しない
 - クライアントサイドで動的機能を実装
 - Cloudflare Workers の制約を回避
 
 **課題:**
+
 - アーキテクチャの大幅な変更が必要
 - Remix の SSR 機能を十分に活用できない
 
@@ -404,6 +428,7 @@ Wrangler がどのように依存関係をバンドルしているかを詳し�
 ### 1. Cloudflare Workers の制約を理解する
 
 **V8 Isolate の特性:**
+
 - Node.js ランタイムではない
 - `node_modules` への実行時アクセスが制限される
 - `external` 指定されたモジュールは解決できない
@@ -414,6 +439,7 @@ Wrangler がどのように依存関係をバンドルしているかを詳し�
 ### 2. React の内部実装に依存した機能の脆弱性
 
 **React Hooks の動作原理:**
+
 - Hooks は React インスタンスのグローバル状態に依存
 - 複数の React インスタンスがあると正しく動作しない
 - SSR 環境では特に注意が必要
@@ -424,6 +450,7 @@ Wrangler がどのように依存関係をバンドルしているかを詳し�
 ### 3. ビルドツールの設定の重要性
 
 **Vite の `ssr.external` vs `ssr.noExternal`:**
+
 - 設定の意味を正しく理解しないと、重大な問題を引き起こす
 - Cloudflare Workers 環境では、特定の設定が機能しない
 
@@ -433,6 +460,7 @@ Wrangler がどのように依存関係をバンドルしているかを詳し�
 ### 4. 段階的な問題解決の重要性
 
 **今回のプロセス:**
+
 1. コードブロック表示の問題を修正
 2. React Hooks エラーが発生
 3. 原因を特定（React 重複バンドル）
@@ -477,12 +505,14 @@ React 重複バンドル問題の根本原因を特定し、**完全に解決**�
 ### 解決策
 
 **問題の本質:**
+
 - `wrangler pages dev` は**開発用コマンドではなく、プレビュー用コマンド**だった
 - Vite でバンドル後、Wrangler が再度バンドルすることで React が重複していた
 
 **正しい開発方法:**
 
 1. **vite.config.ts に cloudflareDevProxyVitePlugin を追加**
+
 ```typescript
 import { vitePlugin as remix, cloudflareDevProxyVitePlugin } from "@remix-run/dev";
 import path from "path";
@@ -507,6 +537,7 @@ export default defineConfig({
 ```
 
 2. **package.json の dev スクリプトを変更**
+
 ```json
 {
   "scripts": {
@@ -516,6 +547,7 @@ export default defineConfig({
 ```
 
 3. **wrangler を devDependencies にインストール**
+
 ```bash
 npm install -D wrangler
 ```
@@ -523,12 +555,14 @@ npm install -D wrangler
 ### 結果
 
 ✅ **React Hooks が完全に復旧**
+
 - `useEffect` が正常に動作
 - `<Link>` コンポーネントが正常に動作
 - すべてのページが 200 OK を返す
 - React 重複バンドルエラーが完全に解消
 
 **動作確認:**
+
 ```bash
 ✅ GET / 200 OK
 ✅ GET /blog 200 OK
@@ -538,11 +572,13 @@ npm install -D wrangler
 ### 重要な学び
 
 **`wrangler pages dev` の正しい使い方:**
+
 - ❌ 開発用: `npm run build && wrangler pages dev ./build/client`
 - ✅ 開発用: `remix vite:dev`（cloudflareDevProxyVitePlugin 使用）
 - ✅ プレビュー用: `wrangler pages dev ./build/client`（本番ビルド後）
 
 **`cloudflareDevProxyVitePlugin` の役割:**
+
 - Vite 開発サーバー内で Wrangler を自動起動
 - Cloudflare 環境をシミュレート
 - **Wrangler の再バンドルを回避**（これが重要！）
