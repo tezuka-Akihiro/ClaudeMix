@@ -2,7 +2,7 @@
 slug: "welcome"
 title: "ようこそ ClaudeMix Blogへ！"
 author: "ClaudeMix Team"
-publishedAt: "2025-01-15"
+publishedAt: "2025-11-15"
 category: "ClaudeMix Philosophy"
 description: "ClaudeMixブログへようこそ。AI（Claude）との協調を前提に設計されたRemix & Cloudflare Edgeベースのモダンな開発体験を提供します。"
 tags: ["Workers", "MCP", "Skills"]

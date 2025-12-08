@@ -50,6 +50,11 @@ graph TD;
         C --> D[4. データバンドル生成<br>（app/generated/blog-posts.ts）];
     end
 
+    style D fill:#f9f,stroke:#333,stroke-width:2px
+```
+
+```mermaid
+graph TD;
     subgraph "リクエスト時（ランタイム）"
         E[ユーザーアクセス<br>（/blog/:slug）] --> F[Remix Loader];
         F --> G{Data-IO層<br>（fetchPostBySlug.server.ts）};
@@ -58,7 +63,6 @@ graph TD;
         I --> F;
     end
 
-    style D fill:#f9f,stroke:#333,stroke-width:2px
     style H fill:#f9f,stroke:#333,stroke-width:2px
 ```
 
