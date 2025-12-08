@@ -7,9 +7,6 @@ category: "Tutorials & Use Cases"
 description: "RemixとCloudflare Workers環境で発生したCSS読み込み問題を解決するデバッグプロセスを解説。パスエイリアス、SSRレンダリングの不整合、開発環境設定の誤りといった複数の原因を特定し、`wrangler pages dev`とViteプラグインを使った正しい開発方法を明らかにします。"
 tags: ["SSR", "Vite", "Workers", "troubleshooting"]
 ---
-
-# Remix + Cloudflare WorkersでCSS読み込み問題を解決: パスエイリアスとSSRの落とし穴
-
 ## 📝 概要
 
 コミット `0c1c665` でCSSが突然読み込まれなくなる問題が発生しました。この記事では、問題の発見から原因特定、そして解決に至るまでのデバッグプロセスを詳細に記録します。特に、Remix + Cloudflare Workers環境特有の注意点について解説します。
@@ -29,6 +26,7 @@ git show 0c1c665 --stat
 ```
 
 このコミットで変更されたファイル:
+
 - `app/entry.client.tsx`: CSSインポートの追加
 - `app/entry.server.tsx`: レンダリング方式の変更
 - `app/styles/globals.css`: `@import`文の削除
@@ -38,6 +36,7 @@ git show 0c1c665 --stat
 ### 原因1: パスエイリアスの解決失敗
 
 **問題のコード** (`app/entry.client.tsx`):
+
 ```typescript
 import "~/styles/globals.css";
 import "~/styles/service-name/layer2.css";
@@ -45,11 +44,13 @@ import "~/styles/blog/layer2.css";
 ```
 
 **なぜ問題なのか:**
+
 - `entry.client.tsx`はクライアントサイドでのみ実行される
 - SSR時にはこれらのCSSが含まれない
 - `~`エイリアスがビルド時に解決されない場合がある
 
 **正しいアプローチ:**
+
 ```typescript
 import "./styles/globals.css";
 import "./styles/service-name/layer2.css";
@@ -61,6 +62,7 @@ import "./styles/blog/layer2.css";
 ### 原因2: レンダリング環境の不整合
 
 **問題のコード** (`app/entry.server.tsx`):
+
 ```typescript
 // Node.js用のレンダリング
 import { renderToPipeableStream } from "react-dom/server";
@@ -68,12 +70,14 @@ import { PassThrough } from "node:stream";
 ```
 
 **なぜ問題なのか:**
+
 - プロジェクトはCloudflare Workers向けに設定
 - `vite.config.ts`で`ssr.noExternal: true`が設定されている
 - `wrangler.toml`にCloudflare Workers設定が存在
 - Node.js APIは使用できない
 
 **正しいアプローチ:**
+
 ```typescript
 // Cloudflare Workers用のレンダリング
 import { renderToReadableStream } from "react-dom/server";
@@ -139,6 +143,7 @@ export default async function handleRequest(
 ```
 
 **理由:**
+
 - `remix dev`はNode.js環境で実行される
 - Cloudflare Workers向けプロジェクトは`wrangler`を使用すべき
 - これにより`renderToReadableStream`が正しく動作する
@@ -152,7 +157,8 @@ npm run build
 ```
 
 ビルド出力:
-```
+
+```text
 build/client/assets/entry-DSeiBC_g.css  41.61 kB │ gzip:  6.68 kB
 ```
 
@@ -165,6 +171,7 @@ curl -s http://localhost:3000/ | grep stylesheet
 ```
 
 出力:
+
 ```html
 <link rel="stylesheet" href="/assets/entry-DSeiBC_g.css"/>
 ```
@@ -178,6 +185,7 @@ curl -s http://localhost:3000/assets/entry-DSeiBC_g.css | head -20
 ```
 
 CSSの内容:
+
 - Googleフォント
 - Tailwind CSS
 - `globals.css`のカスタム変数
@@ -193,6 +201,7 @@ CSSの内容:
 Remixには複数のスタイリング方法があります:
 
 **方法A: entry.client.tsxでインポート** (今回の解決策)
+
 ```typescript
 import "./styles/globals.css";
 import "./styles/service-name/layer2.css";
@@ -200,15 +209,18 @@ import "./styles/blog/layer2.css";
 ```
 
 利点:
+
 - シンプル
 - Viteが自動的にバンドル
 - SSRとクライアントの両方で動作
 
 注意点:
+
 - 相対パスを使用すること
 - `~`エイリアスはビルド時に解決されない場合がある
 
 **方法B: root.tsxのlinks関数** (試したが複雑)
+
 ```typescript
 import globalStyles from "~/styles/globals.css?url";
 
@@ -218,20 +230,24 @@ export const links: LinksFunction = () => [
 ```
 
 利点:
+
 - Remixの推奨方法
 - ルートごとにCSSを分離できる
 
 欠点:
+
 - `?url`クエリパラメータが必要
 - パス解決が複雑
 
 **方法C: globals.cssで@import** (最初に試したがエラー)
+
 ```css
 @import './service-name/layer2.css';
 @import './blog/layer2.css';
 ```
 
 問題:
+
 - Viteが`@import`を`file`ローダーで処理しようとする
 - CSSファイルとして認識されない
 
@@ -245,6 +261,7 @@ export const links: LinksFunction = () => [
 | Cloudflare Workers | `renderToReadableStream` | ESM only |
 
 **教訓:**
+
 - `vite.config.ts`と`wrangler.toml`の設定を確認
 - 開発環境をデプロイ環境に合わせる
 - `wrangler pages dev`を使用する
@@ -252,6 +269,7 @@ export const links: LinksFunction = () => [
 ### 3. パスエイリアスの使用
 
 TypeScriptのパスエイリアス設定(`tsconfig.json`):
+
 ```json
 {
   "compilerOptions": {
@@ -265,6 +283,7 @@ TypeScriptのパスエイリアス設定(`tsconfig.json`):
 これは**型チェック用**であり、ビルド時の解決は保証されません。
 
 **ベストプラクティス:**
+
 - CSSインポートには相対パスを使用
 - TypeScript/JSXコードでは`~`エイリアスを使用可能
 - `vite-tsconfig-paths`プラグインが解決を支援
@@ -274,23 +293,27 @@ TypeScriptのパスエイリアス設定(`tsconfig.json`):
 効果的なデバッグステップ:
 
 1. **git showで変更を確認**
+
    ```bash
    git show <commit-hash>
    ```
 
 2. **ビルド出力を確認**
+
    ```bash
    npm run build
    # CSSファイルがバンドルされているか確認
    ```
 
 3. **ビルド済みファイルを検証**
+
    ```bash
    grep -n 'from "~' build/index.js
    # パスエイリアスが解決されていない場合に検出
    ```
 
 4. **curlでHTMLとCSSを確認**
+
    ```bash
    curl -s http://localhost:3000/ | grep stylesheet
    curl -s http://localhost:3000/assets/entry-xxx.css | head -20

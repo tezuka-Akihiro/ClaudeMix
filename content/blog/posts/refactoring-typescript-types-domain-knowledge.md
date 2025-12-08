@@ -51,7 +51,7 @@ AIの提案に基づき、残りの型をすべて `app/specs/blog/types.ts` に
 
 ページネーション関連の型は、より洗練されたアプローチを取りました。
 
-1.  **基底の型を定義**: まず、ページネーションに関するすべての情報を持つ `PaginationInfo` という基底の型を `app/specs/blog/types.ts` に定義しました。
+1. **基底の型を定義**: まず、ページネーションに関するすべての情報を持つ `PaginationInfo` という基底の型を `app/specs/blog/types.ts` に定義しました。
 
     ```typescript
     export interface PaginationInfo {
@@ -63,7 +63,7 @@ AIの提案に基づき、残りの型をすべて `app/specs/blog/types.ts` に
     }
     ```
 
-2.  **派生型の再定義**: 次に、UIコンポーネントで使われていた `PaginationProps` を、この基底型から `Pick` を使って必要なプロパティだけを抜き出す形で再定義しました。
+2. **派生型の再定義**: 次に、UIコンポーネントで使われていた `PaginationProps` を、この基底型から `Pick` を使って必要なプロパティだけを抜き出す形で再定義しました。
 
     ```diff
     - export interface PaginationProps {

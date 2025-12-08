@@ -7,8 +7,6 @@ category: "Claude Best Practices"
 description: "AIとの開発、まだ手作業で消耗していませんか？本記事では、AIが自律的に開発ツールを操作する未来を実現する「Model Context Protocol (MCP)」を徹底解説。ClaudeMixでの具体的な活用事例も紹介します。"
 tags: ["MCP", "architecture"]
 ---
-# AI開発の未来を変える「MCP」とは？ Claudeと開発ツールを連携させる新常識
-
 ## 📝 概要
 
 「このファイルの内容を教えて」「このテストを実行して結果を教えて」
@@ -38,17 +36,18 @@ MCP（Model Context Protocol）は、**AIアプリケーションが外部のデ
 
 ### アナロジー
 
-**「MCPはAIアプリケーションのUSB-Cポートのようなもの」**
+#### MCPはAIアプリケーションのUSB-Cポートのようなもの
 
 - USB-C: デバイスと周辺機器を標準的な方法で接続
 - MCP: AIモデルと異なるデータソース/ツールを標準的な方法で接続
- 
+
 これまでのAIとのやり取りは、人間が手動で情報をコピー＆ペーストし、AIにコンテキストを「注入」する必要がありました。MCPは、このプロセスを自動化し、AIが自ら外部の世界（ファイルシステム、データベース、APIなど）と対話するための「標準語」を提供するのです。
 
 ---
- 
+
 ## 2. MCPの仕組み：クライアント・ホスト・サーバーモデル
-```
+
+```text
 ┌─────────────────────┐
 │   MCP Host          │ ← AIアプリケーション（Claude Code, Claude Desktop等）
 │   ┌───────────┐     │
@@ -80,6 +79,7 @@ MCP（Model Context Protocol）は、**AIアプリケーションが外部のデ
 **定義**: JSON-RPCベースのクライアント・サーバー通信プロトコル
 
 **含まれる要素**:
+
 - ライフサイクル管理
 - コアプリミティブ:
   - **Tools**: 実行可能な機能
@@ -92,6 +92,7 @@ MCP（Model Context Protocol）は、**AIアプリケーションが外部のデ
 **定義**: データ交換を可能にする通信メカニズムとチャネル
 
 **含まれる要素**:
+
 - トランスポート固有の接続確立
 - メッセージフレーミング
 - 認証
@@ -127,9 +128,9 @@ Anthropicが提供する主要なエンタープライズシステム用サー�
 
 ### 公開リソース
 
-- **GitHub**: https://github.com/modelcontextprotocol
-- **仕様**: https://spec.modelcontextprotocol.io
-- **公式サイト**: https://modelcontextprotocol.io
+- **GitHub**: <https://github.com/modelcontextprotocol>
+- **仕様**: <https://spec.modelcontextprotocol.io>
+- **公式サイト**: <https://modelcontextprotocol.io>
 
 ## 7. Claude Code での MCP 使用
 
@@ -253,7 +254,7 @@ if __name__ == "__main__":
 
 #### 自動実行フロー
 
-```
+```text
 1. ユーザー: 「実装完了しました」
 2. Claude: MCPサーバー「lint-checker」を起動
    → リント結果を取得
@@ -274,9 +275,9 @@ if __name__ == "__main__":
 
 ### 参考リンク
 
-- **MCP Documentation**: https://docs.claude.com/en/docs/mcp
-- **Official Announcement**: https://www.anthropic.com/news/model-context-protocol
-- **GitHub Repository**: https://github.com/modelcontextprotocol
-- **Specification**: https://spec.modelcontextprotocol.io
-- **Architecture Overview**: https://modelcontextprotocol.io/docs/learn/architecture
-- **Claude Code MCP Integration**: https://docs.anthropic.com/en/docs/claude-code/mcp
+- **MCP Documentation**: <https://docs.claude.com/en/docs/mcp>
+- **Official Announcement**: <https://www.anthropic.com/news/model-context-protocol>
+- **GitHub Repository**: <https://github.com/modelcontextprotocol>
+- **Specification**: <https://spec.modelcontextprotocol.io>
+- **Architecture Overview**: <https://modelcontextprotocol.io/docs/learn/architecture>
+- **Claude Code MCP Integration**: <https://docs.anthropic.com/en/docs/claude-code/mcp>
