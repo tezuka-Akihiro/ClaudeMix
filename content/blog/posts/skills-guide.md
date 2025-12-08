@@ -7,8 +7,6 @@ category: "Claude Best Practices"
 description: "Claudeの機能を拡張するモジュール「Skills」の公式ガイドを要約。Skillsの構造、ベストプラクティス、そしてClaudeが文脈に応じて専門知識を自動的に活用する仕組みを解説します。"
 tags: ["Skills", "architecture"]
 ---
-# Claude Skills 公式ガイド要約
-
 **ソース**: <https://code.claude.com/docs/en/skills>
 
 ## 1. Skills とは
@@ -25,7 +23,7 @@ Agent Skills は**Claudeの機能を拡張するモジュール化されたパ�
 
 ### ファイル構成
 
-```
+```text
 my-skill/
 ├── SKILL.md (必須)
 ├── reference.md (オプション)
@@ -129,7 +127,7 @@ Claudeは以下の3つのソースからSkillsを自動発見:
 
 **例**:
 
-```
+```text
 ❌ 悪い: general-dev-helper (コード生成、テスト、レビュー全部)
 ✅ 良い:
    - code-generator

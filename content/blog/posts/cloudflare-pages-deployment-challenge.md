@@ -39,9 +39,9 @@ Remix v2 + Vite で構築したブログアプリケーションを Cloudflare P
 
 **エラーメッセージ:**
 
-```
+~~~text
 [vite]: Rollup failed to resolve import "~/styles/globals.css"
-```
+~~~
 
 **原因:**
 
@@ -56,7 +56,7 @@ Remix v2 + Vite で構築したブログアプリケーションを Cloudflare P
 3. CSS インポートを `entry.client.tsx` に移動
 4. `vite.config.ts` に PostCSS 設定を追加
 
-```javascript
+~~~javascript
 // postcss.config.js
 export default {
   plugins: {
@@ -64,7 +64,7 @@ export default {
     autoprefixer: {},
   },
 };
-```
+~~~
 
 **結果:**
 ✅ ビルド成功
@@ -81,7 +81,9 @@ export default {
 - SSR が動作していない
 
 **原因分析:**
-Remix は SSR フレームワークだが、Cloudflare Pages にデフォルトでデプロイすると静的サイトとして扱われる。SSR を動作させるには **Cloudflare Pages Functions** の設定が必要。
+Remix は SSR フレームワークだが、Cloudflare Pages にデフォルトで
+デプロイすると静的サイトとして扱われる。
+SSR を動作させるには **Cloudflare Pages Functions** の設定が必要。
 
 **解決策:**
 
@@ -89,7 +91,7 @@ Remix は SSR フレームワークだが、Cloudflare Pages にデフォルト�
 2. `@remix-run/cloudflare-pages` をインストール
 3. `wrangler.toml` で `nodejs_compat` を有効化
 
-```javascript
+~~~javascript
 // functions/[[path]].js
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "../build/server/index.js";
@@ -98,7 +100,7 @@ export const onRequest = createPagesFunctionHandler({
   build,
   getLoadContext: (context) => ({ env: context.env }),
 });
-```
+~~~
 
 ---
 
@@ -106,12 +108,12 @@ export const onRequest = createPagesFunctionHandler({
 
 **エラーメッセージ:**
 
-```
+~~~text
 Could not resolve "fs"
 Could not resolve "path"
 Could not resolve "stream"
 Could not resolve "crypto"
-```
+~~~
 
 **原因:**
 
@@ -128,7 +130,7 @@ Could not resolve "crypto"
 
 2. `session.server.ts` のインポートを変更
 
-```typescript
+~~~typescript
 // ❌ Node.js 版
 import { PassThrough } from "node:stream";
 import { createReadableStreamFromReadable } from "@remix-run/node";
@@ -137,7 +139,7 @@ import { renderToPipeableStream } from "react-dom/server";
 // ✅ Cloudflare 版
 import { renderToReadableStream } from "react-dom/server";
 import type { EntryContext } from "@remix-run/cloudflare";
-```
+~~~
 
 **結果:**
 ✅ サーバーバンドルサイズ: 177.31 kB → **33.30 kB** (81%削減)
@@ -149,10 +151,10 @@ import type { EntryContext } from "@remix-run/cloudflare";
 
 **致命的な問題の発見:**
 
-```bash
+~~~bash
 $ grep -r "fs/promises" app/ --include="*.ts" --include="*.tsx"
 # 結果: 20+ ファイルで fs/promises を使用
-```
+~~~
 
 **影響範囲:**
 
@@ -198,18 +200,18 @@ $ grep -r "fs/promises" app/ --include="*.ts" --include="*.tsx"
 
 ### アーキテクチャ変更
 
-```
+~~~text
 Before (ランタイム FS アクセス):
 User Request → SSR → fs.readFile() → Markdown → HTML
 
 After (ビルド時バンドル):
 Build Time: Markdown → JavaScript Module
 User Request → SSR → Import Module → HTML
-```
+~~~
 
 ### ステップ1: プリビルドスクリプト作成
 
-```javascript
+~~~javascript
 // scripts/prebuild/generate-blog-posts.js
 import fs from 'fs/promises';
 import path from 'path';
@@ -275,11 +277,11 @@ export function getAllPosts(): BlogPost[] {
 }
 
 generateBlogPosts().catch(console.error);
-```
+~~~
 
 ### ステップ2: データアクセス層の書き換え
 
-```typescript
+~~~typescript
 // ❌ Before: app/data-io/blog/posts/fetchPosts.server.ts
 import fs from 'fs/promises';
 import matter from 'gray-matter';
@@ -301,25 +303,25 @@ import { getAllPosts } from '~/generated/blog-posts';
 export function fetchPosts() {
   return getAllPosts();
 }
-```
+~~~
 
 ### ステップ3: package.json の更新
 
-```json
+~~~json
 {
   "scripts": {
     "prebuild": "node scripts/prebuild/generate-blog-posts.js",
     "build": "npm run prebuild && remix vite:build"
   }
 }
-```
+~~~
 
 ### ステップ4: .gitignore の更新
 
-```gitignore
+~~~gitignore
 # Generated content
 app/generated/
-```
+~~~
 
 ### 変更が必要なファイル（推定）
 
@@ -413,7 +415,7 @@ app/generated/
 
 ### 実装中に発見した問題
 
-**予想外に順調だった実装**
+#### 予想外に順調だった実装
 
 基本的な実装は極めてスムーズに進みました。計画段階での綿密な設計と、明確なアーキテクチャ方針が功を奏した形です。
 
@@ -421,14 +423,14 @@ app/generated/
 - ✅ 型定義の整合性: 既存インターフェースとの完全な互換性を維持
 - ⚠️ テストの書き換え: インターフェース不変のため、モック戦略のみ調整が必要（今後対応）
 
-**フェーズ5: ESM/CommonJS 互換性問題（デプロイ時に発見）**
+#### フェーズ5: ESM/CommonJS 互換性問題（デプロイ時に発見）
 
 デプロイ時に予期しない問題が発生しました：
 
-```
+~~~text
 ✘ [ERROR] No matching export in "htmlparser2" for import "default"
 ✘ [ERROR] No matching export in "is-plain-object" for import "default"
-```
+~~~
 
 **原因:**
 
@@ -438,7 +440,7 @@ app/generated/
 
 **解決策:**
 
-```typescript
+~~~typescript
 // vite.config.ts
 ssr: {
   noExternal: true, // すべての依存関係をバンドル
@@ -447,7 +449,7 @@ ssr: {
     externalConditions: ["worker", "browser"],
   },
 }
-```
+~~~
 
 **結果:**
 ✅ Pages Functions のバンドルが成功
@@ -455,9 +457,9 @@ ssr: {
 
 ### パフォーマンス測定結果
 
-**ビルド時間**
+#### ビルド時間
 
-```bash
+~~~bash
 プリビルドスクリプト: ~1秒未満
   ├─ 12記事の解析と生成
   ├─ 3カテゴリの読み込み
@@ -466,9 +468,9 @@ ssr: {
 クライアントビルド: 2.01秒
 SSRビルド: 365ms
 合計ビルド時間: 約2.5秒
-```
+~~~
 
-**サーバーバンドルサイズ**
+### サーバーバンドルサイズ
 
 | 項目 | Before | After | 変化 |
 |------|--------|-------|------|
@@ -477,7 +479,7 @@ SSRビルド: 365ms
 
 バンドルサイズは増加しましたが、これは12記事分のコンテンツと全依存関係が含まれているためです。
 
-**実行時パフォーマンス（推定）**
+### 実行時パフォーマンス（推定）
 
 | 指標 | Before (FS) | After (Bundle) | 改善率 |
 |------|-------------|----------------|--------|
@@ -485,7 +487,7 @@ SSRビルド: 365ms
 | 記事詳細取得 | ~5-20ms | ~0.5ms | **10-40x** |
 | コールドスタート | 遅い | 速い | ✅ 大幅改善 |
 
-**Cloudflare Pages での動作確認**
+### Cloudflare Pages での動作確認
 
 ✅ デプロイ成功
 ✅ ブログ一覧ページ正常表示
@@ -494,9 +496,9 @@ SSRビルド: 365ms
 
 ### ベストプラクティス
 
-**1. プリビルドスクリプトの構造**
+#### 1. プリビルドスクリプトの構造
 
-```javascript
+~~~javascript
 // ✅ Good: ESM形式、明確な関数分割、詳細なログ出力
 async function generateBlogPosts() {
   console.log('🚀 Starting blog posts generation...');
@@ -516,22 +518,22 @@ async function generateBlogPosts() {
   await fs.writeFile(outputPath, output);
   console.log(`✅ Generated ${outputPath}`);
 }
-```
+~~~
 
-**2. エラーハンドリングパターン**
+#### 2. エラーハンドリングパターン
 
-```javascript
+~~~javascript
 // ✅ Good: ビルド時にエラーを検出
 if (!data.title || typeof data.title !== 'string') {
   throw new Error(`Invalid frontmatter in ${file}: missing or invalid 'title'`);
 }
-```
+~~~
 
 ビルド時にバリデーションを行うことで、ランタイムエラーを防止。デプロイ前に問題を発見できます。
 
-**3. 型安全性の確保**
+#### 3. 型安全性の確保
 
-```typescript
+~~~typescript
 // ✅ Good: 完全な型定義を生成
 export interface BlogPost {
   slug: string;
@@ -540,26 +542,26 @@ export interface BlogPost {
 }
 
 export const posts: BlogPost[] = [/* ... */];
-```
+~~~
 
 生成されたモジュールは完全な型情報を持つため、IDEの補完やコンパイル時の型チェックが機能します。
 
-**4. CI/CD との統合**
+#### 4. CI/CD との統合
 
-```json
+~~~json
 {
   "scripts": {
     "prebuild": "node scripts/prebuild/generate-blog-posts.js",
     "build": "npm run prebuild && remix vite:build"
   }
 }
-```
+~~~
 
 `prebuild` を `build` スクリプトの前に実行することで、CI/CD環境でも自動的にコンテンツが生成されます。
 
-**5. Vite SSR 設定の重要性**
+#### 5. Vite SSR 設定の重要性
 
-```typescript
+~~~typescript
 // ✅ Cloudflare Workers 用の最適な設定
 ssr: {
   noExternal: true, // すべてバンドル
@@ -567,11 +569,11 @@ ssr: {
     conditions: ["worker", "browser"], // 環境に応じた解決
   },
 }
-```
+~~~
 
 ### ハマったポイント
 
-**1. ESM/CommonJS 互換性問題**
+#### 1. ESM/CommonJS 互換性問題
 
 これが唯一の予期しない問題でした。
 
@@ -580,7 +582,7 @@ ssr: {
 - **解決**: `ssr.resolve.conditions` で Worker 環境用の条件を指定
 - **教訓**: Cloudflare Workers では、すべての依存関係を正しくバンドルする設定が必要
 
-**2. 基本実装がスムーズだった理由**
+#### 2. 基本実装がスムーズだった理由
 
 ハマったポイントが少なかったのは、以下の要因によるものです:
 

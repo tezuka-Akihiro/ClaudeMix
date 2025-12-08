@@ -7,9 +7,6 @@ category: "ClaudeMix Philosophy"
 summary: "Remix × Cloudflare Workers 環境で発生した React Hooks エラーの原因究明から、一時的な回避策の実装まで。React の重複バンドル問題がもたらす影響と、その解決に向けた試行錯誤の記録。"
 tags: ["React", "Workers", "Vite", "SSR", "troubleshooting"]
 ---
-
-# Cloudflare Workers における React Hooks エラーとの戦い：重複バンドル問題の深堀り
-
 ## 📝 概要
 
 Remix v2 + Vite で構築したブログアプリケーションを Cloudflare Workers 環境で動作させる際に、予期せぬ React Hooks エラーに遭遇しました。この記事では、問題の発見から原因の特定、そして一時的な回避策の実装までのプロセスを詳細に記録します。
@@ -26,7 +23,7 @@ Remix v2 + Vite で構築したブログアプリケーションを Cloudflare W
 
 **症状:**
 
-```
+```text
 記事本文のコードブロックが "__CODE_BLOCK_0__" のようなプレースホルダーとして表示される
 ```
 
@@ -75,7 +72,7 @@ renderer.code = function(token: any): string {
 
 **エラーメッセージ:**
 
-```
+```text
 TypeError: Cannot read properties of null (reading 'useState')
 at useState (react.development.js:1634:21)
 at BlogHeader (BlogHeader.tsx:17:3)
@@ -109,7 +106,7 @@ of a function component. This could happen for one of the following reasons:
 
 **問題の構造:**
 
-```
+```text
 アプリケーション
 ├─ SSR Bundle (build/server/index.js)
 │  └─ React (バージョン X)
@@ -146,7 +143,7 @@ Cloudflare Workers 環境では、`external` に指定されたモジュール�
 
 Wrangler は独自のビルドプロセスで `.wrangler` ディレクトリに依存関係をコピーします：
 
-```
+```text
 .wrangler/
 ├── node_modules/
 │   ├── react/
@@ -353,7 +350,7 @@ ssr: {
 
 **SSR バンドルサイズ:**
 
-```
+```text
 build/server/index.js: 3,150.26 kB
 ```
 
@@ -563,7 +560,7 @@ npm install -D wrangler
 
 **動作確認:**
 
-```bash
+```text
 ✅ GET / 200 OK
 ✅ GET /blog 200 OK
 ✅ GET /blog/sample-reference-post 200 OK (useEffect 動作確認済み)

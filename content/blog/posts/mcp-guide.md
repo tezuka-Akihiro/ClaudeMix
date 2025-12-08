@@ -7,8 +7,6 @@ category: "Claude Best Practices"
 description: "AIとの開発、まだ手作業で消耗していませんか？本記事では、AIが自律的に開発ツールを操作する未来を実現する「Model Context Protocol (MCP)」を徹底解説。ClaudeMixでの具体的な活用事例も紹介します。"
 tags: ["MCP", "architecture"]
 ---
-# AI開発の未来を変える「MCP」とは？ Claudeと開発ツールを連携させる新常識
-
 ## 📝 概要
 
 「このファイルの内容を教えて」「このテストを実行して結果を教えて」
@@ -38,7 +36,7 @@ MCP（Model Context Protocol）は、**AIアプリケーションが外部のデ
 
 ### アナロジー
 
-**「MCPはAIアプリケーションのUSB-Cポートのようなもの」**
+#### MCPはAIアプリケーションのUSB-Cポートのようなもの
 
 - USB-C: デバイスと周辺機器を標準的な方法で接続
 - MCP: AIモデルと異なるデータソース/ツールを標準的な方法で接続
@@ -49,7 +47,7 @@ MCP（Model Context Protocol）は、**AIアプリケーションが外部のデ
 
 ## 2. MCPの仕組み：クライアント・ホスト・サーバーモデル
 
-```
+```text
 ┌─────────────────────┐
 │   MCP Host          │ ← AIアプリケーション（Claude Code, Claude Desktop等）
 │   ┌───────────┐     │
@@ -256,7 +254,7 @@ if __name__ == "__main__":
 
 #### 自動実行フロー
 
-```
+```text
 1. ユーザー: 「実装完了しました」
 2. Claude: MCPサーバー「lint-checker」を起動
    → リント結果を取得

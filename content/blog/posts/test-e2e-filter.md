@@ -8,8 +8,6 @@ tags: ["Playwright", "testing"]
 description: "ブログのカテゴリ・タグフィルター機能をPlaywrightでテストする実装例"
 ---
 
-# Playwrightによるフィルター機能のE2Eテスト実装
-
 この記事では、ブログのカテゴリ・タグフィルター機能をPlaywrightでテストする実装例を紹介します。
 
 ## FilterPanelのE2Eテスト設計

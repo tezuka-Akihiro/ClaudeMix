@@ -20,7 +20,7 @@ tags: ["refactoring", "testing", "architecture"]
 
 プロジェクト初期、カテゴリ名「Claude Best Practices」という単純な情報が、以下の4箇所に散在していました：
 
-```
+```text
 カテゴリ名「Claude Best Practices」の定義箇所:
 - spec.yaml: カテゴリマスタ定義
 - func-spec.md: 機能仕様書の説明文

@@ -7,8 +7,6 @@ category: "Claude Best Practices"
 description: "Claudeがプロジェクト全体の文脈を理解するための共有メカニズム「Projects」の公式ガイドを要約。CLAUDE.mdの理想的な構成や、コンテキスト管理のベストプラクティスを解説します。"
 tags: ["Projects", "architecture"]
 ---
-# Claude Projects 公式ガイド要約
-
 **ソース**: <https://www.anthropic.com/engineering/claude-code-best-practices>
 
 ## 1. Claude Projectsとは
@@ -112,7 +110,7 @@ Anthropic公式が推奨する記載事項:
 
 **実践**:
 
-```
+```text
 「まず計画を立ててください。コードは書かないでください」
 
 → Claudeが計画を提示
@@ -152,7 +150,7 @@ $ARGUMENTS
 
 **使用**:
 
-```
+```bash
 /debug-error "TypeError: Cannot read property 'map' of undefined"
 ```
 
@@ -160,7 +158,7 @@ $ARGUMENTS
 
 ### 1. Explore-Plan-Code-Commit
 
-```
+```text
 1. Explore: 関連ファイル、画像、URLを読む（コードは書かない）
 2. Plan: 明確な計画を立てる
 3. Code: 実装
@@ -171,7 +169,7 @@ $ARGUMENTS
 
 ### 2. Test-Driven Development (TDD)
 
-```
+```text
 1. テストを書く
 2. 失敗を確認
 3. 実装
@@ -180,7 +178,7 @@ $ARGUMENTS
 
 ### 3. Visual Iteration
 
-```
+```text
 1. デザインモックまたはスクリーンショットを提供
 2. 実装
 3. スクリーンショットを撮影
@@ -262,7 +260,7 @@ gh auth login
 
 #### Projects機能との統合
 
-```
+```text
 .claude/
 ├── CLAUDE.md           # プロジェクト文脈
 ├── commands/           # カスタムコマンド

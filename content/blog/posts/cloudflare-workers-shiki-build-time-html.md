@@ -28,7 +28,7 @@ stg環境（`https://stg.claudemix.pages.dev/blog`）にデプロイ後、記事
 
 **エラーメッセージ:**
 
-```
+```text
 CompileError: WebAssembly.instantiate(): Wasm code generation disallowed by embedder
   at shiki/engine-oniguruma
 ```
@@ -214,7 +214,7 @@ async function generateBlogPosts() {
 
 ### パフォーマンス結果
 
-```
+```text
 📊 ビルド時変換の結果:
 - 最速: 1ms (welcome)
 - 最長: 322ms (cloudflare-pages-deployment-challenge)

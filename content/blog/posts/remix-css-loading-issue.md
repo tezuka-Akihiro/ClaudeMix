@@ -7,9 +7,6 @@ category: "Tutorials & Use Cases"
 description: "RemixとCloudflare Workers環境で発生したCSS読み込み問題を解決するデバッグプロセスを解説。パスエイリアス、SSRレンダリングの不整合、開発環境設定の誤りといった複数の原因を特定し、`wrangler pages dev`とViteプラグインを使った正しい開発方法を明らかにします。"
 tags: ["SSR", "Vite", "Workers", "troubleshooting"]
 ---
-
-# Remix + Cloudflare WorkersでCSS読み込み問題を解決: パスエイリアスとSSRの落とし穴
-
 ## 📝 概要
 
 コミット `0c1c665` でCSSが突然読み込まれなくなる問題が発生しました。この記事では、問題の発見から原因特定、そして解決に至るまでのデバッグプロセスを詳細に記録します。特に、Remix + Cloudflare Workers環境特有の注意点について解説します。
@@ -161,7 +158,7 @@ npm run build
 
 ビルド出力:
 
-```
+```text
 build/client/assets/entry-DSeiBC_g.css  41.61 kB │ gzip:  6.68 kB
 ```
 
