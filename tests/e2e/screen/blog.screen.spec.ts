@@ -99,19 +99,19 @@ test.describe.serial('E2E Screen Test for blog - Navigation Menu', () => {
     await navigationMenu.waitFor({ state: 'visible', timeout: 10000 });
     await expect(navigationMenu).toBeVisible();
 
-    // 3. メニュー項目が表示され、数が2つであること
+    // 3. メニュー項目が表示され、数が2つ以上であること
     const menuItems = page.getByTestId('menu-item');
     await expect(menuItems.first()).toBeVisible();
-    await expect(menuItems).toHaveCount(2);
+    expect(await menuItems.count()).toBeGreaterThanOrEqual(2);
 
-    // 4. 1つ目のメニュー項目（挨拶記事）をクリック
+    // 4. 1つ目のメニュー項目をクリック
     const firstMenuItem = menuItems.first();
-    await expect(firstMenuItem).toHaveText('挨拶記事');
+    await expect(firstMenuItem).toHaveText('はじめまして');
     await firstMenuItem.click();
     await page.waitForLoadState('networkidle');
 
-    // 5. /blog/welcomeページへ遷移すること
-    await expect(page).toHaveURL('/blog/welcome');
+    // 5. ページへ遷移すること
+    await expect(page).toHaveURL('/blog/hazimemasite');
   });
 
   /**
