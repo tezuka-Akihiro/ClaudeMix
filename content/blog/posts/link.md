@@ -10,7 +10,7 @@ tags: []
 
 ## QRcode
 
-![alt text](../../../public/images/blog/qrcode.png)
+![alt text](/images/blog/qrcode.png)
 
 ## X
 
