@@ -7,9 +7,6 @@ publishedAt: "2025-11-16"
 category: "Claude Best Practices"
 tags: ["Skills", "Prompts", "Projects", "MCP"]
 ---
-# Claude 公式ベストプラクティス総まとめ
-
-
 **統合ソース**: Skills, Prompts, Projects, MCP公式ガイド
 
 ## 1. 全体像
@@ -232,34 +229,38 @@ TDDサイクルを実行してください。各ステップで思考プロセ�
 - `npm run lint`: リント実行
 
 ## ディレクトリ構造
-\`\`\`
+
+```bash
 app/
 ├── routes/          # Remixルート
 ├── components/      # UIコンポーネント
 ├── lib/             # 純粋ロジック層
 └── data-io/         # 副作用層
-\`\`\`
+```
 
 ## コードスタイル
+
 - TypeScript厳格モード
 - Prettier自動フォーマット
 - 3層分離アーキテクチャ遵守
 
 ## テストポリシー
+
 - E2EファースEnd（Outside-In TDD）
 - 各層ごとに単体テスト
 - カバレッジ80%以上
 
 ## 注意事項
+
 - Remixの`loader`/`action`はサーバー専用（`.server.ts`推奨）
 - クライアント側でのファイルシステムアクセス不可
 - 環境変数は`.env`で管理（gitignore必須）
 
 ## 禁止事項
+
 - `any`型の使用（型安全性の徹底）
 - 直接的なDOM操作（Reactの原則に反する）
 - 層の責務を越える実装（3層分離違反）
-```
 
 ### コンテキスト管理
 
@@ -277,7 +278,7 @@ app/
 
 ### アーキテクチャ理解
 
-```
+```text
 Host (Claude Code)
   ├─ Client 1 ←→ Server 1 (lint-checker)
   ├─ Client 2 ←→ Server 2 (test-runner)
@@ -322,7 +323,7 @@ Host (Claude Code)
 
 ### 典型的な開発フロー
 
-```
+```text
 1. [Projects] CLAUDE.mdでプロジェクト文脈を共有
    ↓
 2. [Skills] requirement-clarifierが要件を明確化
@@ -342,7 +343,7 @@ Host (Claude Code)
 
 ### 品質保証フロー
 
-```
+```text
 実装完了
   ↓
 [MCP] lint-checker起動
@@ -366,7 +367,7 @@ Host (Claude Code)
 
 #### Skills実装
 
-```
+```text
 .claude/skills/layer1-official/
 ├── requirements-clarification-expert.md
 ├── prompt-engineering-expert.md
@@ -376,6 +377,7 @@ Host (Claude Code)
 ```
 
 **各Skillの役割**:
+
 - **requirements-clarification-expert**: 曖昧な要求を明確化（Prompts技術1: 明確性）
 - **prompt-engineering-expert**: 効果的なプロンプト作成支援（Prompts技術2: 例示）
 - **context-manager**: 段階的情報開示（Prompts技術8: 長文コンテキスト）
@@ -384,7 +386,7 @@ Host (Claude Code)
 
 #### Prompts実装
 
-```
+```text
 .claude/commands/layer1-official/
 ├── structured-task.md                # XMLタグ活用
 ├── example-driven-implementation.md  # マルチショット例示
@@ -440,9 +442,9 @@ Host (Claude Code)
 
 ### Layer 2: Remix特化の実装
 
-#### Skills実装
+#### Layer 2: Skills実装
 
-```
+```text
 .claude/skills/layer2-remix-specific/
 ├── service-section-pattern-expert.md
 ├── remix-design-workflow-expert.md
@@ -453,14 +455,15 @@ Host (Claude Code)
 ```
 
 **Layer 1との統合**:
+
 - Layer 1の`requirements-clarification-expert`が要件を明確化
 - Layer 2の`service-section-pattern-expert`が{service}/{section}に落とし込み
 - Layer 1の`xml-structuring-specialist`で構造化
 - Layer 2の`remix-design-workflow-expert`が3層分離適用
 
-#### Prompts実装
+#### Layer 2: Prompts実装
 
-```
+```text
 .claude/commands/layer2-remix-specific/
 ├── run-design-workflow.md
 ├── design-section.md
@@ -533,8 +536,8 @@ Host (Claude Code)
 
 ## 9. 参考リンク
 
-- **Skills**: https://code.claude.com/docs/en/skills
-- **Prompts**: https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview
-- **Projects**: https://www.anthropic.com/engineering/claude-code-best-practices
-- **MCP**: https://docs.claude.com/en/docs/mcp
-- **GitHub (MCP)**: https://github.com/modelcontextprotocol
+- **Skills**: <https://code.claude.com/docs/en/skills>
+- **Prompts**: <https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview>
+- **Projects**: <https://www.anthropic.com/engineering/claude-code-best-practices>
+- **MCP**: <https://docs.claude.com/en/docs/mcp>
+- **GitHub (MCP)**: <https://github.com/modelcontextprotocol>

@@ -20,7 +20,7 @@ tags: ["refactoring", "testing", "architecture"]
 
 プロジェクト初期、カテゴリ名「Claude Best Practices」という単純な情報が、以下の4箇所に散在していました：
 
-```
+```text
 カテゴリ名「Claude Best Practices」の定義箇所:
 - spec.yaml: カテゴリマスタ定義
 - func-spec.md: 機能仕様書の説明文
@@ -166,6 +166,7 @@ it('should filter posts by category', async ({ page }) => {
 ```
 
 **重要な変更点**：
+
 - 件数チェック（`toHaveCount(3)`）→ **存在確認**（`toBeVisible()`）に変更
 - ハードコードされた値 → `spec.yaml`から取得
 - 本番データ依存 → テスト専用記事を使用

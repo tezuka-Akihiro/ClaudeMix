@@ -33,8 +33,8 @@ tags: ["architecture", "performance", "Vite"]
 
 私たちが直面した壁は、大きく分けて二つありました。
 
-1.  **パフォーマンスの壁**: リクエストごとの動的変換処理がCPU負荷を高め、表示遅延の原因となっていました。
-2.  **設計上の壁**: 生成されたHTMLファイルをGitで管理すると、元となるMarkdownファイルとの同期が崩れるリスクがありました。コンテンツの「唯一の真実の源（Single Source of Truth）」が曖昧になるのは、保守性の観点から致命的です。
+1. **パフォーマンスの壁**: リクエストごとの動的変換処理がCPU負荷を高め、表示遅延の原因となっていました。
+2. **設計上の壁**: 生成されたHTMLファイルをGitで管理すると、元となるMarkdownファイルとの同期が崩れるリスクがありました。コンテンツの「唯一の真実の源（Single Source of Truth）」が曖昧になるのは、保守性の観点から致命的です。
 
 これらの課題を解決するため、私たちは「**ビルド時に全ての重い処理を完了させ、ランタイムの責務を最小化する**」というアプローチを選択しました。
 
@@ -50,6 +50,11 @@ graph TD;
         C --> D[4. データバンドル生成<br>（app/generated/blog-posts.ts）];
     end
 
+    style D fill:#f9f,stroke:#333,stroke-width:2px
+```
+
+```mermaid
+graph TD;
     subgraph "リクエスト時（ランタイム）"
         E[ユーザーアクセス<br>（/blog/:slug）] --> F[Remix Loader];
         F --> G{Data-IO層<br>（fetchPostBySlug.server.ts）};
@@ -58,7 +63,6 @@ graph TD;
         I --> F;
     end
 
-    style D fill:#f9f,stroke:#333,stroke-width:2px
     style H fill:#f9f,stroke:#333,stroke-width:2px
 ```
 
@@ -66,21 +70,21 @@ graph TD;
 
 `npm run build` を実行すると、`prebuild` スクリプトが起動します。
 
-1.  **Markdownファイルの探索**: `content/blog/posts/` 配下にある全ての `.md` ファイルを探索します。
-2.  **変換処理**: 各ファイルに対して、以下の重い処理を実行します。
-    -   `gray-matter` でFrontmatter（メタデータ）を抽出
-    -   `marked` でMarkdown本文をHTMLに変換
-    -   `shiki` でコードブロックのシンタックスハイライトを適用
-    -   見出し情報を抽出し、目次生成用のデータを作成
-3.  **データバンドル生成**: 全ての記事の変換結果（HTMLコンテンツ、メタデータ、見出し情報）を一つのTypeScriptファイル `app/generated/blog-posts.ts` にまとめます。このファイルはGitの管理対象から除外します（`.gitignore` に追加）。
+1. **Markdownファイルの探索**: `content/blog/posts/` 配下にある全ての `.md` ファイルを探索します。
+2. **変換処理**: 各ファイルに対して、以下の重い処理を実行します。
+    - `gray-matter` でFrontmatter（メタデータ）を抽出
+    - `marked` でMarkdown本文をHTMLに変換
+    - `shiki` でコードブロックのシンタックスハイライトを適用
+    - 見出し情報を抽出し、目次生成用のデータを作成
+3. **データバンドル生成**: 全ての記事の変換結果（HTMLコンテンツ、メタデータ、見出し情報）を一つのTypeScriptファイル `app/generated/blog-posts.ts` にまとめます。このファイルはGitの管理対象から除外します（`.gitignore` に追加）。
 
 ### ランタイムの動作
 
 ユーザーが記事ページにアクセスすると、Remixの `loader` 関数が実行されます。
 
-1.  `loader` はデータIO層の関数 `fetchPostBySlug` を呼び出します。
-2.  `fetchPostBySlug` は、ビルド時に生成されたデータバンドル `app/generated/blog-posts.ts` を **直接インポート** します。
-3.  データバンドル内の `Map` オブジェクトを使い、リクエストされた `slug` に対応する記事データを瞬時に取得して返します。
+1. `loader` はデータIO層の関数 `fetchPostBySlug` を呼び出します。
+2. `fetchPostBySlug` は、ビルド時に生成されたデータバンドル `app/generated/blog-posts.ts` を **直接インポート** します。
+3. データバンドル内の `Map` オブジェクトを使い、リクエストされた `slug` に対応する記事データを瞬時に取得して返します。
 
 このアーキテクチャにより、ランタイムではファイルI/OやCPU負荷の高い変換処理が一切発生せず、メモリからデータを返すだけの極めて軽量な動作が実現されます。
 
@@ -92,7 +96,7 @@ graph TD;
 
 このスクリプトは、前述の変換処理を行い、最終的にデータバンドルを生成する役割を担います。
 
-```javascript:scripts/prebuild/generate-blog-posts.js
+```javascript
 // 抜粋：記事データを生成し、ファイルに書き出す部分
 import fs from 'fs/promises';
 import path from 'path';
@@ -127,7 +131,7 @@ async function generateBlogData() {
 
 ランタイムで記事データを取得するコードは、驚くほどシンプルになります。
 
-```typescript:app/data-io/blog/post-detail/fetchPostBySlug.server.ts
+```typescript
 import { getPostBySlug as getFromBundle } from '~/generated/blog-posts';
 
 export function fetchPostBySlug(slug: string) {

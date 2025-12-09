@@ -119,7 +119,11 @@
       "Bash(ForEach-Object { Select-String -Path $_ullName -Pattern \"^publishedAt:\" -Context 0,0)",
       "Bash(wrangler pages deployment list:*)",
       "Bash(Select-String -Pattern \"(stg|blog)\" -Context 0,2)",
-      "Bash(wrangler pages dev:*)"
+      "Bash(wrangler pages dev:*)",
+      "Bash(Select-String -Pattern \"(MD040|MD024|MD036)\" -Context 0,0)",
+      "Bash(Get-ChildItem -Path public -Recurse)",
+      "Bash(Select-Object FullName)",
+      "Bash(lsof:*)"
     ],
     "deny": [],
     "ask": []

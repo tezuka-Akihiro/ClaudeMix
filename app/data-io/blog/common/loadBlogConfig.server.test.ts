@@ -16,14 +16,14 @@ describe('loadBlogConfig - Side Effects Layer', () => {
       const result = await loadBlogConfig();
 
       // Assert
-      expect(result.menuItems).toHaveLength(2);
+      expect(result.menuItems).toHaveLength(3);
       expect(result.menuItems[0]).toEqual({
-        label: "挨拶記事",
-        path: "/blog/welcome",
+        label: "はじめまして",
+        path: "/blog/hazimemasite",
       });
       expect(result.menuItems[1]).toEqual({
-        label: "Articles",
-        path: "/blog",
+        label: "hello world",
+        path: "/blog/welcome",
       });
     });
 

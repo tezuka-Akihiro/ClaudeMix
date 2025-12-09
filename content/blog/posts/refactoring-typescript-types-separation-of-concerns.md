@@ -22,7 +22,7 @@ description: "AIとの協調リファクタリング第3弾。今回はフィル
 
 これまでのリファクタリングで主要な型は整理されましたが、フィルター機能周りにはまだ改善の余地がありました。
 
-1.  **責務の混在**: `fetchPosts.server.ts` にあった `FetchPostsOptions` 型は、**ページネーション** (`limit`, `offset`) と**フィルター** (`category`, `tags`) という、2つの異なる責務を併せ持っていました。
+1. **責務の混在**: `fetchPosts.server.ts` にあった `FetchPostsOptions` 型は、**ページネーション** (`limit`, `offset`) と**フィルター** (`category`, `tags`) という、2つの異なる責務を併せ持っていました。
 
     ```typescript
     // ❌ 修正前
@@ -34,7 +34,7 @@ description: "AIとの協調リファクタリング第3弾。今回はフィル
     }
     ```
 
-2.  **不適切な配置**: `fetchAvailableFilters.server.ts` で定義されていた `AvailableFilters` 型は、フィルターの選択肢を定義するもので、UIコンポーネントでも必要とされる情報です。しかし、データアクセス層（`data-io`）に定義されていたため、UI層から参照しにくい状態でした。
+2. **不適切な配置**: `fetchAvailableFilters.server.ts` で定義されていた `AvailableFilters` 型は、フィルターの選択肢を定義するもので、UIコンポーネントでも必要とされる情報です。しかし、データアクセス層（`data-io`）に定義されていたため、UI層から参照しにくい状態でした。
 
 ## 🔍 AIとの設計相談：『関心の分離』を適用する
 
@@ -56,8 +56,8 @@ AIとの対話を通じて、具体的なリファクタリング計画が明確
 
 まず、`FetchPostsOptions` からフィルターの責務を分離しました。
 
-1.  **`FilterOptions` を共通化**: フィルター条件のみを持つ `FilterOptions` を `app/specs/blog/types.ts` に定義。
-2.  **Intersection Type で結合**: `fetchPosts.server.ts` で、ページネーション用の `PaginationOptions` と共通の `FilterOptions` を `&` を使って結合し、新しい `FetchPostsOptions` を定義しました。
+1. **`FilterOptions` を共通化**: フィルター条件のみを持つ `FilterOptions` を `app/specs/blog/types.ts` に定義。
+2. **Intersection Type で結合**: `fetchPosts.server.ts` で、ページネーション用の `PaginationOptions` と共通の `FilterOptions` を `&` を使って結合し、新しい `FetchPostsOptions` を定義しました。
 
     ```diff
     - export interface FetchPostsOptions {
@@ -74,14 +74,14 @@ AIとの対話を通じて、具体的なリファクタリング計画が明確
     + export type FetchPostsOptions = PaginationOptions & FilterOptions;
     ```
 
-3.  **古い定義を削除**: `lib/blog/posts/filterPosts.ts` にあった重複する `FilterOptions` を削除し、共通の型をインポートするように変更しました。
+3. **古い定義を削除**: `lib/blog/posts/filterPosts.ts` にあった重複する `FilterOptions` を削除し、共通の型をインポートするように変更しました。
 
 ### Step 2: `AvailableFilters` の集約
 
 次に、UIとサーバーで共有される `AvailableFilters` 型を共通の場所に移動しました。
 
-1.  **`AvailableFilters` を共通化**: `app/specs/blog/types.ts` に `AvailableFilters` を定義。この際、すでに共通化されていた `TagGroup` 型を再利用しました。
-2.  **古い定義を削除**: `fetchAvailableFilters.server.ts` からローカルの型定義を削除し、共通の型をインポートするように変更しました。
+1. **`AvailableFilters` を共通化**: `app/specs/blog/types.ts` に `AvailableFilters` を定義。この際、すでに共通化されていた `TagGroup` 型を再利用しました。
+2. **古い定義を削除**: `fetchAvailableFilters.server.ts` からローカルの型定義を削除し、共通の型をインポートするように変更しました。
 
 ## ✨ 結果と考察
 

@@ -8,8 +8,6 @@ category: "ClaudeMix Philosophy"
 tags: ["Workers", "MCP", "architecture"]
 ---
 
-# このプロジェクトについて
-
 このプロジェクトの名前「ClaudeMix」は、私たちの開発哲学そのものを表しています。
 
 ## 名前の由来

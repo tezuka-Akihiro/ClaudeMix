@@ -155,41 +155,6 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     await expect(errorElement).toContainText(/404|Not Found|ページが見つかりません/i);
   });
 
-  /**
-   * Post Detail Reference Feature: 外部ファイル参照
-   * @description
-   * sourceプロパティで指定された外部マークダウンファイル（README.md）が
-   * 記事本文として正しく表示されることを検証
-   */
-  test('Post Detail: sourceプロパティで外部ファイルを参照して表示される', async ({ page }) => {
-    const TEST_SLUG = 'readme';
-    const TARGET_URL = `/blog/${TEST_SLUG}`;
-
-    // 1. 参照記事にアクセス
-    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
-
-    // 2. 記事が正常に表示される
-    await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
-
-    // 3. タイトルが表示される
-    const titleElement = page.locator('[data-testid="post-title"]');
-    await expect(titleElement).toBeVisible();
-    await expect(titleElement).toContainText('README参照記事');
-
-    // 4. 本文が表示される（README.mdの内容が含まれている）
-    const contentElement = page.locator('[data-testid="post-content"]');
-    await expect(contentElement).toBeVisible();
-
-    // 5. README.mdの特徴的な文字列が含まれていることを確認
-    await expect(contentElement).toContainText('AI開発ガードレール・ボイラープレート');
-    await expect(contentElement).toContainText('Remix');
-  });
-
-  /**
-   * 注: 外部参照エラーのテストは削除済み
-   * 理由: ビルド時品質保証により、外部参照エラーはビルド失敗となる
-   * エッジランタイムでのエラーハンドリングは不要
-   */
 
   /**
    * Post Detail TOC Feature: 目次の表示

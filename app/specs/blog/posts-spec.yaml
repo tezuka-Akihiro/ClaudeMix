@@ -106,6 +106,12 @@ tags:
       group: "Claude Code"
       description: "Claude Code Projects"
 
+    # その他技術
+    - name: "TypeScript"
+      category: "technical"
+      group: "other"
+      description: "TypeScript 型システム・言語機能"
+
     # 記事の性質
     - name: "troubleshooting"
       category: "nature"
@@ -166,6 +172,11 @@ tags:
       category: "nature"
       group: "other"
       description: "パフォーマンス最適化"
+
+category:
+  1: "Claude Best Practices"
+  2: "ClaudeMix Philosophy"
+  3: "Tutorials & Use Cases"
 
   # 命名規則（ガイドライン）
   naming_rules:
@@ -395,7 +406,7 @@ test_articles:
     category_id: 3
     category_name: "Tutorials & Use Cases"
     tags: ["Playwright", "testing"]
-    publishedAt: "2025-01-15"
+    publishedAt: "2025-11-15"
     description: "ブログのカテゴリ・タグフィルター機能をPlaywrightでテストする実装例"
     # フィルタテスト: この記事が表示される条件
     expected_in_filters:
