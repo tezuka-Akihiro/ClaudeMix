@@ -16,6 +16,10 @@ tags: []
 
 <https://x.com/engineer_yusaku>
 
+![alt text](/images/blog/qr-x.png)
+
 ## note
 
 <https://note.com/engineer_yusaku>
+
+![alt text](/images/blog/qr-note.png)
