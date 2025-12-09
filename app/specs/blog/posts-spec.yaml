@@ -130,6 +130,11 @@ tags:
       group: "other"
       description: "アーキテクチャ設計関連"
 
+    - name: "OGP"
+      category: "technical"
+      group: "other"
+      description: "Open Graph Protocol 画像生成"
+
   # 推奨タグ（必要に応じて追加）
   recommended:
     # Remix関連（まだ記事がない要素技術）
@@ -137,6 +142,10 @@ tags:
       category: "technical"
       group: "Remix"
       description: "Remix Loader"
+    - name: "Nested Routing"
+      category: "technical"
+      group: "Remix"
+      description: "Remixのネストされたルーティング"
     - name: "Action"
       category: "technical"
       group: "Remix"

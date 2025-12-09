@@ -44,7 +44,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 |:---|:---|:---|
 | copyrightFormatter.ts | app/lib/blog/common/copyrightFormatter.ts | コピーライト文字列のフォーマット（年の自動更新など） |
 | copyrightFormatter.test.ts | app/lib/blog/common/copyrightFormatter.test.ts | ユニットテスト |
-| generateOgpImage.ts | app/lib/blog/common/generateOgpImage.ts | OGP画像生成ロジック（SatoriライブラリによるPNG生成） |
+| generateOgpImage.tsx | app/lib/blog/common/generateOgpImage.tsx | OGP画像生成ロジック（SatoriライブラリによるPNG生成） |
 | generateOgpImage.test.ts | app/lib/blog/common/generateOgpImage.test.ts | ユニットテスト |
 
 ---

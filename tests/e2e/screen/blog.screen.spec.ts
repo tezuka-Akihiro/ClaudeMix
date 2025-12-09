@@ -395,3 +395,85 @@ test('should filter posts by selecting a tag from a specific group', async ({ pa
     await expect(testArticleCard).toBeVisible();
   });
 });
+
+/**
+ * @see docs/E2E_TEST_CRITERIA.md
+ * @description
+ * OGP画像生成のAPIエンドポイントテスト:
+ * commonセクションの共通インフラ機能として、OGP画像の動的生成をテストします。
+ * UI表示ではなく、APIエンドポイントのレスポンス（ステータス、ヘッダー、画像データ）を検証します。
+ *
+ * @reference
+ * - develop/blog/common/func-spec.md (OGP Image Generation)
+ * - develop/OGP導入.md
+ * - app/specs/blog/common-spec.yaml (ogpセクション)
+ */
+test.describe('E2E Section Test for blog common - OGP Image Generation', () => {
+
+  test.afterEach(async ({ page }) => {
+    await page.waitForTimeout(1000);
+  });
+
+  /**
+   * テスト1: 存在する記事のOGP画像生成確認
+   * @description 有効なslugに対してOGP画像が正常に生成され、適切なヘッダーとPNG形式で返却されること
+   */
+  test('should generate OGP image for existing post with correct headers and PNG format', async ({ request }) => {
+    const testSlug = 'hazimemasite';
+    const response = await request.get(`/ogp/${testSlug}.png`);
+
+    // 1. ステータスコードが200であること
+    expect(response.status()).toBe(200);
+
+    // 2. Content-Typeがimage/pngであること
+    const contentType = response.headers()['content-type'];
+    expect(contentType).toBe('image/png');
+
+    // 3. Cache-Controlヘッダーが適切に設定されていること
+    const cacheControl = response.headers()['cache-control'];
+    expect(cacheControl).toContain('public');
+    expect(cacheControl).toContain('max-age=31536000');
+    expect(cacheControl).toContain('immutable');
+
+    // 4. レスポンスボディがPNG形式であること（PNGシグネチャの確認）
+    const buffer = await response.body();
+    expect(buffer.length).toBeGreaterThan(0);
+
+    // PNGファイルシグネチャ: 89 50 4E 47 0D 0A 1A 0A
+    expect(buffer[0]).toBe(0x89);
+    expect(buffer[1]).toBe(0x50); // 'P'
+    expect(buffer[2]).toBe(0x4E); // 'N'
+    expect(buffer[3]).toBe(0x47); // 'G'
+  });
+
+  /**
+   * テスト2: 存在しない記事のOGP画像生成確認
+   * @description 無効なslugに対して404エラーが返却されること
+   */
+  test('should return 404 for non-existing post', async ({ request }) => {
+    const nonExistingSlug = 'this-post-does-not-exist-12345';
+    const response = await request.get(`/ogp/${nonExistingSlug}.png`);
+
+    // ステータスコードが404であること
+    expect(response.status()).toBe(404);
+  });
+
+  /**
+   * テスト3: 複数の記事でOGP画像が生成されること
+   * @description 異なるslugに対してそれぞれOGP画像が正常に生成されること
+   */
+  test('should generate OGP images for multiple different posts', async ({ request }) => {
+    const testSlugs = ['hazimemasite', 'welcome', 'about-claudemix'];
+
+    for (const slug of testSlugs) {
+      const response = await request.get(`/ogp/${slug}.png`);
+
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type']).toBe('image/png');
+
+      const buffer = await response.body();
+      expect(buffer.length).toBeGreaterThan(0);
+      expect(buffer[0]).toBe(0x89); // PNG signature
+    }
+  });
+});
