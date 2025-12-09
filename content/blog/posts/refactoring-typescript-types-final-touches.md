@@ -4,7 +4,7 @@ title: "AIと育てる型定義 Part 5: UIとデータ層を繋ぐ『生きた�
 publishedAt: "2025-11-27"
 summary: "AI協調リファクタリング最終回。UIコンポーネントのPropsやデータ層の戻り値をドメイン仕様に統合し、プロジェクトの『生きた仕様書』を完成させるまでの全記録。"
 author: "ClaudeMix Team"
-tags: ["refactoring", "architecture", "typescript"]
+tags: ["refactoring", "architecture", "TypeScript"]
 category: "Claude Best Practices"
 description: "AI協調リファクタリング最終回。UIコンポーネントのPropsやデータ層の戻り値をドメイン仕様に統合し、プロジェクトの『生きた仕様書』を完成させるまでの全記録。"
 ---
