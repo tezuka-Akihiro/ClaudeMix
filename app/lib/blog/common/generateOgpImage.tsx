@@ -3,10 +3,26 @@
 // PostMetadataを受け取り、PNG画像バッファを返す
 
 import satori from 'satori';
-import { Resvg } from '@resvg/resvg-js';
+import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import type { PostMetadata } from '~/data-io/blog/common/loadPostMetadata.server';
 import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { BlogCommonSpec } from '~/specs/blog/types';
+
+// WASM初期化フラグ
+let wasmInitialized = false;
+
+/**
+ * WASM初期化（初回のみ実行）
+ */
+async function ensureWasmInitialized(): Promise<void> {
+  if (!wasmInitialized) {
+    // WASMファイルをfetchしてArrayBufferとして読み込む
+    const response = await fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm');
+    const wasmBinary = await response.arrayBuffer();
+    await initWasm(wasmBinary);
+    wasmInitialized = true;
+  }
+}
 
 /**
  * テキストを指定された最大長で切り詰める
@@ -51,6 +67,9 @@ export async function fetchFont(): Promise<ArrayBuffer> {
  * @returns PNG画像のバッファ
  */
 export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> {
+  // WASM初期化
+  await ensureWasmInitialized();
+
   // spec.yamlからOGP設定を読み込む（ビルド時に生成された静的データ）
   const spec = loadSpec<BlogCommonSpec>('blog/common');
   const ogpConfig = spec.ogp;
@@ -136,14 +155,8 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
     }
   );
 
-  // SVGをPNGに変換
-  const resvg = new Resvg(svg, {
-    fitTo: {
-      mode: 'width',
-      value: ogpConfig.image.width,
-    },
-  });
-
+  // SVGをPNGに変換（WASM版）
+  const resvg = new Resvg(svg);
   const pngData = resvg.render();
   const pngBuffer = pngData.asPng();
 

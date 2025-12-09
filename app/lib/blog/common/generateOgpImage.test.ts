@@ -6,7 +6,8 @@ vi.mock('satori', () => ({
   default: vi.fn(async () => '<svg>mock svg</svg>'),
 }));
 
-vi.mock('@resvg/resvg-js', () => ({
+vi.mock('@resvg/resvg-wasm', () => ({
+  initWasm: vi.fn(async () => Promise.resolve()),
   Resvg: vi.fn().mockImplementation(() => ({
     render: vi.fn(() => ({
       asPng: vi.fn(() => {
