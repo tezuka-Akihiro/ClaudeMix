@@ -1,0 +1,94 @@
+{
+  "version": "1.0.0",
+  "description": "Blog metadata linting configuration",
+
+  "globalSettings": {
+    "encoding": "utf-8",
+    "parallel": true,
+    "reportFormat": "detailed"
+  },
+
+  "rules": {
+    "required-fields": {
+      "enabled": true,
+      "severity": "error",
+      "description": "必須フィールドの存在チェック",
+      "fields": ["slug", "title", "publishedAt", "category", "description", "tags"]
+    },
+
+    "date-validation": {
+      "enabled": true,
+      "severity": "error",
+      "description": "publishedAt の日付検証（年月が前後1ヶ月以内）",
+      "format": "YYYY-MM-DD",
+      "allowedRange": "±1 month"
+    },
+
+    "category-validation": {
+      "enabled": true,
+      "severity": "error",
+      "description": "category の選択肢検証",
+      "specPath": "app/specs/blog/posts-spec.yaml",
+      "specField": "categories[].name"
+    },
+
+    "tags-validation": {
+      "enabled": true,
+      "severity": "error",
+      "description": "tags の選択肢検証",
+      "specPath": "app/specs/blog/posts-spec.yaml",
+      "specFields": ["tags.current[].name", "tags.recommended[].name"],
+      "allowEmpty": true
+    },
+
+    "slug-validation": {
+      "enabled": true,
+      "severity": "error",
+      "description": "slug のフォーマット検証",
+      "pattern": "^[a-z0-9-]+$",
+      "maxLength": 100
+    },
+
+    "description-length": {
+      "enabled": true,
+      "severity": "warning",
+      "description": "description の長さ検証",
+      "minLength": 20,
+      "maxLength": 160
+    }
+  },
+
+  "severity": {
+    "error": {
+      "exitCode": 1,
+      "color": "red",
+      "symbol": "❌"
+    },
+    "warning": {
+      "exitCode": 0,
+      "color": "yellow",
+      "symbol": "⚠️"
+    },
+    "info": {
+      "exitCode": 0,
+      "color": "blue",
+      "symbol": "ℹ️"
+    }
+  },
+
+  "output": {
+    "verbose": false,
+    "showPassedRules": false,
+    "groupByFile": true,
+    "summary": true,
+    "reportPath": "tests/lint/blog-metadata-report.md"
+  },
+
+  "ignore": {
+    "files": [
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/archive/**"
+    ]
+  }
+}
