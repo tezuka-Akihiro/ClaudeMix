@@ -5,6 +5,9 @@
 import { slugify } from './slugify';
 import type { Heading } from '~/specs/blog/types';
 
+// 型を再エクスポート
+export type { Heading };
+
 /**
  * マークダウンテキストから目次用の見出しを抽出する
  * 階層定義は develop/blog/post-detail/func-spec.md の「目次階層の定義」を参照

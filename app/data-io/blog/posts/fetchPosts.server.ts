@@ -5,6 +5,9 @@ import { getAllPosts } from '~/generated/blog-posts';
 import { filterPosts } from '~/lib/blog/posts/filterPosts';
 import type { FilterOptions, PostSummary, FilteredPostsResult } from '~/specs/blog/types';
 
+// 型を再エクスポート
+export type { PostSummary, FilteredPostsResult };
+
 export interface PaginationOptions {
   limit?: number;
   offset?: number;
