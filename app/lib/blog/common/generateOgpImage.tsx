@@ -42,23 +42,15 @@ function truncateText(text: string, maxLength: number): string {
  * @returns フォントのArrayBuffer
  */
 export async function fetchFont(): Promise<ArrayBuffer> {
-  // @fontsource パッケージからフォントファイルを読み込む
-  // Node.js環境でのみ動作（サーバーサイド）
-  const fs = await import('fs/promises');
-  const path = await import('path');
+  // CDN経由でフォントを取得（Cloudflare Workers互換）
+  const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-jp@5.2.8/files/noto-sans-jp-japanese-400-normal.woff';
+  const response = await fetch(fontUrl);
 
-  // @fontsource/noto-sans-jpのフォントファイルパスを解決
-  const fontPath = path.join(
-    process.cwd(),
-    'node_modules',
-    '@fontsource',
-    'noto-sans-jp',
-    'files',
-    'noto-sans-jp-japanese-400-normal.woff'
-  );
+  if (!response.ok) {
+    throw new Error(`Failed to fetch font: ${response.statusText}`);
+  }
 
-  const buffer = await fs.readFile(fontPath);
-  return buffer.buffer;
+  return await response.arrayBuffer();
 }
 
 /**
