@@ -44,6 +44,17 @@
    - 子コンポーネント（記事一覧、記事詳細）を表示するエリア
    - 配置: `app/components/blog/common/BlogLayout.tsx`
 
+#### OGP Image Generation
+1. **OGP画像生成**: 記事ごとのSNSシェア用画像を動的に生成
+   - **エンドポイント**: `/ogp/$slug.png`
+   - **機能概要**: 記事のスラッグに基づいてOGP画像を動的に生成し、PNG形式で返す
+   - **入力**: URL パラメータ `$slug`（記事の識別子）
+   - **出力**: PNG画像（1200x630px）、Content-Type: `image/png`、Cache-Control: `public, max-age=31536000, immutable`
+   - **エラーハンドリング**:
+     - 記事が存在しない場合: 404エラー
+     - 画像生成失敗時: 500エラー
+   - **配置**: `app/routes/ogp.$slug[.png].tsx`
+
 ### 開発戦略: 段階的強化 (Progressive Enhancement)
 1. **ステップ1: モック実装 (UIの確立)**
    - UI層はまず、固定値や単純なPropsを用いて「ガワ」を実装します。この段階では、`loader`や`action`からの実データ連携は行いません。
@@ -114,4 +125,26 @@ interface CommonData {
 
    - loadBlogConfig.server.ts: ブログ設定情報の読み込み
      - ブログタイトルやコピーライト情報を定数として管理
+
+   - loadPostMetadata.server.ts: 記事メタデータの読み込み（OGP画像生成用）
+     - MDXファイルのFrontmatter（タイトル、説明、著者など）を読み込む
+     - 記事が存在しない場合はnullを返す
+~~~
+
+### 🖼️ OGP画像生成のデータフロー
+~~~
+OGP画像生成 (Route: /ogp/$slug.png):
+1. [Route層の責務]
+   - URLパラメータから記事のslugを取得
+   - Data-IO層から記事メタデータを取得
+   - Logic層で画像を生成
+   - PNG形式でレスポンス（Cache-Controlヘッダー付き）
+
+2. [Data-IO層の責務]
+   - loadPostMetadata.server.ts: MDXファイルからFrontmatterを読み込む
+   - 記事が存在しない場合はnullを返す
+
+3. [Logic層の責務]
+   - generateOgpImage.ts: 記事メタデータからOGP画像（PNG）を生成
+   - Satoriライブラリを使用してHTML/CSSから画像を生成
 ~~~

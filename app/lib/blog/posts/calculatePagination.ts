@@ -1,7 +1,8 @@
+import type { PaginationInfo } from '~/specs/blog/types';
+
 /**
  * ページネーション情報を計算する純粋関数
  *
-import type { PaginationInfo } from '~/specs/blog/types';
  * @param totalPosts - 総記事数
  * @param currentPage - 現在のページ番号（1始まり）
  * @param postsPerPage - 1ページあたりの記事数

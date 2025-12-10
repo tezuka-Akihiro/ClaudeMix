@@ -24,9 +24,8 @@ export async function fetchAvailableFilters(): Promise<AvailableFilters> {
 
     // specからタグ定義を読み込み、グループ化する
     const spec = loadPostsSpec();
-    // spec.yamlのcurrentとrecommendedの両方のタグ定義を結合して使用する
-    const allTagDefinitions = [...spec.tags.current, ...spec.tags.recommended];
-    const tagGroups = groupTags(uniqueTags, allTagDefinitions);
+    // spec.yamlのタグ定義を使用する
+    const tagGroups = groupTags(uniqueTags, spec.tags.current);
 
     return {
       categories: uniqueCategories,

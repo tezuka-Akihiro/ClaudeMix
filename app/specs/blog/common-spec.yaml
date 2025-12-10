@@ -138,3 +138,28 @@ basic_tests:
 
   - name: "レスポンシブ対応確認"
     description: "モバイル/タブレット/デスクトップで適切なレイアウトが適用されること"
+
+# ==========================================
+# OGP画像生成設定
+# ==========================================
+ogp:
+  image:
+    width: 1200
+    height: 630
+    format: "png"
+  cache:
+    maxAge: 31536000  # 1年 (秒)
+    directive: "public, max-age=31536000, immutable"
+  title:
+    maxLength: 60
+    fontSize: 48
+    maxLines: 2
+  description:
+    maxLength: 120
+    fontSize: 24
+    maxLines: 3
+  author:
+    fontSize: 16
+    prefix: "By "
+  font:
+    family: "'Noto Sans JP', 'Hiragino Sans', 'ヒラギノ角ゴ ProN W3', 'メイリオ', Meiryo, sans-serif"

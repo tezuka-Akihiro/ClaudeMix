@@ -125,3 +125,37 @@ export interface PostsPageData {
 export type RenderedPost = Omit<Post, 'content' | 'summary' | 'testOnly'> & {
   htmlContent: string;
 };
+
+/**
+ * Blog commonセクションのspec.yamlの型定義
+ */
+export interface BlogCommonSpec {
+  ogp: {
+    image: {
+      width: number;
+      height: number;
+      format: string;
+    };
+    cache: {
+      maxAge: number;
+      directive: string;
+    };
+    title: {
+      maxLength: number;
+      fontSize: number;
+      maxLines: number;
+    };
+    description: {
+      maxLength: number;
+      fontSize: number;
+      maxLines: number;
+    };
+    author: {
+      fontSize: number;
+      prefix: string;
+    };
+    font: {
+      family: string;
+    };
+  };
+}

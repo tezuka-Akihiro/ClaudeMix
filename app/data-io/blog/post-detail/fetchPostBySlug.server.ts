@@ -31,7 +31,8 @@ export async function fetchPostBySlug(slug: string): Promise<Post | null> {
       slug: blogPost.slug,
       ...blogPost.frontmatter,
       content: blogPost.content,
-      headings: blogPost.headings,
+      // generated/blog-postsのHeading型（level: number）をspecs/blog/typesのHeading型（level: 2）に型アサーション
+      headings: blogPost.headings as Post['headings'],
     };
 
     // Postオブジェクトを返す
