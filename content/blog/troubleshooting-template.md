@@ -4,9 +4,13 @@ title: "【解説】内部技術ドキュメントをブログ記事にする公
 description: "社内向け技術リファレンスを外部向けブログ記事に変換するためのテンプレートです。Claudeの公式ベストプラクティスを例に、読者を引きつける構成とSEOに配慮したメタデータの活用方法を解説します。"
 author: "ClaudeMix Team"
 publishedAt: "YYYY-MM-DD"
-category: "ClaudeMix Philosophy"
-tags: [] # app\specs\blog\posts-spec.yaml
+category: "" # app\specs\blog\posts-spec.yaml で許可されているもののみ使用可
+tags: [] # app\specs\blog\posts-spec.yaml で許可されているもののみ使用可
 ---
+
+
+本文テンプレート：
+content\blog\導入基本構成.md の内容をそのままここに記載する。
 
 ## 📝 概要
 （例：RemixアプリをCloudflareにデプロイする過程で、`Cannot read properties of null (reading 'useState')` というエラーに遭遇しました。この記事では、問題の発見から原因の特定、そして解決に至るまでの全プロセスを記録します。）

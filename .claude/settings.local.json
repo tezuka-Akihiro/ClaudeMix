@@ -123,7 +123,9 @@
       "Bash(Select-String -Pattern \"(MD040|MD024|MD036)\" -Context 0,0)",
       "Bash(Get-ChildItem -Path public -Recurse)",
       "Bash(Select-Object FullName)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(Select-Object -First 1)",
+      "Bash(xxd:*)"
     ],
     "deny": [],
     "ask": []
