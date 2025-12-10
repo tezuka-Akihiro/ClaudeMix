@@ -29,6 +29,7 @@ blog_config:
   title: "ClaudeMix Blog"
   copyright: "© 2025 ClaudeMix"
   home_path: "/blog"
+  site_url: "https://stg.claudemix.pages.dev"
 
 # ==========================================
 # ナビゲーションメニュー設定

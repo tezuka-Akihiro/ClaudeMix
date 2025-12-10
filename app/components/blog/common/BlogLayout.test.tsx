@@ -10,6 +10,8 @@ const mockConfig = {
     { label: 'Articles', path: '/blog' },
   ],
   copyright: "© 2025 Test Project",
+  siteUrl: "https://example.com",
+  siteName: "Test Blog",
 };
 
 describe('BlogLayout', () => {

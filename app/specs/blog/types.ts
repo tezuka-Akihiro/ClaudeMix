@@ -87,6 +87,8 @@ export interface BlogConfig {
   blogTitle: string;
   menuItems: MenuItem[];
   copyright: string;
+  siteUrl: string;
+  siteName: string;
 }
 
 /**
@@ -155,6 +157,7 @@ export interface BlogCommonSpec {
     title: string;
     copyright: string;
     home_path: string;
+    site_url: string;
   };
   navigation: {
     menu_items: MenuItem[];
