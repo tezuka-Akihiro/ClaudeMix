@@ -168,12 +168,8 @@ tag_groups:
     - "Cloudflare"
     - "Claude Code"
     - "other"
+    - "起業"
 
-category:
-  1: "Claude Best Practices"
-  2: "ClaudeMix Philosophy"
-  3: "Tutorials & Use Cases"
-  4: "起業"
 
   # 命名規則（ガイドライン）
   naming_rules:
