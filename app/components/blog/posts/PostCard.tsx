@@ -7,12 +7,19 @@ import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import { getCategoryEmoji } from '~/lib/blog/posts/categoryUtils';
 import type { PostSummary } from '~/specs/blog/types';
 
-const PostCard: React.FC<PostSummary> = ({ slug, title, publishedAt, category, description, tags }) => {
+interface PostCardProps extends PostSummary {
+  categorySpec: {
+    categories: Array<{ name: string; emoji: string }>;
+    defaultEmoji: string;
+  };
+}
+
+const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category, description, tags, categorySpec }) => {
   // 日付をフォーマット（ISO形式 → 日本語形式）
   const formattedDate = formatPublishedDate(publishedAt);
 
-  // カテゴリ絵文字を取得
-  const categoryEmoji = getCategoryEmoji(category);
+  // カテゴリ絵文字を取得（spec値注入パターン）
+  const categoryEmoji = getCategoryEmoji(category, categorySpec.categories, categorySpec.defaultEmoji);
 
   return (
     <Link

@@ -8,10 +8,27 @@ export interface TagSpec {
 }
 
 export interface BlogPostsSpec {
-  tags: {
-    current: TagSpec[];
+  tags: TagSpec[];
+  categories: Array<{
+    id: number;
+    name: string;
+    emoji: string;
+    description: string;
+    use_case: string;
+  }>;
+  tag_groups: {
+    order: string[];
   };
-  // ... 他のspec定義
+  business_rules: {
+    pagination: {
+      posts_per_page: number;
+      default_page: number;
+    };
+    display: {
+      max_tags_per_card: number;
+      default_category_emoji: string;
+    };
+  };
 }
 
 export interface TagGroup {
@@ -116,6 +133,10 @@ export interface PostsPageData {
   pagination: Pick<PaginationInfo, 'currentPage' | 'totalPages'>;
   availableFilters: AvailableFilters;
   selectedFilters: FilterOptions;
+  categorySpec: {
+    categories: Array<{ name: string; emoji: string }>;
+    defaultEmoji: string;
+  };
 }
 
 /**
@@ -130,6 +151,18 @@ export type RenderedPost = Omit<Post, 'content' | 'summary' | 'testOnly'> & {
  * Blog commonセクションのspec.yamlの型定義
  */
 export interface BlogCommonSpec {
+  blog_config: {
+    title: string;
+    copyright: string;
+    home_path: string;
+  };
+  navigation: {
+    menu_items: MenuItem[];
+    animation: {
+      fade_duration_ms: number;
+      transition_timing: string;
+    };
+  };
   ogp: {
     image: {
       width: number;

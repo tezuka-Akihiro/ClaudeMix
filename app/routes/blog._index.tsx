@@ -10,6 +10,7 @@ import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { fetchPosts } from "~/data-io/blog/posts/fetchPosts.server";
 import { fetchAvailableFilters } from "~/data-io/blog/posts/fetchAvailableFilters.server";
 import { calculatePagination } from "~/lib/blog/posts/calculatePagination";
+import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -27,7 +28,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   // データ取得（副作用層）
-  const postsPerPage = 10;
+  const spec = loadPostsSpec();
+  const postsPerPage = spec.business_rules.pagination.posts_per_page;
   const { posts, total } = await fetchPosts({
     limit: postsPerPage,
     offset: (page - 1) * postsPerPage,
@@ -59,6 +61,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
       category,
       tags,
     },
+    categorySpec: {
+      categories: spec.categories,
+      defaultEmoji: spec.business_rules.display.default_category_emoji,
+    },
   });
 }
 
@@ -69,6 +75,7 @@ export default function BlogIndex() {
     pagination,
     availableFilters,
     selectedFilters,
+    categorySpec,
   } = useLoaderData<typeof loader>();
 
   return (
@@ -78,6 +85,7 @@ export default function BlogIndex() {
         pagination={pagination}
         availableFilters={availableFilters}
         selectedFilters={selectedFilters}
+        categorySpec={categorySpec}
       />
     </BlogLayout>
   );

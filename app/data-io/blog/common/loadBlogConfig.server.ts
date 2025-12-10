@@ -1,24 +1,23 @@
 // loadBlogConfig.server - 🔌 副作用層
 // ブログ設定情報（タイトル、メニュー項目、コピーライト）を返す
-// 固定の設定値を返す（外部ファイル読み込みは不要）
-import type { BlogConfig, MenuItem } from '~/specs/blog/types';
+// spec.yamlから設定を読み込む（SSoTパターン）
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { BlogConfig, MenuItem, BlogCommonSpec } from '~/specs/blog/types';
 
 // 型を再エクスポート
 export type { BlogConfig, MenuItem };
 
 /**
- * ブログの設定情報を読み込む
+ * ブログの設定情報を読み込む（spec.yaml参照パターン）
  *
  * @returns ブログ設定（タイトル、メニュー項目、コピーライト）
  */
 export async function loadBlogConfig(): Promise<BlogConfig> {
+  const spec = loadSpec<BlogCommonSpec>('blog/common');
+
   return {
-    blogTitle: "ClaudeMix Blog",
-    menuItems: [
-      { label: "はじめまして", path: "/blog/hazimemasite" },
-      { label: "カテゴリ一覧", path: "/blog/welcome" },
-      { label: "LINK",path: "/blog/link" },
-    ],
-    copyright: `© ${new Date().getFullYear()} ClaudeMix`,
+    blogTitle: spec.blog_config.title,
+    menuItems: spec.navigation.menu_items,
+    copyright: spec.blog_config.copyright,
   };
 }

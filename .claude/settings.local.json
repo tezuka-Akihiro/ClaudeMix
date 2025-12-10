@@ -125,7 +125,12 @@
       "Bash(Select-Object FullName)",
       "Bash(lsof:*)",
       "Bash(Select-Object -First 1)",
-      "Bash(xxd:*)"
+      "Bash(xxd:*)",
+      "Bash(Select-String -Pattern \"(error|Error|TS\\d+)\" -Context 0,2)",
+      "Bash(Select-String -Pattern \"(tagGroups|Playwright|testing)\" -Context 1,1)",
+      "Bash(Select-String -Pattern \"^tags:.*\")",
+      "Bash(do head -20 \"$file\")",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

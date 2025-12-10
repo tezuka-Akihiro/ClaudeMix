@@ -2,6 +2,8 @@
   "include": [
     "app/**/*.ts",
     "app/**/*.tsx",
+    "app/**/*.test.ts",
+    "app/**/*.test.tsx",
     "test/**/*.ts",
     "test/**/*.js",
     "scripts/**/*.ts",
@@ -10,14 +12,8 @@
   "exclude": [
     "node_modules",
     "build",
-    "**/*.yaml",
-    "**/*.yml",
     "scripts/templates/**/*",
-    "scripts/generate/templates/**/*",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
+    "scripts/generate/templates/**/*"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],

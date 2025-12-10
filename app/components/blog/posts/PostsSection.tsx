@@ -13,6 +13,7 @@ const PostsSection: React.FC<PostsPageData> = ({
   pagination,
   availableFilters,
   selectedFilters,
+  categorySpec,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -54,6 +55,7 @@ const PostsSection: React.FC<PostsPageData> = ({
                 category={post.category}
                 description={post.description}
                 tags={post.tags}
+                categorySpec={categorySpec}
               />
             ))}
           </div>

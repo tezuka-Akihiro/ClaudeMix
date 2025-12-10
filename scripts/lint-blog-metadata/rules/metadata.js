@@ -76,11 +76,8 @@ export function getMetadataRules() {
         const specPath = path.join(process.cwd(), config.specPath || 'app/specs/blog/posts-spec.yaml');
         const spec = yaml.load(fs.readFileSync(specPath, 'utf8'));
 
-        // current と recommended の両方から取得
-        const allowedTags = [
-          ...(spec.tags.current || []).map(tag => tag.name),
-          ...(spec.tags.recommended || []).map(tag => tag.name)
-        ];
+        // タグ一覧を取得
+        const allowedTags = (spec.tags || []).map(tag => tag.name);
 
         // 各タグの検証
         const invalidTags = [];
@@ -97,7 +94,7 @@ export function getMetadataRules() {
             severity: config.severity || this.severity,
             file: filePath,
             rule: this.name,
-            suggestion: `許可されたタグは spec.yaml の tags.current または tags.recommended を参照してください`
+            suggestion: `許可されたタグは spec.yaml の tags を参照してください`
           });
         }
 

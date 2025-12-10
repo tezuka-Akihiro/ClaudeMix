@@ -37,7 +37,7 @@
       "severity": "error",
       "description": "tags の選択肢検証",
       "specPath": "app/specs/blog/posts-spec.yaml",
-      "specFields": ["tags.current[].name", "tags.recommended[].name"],
+      "specField": "tags[].name",
       "allowEmpty": true
     },
 

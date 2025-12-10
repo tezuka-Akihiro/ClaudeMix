@@ -13,14 +13,22 @@ describe('categoryUtils', () => {
     it('should return correct emoji for each category from spec.yaml', () => {
       // Arrange & Act & Assert
       spec.categories.forEach(category => {
-        const emoji = getCategoryEmoji(category.name);
+        const emoji = getCategoryEmoji(
+          category.name,
+          spec.categories,
+          spec.business_rules.display.default_category_emoji
+        );
         expect(emoji).toBe(category.emoji);
       });
     });
 
     it('should return default emoji for unknown category', async () => {
       // Act
-      const emoji = getCategoryEmoji('Unknown Category');
+      const emoji = getCategoryEmoji(
+        'Unknown Category',
+        spec.categories,
+        spec.business_rules.display.default_category_emoji
+      );
 
       // Assert
       expect(emoji).toBe(spec.business_rules.display.default_category_emoji);
@@ -28,7 +36,11 @@ describe('categoryUtils', () => {
 
     it('should handle empty string', async () => {
       // Act
-      const emoji = getCategoryEmoji('');
+      const emoji = getCategoryEmoji(
+        '',
+        spec.categories,
+        spec.business_rules.display.default_category_emoji
+      );
 
       // Assert
       expect(emoji).toBe(spec.business_rules.display.default_category_emoji);

@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import PostsSection from './PostsSection';
 import type { PostsPageData } from '~/specs/blog/types';
+import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 // Helper function to render component with Router context
 const renderWithRouter = (ui: React.ReactElement) => {
@@ -11,6 +12,12 @@ const renderWithRouter = (ui: React.ReactElement) => {
 
 describe('PostsSection', () => {
   let mockProps: PostsPageData;
+  let spec: BlogPostsSpec;
+
+  beforeAll(async () => {
+    // Load spec.yaml dynamically to ensure tests stay in sync with spec
+    spec = await loadSpec('blog', 'posts');
+  });
 
   beforeEach(() => {
     mockProps = {
@@ -20,12 +27,14 @@ describe('PostsSection', () => {
           title: 'Test Post 1',
           publishedAt: '2024-01-01',
           category: 'Category 1',
+          tags: [],
         },
         {
           slug: 'test-post-2',
           title: 'Test Post 2',
           publishedAt: '2024-01-02',
           category: 'Category 2',
+          tags: [],
         },
       ],
       pagination: {
@@ -40,6 +49,10 @@ describe('PostsSection', () => {
       selectedFilters: {
         category: '',
         tags: [],
+      },
+      categorySpec: {
+        categories: spec.categories,
+        defaultEmoji: spec.business_rules.display.default_category_emoji,
       },
     };
   });
@@ -106,8 +119,8 @@ describe('PostsSection', () => {
       // Open the panel to check its contents
       fireEvent.click(screen.getByTestId('filter-toggle-button'));
       
-      const categorySelector = screen.getByTestId('category-selector') as HTMLSelectElement;
-      expect(categorySelector.value).toBe('Category 1');
+      const categorySelector = screen.getByRole('combobox');
+      expect(categorySelector).toHaveValue('Category 1');
       
       const tagButton = screen.getByRole('button', { name: 'Tag 1' });
       expect(tagButton).toHaveAttribute('aria-pressed', 'true');

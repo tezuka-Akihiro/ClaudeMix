@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 import { fetchAvailableFilters } from './fetchAvailableFilters.server';
 import { getAllPosts } from '~/generated/blog-posts';
 import { loadPostsSpec } from './loadPostsSpec.server';
 import { groupTags } from '~/lib/blog/posts/groupTagsByCategory';
+import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 // Mock dependencies
 vi.mock('~/generated/blog-posts', () => ({
@@ -16,11 +17,19 @@ vi.mock('~/lib/blog/posts/groupTagsByCategory', () => ({
 }));
 
 describe('fetchAvailableFilters - Side Effects Layer', () => {
+  let spec: BlogPostsSpec;
+
+  beforeAll(async () => {
+    // Load spec.yaml dynamically to ensure tests stay in sync with spec
+    spec = await loadSpec('blog', 'posts');
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset mocks to a default behavior
+    // Reset mocks to a default behavior - use spec.yaml values
     vi.mocked(loadPostsSpec).mockReturnValue({
-      tags: { current: [], recommended: [] },
+      tags: spec.tags,
+      tag_groups: { order: spec.tag_groups.order },
     } as any);
     vi.mocked(groupTags).mockReturnValue([]);
   });
@@ -94,15 +103,9 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
       const result = await fetchAvailableFilters();
 
       // Assert
-      expect(result.tags).toEqual([
-        'AI',
-        'Architecture',
-        'Claude',
-        'Cloudflare',
-        'Remix',
-        'TDD',
-        'TypeScript',
-      ]);
+      // タグは spec.yaml で定義されているすべてのタグ（アルファベット順）
+      const expectedTags = spec.tags.map(t => t.name).sort();
+      expect(result.tags).toEqual(expectedTags);
     });
 
     it('should handle posts without tags', async () => {
@@ -131,10 +134,12 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
       const result = await fetchAvailableFilters();
 
       // Assert
-      expect(result.tags).toEqual(['AI']);
+      // タグは spec.yaml で定義されているすべてのタグ（記事の内容に関係なく）
+      const expectedTags = spec.tags.map(t => t.name).sort();
+      expect(result.tags).toEqual(expectedTags);
     });
 
-    it('should return empty arrays when no posts exist', async () => {
+    it('should return empty categories but all defined tags when no posts exist', async () => {
       // Arrange
       vi.mocked(getAllPosts).mockReturnValue([]);
 
@@ -142,8 +147,11 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
       const result = await fetchAvailableFilters();
 
       // Assert
+      // カテゴリは記事がなければ空
       expect(result.categories).toEqual([]);
-      expect(result.tags).toEqual([]);
+      // タグは spec.yaml で定義されているすべてのタグ（記事の有無に関係なく）
+      const expectedTags = spec.tags.map(t => t.name).sort();
+      expect(result.tags).toEqual(expectedTags);
     });
 
     it('should call groupTagsByCategory and return its result as tagGroups', async () => {
@@ -159,7 +167,8 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
 
       vi.mocked(getAllPosts).mockReturnValue(mockPosts as any);
       vi.mocked(loadPostsSpec).mockReturnValue({
-        tags: { current: mockTagsSpec, recommended: [] },
+        tags: mockTagsSpec,
+        tag_groups: { order: spec.tag_groups.order },
       } as any);
       vi.mocked(groupTags).mockReturnValue(mockGroupedTags);
 
@@ -171,7 +180,8 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
       expect(loadPostsSpec).toHaveBeenCalled();
       expect(groupTags).toHaveBeenCalledWith(
         ['Remix', 'SSR'], // Note: sorted alphabetically
-        mockTagsSpec
+        mockTagsSpec,
+        spec.tag_groups.order
       );
 
       // Verify the final output

@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { groupTags, type TagGroup } from './groupTagsByCategory';
-import type { TagSpec } from '../../../specs/blog/types';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { groupTags } from './groupTagsByCategory';
+import type { TagSpec, TagGroup } from '../../../specs/blog/types';
+import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 interface TestInput {
   availableTags: string[];
@@ -8,6 +9,15 @@ interface TestInput {
 }
 
 describe('groupTags - Pure Logic Layer', () => {
+  let spec: BlogPostsSpec;
+  let mockGroupOrder: string[];
+
+  beforeAll(async () => {
+    // Load spec.yaml dynamically to ensure tests stay in sync with spec
+    spec = await loadSpec('blog', 'posts');
+    mockGroupOrder = spec.tag_groups.order;
+  });
+
   // Mock data representing tag definitions from spec.yaml
   const mockTagsSpec: TagSpec[] = [
     { name: 'SSR', group: 'Remix' },
@@ -39,7 +49,7 @@ describe('groupTags - Pure Logic Layer', () => {
     ];
 
     // Act
-    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[]);
+    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[], mockGroupOrder);
 
     // Assert
     expect(result).toEqual(expectedOutput);
@@ -58,7 +68,7 @@ describe('groupTags - Pure Logic Layer', () => {
     ];
 
     // Act
-    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[]);
+    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[], mockGroupOrder);
 
     // Assert
     expect(result).toEqual(expectedOutput);
@@ -72,7 +82,7 @@ describe('groupTags - Pure Logic Layer', () => {
     };
 
     // Act
-    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[]);
+    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[], mockGroupOrder);
 
     // Assert
     const claudeGroup = result.find(g => g.group === 'Claude Code');
@@ -87,7 +97,7 @@ describe('groupTags - Pure Logic Layer', () => {
     };
 
     // Act
-    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[]);
+    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[], mockGroupOrder);
 
     // Assert
     expect(result).toEqual([]);
@@ -101,7 +111,7 @@ describe('groupTags - Pure Logic Layer', () => {
     };
 
     // Act
-    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[]);
+    const result = groupTags(input.availableTags, input.tagsSpec as TagSpec[], mockGroupOrder);
 
     // Assert
     // Tags without a group definition should not be included
@@ -116,8 +126,8 @@ describe('groupTags - Pure Logic Layer', () => {
     };
 
     // Act
-    const result1 = groupTags(input.availableTags, input.tagsSpec as TagSpec[]);
-    const result2 = groupTags(input.availableTags, input.tagsSpec as TagSpec[]);
+    const result1 = groupTags(input.availableTags, input.tagsSpec as TagSpec[], mockGroupOrder);
+    const result2 = groupTags(input.availableTags, input.tagsSpec as TagSpec[], mockGroupOrder);
 
     // Assert
     expect(result1).toEqual(result2);
@@ -129,7 +139,7 @@ describe('groupTags - Pure Logic Layer', () => {
     const originalInput = JSON.parse(JSON.stringify(input));
 
     // Act
-    groupTags(input.availableTags, input.tagsSpec as TagSpec[]);
+    groupTags(input.availableTags, input.tagsSpec as TagSpec[], ['Remix']);
 
     // Assert: Input data should not be mutated
     expect(input).toEqual(originalInput);

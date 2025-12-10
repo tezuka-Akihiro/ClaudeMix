@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
 import PostCard from '~/components/blog/posts/PostCard';
+import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 // Helper function to render component with Router context
 const renderWithRouter = (ui: React.ReactElement) => {
@@ -9,14 +11,31 @@ const renderWithRouter = (ui: React.ReactElement) => {
 };
 
 describe('PostCard', () => {
+  let spec: BlogPostsSpec;
+  let mockCategorySpec: {
+    categories: Array<{ name: string; emoji: string }>;
+    defaultEmoji: string;
+  };
+
+  beforeAll(async () => {
+    // Load spec.yaml dynamically to ensure tests stay in sync with spec
+    spec = await loadSpec('blog', 'posts');
+    mockCategorySpec = {
+      categories: spec.categories,
+      defaultEmoji: spec.business_rules.display.default_category_emoji,
+    };
+  });
+
   describe('Rendering', () => {
     it('should display category emoji, title and published date', () => {
       // Arrange
       const props = {
-        slug: 'test-post',
+        slug:'test-post',
         title: 'Test Post Title',
         publishedAt: '2024-05-01',
         category: 'Claude Best Practices',
+        tags: [],
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -42,6 +61,8 @@ describe('PostCard', () => {
         title: 'Test Post',
         publishedAt: '2024-05-01',
         category: 'Claude Best Practices',
+        tags: [],
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -60,6 +81,8 @@ describe('PostCard', () => {
         title: 'Test Post',
         publishedAt: '2024-05-01',
         category: 'Claude Best Practices',
+        tags: [],
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -80,6 +103,8 @@ describe('PostCard', () => {
         title: 'Remix Tips',
         publishedAt: '2024-05-01',
         category: 'Tutorials & Use Cases',
+        tags: [],
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -97,6 +122,8 @@ describe('PostCard', () => {
         title: 'Another Post',
         publishedAt: '2024-06-15',
         category: 'ClaudeMix Philosophy',
+        tags: [],
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -116,6 +143,8 @@ describe('PostCard', () => {
         title: 'Test Post',
         publishedAt: '2024-05-01',
         category: 'Claude Best Practices',
+        tags: [],
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -146,6 +175,8 @@ describe('PostCard', () => {
           title: 'Test Post',
           publishedAt,
           category: 'Claude Best Practices',
+          tags: [],
+          categorySpec: mockCategorySpec,
         };
 
         // Act
@@ -176,6 +207,8 @@ describe('PostCard', () => {
           title: 'Test Post',
           publishedAt: '2024-05-01',
           category,
+          tags: [],
+          categorySpec: mockCategorySpec,
         };
 
         // Act
@@ -200,6 +233,8 @@ describe('PostCard', () => {
         publishedAt: '2024-05-01',
         category: 'Claude Best Practices',
         description: 'This is a test description',
+        tags: [],
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -219,6 +254,7 @@ describe('PostCard', () => {
         publishedAt: '2024-05-01',
         category: 'Claude Best Practices',
         tags: ['AI', 'Claude', 'TDD'],
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -244,7 +280,9 @@ describe('PostCard', () => {
         title: 'Test Post',
         publishedAt: '2024-05-01',
         category: 'Claude Best Practices',
+        tags: [],
         description: 'Test description',
+        categorySpec: mockCategorySpec,
       };
 
       // Act
@@ -264,6 +302,7 @@ describe('PostCard', () => {
         category: 'Claude Best Practices',
         description: 'Comprehensive guide',
         tags: ['Remix', 'TypeScript'],
+        categorySpec: mockCategorySpec,
       };
 
       // Act

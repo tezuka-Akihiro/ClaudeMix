@@ -8,6 +8,7 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import yaml from 'js-yaml';
+import type { TagSpec } from '~/specs/blog/types';
 
 /**
  * ブログ記事セクションのspec.yamlの型定義
@@ -22,6 +23,10 @@ export interface BlogPostsSpec {
     name: string;
     emoji: string;
   }>;
+  tags: TagSpec[];
+  tag_groups: {
+    order: string[];
+  };
   test_articles: Array<{
     slug: string;
     title: string;
@@ -66,10 +71,10 @@ export interface BlogPostsSpec {
  * @param section
  * @returns spec.yamlの内容
  */
-export async function loadSpec(service: string ,section: string): Promise<BlogPostsSpec> {
+export async function loadSpec<T = BlogPostsSpec>(service: string ,section: string): Promise<T> {
   const specPath = join(process.cwd(), 'app/specs/',service,'/',section + '-spec.yaml');
   const content = await readFile(specPath, 'utf-8');
-  const spec = yaml.load(content) as BlogPostsSpec;
+  const spec = yaml.load(content) as T;
 
   return spec;
 }
