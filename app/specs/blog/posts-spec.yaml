@@ -50,6 +50,11 @@ categories:
     emoji: "🚀"
     description: "機能追加・改修のチュートリアル"
     use_case: "新機能追加・機能改修の記事（20-30%）"
+  - id: 4
+    name: "起業"
+    emoji: "💼"
+    description: "起業活動・セミナー・スタートアップハブでの交流"
+    use_case: "起業活動やスタートアップ関連の記事"
 
 # ==========================================
 # タグマスタ定義
@@ -135,6 +140,20 @@ tags:
       group: "other"
       description: "Open Graph Protocol 画像生成"
 
+    # 起業関連
+    - name: "セミナー"
+      category: "nature"
+      group: "起業"
+      description: "セミナー参加レポート"
+    - name: "スタハブ多摩"
+      category: "technical"
+      group: "起業"
+      description: "東京都スタートアップハブ多摩での活動"
+    - name: "エンジニア初心者向き"
+      category: "nature"
+      group: "起業"
+      description: "エンジニア初心者向けの解説記事"
+
   # 推奨タグ（必要に応じて追加）
   recommended:
     # Remix関連（まだ記事がない要素技術）
@@ -186,6 +205,7 @@ category:
   1: "Claude Best Practices"
   2: "ClaudeMix Philosophy"
   3: "Tutorials & Use Cases"
+  4: "起業"
 
   # 命名規則（ガイドライン）
   naming_rules:
