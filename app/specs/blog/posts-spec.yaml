@@ -158,6 +158,20 @@ tags:
     group: "other"
     description: "パフォーマンス最適化"
 
+  # 起業関連
+  - name: "セミナー"
+    category: "nature"
+    group: "起業"
+    description: "セミナー・勉強会の参加レポート"
+  - name: "スタハブ多摩"
+    category: "nature"
+    group: "起業"
+    description: "スタートアップハブ多摩での活動"
+  - name: "エンジニア初心者向き"
+    category: "nature"
+    group: "起業"
+    description: "エンジニア初心者向けQ&A"
+
 # ==========================================
 # タググループ順序定義
 # ==========================================

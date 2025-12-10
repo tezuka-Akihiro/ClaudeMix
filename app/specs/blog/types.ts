@@ -3,7 +3,7 @@
 export interface TagSpec {
   name: string;
   category: 'technical' | 'nature';
-  group: 'Remix' | 'Cloudflare' | 'Claude Code' | 'other';
+  group: 'Remix' | 'Cloudflare' | 'Claude Code' | 'other' | '起業';
   description: string;
 }
 
