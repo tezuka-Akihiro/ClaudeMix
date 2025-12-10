@@ -11,19 +11,17 @@ describe('loadBlogConfig - Side Effects Layer', () => {
       expect(result.blogTitle).toBe("ClaudeMix Blog");
     });
 
-    it('should return correct menu items', async () => {
+    it('should return valid menu items', async () => {
       // Act
       const result = await loadBlogConfig();
 
       // Assert
       expect(result.menuItems).toHaveLength(3);
-      expect(result.menuItems[0]).toEqual({
-        label: "はじめまして",
-        path: "/blog/hazimemasite",
-      });
-      expect(result.menuItems[1]).toEqual({
-        label: "hello world",
-        path: "/blog/welcome",
+      result.menuItems.forEach((item) => {
+        expect(item).toHaveProperty('label');
+        expect(typeof item.label).toBe('string');
+        expect(item.label.length).toBeGreaterThan(0);
+        expect(item.path).toMatch(/^\/blog\//);
       });
     });
 

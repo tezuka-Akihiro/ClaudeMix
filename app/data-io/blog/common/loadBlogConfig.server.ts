@@ -16,7 +16,7 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
     blogTitle: "ClaudeMix Blog",
     menuItems: [
       { label: "はじめまして", path: "/blog/hazimemasite" },
-      { label: "hello world", path: "/blog/welcome" },
+      { label: "カテゴリ一覧", path: "/blog/welcome" },
       { label: "LINK",path: "/blog/link" },
     ],
     copyright: `© ${new Date().getFullYear()} ClaudeMix`,
