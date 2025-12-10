@@ -47,6 +47,23 @@ describe('loadBlogConfig - Side Effects Layer', () => {
       expect(result.copyright).toBe(spec.blog_config.copyright);
     });
 
+    it('should return site URL from spec.yaml', async () => {
+      // Act
+      const result = await loadBlogConfig();
+
+      // Assert
+      expect(result.siteUrl).toBe(spec.blog_config.site_url);
+      expect(result.siteUrl).toMatch(/^https?:\/\//);
+    });
+
+    it('should return site name from spec.yaml', async () => {
+      // Act
+      const result = await loadBlogConfig();
+
+      // Assert
+      expect(result.siteName).toBe(spec.blog_config.title);
+    });
+
     it('should return complete blog config structure', async () => {
       // Act
       const result = await loadBlogConfig();
@@ -55,6 +72,8 @@ describe('loadBlogConfig - Side Effects Layer', () => {
       expect(result).toHaveProperty('blogTitle');
       expect(result).toHaveProperty('menuItems');
       expect(result).toHaveProperty('copyright');
+      expect(result).toHaveProperty('siteUrl');
+      expect(result).toHaveProperty('siteName');
       expect(Array.isArray(result.menuItems)).toBe(true);
     });
   });

@@ -19,5 +19,7 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
     blogTitle: spec.blog_config.title,
     menuItems: spec.navigation.menu_items,
     copyright: spec.blog_config.copyright,
+    siteUrl: spec.blog_config.site_url,
+    siteName: spec.blog_config.title,
   };
 }
