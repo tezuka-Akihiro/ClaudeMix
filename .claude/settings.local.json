@@ -130,7 +130,13 @@
       "Bash(Select-String -Pattern \"(tagGroups|Playwright|testing)\" -Context 1,1)",
       "Bash(Select-String -Pattern \"^tags:.*\")",
       "Bash(do head -20 \"$file\")",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(node scripts/lint-file-list/check-diff.js:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run:*)",
+      "Bash(node scripts/prebuild/generate-specs.js:*)",
+      "Bash(node scripts/lint-template/engine.js:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

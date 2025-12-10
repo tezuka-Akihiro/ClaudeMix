@@ -1,7 +1,7 @@
 // blog.$slug - Route: 記事詳細ページ
 // データフローとページ構成を担当
 
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { fetchPostBySlug } from "~/data-io/blog/post-detail/fetchPostBySlug.server";
@@ -69,6 +69,34 @@ export async function loader({ params }: LoaderFunctionArgs) {
     config,
   });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data, params, location }) => {
+  if (!data) {
+    return [
+      { title: "Not Found" },
+      { name: "description", content: "The page you are looking for does not exist." },
+    ];
+  }
+
+  const { post, config } = data;
+  const siteUrl = config.siteUrl; // 例: "https://example.com"
+  const pageUrl = new URL(location.pathname, siteUrl).toString();
+  const ogpImageUrl = new URL(`/ogp/${params.slug}.png`, siteUrl).toString();
+
+  return [
+    { title: `${post.title} | ${config.siteName}` },
+    { name: "description", content: post.description },
+    // OGP (Open Graph Protocol)
+    { property: "og:title", content: post.title },
+    { property: "og:description", content: post.description },
+    { property: "og:type", content: "article" },
+    { property: "og:url", content: pageUrl },
+    { property: "og:image", content: ogpImageUrl },
+    { property: "og:site_name", content: config.siteName },
+    // Twitter Card
+    { name: "twitter:card", content: "summary_large_image" },
+  ];
+};
 
 export default function BlogPostDetail() {
   const { post, headings, config } = useLoaderData<typeof loader>();

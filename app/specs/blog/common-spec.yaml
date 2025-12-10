@@ -35,10 +35,12 @@ blog_config:
 # ==========================================
 navigation:
   menu_items:
-    - label: "挨拶記事"
+    - label: "はじめまして"
+      path: "/blog/hazimemasite"
+    - label: "カテゴリー"
       path: "/blog/welcome"
-    - label: "Articles"
-      path: "/blog"
+    - label: "LINK"
+      path: "/blog/link"
 
   # メニューアニメーション設定
   animation:
@@ -150,6 +152,25 @@ ogp:
   cache:
     maxAge: 31536000  # 1年 (秒)
     directive: "public, max-age=31536000, immutable"
+
+  # レイアウト設定
+  layout:
+    paddingX: "80px"
+    paddingY: "60px"
+    contentGap: "24px"
+
+  # 色設定
+  colors:
+    background:
+      gradientStart: "#667eea"
+      gradientEnd: "#764ba2"
+      gradientAngle: "135deg"
+    text:
+      primary: "#ffffff"
+      description: "rgba(255, 255, 255, 0.7)"
+      author: "rgba(255, 255, 255, 0.6)"
+
+  # テキスト設定
   title:
     maxLength: 60
     fontSize: 48
@@ -161,5 +182,7 @@ ogp:
   author:
     fontSize: 16
     prefix: "By "
+
+  # フォント設定
   font:
     family: "'Noto Sans JP', 'Hiragino Sans', 'ヒラギノ角ゴ ProN W3', 'メイリオ', Meiryo, sans-serif"

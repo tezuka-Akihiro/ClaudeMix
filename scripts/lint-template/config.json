@@ -23,9 +23,9 @@
         "AWS", "Azure", "GCP", "Google Cloud", "Firebase", "Vercel", "Netlify",
         "Stripe", "PayPal", "Slack", "Discord", "Zoom", "Teams", "Gmail",
         "MongoDB", "PostgreSQL", "MySQL", "Redis", "Elasticsearch",
-        "Docker", "Kubernetes", "GitHub", "GitLab", "Bitbucket",
+        "Docker", "Kubernetes", "GitLab", "Bitbucket",
         "Shopify", "WooCommerce", "Magento", "Salesforce",
-        "React", "Vue", "Angular", "Next.js", "Nuxt.js", "Gatsby"
+        "Vue", "Angular", "Next.js", "Nuxt.js", "Gatsby"
       ],
       "projectSpecificNames": [
         "TBD: プロジェクト固有名をここに追加予定"

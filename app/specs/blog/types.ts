@@ -173,6 +173,23 @@ export interface BlogCommonSpec {
       maxAge: number;
       directive: string;
     };
+    layout: {
+      paddingX: string;
+      paddingY: string;
+      contentGap: string;
+    };
+    colors: {
+      background: {
+        gradientStart: string;
+        gradientEnd: string;
+        gradientAngle: string;
+      };
+      text: {
+        primary: string;
+        description: string;
+        author: string;
+      };
+    };
     title: {
       maxLength: number;
       fontSize: number;

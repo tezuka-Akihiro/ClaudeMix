@@ -84,8 +84,8 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        padding: '60px 80px',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: `${ogpConfig.layout.paddingY} ${ogpConfig.layout.paddingX}`,
+        background: `linear-gradient(${ogpConfig.colors.background.gradientAngle}, ${ogpConfig.colors.background.gradientStart} 0%, ${ogpConfig.colors.background.gradientEnd} 100%)`,
         fontFamily: ogpConfig.font.family,
       }}
     >
@@ -94,7 +94,7 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '24px',
+          gap: ogpConfig.layout.contentGap,
         }}
       >
         {/* タイトル */}
@@ -102,7 +102,7 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
           style={{
             fontSize: ogpConfig.title.fontSize,
             fontWeight: 'bold',
-            color: '#ffffff',
+            color: ogpConfig.colors.text.primary,
             lineHeight: 1.2,
             maxWidth: '100%',
           }}
@@ -114,7 +114,7 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
         <div
           style={{
             fontSize: ogpConfig.description.fontSize,
-            color: 'rgba(255, 255, 255, 0.7)',
+            color: ogpConfig.colors.text.description,
             lineHeight: 1.5,
             maxWidth: '100%',
           }}
@@ -127,7 +127,7 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
       <div
         style={{
           fontSize: ogpConfig.author.fontSize,
-          color: 'rgba(255, 255, 255, 0.6)',
+          color: ogpConfig.colors.text.author,
         }}
       >
         {author}
