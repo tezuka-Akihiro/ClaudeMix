@@ -7,7 +7,7 @@
 
 import { readFile, readdir } from 'fs/promises';
 import { join } from 'path';
-import yaml from 'js-yaml';
+import { load } from 'js-yaml';
 import matter from 'gray-matter';
 
 /**
@@ -64,7 +64,7 @@ export interface TestArticleFrontmatter {
 export async function loadSpec(service: string ,section: string): Promise<BlogPostsSpec> {
   const specPath = join(process.cwd(), 'app/specs/',service,'/',section + '-spec.yaml');
   const content = await readFile(specPath, 'utf-8');
-  const spec = yaml.load(content) as BlogPostsSpec;
+  const spec = load(content) as BlogPostsSpec;
 
   return spec;
 }
