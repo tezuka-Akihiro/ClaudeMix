@@ -61,7 +61,7 @@ SNSでのシェア対策として、動的OGP画像を生成したいと思い�
 
 - **Current**：
   - `routes/ogp.$slug[.png].tsx`としてResource Routeを実装
-  - `satori`と`@resvg/resvg-js`を使用した画像生成処理の構築
+  - `satori`と`@resvg/resvg-wasm`を使用した画像生成処理の構築
   - Cloudflare EdgeでのCache-Control設定による高速化
 
 - **Next**：
@@ -99,7 +99,10 @@ OGP画像生成を独立したAPIではなく、**RemixのResource Routeとし�
 
 RemixのResource Routeパターンを採用し、通常のページルートと同じ構造で実装することにしました。これにより、AIに対して「Webページと同じパターンで画像を返すルート」という明確な制約を与えることができました。
 
-また、フォントの取得方法についても工夫しました。当初はGoogle FontsのAPIから動的に取得しようとしましたが、本番環境で失敗するケースがあったため、`@fontsource/noto-sans-jp`パッケージを使用してフォントをバンドルする方式に変更しました。
+また、Cloudflare Workers環境での動作を考慮し、以下の技術的な工夫を行いました：
+
+1. **WASMベースのレンダリング**: Node.js環境に依存する`@resvg/resvg-js`ではなく、Cloudflare Workersでも動作する`@resvg/resvg-wasm`を採用しました。
+2. **CDN経由のフォント取得**: ファイルシステムアクセスが制限されるCloudflare Workers環境でも動作するよう、`@fontsource/noto-sans-jp`のフォントをCDN（jsDelivr）経由で取得する方式を採用しました。
 
 ## コード抜粋
 
@@ -160,30 +163,46 @@ export async function loader({ params }: LoaderFunctionArgs) {
 ```typescript
 // app/lib/blog/common/generateOgpImage.tsx
 import satori from 'satori';
-import { Resvg } from '@resvg/resvg-js';
+import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import type { PostMetadata } from '~/data-io/blog/common/loadPostMetadata.server';
 import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { BlogCommonSpec } from '~/specs/blog/types';
 
+// WASM初期化フラグ
+let wasmInitialized = false;
+
+/**
+ * WASM初期化（初回のみ実行）
+ */
+async function ensureWasmInitialized(): Promise<void> {
+  if (!wasmInitialized) {
+    // WASMファイルをfetchしてArrayBufferとして読み込む
+    const response = await fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm');
+    const wasmBinary = await response.arrayBuffer();
+    await initWasm(wasmBinary);
+    wasmInitialized = true;
+  }
+}
+
+/**
+ * フォントデータを取得（CDN経由）
+ */
 export async function fetchFont(): Promise<ArrayBuffer> {
-  const fs = await import('fs/promises');
-  const path = await import('path');
+  // CDN経由でフォントを取得（Cloudflare Workers互換）
+  const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-jp@5.2.8/files/noto-sans-jp-japanese-400-normal.woff';
+  const response = await fetch(fontUrl);
 
-  // @fontsource/noto-sans-jpのフォントファイルパスを解決
-  const fontPath = path.join(
-    process.cwd(),
-    'node_modules',
-    '@fontsource',
-    'noto-sans-jp',
-    'files',
-    'noto-sans-jp-japanese-400-normal.woff'
-  );
+  if (!response.ok) {
+    throw new Error(`Failed to fetch font: ${response.statusText}`);
+  }
 
-  const buffer = await fs.readFile(fontPath);
-  return buffer.buffer;
+  return await response.arrayBuffer();
 }
 
 export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> {
+  // WASM初期化
+  await ensureWasmInitialized();
+
   const spec = loadSpec<BlogCommonSpec>('blog/common');
   const ogpConfig = spec.ogp;
 
@@ -199,10 +218,12 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
     }}
   );
 
-  // SVGをPNGに変換
+  // SVGをPNGに変換（WASM版）
   const resvg = new Resvg(svg);
   const pngData = resvg.render();
-  return Buffer.from(pngData.asPng());
+  const pngBuffer = pngData.asPng();
+
+  return Buffer.from(pngBuffer);
 }
 ```
 
@@ -214,7 +235,10 @@ Next.jsのAPIルートのような「機能の分離」は、一見すると関�
 
 特に印象的だったのは、Remixのloaderパターンに統一することで、AIが生成するコード品質が劇的に向上したことです。データ取得、エラーハンドリング、レスポンス返却という一連の流れが、常に同じパターンで実装されるため、AIが迷うことなく正しいコードを生成できるのです。
 
-また、フォント読み込みの失敗という実践的な課題に直面し、外部APIへの依存を減らす設計の重要性も実感しました。`@fontsource`パッケージを使用することで、フォントをバンドルし、確実に読み込めるようにしたことは、本番環境での安定性向上に大きく貢献しました。
+また、Cloudflare Workers環境特有の制約に直面し、以下の技術的な学びを得ました：
+
+1. **WASMの活用**: Node.jsのネイティブモジュールに依存する`@resvg/resvg-js`ではなく、`@resvg/resvg-wasm`を採用することで、Cloudflare Workersでも動作する画像生成を実現しました。
+2. **CDNベースのリソース取得**: ファイルシステムアクセスが制限されるEdge環境では、フォントなどのリソースをCDN経由で取得する設計が不可欠でした。これにより、環境に依存しない堅牢な実装が可能になりました。
 
 このブログ自身が「AIに実装させ、人間が設計する」というコンセプトで作られているため、この知見は今後の開発にも活かせると確信しています。
 
