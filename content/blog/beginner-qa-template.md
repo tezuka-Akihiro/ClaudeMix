@@ -1,9 +1,9 @@
 ---
-slug: "beginner-qa-YYYY-MM-DD"
+slug: "beginner-qa-2025-MM-DD"
 title: "【初心者向けQ&A】タイトルをここに記入"
 description: "エンジニア初心者の方からよくいただく質問に、わかりやすく答えます。専門用語を避け、初めての方でも理解できるように丁寧に解説します。"
 author: "ClaudeMix Team"
-publishedAt: "YYYY-MM-DD"
+publishedAt: "2025-MM-DD"
 category: "起業"
 tags: ["エンジニア初心者向き"] # app\specs\blog\posts-spec.yaml で許可されているもののみ使用可
 ---

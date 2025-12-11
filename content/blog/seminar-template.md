@@ -1,9 +1,9 @@
 ---
-slug: "seminar-report-YYYY-MM-DD"
+slug: "seminar-report-2025-MM-DD"
 title: "【セミナーレポート】タイトルをここに記入"
 description: "セミナーの概要を簡潔に説明します。どんなテーマで、どんな学びがあったのか、読者が興味を持つポイントを1〜2文で表現してください。"
-author: "ClaudeMix Team"
-publishedAt: "YYYY-MM-DD"
+author: "成功する起業家"
+publishedAt: "2025-MM-DD"
 category: "起業"
 tags: ["セミナー"] # app\specs\blog\posts-spec.yaml で許可されているもののみ使用可
 ---
