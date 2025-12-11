@@ -1,29 +1,41 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { filterPosts, type FilterOptions } from './filterPosts';
 import type { PostSummary } from '../../../data-io/blog/posts/fetchPosts.server';
-import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
+
 
 describe('filterPosts - Pure Logic Layer', () => {
-  let spec: BlogPostsSpec;
-  let mockPosts: PostSummary[];
-
-  beforeAll(async () => {
-    spec = await loadSpec('blog','posts');
-    // spec.yamlのtest_dataを使用
-    mockPosts = spec.test_data.posts.map(post => ({
-      slug: post.slug,
-      title: post.title,
-      publishedAt: post.publishedAt,
-      category: post.category,
-      description: post.description,
-      tags: post.tags,
-    }));
-  });
+  // Test data hardcoded for pure logic testing
+  const mockPosts: PostSummary[] = [
+    {
+      slug: "remix-tips-2024",
+      title: "Remixで学ぶモダンWeb開発",
+      description: "Remixフレームワークを使ったモダンなWeb開発の基礎から実践までを解説します。",
+      publishedAt: "2024-05-01",
+      category: "Tutorials & Use Cases",
+      tags: ["Remix", "Cloudflare", "TypeScript"],
+    },
+    {
+      slug: "claude-code-guide",
+      title: "Claude Codeを使った効率的な開発フロー",
+      description: "AI（Claude）との協調開発によるコーディング効率化の実践ガイドです。",
+      publishedAt: "2024-04-15",
+      category: "Claude Best Practices",
+      tags: ["AI", "Claude", "TDD"],
+    },
+    {
+      slug: "typescript-best-practices",
+      title: "TypeScriptベストプラクティス",
+      description: "型安全なコードを書くためのTypeScriptのベストプラクティスを紹介します。",
+      publishedAt: "2024-03-20",
+      category: "ClaudeMix Philosophy",
+      tags: ["TypeScript", "Architecture"],
+    },
+  ];
 
   describe('Category Filter', () => {
     it('should filter posts by category', () => {
-      // Arrange - Use first test post's category from spec.yaml
-      const testPost = spec.test_data.posts[0];
+      // Arrange - Use first test post's category
+      const testPost = mockPosts[0];
       const filters: FilterOptions = { category: testPost.category };
 
       // Act
@@ -43,7 +55,7 @@ describe('filterPosts - Pure Logic Layer', () => {
       const result = filterPosts(mockPosts, filters);
 
       // Assert
-      expect(result).toHaveLength(spec.test_data.posts.length);
+      expect(result).toHaveLength(mockPosts.length);
     });
 
     it('should return all posts when category is undefined', () => {
@@ -54,7 +66,7 @@ describe('filterPosts - Pure Logic Layer', () => {
       const result = filterPosts(mockPosts, filters);
 
       // Assert
-      expect(result).toHaveLength(spec.test_data.posts.length);
+      expect(result).toHaveLength(mockPosts.length);
     });
   });
 
@@ -74,8 +86,8 @@ describe('filterPosts - Pure Logic Layer', () => {
     });
 
     it('should filter posts by multiple tags (AND condition)', () => {
-      // Arrange - Use first test post's tags from spec.yaml
-      const testPost = spec.test_data.posts[0]; // remix-tips-2024
+      // Arrange - Use first test post's tags
+      const testPost = mockPosts[0]; // remix-tips-2024
       const filters: FilterOptions = { tags: [testPost.tags[0], testPost.tags[1]] };
 
       // Act
@@ -96,7 +108,7 @@ describe('filterPosts - Pure Logic Layer', () => {
       const result = filterPosts(mockPosts, filters);
 
       // Assert
-      expect(result).toHaveLength(spec.test_data.posts.length);
+      expect(result).toHaveLength(mockPosts.length);
     });
 
     it('should return all posts when tags is undefined', () => {
@@ -107,14 +119,14 @@ describe('filterPosts - Pure Logic Layer', () => {
       const result = filterPosts(mockPosts, filters);
 
       // Assert
-      expect(result).toHaveLength(spec.test_data.posts.length);
+      expect(result).toHaveLength(mockPosts.length);
     });
   });
 
   describe('Combined Filter', () => {
     it('should filter posts by category and tags', () => {
-      // Arrange - Use second test post from spec.yaml
-      const testPost = spec.test_data.posts[1]; // claude-code-guide
+      // Arrange - Use second test post
+      const testPost = mockPosts[1]; // claude-code-guide
       const filters: FilterOptions = {
         category: testPost.category,
         tags: [testPost.tags[0]], // First tag
@@ -133,8 +145,8 @@ describe('filterPosts - Pure Logic Layer', () => {
     it('should return empty array when combined filters do not match any post', () => {
       // Arrange - Intentional mismatch: first post's category with second post's tag
       const filters: FilterOptions = {
-        category: spec.test_data.posts[0].category, // Tutorials & Use Cases
-        tags: [spec.test_data.posts[1].tags[0]], // AI (doesn't exist in first post)
+        category: mockPosts[0].category, // Tutorials & Use Cases
+        tags: [mockPosts[1].tags[0]], // AI (doesn't exist in first post)
       };
 
       // Act
