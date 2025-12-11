@@ -19,9 +19,9 @@
     "date-validation": {
       "enabled": true,
       "severity": "error",
-      "description": "publishedAt の日付検証（年月が前後1ヶ月以内）",
+      "description": "publishedAt の日付検証（2025-11-01以降）",
       "format": "YYYY-MM-DD",
-      "allowedRange": "±1 month"
+      "allowedRange": "2025-11-01 以降"
     },
 
     "category-validation": {

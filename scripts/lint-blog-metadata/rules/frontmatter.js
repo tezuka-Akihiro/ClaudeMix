@@ -35,7 +35,7 @@ export function getFrontmatterRules() {
 
     'date-validation': {
       name: 'date-validation',
-      description: 'publishedAt の日付検証（年月が前後1ヶ月以内）',
+      description: 'publishedAt の日付検証（2025-11-01以降）',
       severity: 'error',
 
       check: function(content, filePath, config) {
@@ -60,36 +60,31 @@ export function getFrontmatterRules() {
           return results;
         }
 
-        // 年月の範囲検証（日は無視）
+        // 日付の範囲検証（2025-11-01以降）
         const publishedDate = new Date(data.publishedAt);
+        const minDate = new Date('2025-11-01');
         const now = new Date();
+        const maxDate = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()); // 1年後まで
 
-        // 現在の年月
-        const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth(); // 0-11
-
-        // publishedAtの年月
-        const publishedYear = publishedDate.getFullYear();
-        const publishedMonth = publishedDate.getMonth(); // 0-11
-
-        // 前後1ヶ月の範囲を計算
-        const minDate = new Date(currentYear, currentMonth - 1, 1); // 1ヶ月前の1日
-        const maxDate = new Date(currentYear, currentMonth + 2, 0); // 1ヶ月後の末日
-
-        const publishedYearMonth = new Date(publishedYear, publishedMonth, 1);
-
-        if (publishedYearMonth < new Date(minDate.getFullYear(), minDate.getMonth(), 1) ||
-            publishedYearMonth > new Date(maxDate.getFullYear(), maxDate.getMonth(), 1)) {
-          const minYearMonth = `${minDate.getFullYear()}-${String(minDate.getMonth() + 1).padStart(2, '0')}`;
-          const maxYearMonth = `${maxDate.getFullYear()}-${String(maxDate.getMonth() + 1).padStart(2, '0')}`;
-
+        if (publishedDate < minDate) {
           results.push({
-            message: `publishedAt の年月は現在から前後1ヶ月以内である必要があります: ${data.publishedAt}`,
+            message: `publishedAt は 2025-11-01 以降である必要があります: ${data.publishedAt}`,
             line: 1,
             severity: config.severity || this.severity,
             file: filePath,
             rule: this.name,
-            suggestion: `許可範囲: ${minYearMonth}-XX 〜 ${maxYearMonth}-XX`
+            suggestion: `許可範囲: 2025-11-01 以降`
+          });
+        }
+
+        if (publishedDate > maxDate) {
+          results.push({
+            message: `publishedAt が未来すぎます（現在から1年以内）: ${data.publishedAt}`,
+            line: 1,
+            severity: config.severity || this.severity,
+            file: filePath,
+            rule: this.name,
+            suggestion: `許可範囲: 2025-11-01 〜 ${maxDate.getFullYear()}-${String(maxDate.getMonth() + 1).padStart(2, '0')}-${String(maxDate.getDate()).padStart(2, '0')}`
           });
         }
 
