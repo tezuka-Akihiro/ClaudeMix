@@ -9,37 +9,10 @@ import { readFile, readdir } from 'fs/promises';
 import { join } from 'path';
 import { load } from 'js-yaml';
 import matter from 'gray-matter';
+import type { BlogPostsSpec } from '~/specs/blog/types';
 
-/**
- * ブログ記事セクションのspec.yamlの型定義
- */
-export interface BlogPostsSpec {
-  project: {
-    name: string;
-    copyright_name: string;
-  };
-  categories: Array<{
-    id: number;
-    name: string;
-    emoji: string;
-  }>;
-  ui_selectors: {
-    section: Record<string, string>;
-    card: Record<string, string>;
-    filter: Record<string, string>;
-    states: Record<string, string>;
-  };
-  business_rules: {
-    pagination: {
-      posts_per_page: number;
-      default_page: number;
-    };
-    display: {
-      max_tags_per_card: number;
-      default_category_emoji: string;
-    };
-  };
-}
+// Re-export the type for convenience
+export type { BlogPostsSpec };
 
 /**
  * テスト記事のフロントマター型定義
@@ -74,7 +47,7 @@ export async function loadSpec<T = BlogPostsSpec>(service: string ,section: stri
  *
  * @returns テスト記事のフロントマター配列
  */
-async function loadTestArticles(): Promise<TestArticleFrontmatter[]> {
+export async function loadTestArticles(): Promise<TestArticleFrontmatter[]> {
   const postsDir = join(process.cwd(), 'content/blog/posts');
   const files = await readdir(postsDir);
   const testFiles = files.filter(f => f.startsWith('test-e2e-') && f.endsWith('.md'));

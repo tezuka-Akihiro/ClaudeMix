@@ -135,7 +135,7 @@ describe('FilterPanel', () => {
       );
 
       // Assert
-      const selector = screen.getByTestId('category-selector') as HTMLSelectElement;
+      const selector = screen.getByTestId('category-selector') as unknown as HTMLSelectElement;
       expect(selector.value).toBe('Tech');
     });
 
@@ -182,7 +182,7 @@ describe('FilterPanel', () => {
       expect(screen.getByText('Cloudflare')).toBeInTheDocument();
 
       const remixGroup = screen.getByText('Remix').closest('[data-testid="tag-group-container"]');
-      expect(within(remixGroup!).getByText('SSR')).toBeInTheDocument();
+      expect(within(remixGroup as HTMLElement).getByText('SSR')).toBeInTheDocument();
     });
   });
 });

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { fetchPostBySlug, type Post } from '~/data-io/blog/post-detail/fetchPostBySlug.server';
+import { fetchPostBySlug } from '~/data-io/blog/post-detail/fetchPostBySlug.server';
+import type { Post } from '~/specs/blog/types';
 
 describe('fetchPostBySlug - Data-IO Layer', () => {
   describe('正常系テスト', () => {

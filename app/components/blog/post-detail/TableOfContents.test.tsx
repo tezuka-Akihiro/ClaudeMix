@@ -9,7 +9,7 @@ import type { Heading } from "../../../lib/blog/post-detail/extractHeadings";
 describe("TableOfContents", () => {
   const mockHeadings: Heading[] = [
     { level: 2, text: "はじめに", id: "はじめに" },
-    { level: 3, text: "概要", id: "概要" },
+    { level: 2, text: "概要", id: "概要" },
     { level: 2, text: "まとめ", id: "まとめ" },
   ];
 

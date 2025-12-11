@@ -8,6 +8,10 @@ export interface TagSpec {
 }
 
 export interface BlogPostsSpec {
+  project: {
+    name: string;
+    copyright_name: string;
+  };
   tags: TagSpec[];
   categories: Array<{
     id: number;
