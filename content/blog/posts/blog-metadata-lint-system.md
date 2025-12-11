@@ -39,7 +39,7 @@ ClaudeMix ブログは Cloudflare Workers 上で動作するエッジファー�
   既存の3つの lint システム（Markdown, Template, CSS Architecture）のアーキテクチャを調査し、一貫性のある設計方針を策定しました。
 
 - **Current**:
-  6つの検証ルール（必須フィールド、日付範囲、カテゴリ、タグ、slug 形式、description 長）を実装し、spec.yaml から許可値を動的に読み込む仕組みを構築しました。
+  6つの検証ルール（必須フィールド、カテゴリ、タグ、日付形式、slug 形式、description 長）を実装し、spec.yaml から許可値を動的に読み込む仕組みを構築しました。
 
 - **Next**:
   実際のブログ記事にリントを適用し、検出された問題を修正。TypeScript タグの追加や description フィールドの拡充を行いました。
@@ -170,41 +170,36 @@ displayResults(results) {
 
 ## コード抜粋
 
-最終的に実装した検証ルールの一例です。日付検証では、年月のみを比較し、±1ヶ月の範囲内であることを確認します。
+最終的に実装した検証ルールの一例です。カテゴリ検証では、spec.yaml から動的に許可値を読み込み、記事のカテゴリが許可リストに含まれているかを確認します。
 
 ```javascript
-// scripts/lint-blog-metadata/rules/frontmatter.js
-'date-validation': {
-  name: 'date-validation',
-  description: 'publishedAt の日付検証（年月が前後1ヶ月以内）',
+// scripts/lint-blog-metadata/rules/metadata.js
+'category-validation': {
+  name: 'category-validation',
+  description: 'category の選択肢検証',
   severity: 'error',
 
   check: function(content, filePath, config) {
     const results = [];
     const { data } = matter(content);
 
-    if (!data.publishedAt) {
+    if (!data.category) {
       return results; // required-fieldsで検出されるのでスキップ
     }
 
-    const publishedDate = new Date(data.publishedAt);
-    const now = new Date();
+    // spec.yaml からカテゴリ取得
+    const specPath = path.join(process.cwd(), config.specPath || 'app/specs/blog/posts-spec.yaml');
+    const spec = yaml.load(fs.readFileSync(specPath, 'utf8'));
+    const allowedCategories = spec.categories.map(cat => cat.name);
 
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-    const publishedYear = publishedDate.getFullYear();
-    const publishedMonth = publishedDate.getMonth();
-
-    // 前後1ヶ月の範囲を計算
-    const minDate = new Date(currentYear, currentMonth - 1, 1);
-    const maxDate = new Date(currentYear, currentMonth + 2, 0);
-    const publishedYearMonth = new Date(publishedYear, publishedMonth, 1);
-
-    if (publishedYearMonth < new Date(minDate.getFullYear(), minDate.getMonth(), 1) ||
-        publishedYearMonth > new Date(maxDate.getFullYear(), maxDate.getMonth(), 1)) {
+    if (!allowedCategories.includes(data.category)) {
       results.push({
-        message: `publishedAt の年月は現在から前後1ヶ月以内である必要があります`,
-        suggestion: `許可範囲: ${minDate.getFullYear()}-${minDate.getMonth() + 1} 〜 ${maxDate.getFullYear()}-${maxDate.getMonth() + 1}`
+        message: `無効なカテゴリ: "${data.category}"`,
+        line: 1,
+        severity: config.severity || this.severity,
+        file: filePath,
+        rule: this.name,
+        suggestion: `許可されたカテゴリ: ${allowedCategories.join(', ')}`
       });
     }
 
@@ -212,6 +207,8 @@ displayResults(results) {
   }
 }
 ```
+
+このコードの重要なポイントは、**spec.yaml を Single Source of Truth として扱っている**点です。カテゴリの追加や変更は spec.yaml を更新するだけで自動的に反映されるため、検証ルール自体を変更する必要がありません。
 
 ## 今回の学びと感想
 
