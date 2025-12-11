@@ -53,7 +53,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * Mermaidコードブロックが正しくSVG図表にレンダリングされることを検証
    */
   test('Post Detail: Mermaidコードブロックが正しくSVG図表にレンダリングされる', async ({ page }) => {
-    const TEST_SLUG = 'sample-remix-tips-2024';
+    const TEST_SLUG = 'about-claudemix';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -75,7 +75,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * コードブロックがShikiによって正しくハイライトされることを検証
    */
   test('Post Detail: コードブロックがShikiでハイライトされる', async ({ page }) => {
-    const TEST_SLUG = 'sample-remix-tips-2024';
+    const TEST_SLUG = 'about-claudemix';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -99,7 +99,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * 画像にloading="lazy"属性が付与されていることを検証
    */
   test('Post Detail: 画像に遅延読み込み属性が付与される', async ({ page }) => {
-    const TEST_SLUG = 'sample-remix-tips-2024';
+    const TEST_SLUG = 'about-claudemix';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -119,7 +119,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * 画像にmax-width: 100%スタイルが適用されていることを検証
    */
   test('Post Detail: 画像がレスポンシブ対応される', async ({ page }) => {
-    const TEST_SLUG = 'sample-remix-tips-2024';
+    const TEST_SLUG = 'about-claudemix';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス

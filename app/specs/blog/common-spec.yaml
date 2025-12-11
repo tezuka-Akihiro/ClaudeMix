@@ -99,50 +99,6 @@ accessibility:
     close_menu: "Escape"
 
 # ==========================================
-# テストデータ
-# ==========================================
-test_data:
-  blog_header:
-    title: "ClaudeMix Blog"
-    menu_items:
-      - label: "挨拶記事"
-        path: "/blog/welcome"
-      - label: "Articles"
-        path: "/blog"
-
-  blog_footer:
-    copyright: "© 2025 ClaudeMix"
-
-  navigation_menu:
-    default_items:
-      - label: "挨拶記事"
-        path: "/blog/welcome"
-      - label: "Articles"
-        path: "/blog"
-
-# ==========================================
-# 基本テスト確認項目
-# ==========================================
-basic_tests:
-  - name: "BlogLayout表示確認"
-    description: "BlogLayoutが正常にレンダリングされ、Header/Footer/Contentエリアが配置されること"
-
-  - name: "BlogHeader表示確認"
-    description: "ブログタイトルとmenuボタンが左右に配置されること"
-
-  - name: "NavigationMenu開閉確認"
-    description: "menuボタンクリックでNavigationMenuが開閉すること"
-
-  - name: "NavigationMenuナビゲーション確認"
-    description: "メニュー項目クリックで対応するページへ遷移すること"
-
-  - name: "BlogFooter表示確認"
-    description: "コピーライト表記が正常に表示されること"
-
-  - name: "レスポンシブ対応確認"
-    description: "モバイル/タブレット/デスクトップで適切なレイアウトが適用されること"
-
-# ==========================================
 # OGP画像生成設定
 # ==========================================
 ogp:

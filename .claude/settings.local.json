@@ -136,7 +136,10 @@
       "Bash(npm run:*)",
       "Bash(node scripts/prebuild/generate-specs.js:*)",
       "Bash(node scripts/lint-template/engine.js:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm run test:e2e:screen:*)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": []

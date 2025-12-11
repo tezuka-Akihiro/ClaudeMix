@@ -5,63 +5,26 @@
  * テストデータの一元管理を実現します。
  */
 
-import { readFile } from 'fs/promises';
+import { readFile, readdir } from 'fs/promises';
 import { join } from 'path';
-import yaml from 'js-yaml';
-import type { TagSpec } from '~/specs/blog/types';
+import { load } from 'js-yaml';
+import matter from 'gray-matter';
+import type { BlogPostsSpec } from '~/specs/blog/types';
+
+// Re-export the type for convenience
+export type { BlogPostsSpec };
 
 /**
- * ブログ記事セクションのspec.yamlの型定義
+ * テスト記事のフロントマター型定義
  */
-export interface BlogPostsSpec {
-  project: {
-    name: string;
-    copyright_name: string;
-  };
-  categories: Array<{
-    id: number;
-    name: string;
-    emoji: string;
-  }>;
-  tags: TagSpec[];
-  tag_groups: {
-    order: string[];
-  };
-  test_articles: Array<{
-    slug: string;
-    title: string;
-    category_id: number;
-    category_name: string;
-    tags: string[];
-    publishedAt: string;
-    expected_in_filters: Record<string, boolean>;
-  }>;
-  ui_selectors: {
-    section: Record<string, string>;
-    card: Record<string, string>;
-    filter: Record<string, string>;
-    states: Record<string, string>;
-  };
-  test_data: {
-    posts: Array<{
-      slug: string;
-      title: string;
-      description: string;
-      publishedAt: string;
-      category: string;
-      tags: string[];
-    }>;
-  };
-  business_rules: {
-    pagination: {
-      posts_per_page: number;
-      default_page: number;
-    };
-    display: {
-      max_tags_per_card: number;
-      default_category_emoji: string;
-    };
-  };
+export interface TestArticleFrontmatter {
+  slug: string;
+  title: string;
+  category: string;
+  tags: string[];
+  publishedAt: string;
+  description?: string;
+  author?: string;
 }
 
 /**
@@ -74,9 +37,30 @@ export interface BlogPostsSpec {
 export async function loadSpec<T = BlogPostsSpec>(service: string ,section: string): Promise<T> {
   const specPath = join(process.cwd(), 'app/specs/',service,'/',section + '-spec.yaml');
   const content = await readFile(specPath, 'utf-8');
-  const spec = yaml.load(content) as T;
+  const spec = load(content) as T;
 
   return spec;
+}
+
+/**
+ * テスト専用記事（test-e2e-*.md）を読み込む
+ *
+ * @returns テスト記事のフロントマター配列
+ */
+export async function loadTestArticles(): Promise<TestArticleFrontmatter[]> {
+  const postsDir = join(process.cwd(), 'content/blog/posts');
+  const files = await readdir(postsDir);
+  const testFiles = files.filter(f => f.startsWith('test-e2e-') && f.endsWith('.md'));
+
+  const articles: TestArticleFrontmatter[] = [];
+  for (const file of testFiles) {
+    const filePath = join(postsDir, file);
+    const content = await readFile(filePath, 'utf-8');
+    const { data } = matter(content);
+    articles.push(data as TestArticleFrontmatter);
+  }
+
+  return articles;
 }
 
 /**
@@ -86,25 +70,32 @@ export async function loadSpec<T = BlogPostsSpec>(service: string ,section: stri
  * @returns テスト記事の情報
  */
 export async function getTestArticleBySlug(slug: string) {
-  const spec = await loadSpec('blog','posts');
-  const article = spec.test_articles.find(a => a.slug === slug);
+  const articles = await loadTestArticles();
+  const article = articles.find(a => a.slug === slug);
 
   if (!article) {
-    throw new Error(`Test article with slug "${slug}" not found in spec.yaml`);
+    throw new Error(`Test article with slug "${slug}" not found`);
   }
 
   return article;
 }
 
 /**
- * カテゴリIDでテスト記事を検索
+ * カテゴリ名でテスト記事を検索
  *
  * @param categoryId - カテゴリID
  * @returns 該当カテゴリのテスト記事の配列
  */
 export async function getTestArticlesByCategory(categoryId: number) {
   const spec = await loadSpec('blog','posts');
-  return spec.test_articles.filter(a => a.category_id === categoryId);
+  const category = spec.categories.find(c => c.id === categoryId);
+
+  if (!category) {
+    throw new Error(`Category with id ${categoryId} not found in spec.yaml`);
+  }
+
+  const articles = await loadTestArticles();
+  return articles.filter(a => a.category === category.name);
 }
 
 /**
@@ -114,8 +105,8 @@ export async function getTestArticlesByCategory(categoryId: number) {
  * @returns 該当タグを持つテスト記事の配列
  */
 export async function getTestArticlesByTag(tag: string) {
-  const spec = await loadSpec('blog','posts');
-  return spec.test_articles.filter(a => a.tags.includes(tag));
+  const articles = await loadTestArticles();
+  return articles.filter(a => a.tags.includes(tag));
 }
 
 /**

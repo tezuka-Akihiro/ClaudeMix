@@ -1,5 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { load } from 'js-yaml';
 import type { PostMetadata } from '~/data-io/blog/common/loadPostMetadata.server';
+import type { BlogCommonSpec } from '~/specs/blog/types';
+
+// 実際の spec ファイルを読み込む
+const specPath = join(process.cwd(), 'app/specs/blog/common-spec.yaml');
+const specContent = readFileSync(specPath, 'utf-8');
+const actualSpec = load(specContent) as BlogCommonSpec;
+
+// loadSpecをモック（実際の spec データを返す）
+vi.mock('~/spec-loader/specLoader.server', () => ({
+  loadSpec: vi.fn((): BlogCommonSpec => actualSpec),
+}));
 
 // satoriとResvgをモック
 vi.mock('satori', () => ({
@@ -72,7 +86,8 @@ describe('generateOgpImage - Pure Logic Layer', () => {
 
     it('should truncate long title', async () => {
       // Arrange
-      const longTitle = 'A'.repeat(100); // 100文字の長いタイトル
+      // spec で定義された maxLength を超える長さのタイトルを生成
+      const longTitle = 'A'.repeat(actualSpec.ogp.title.maxLength + 50);
       const metadata: PostMetadata = {
         title: longTitle,
         description: 'Short description',
@@ -89,7 +104,8 @@ describe('generateOgpImage - Pure Logic Layer', () => {
 
     it('should truncate long description', async () => {
       // Arrange
-      const longDescription = 'B'.repeat(200); // 200文字の長い説明
+      // spec で定義された maxLength を超える長さの説明を生成
+      const longDescription = 'B'.repeat(actualSpec.ogp.description.maxLength + 100);
       const metadata: PostMetadata = {
         title: 'Short Title',
         description: longDescription,

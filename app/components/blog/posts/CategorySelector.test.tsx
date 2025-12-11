@@ -80,7 +80,7 @@ describe('CategorySelector', () => {
       );
 
       // Assert
-      const selector = screen.getByTestId('category-selector') as HTMLSelectElement;
+      const selector = screen.getByTestId('category-selector') as unknown as HTMLSelectElement;
       expect(selector.value).toBe(selectedCategory);
     });
 
@@ -92,7 +92,7 @@ describe('CategorySelector', () => {
       render(<CategorySelector availableCategories={availableCategories} />);
 
       // Assert
-      const selector = screen.getByTestId('category-selector') as HTMLSelectElement;
+      const selector = screen.getByTestId('category-selector') as unknown as HTMLSelectElement;
       expect(selector.value).toBe('');
     });
   });

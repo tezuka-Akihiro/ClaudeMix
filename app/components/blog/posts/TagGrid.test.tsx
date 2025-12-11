@@ -178,14 +178,14 @@ describe('TagGrid', () => {
       const remixGroup = screen.getByText('Remix').closest('[data-testid="tag-group-container"]');
       expect(remixGroup).not.toBeNull();
       if (remixGroup) {
-        expect(within(remixGroup).getByText('SSR')).toBeInTheDocument();
-        expect(within(remixGroup).getByText('Vite')).toBeInTheDocument();
+        expect(within(remixGroup as HTMLElement).getByText('SSR')).toBeInTheDocument();
+        expect(within(remixGroup as HTMLElement).getByText('Vite')).toBeInTheDocument();
       }
 
       const cloudflareGroup = screen.getByText('Cloudflare').closest('[data-testid="tag-group-container"]');
       expect(cloudflareGroup).not.toBeNull();
       if (cloudflareGroup) {
-        expect(within(cloudflareGroup).getByText('Workers')).toBeInTheDocument();
+        expect(within(cloudflareGroup as HTMLElement).getByText('Workers')).toBeInTheDocument();
       }
     });
 
