@@ -1,14 +1,10 @@
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 import { fetchAvailableFilters } from './fetchAvailableFilters.server';
-import { getAllPosts } from '~/generated/blog-posts';
 import { loadPostsSpec } from './loadPostsSpec.server';
 import { groupTags } from '~/lib/blog/posts/groupTagsByCategory';
 import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
 // Mock dependencies
-vi.mock('~/generated/blog-posts', () => ({
-  getAllPosts: vi.fn(),
-}));
 vi.mock('./loadPostsSpec.server', () => ({
   loadPostsSpec: vi.fn(),
 }));
@@ -28,6 +24,7 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
     vi.clearAllMocks();
     // Reset mocks to a default behavior - use spec.yaml values
     vi.mocked(loadPostsSpec).mockReturnValue({
+      categories: spec.categories,
       tags: spec.tags,
       tag_groups: { order: spec.tag_groups.order },
     } as any);
@@ -35,138 +32,53 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
   });
 
   describe('fetchAvailableFilters function', () => {
-    it('should return unique categories sorted alphabetically', async () => {
-      // Arrange
-      vi.mocked(getAllPosts).mockReturnValue([
-        {
-          slug: 'post1',
-          frontmatter: { title: 'Post 1', publishedAt: '2024-05-01', category: 'Tutorials & Use Cases' },
-        } as any,
-        {
-          slug: 'post2',
-          frontmatter: { title: 'Post 2', publishedAt: '2024-04-15', category: 'Claude Best Practices' },
-        } as any,
-        {
-          slug: 'post3',
-          frontmatter: { title: 'Post 3', publishedAt: '2024-03-20', category: 'ClaudeMix Philosophy' },
-        } as any,
-        {
-          slug: 'post4',
-          frontmatter: { title: 'Post 4', publishedAt: '2024-02-10', category: 'Claude Best Practices' },
-        } as any,
-      ]);
+    it('should return all categories defined in spec.yaml', async () => {
+      // Arrange - spec.yamlに定義されている全カテゴリを期待値として使用
+      const expectedCategories = spec.categories.map(cat => cat.name);
 
       // Act
       const result = await fetchAvailableFilters();
 
       // Assert
-      expect(result.categories).toEqual([
-        'Claude Best Practices',
-        'ClaudeMix Philosophy',
-        'Tutorials & Use Cases',
-      ]);
+      expect(result.categories).toEqual(expectedCategories);
+      expect(result.categories).toContain('起業'); // 新しく追加されたカテゴリを確認
     });
 
-    it('should return unique tags sorted alphabetically', async () => {
-      // Arrange
-      vi.mocked(getAllPosts).mockReturnValue([
-        {
-          slug: 'post1',
-          frontmatter: {
-            title: 'Post 1',
-            publishedAt: '2024-05-01',
-            category: 'Tutorials & Use Cases',
-            tags: ['Remix', 'TypeScript', 'Cloudflare'],
-          },
-        } as any,
-        {
-          slug: 'post2',
-          frontmatter: {
-            title: 'Post 2',
-            publishedAt: '2024-04-15',
-            category: 'Claude Best Practices',
-            tags: ['AI', 'Claude', 'TDD'],
-          },
-        } as any,
-        {
-          slug: 'post3',
-          frontmatter: {
-            title: 'Post 3',
-            publishedAt: '2024-03-20',
-            category: 'ClaudeMix Philosophy',
-            tags: ['TypeScript', 'Architecture'],
-          },
-        } as any,
-      ]);
+    it('should return all tags defined in spec.yaml sorted alphabetically', async () => {
+      // Arrange - spec.yamlに定義されている全タグを期待値として使用
+      const expectedTags = spec.tags.map(t => t.name).sort();
 
       // Act
       const result = await fetchAvailableFilters();
 
       // Assert
-      // タグは spec.yaml で定義されているすべてのタグ（アルファベット順）
-      const expectedTags = spec.tags.map(t => t.name).sort();
       expect(result.tags).toEqual(expectedTags);
     });
 
-    it('should handle posts without tags', async () => {
+    it('should return categories and tags from spec.yaml regardless of actual post content', async () => {
       // Arrange
-      vi.mocked(getAllPosts).mockReturnValue([
-        {
-          slug: 'post1',
-          frontmatter: {
-            title: 'Post 1',
-            publishedAt: '2024-05-01',
-            category: 'Tutorials & Use Cases',
-          },
-        } as any,
-        {
-          slug: 'post2',
-          frontmatter: {
-            title: 'Post 2',
-            publishedAt: '2024-04-15',
-            category: 'Claude Best Practices',
-            tags: ['AI'],
-          },
-        } as any,
-      ]);
+      const expectedCategories = spec.categories.map(cat => cat.name);
+      const expectedTags = spec.tags.map(t => t.name).sort();
 
       // Act
       const result = await fetchAvailableFilters();
 
       // Assert
-      // タグは spec.yaml で定義されているすべてのタグ（記事の内容に関係なく）
-      const expectedTags = spec.tags.map(t => t.name).sort();
+      // カテゴリとタグは spec.yaml で定義されているすべて（記事の内容に関係なく）
+      expect(result.categories).toEqual(expectedCategories);
       expect(result.tags).toEqual(expectedTags);
     });
 
-    it('should return empty categories but all defined tags when no posts exist', async () => {
+    it('should call groupTags and return its result as tagGroups', async () => {
       // Arrange
-      vi.mocked(getAllPosts).mockReturnValue([]);
-
-      // Act
-      const result = await fetchAvailableFilters();
-
-      // Assert
-      // カテゴリは記事がなければ空
-      expect(result.categories).toEqual([]);
-      // タグは spec.yaml で定義されているすべてのタグ（記事の有無に関係なく）
-      const expectedTags = spec.tags.map(t => t.name).sort();
-      expect(result.tags).toEqual(expectedTags);
-    });
-
-    it('should call groupTagsByCategory and return its result as tagGroups', async () => {
-      // Arrange
-      const mockPosts = [
-        { frontmatter: { tags: ['Remix', 'SSR'] } },
-      ];
       const mockTagsSpec = [
         { name: 'Remix', group: 'Remix' },
         { name: 'SSR', group: 'Remix' },
       ];
       const mockGroupedTags = [{ group: 'Remix', tags: ['Remix', 'SSR'] }];
 
-      vi.mocked(getAllPosts).mockReturnValue(mockPosts as any);
       vi.mocked(loadPostsSpec).mockReturnValue({
+        categories: spec.categories,
         tags: mockTagsSpec,
         tag_groups: { order: spec.tag_groups.order },
       } as any);
@@ -189,10 +101,10 @@ describe('fetchAvailableFilters - Side Effects Layer', () => {
       expect(result.tagGroups).toHaveLength(1);
     });
 
-    it('should throw error when getAllPosts throws', async () => {
+    it('should throw error when loadPostsSpec throws', async () => {
       // Arrange
-      vi.mocked(getAllPosts).mockImplementation(() => {
-        throw new Error('Failed to get posts');
+      vi.mocked(loadPostsSpec).mockImplementation(() => {
+        throw new Error('Failed to load spec');
       });
 
       // Act & Assert
