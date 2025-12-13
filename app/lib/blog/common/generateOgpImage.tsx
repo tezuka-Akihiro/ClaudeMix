@@ -26,7 +26,7 @@ function truncateText(text: string, maxLength: number): string {
  * @returns フォントのArrayBuffer
  */
 async function fetchFont(baseUrl: string): Promise<ArrayBuffer> {
-  const fontUrl = `${baseUrl}/noto-sans-jp-400.woff`;
+  const fontUrl = `${baseUrl}/NotoSansJP-Regular.ttf`;
   console.log('[OGP/Font] Fetching font from:', fontUrl);
   const response = await fetch(fontUrl);
   if (!response.ok) {
