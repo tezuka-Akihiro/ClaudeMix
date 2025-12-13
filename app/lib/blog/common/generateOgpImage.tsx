@@ -16,8 +16,8 @@ let wasmInitialized = false;
  */
 async function ensureWasmInitialized(): Promise<void> {
   if (!wasmInitialized) {
-    // WASMファイルをfetchしてArrayBufferとして読み込む
-    const response = await fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm');
+    // WASMファイルをローカルの静的ファイルから読み込む
+    const response = await fetch('/resvg.wasm');
     const wasmBinary = await response.arrayBuffer();
     await initWasm(wasmBinary);
     wasmInitialized = true;
