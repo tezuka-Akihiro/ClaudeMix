@@ -7,6 +7,8 @@ import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import type { PostMetadata } from '~/data-io/blog/common/loadPostMetadata.server';
 import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { BlogCommonSpec } from '~/specs/blog/types';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 // WASM初期化フラグ
 let wasmInitialized = false;
@@ -16,11 +18,18 @@ let wasmInitialized = false;
  */
 async function ensureWasmInitialized(): Promise<void> {
   if (!wasmInitialized) {
-    // WASMファイルをローカルの静的ファイルから読み込む
-    const response = await fetch('/resvg.wasm');
-    const wasmBinary = await response.arrayBuffer();
-    await initWasm(wasmBinary);
+    console.log('[OGP/WASM] Initializing WASM...');
+    // WASMファイルをnode_modulesから直接読み込む
+    // Cloudflare Workers環境では、buildプロセスでpublicフォルダにコピーされたファイルが使用される
+    const wasmPath = join(process.cwd(), 'node_modules', '@resvg', 'resvg-wasm', 'index_bg.wasm');
+    console.log('[OGP/WASM] Reading WASM from:', wasmPath);
+    const wasmBuffer = readFileSync(wasmPath);
+    console.log('[OGP/WASM] WASM binary loaded, size:', wasmBuffer.byteLength);
+    await initWasm(wasmBuffer);
+    console.log('[OGP/WASM] WASM initialized successfully');
     wasmInitialized = true;
+  } else {
+    console.log('[OGP/WASM] WASM already initialized, skipping');
   }
 }
 
@@ -42,15 +51,12 @@ function truncateText(text: string, maxLength: number): string {
  * @returns フォントのArrayBuffer
  */
 export async function fetchFont(): Promise<ArrayBuffer> {
-  // CDN経由でフォントを取得（Cloudflare Workers互換）
-  const fontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-jp@5.2.8/files/noto-sans-jp-japanese-400-normal.woff';
-  const response = await fetch(fontUrl);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch font: ${response.statusText}`);
-  }
-
-  return await response.arrayBuffer();
+  // フォントファイルをnode_modulesから直接読み込む
+  const fontPath = join(process.cwd(), 'node_modules', '@fontsource', 'noto-sans-jp', 'files', 'noto-sans-jp-0-400-normal.woff');
+  console.log('[OGP/Font] Reading font from:', fontPath);
+  const fontBuffer = readFileSync(fontPath);
+  console.log('[OGP/Font] Font loaded, size:', fontBuffer.byteLength);
+  return fontBuffer.buffer;
 }
 
 /**
@@ -59,9 +65,11 @@ export async function fetchFont(): Promise<ArrayBuffer> {
  * @returns PNG画像のバッファ
  */
 export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> {
+  console.log('[OGP/Generate] Starting OGP image generation');
   // WASM初期化
   await ensureWasmInitialized();
 
+  console.log('[OGP/Generate] Loading spec config...');
   // spec.yamlからOGP設定を読み込む（ビルド時に生成された静的データ）
   const spec = loadSpec<BlogCommonSpec>('blog/common');
   const ogpConfig = spec.ogp;
@@ -70,9 +78,12 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
   const title = truncateText(metadata.title, ogpConfig.title.maxLength);
   const description = truncateText(metadata.description, ogpConfig.description.maxLength);
   const author = `${ogpConfig.author.prefix}${metadata.author}`;
+  console.log('[OGP/Generate] Text prepared:', { title, description, author });
 
   // フォントデータを取得
+  console.log('[OGP/Generate] Fetching font...');
   const fontData = await fetchFont();
+  console.log('[OGP/Generate] Font loaded, size:', fontData.byteLength);
 
   // Satoriを使ってSVGを生成
   const svg = await satori(
@@ -146,11 +157,14 @@ export async function generateOgpImage(metadata: PostMetadata): Promise<Buffer> 
       ],
     }
   );
+  console.log('[OGP/Generate] SVG generated, length:', svg.length);
 
   // SVGをPNGに変換（WASM版）
+  console.log('[OGP/Generate] Converting SVG to PNG...');
   const resvg = new Resvg(svg);
   const pngData = resvg.render();
   const pngBuffer = pngData.asPng();
+  console.log('[OGP/Generate] PNG conversion complete, buffer size:', pngBuffer.length);
 
   return Buffer.from(pngBuffer);
 }

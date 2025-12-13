@@ -14,33 +14,43 @@ import type { BlogCommonSpec } from '~/specs/blog/types';
  */
 export async function loader({ params }: LoaderFunctionArgs) {
   let { slug } = params;
+  console.log('[OGP] Starting OGP image generation for slug:', slug);
 
   // slugが存在しない場合は404
   if (!slug) {
+    console.error('[OGP] No slug provided');
     throw new Response('Not Found', { status: 404 });
   }
 
   // .png拡張子を除去（/ogp/slug.pngの形式で呼ばれる場合に対応）
   if (slug.endsWith('.png')) {
     slug = slug.slice(0, -4);
+    console.log('[OGP] Removed .png extension, slug is now:', slug);
   }
 
   // 記事のメタデータを取得
+  console.log('[OGP] Loading post metadata for:', slug);
   const metadata = await loadPostMetadata(slug);
 
   // 記事が存在しない場合は404
   if (!metadata) {
+    console.error('[OGP] Post not found for slug:', slug);
     throw new Response('Not Found', { status: 404 });
   }
 
+  console.log('[OGP] Metadata loaded:', { title: metadata.title, author: metadata.author });
+
   try {
+    console.log('[OGP] Starting image generation...');
     // OGP画像を生成
     const imageBuffer = await generateOgpImage(metadata);
+    console.log('[OGP] Image generated, buffer size:', imageBuffer.length);
 
     // spec.yamlからキャッシュ設定を取得（ビルド時に生成された静的データ）
     const spec = loadSpec<BlogCommonSpec>('blog/common');
     const cacheDirective = spec.ogp.cache.directive;
 
+    console.log('[OGP] Returning PNG response');
     // PNG画像としてレスポンスを返す
     // BufferをUint8Arrayに変換してResponseに渡す
     return new Response(new Uint8Array(imageBuffer), {
@@ -52,7 +62,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
     });
   } catch (error) {
     // 画像生成に失敗した場合は500エラー
-    console.error(`Failed to generate OGP image for slug "${slug}":`, error);
+    console.error(`[OGP] Failed to generate OGP image for slug "${slug}":`, error);
+    console.error('[OGP] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('[OGP] Error cause:', error instanceof Error && 'cause' in error ? error.cause : 'No cause');
     throw new Response('Internal Server Error', { status: 500 });
   }
 }
