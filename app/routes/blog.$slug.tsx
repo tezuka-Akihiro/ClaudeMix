@@ -10,6 +10,8 @@ import { PostDetailSection } from "~/components/blog/post-detail/PostDetailSecti
 import BlogLayout from "~/components/blog/common/BlogLayout";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
+import { loadSpec } from "~/spec-loader/specLoader.server";
+import type { BlogCommonSpec } from "~/specs/blog/types";
 
 export interface PostDetailLoaderData {
   post: {
@@ -52,6 +54,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
   // ブログ設定を取得
   const config = await loadBlogConfig();
 
+  // OGP画像の設定を取得
+  const spec = loadSpec<BlogCommonSpec>('blog/common');
+  const ogpImageWidth = spec.ogp.image.width;
+  const ogpImageHeight = spec.ogp.image.height;
+
   return json({
     post: {
       slug: post.slug,
@@ -67,6 +74,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
     },
     headings,
     config,
+    ogpImage: {
+      width: ogpImageWidth,
+      height: ogpImageHeight,
+    },
   });
 }
 
@@ -78,7 +89,7 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
     ];
   }
 
-  const { post, config } = data;
+  const { post, config, ogpImage } = data;
   const siteUrl = config.siteUrl; // 例: "https://example.com"
   const pageUrl = new URL(location.pathname, siteUrl).toString();
   const ogpImageUrl = new URL(`/ogp/${params.slug}.png`, siteUrl).toString();
@@ -92,9 +103,15 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
     { property: "og:type", content: "article" },
     { property: "og:url", content: pageUrl },
     { property: "og:image", content: ogpImageUrl },
+    { property: "og:image:width", content: ogpImage.width.toString() },
+    { property: "og:image:height", content: ogpImage.height.toString() },
+    { property: "og:image:type", content: "image/png" },
+    { property: "og:image:alt", content: post.title },
     { property: "og:site_name", content: config.siteName },
     // Twitter Card
     { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:image", content: ogpImageUrl },
+    { name: "twitter:image:alt", content: post.title },
   ];
 };
 
