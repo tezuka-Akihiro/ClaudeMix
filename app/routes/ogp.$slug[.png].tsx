@@ -12,9 +12,13 @@ import type { BlogCommonSpec } from '~/specs/blog/types';
  * @param params.slug - 記事のslug（.png拡張子を含む場合は除去）
  * @returns PNG画像のResponse
  */
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   let { slug } = params;
-  console.log('[OGP] Starting OGP image generation for slug:', slug);
+
+  // リクエストURLからベースURLを取得（Cloudflare Workers環境で必要）
+  const url = new URL(request.url);
+  const baseUrl = `${url.protocol}//${url.host}`;
+  console.log('[OGP] Starting OGP image generation for slug:', slug, 'baseUrl:', baseUrl);
 
   // slugが存在しない場合は404
   if (!slug) {
@@ -43,7 +47,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   try {
     console.log('[OGP] Starting image generation...');
     // OGP画像を生成
-    const imageBuffer = await generateOgpImage(metadata);
+    const imageBuffer = await generateOgpImage(metadata, baseUrl);
     console.log('[OGP] Image generated, buffer size:', imageBuffer.length);
 
     // spec.yamlからキャッシュ設定を取得（ビルド時に生成された静的データ）
