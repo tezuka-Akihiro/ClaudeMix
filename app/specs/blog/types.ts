@@ -212,6 +212,7 @@ export interface BlogCommonSpec {
       prefix: string;
     };
     font: {
+      name: string;
       family: string;
     };
   };
