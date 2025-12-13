@@ -37,7 +37,6 @@
     "@remix-run/node": "^2.17.1",
     "@remix-run/react": "^2.17.1",
     "@remix-run/serve": "^2.17.1",
-    "@resvg/resvg-wasm": "^2.6.2",
     "gray-matter": "^4.0.3",
     "isbot": "^4.4.0",
     "marked": "^17.0.0",
@@ -45,8 +44,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sanitize-html": "^2.17.0",
-    "satori": "^0.18.3",
-    "shiki": "^3.15.0"
+    "shiki": "^3.15.0",
+    "workers-og": "^0.0.27"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",
