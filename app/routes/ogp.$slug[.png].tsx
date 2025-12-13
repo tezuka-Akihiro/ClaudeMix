@@ -46,22 +46,21 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   try {
     console.log('[OGP] Starting image generation...');
-    // OGP画像を生成
-    const imageBuffer = await generateOgpImage(metadata, baseUrl);
-    console.log('[OGP] Image generated, buffer size:', imageBuffer.length);
+    // OGP画像を生成（ImageResponseを返す）
+    const response = await generateOgpImage(metadata, baseUrl);
 
     // spec.yamlからキャッシュ設定を取得（ビルド時に生成された静的データ）
     const spec = loadSpec<BlogCommonSpec>('blog/common');
     const cacheDirective = spec.ogp.cache.directive;
 
-    console.log('[OGP] Returning PNG response');
-    // PNG画像としてレスポンスを返す（Uint8Arrayをそのまま使用）
-    return new Response(imageBuffer, {
-      status: 200,
-      headers: {
-        'Content-Type': 'image/png',
-        'Cache-Control': cacheDirective,
-      },
+    // キャッシュヘッダーを追加してレスポンスを返す
+    console.log('[OGP] Adding cache headers and returning response');
+    const headers = new Headers(response.headers);
+    headers.set('Cache-Control', cacheDirective);
+
+    return new Response(response.body, {
+      status: response.status,
+      headers,
     });
   } catch (error) {
     // 画像生成に失敗した場合は500エラー
