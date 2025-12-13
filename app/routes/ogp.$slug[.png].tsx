@@ -55,9 +55,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     const cacheDirective = spec.ogp.cache.directive;
 
     console.log('[OGP] Returning PNG response');
-    // PNG画像としてレスポンスを返す
-    // BufferをUint8Arrayに変換してResponseに渡す
-    return new Response(new Uint8Array(imageBuffer), {
+    // PNG画像としてレスポンスを返す（Uint8Arrayをそのまま使用）
+    return new Response(imageBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'image/png',

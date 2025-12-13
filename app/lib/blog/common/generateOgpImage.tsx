@@ -70,9 +70,9 @@ export async function fetchFont(baseUrl: string): Promise<ArrayBuffer> {
  * OGP画像を生成する
  * @param metadata - 記事のメタデータ（title, description, author）
  * @param baseUrl - アプリケーションのベースURL（例: https://example.com）
- * @returns PNG画像のバッファ
+ * @returns PNG画像のバッファ（Uint8Array）
  */
-export async function generateOgpImage(metadata: PostMetadata, baseUrl: string): Promise<Buffer> {
+export async function generateOgpImage(metadata: PostMetadata, baseUrl: string): Promise<Uint8Array> {
   console.log('[OGP/Generate] Starting OGP image generation with baseUrl:', baseUrl);
   // WASM初期化
   await ensureWasmInitialized(baseUrl);
@@ -174,5 +174,6 @@ export async function generateOgpImage(metadata: PostMetadata, baseUrl: string):
   const pngBuffer = pngData.asPng();
   console.log('[OGP/Generate] PNG conversion complete, buffer size:', pngBuffer.length);
 
-  return Buffer.from(pngBuffer);
+  // Uint8Arrayをそのまま返す（Cloudflare Workers互換）
+  return pngBuffer;
 }
