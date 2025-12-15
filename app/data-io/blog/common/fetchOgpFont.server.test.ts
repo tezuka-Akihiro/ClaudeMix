@@ -1,4 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { load } from 'js-yaml';
+import type { BlogCommonSpec } from '~/specs/blog/types';
+
+// 実際の spec ファイルを読み込む
+const specPath = join(process.cwd(), 'app/specs/blog/common-spec.yaml');
+const specContent = readFileSync(specPath, 'utf-8');
+const actualSpec = load(specContent) as BlogCommonSpec;
+
+// loadSpecをモック（実際の spec データを返す）
+vi.mock('~/spec-loader/specLoader.server', () => ({
+  loadSpec: vi.fn((): BlogCommonSpec => actualSpec),
+}));
+
+// モックの後にインポート
 import { fetchOgpFont } from '~/data-io/blog/common/fetchOgpFont.server';
 
 describe('fetchOgpFont - Data-IO Layer', () => {
@@ -39,10 +55,10 @@ describe('fetchOgpFont - Data-IO Layer', () => {
       expect(fontData).toBeInstanceOf(ArrayBuffer);
       expect(fontData.byteLength).toBeGreaterThan(0);
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap',
+        actualSpec.ogp.font.fetch.apiUrl,
         expect.objectContaining({
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'User-Agent': actualSpec.ogp.font.fetch.userAgent,
           },
         })
       );

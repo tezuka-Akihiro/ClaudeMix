@@ -3,14 +3,8 @@
 // Cloudflare Workers環境での動的フォント取得を担当
 
 import { debugLog, errorLog } from '~/lib/blog/common/logger';
-import {
-  GOOGLE_FONTS_CSS_URL,
-  FONT_FETCH_USER_AGENT,
-  OGP_FONT_CACHE_NAME,
-  FONT_CONTENT_TYPE,
-  FONT_CACHE_CONTROL,
-  FONT_URL_REGEX,
-} from '~/lib/blog/common/ogp-constants';
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { BlogCommonSpec } from '~/specs/blog/types';
 
 /**
  * フォントデータを取得（Cache API対応 - Google Fonts API版）
@@ -21,12 +15,16 @@ import {
 export async function fetchOgpFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
   debugLog('[OGP/Font] Starting font fetch process');
 
+  // spec.yamlからフォント取得設定を読み込む（SSoTパターン）
+  const spec = loadSpec<BlogCommonSpec>('blog/common');
+  const fontFetchConfig = spec.ogp.font.fetch;
+
   try {
     // Google Fonts APIからCSSを取得してフォントURLを抽出
     debugLog('[OGP/Font] Fetching CSS from Google Fonts API...');
-    const cssResponse = await fetch(GOOGLE_FONTS_CSS_URL, {
+    const cssResponse = await fetch(fontFetchConfig.apiUrl, {
       headers: {
-        'User-Agent': FONT_FETCH_USER_AGENT,
+        'User-Agent': fontFetchConfig.userAgent,
       },
     });
 
@@ -38,7 +36,8 @@ export async function fetchOgpFont(ctx?: ExecutionContext): Promise<ArrayBuffer>
     debugLog('[OGP/Font] CSS fetched, extracting TTF URL...');
 
     // CSSからTTFのURLを抽出（url(...)の部分）
-    const urlMatch = cssText.match(FONT_URL_REGEX);
+    const urlRegex = new RegExp(fontFetchConfig.urlRegex);
+    const urlMatch = cssText.match(urlRegex);
     if (!urlMatch || !urlMatch[1]) {
       throw new Error('Failed to extract font URL from CSS');
     }
@@ -47,7 +46,7 @@ export async function fetchOgpFont(ctx?: ExecutionContext): Promise<ArrayBuffer>
     debugLog('[OGP/Font] TTF URL extracted:', fontFileUrl);
 
     // Cache API を開く（フォントURLをキャッシュキーとして使用）
-    const cache = await caches.open(OGP_FONT_CACHE_NAME);
+    const cache = await caches.open(fontFetchConfig.cacheName);
 
     // キャッシュを確認
     const cached = await cache.match(fontFileUrl);
@@ -72,8 +71,8 @@ export async function fetchOgpFont(ctx?: ExecutionContext): Promise<ArrayBuffer>
     if (ctx) {
       const cacheResponse = new Response(fontBuffer, {
         headers: {
-          'Content-Type': FONT_CONTENT_TYPE,
-          'Cache-Control': FONT_CACHE_CONTROL,
+          'Content-Type': fontFetchConfig.contentType,
+          'Cache-Control': fontFetchConfig.cacheControl,
         },
       });
       ctx.waitUntil(cache.put(fontFileUrl, cacheResponse));

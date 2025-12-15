@@ -144,3 +144,12 @@ ogp:
   font:
     name: "Noto Sans JP"  # workers-ogに登録する単一フォント名
     family: "'Noto Sans JP', 'Hiragino Sans', 'ヒラギノ角ゴ ProN W3', 'メイリオ', Meiryo, sans-serif"
+
+    # フォント取得設定（Data-IO層で使用）
+    fetch:
+      apiUrl: "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      cacheName: "ogp-fonts-v1"
+      contentType: "font/ttf"
+      cacheControl: "public, max-age=31536000, immutable"
+      urlRegex: "url\\((https:\\/\\/[^)]+\\.ttf)\\)"
