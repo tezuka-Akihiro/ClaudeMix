@@ -53,13 +53,18 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     const spec = loadSpec<BlogCommonSpec>('blog/common');
     const cacheDirective = spec.ogp.cache.directive;
 
+    // ImageResponseのbodyを完全に読み取る（ReadableStreamは一度しか読めないため）
+    console.log('[OGP] Reading image data from response...');
+    const imageData = await response.arrayBuffer();
+    console.log('[OGP] Image data size:', imageData.byteLength, 'bytes');
+
     // キャッシュヘッダーを追加してレスポンスを返す
-    console.log('[OGP] Adding cache headers and returning response');
+    console.log('[OGP] Creating response with cache headers');
     const headers = new Headers(response.headers);
     headers.set('Cache-Control', cacheDirective);
 
-    return new Response(response.body, {
-      status: response.status,
+    return new Response(imageData, {
+      status: 200,
       headers,
     });
   } catch (error) {
