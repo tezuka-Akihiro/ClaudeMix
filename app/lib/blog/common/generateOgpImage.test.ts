@@ -171,5 +171,78 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       expect(response).toBeDefined();
       expect(buffer.byteLength).toBeGreaterThan(0);
     });
+
+    it('should handle emoji in metadata', async () => {
+      // Arrange
+      const metadata: PostMetadata = {
+        title: '🚀 Deploy Guide 🎉',
+        description: '📝 Learn how to deploy your app with ✨ ease',
+        author: '👨‍💻 Developer',
+      };
+
+      // Act
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+      const view = new Uint8Array(buffer);
+
+      // Assert
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+      expect(view[0]).toBe(0x89); // PNG signature
+    });
+
+    it('should handle very short fields', async () => {
+      // Arrange
+      const metadata: PostMetadata = {
+        title: 'A',
+        description: 'B',
+        author: 'C',
+      };
+
+      // Act
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+
+      // Assert
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+    });
+
+    it('should handle empty font data without crashing', async () => {
+      // Arrange
+      const metadata: PostMetadata = {
+        title: 'Test Title',
+        description: 'Test Description',
+        author: 'Test Author',
+      };
+      const emptyFontData = new ArrayBuffer(0);
+
+      // Act
+      const response = await generateOgpImage(metadata, emptyFontData);
+      const buffer = await response.arrayBuffer();
+
+      // Assert
+      // workers-og accepts empty font data without throwing
+      // (may produce broken image, but doesn't crash)
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+    });
+
+    it('should handle all fields at maximum length', async () => {
+      // Arrange
+      const metadata: PostMetadata = {
+        title: 'A'.repeat(actualSpec.ogp.title.maxLength),
+        description: 'B'.repeat(actualSpec.ogp.description.maxLength),
+        author: 'Very Long Author Name That Exceeds Normal Length',
+      };
+
+      // Act
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+
+      // Assert
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+    });
   });
 });
