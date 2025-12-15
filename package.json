@@ -20,6 +20,8 @@
     "test:e2e:debug": "playwright test --debug -c tests/e2e/playwright.config.ts",
     "test:e2e:report": "playwright show-report --config tests/e2e/playwright.config.ts",
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 remix vite:dev",
+    "dev:wrangler": "npm run build && wrangler pages dev ./build/client --compatibility-date=2024-09-23 --compatibility-flags=nodejs_compat",
+    "preview": "npm run build && wrangler pages dev ./build/client --compatibility-date=2024-09-23 --compatibility-flags=nodejs_compat --port=8788",
     "start": "cross-env NODE_ENV=production node ./server.js",
     "typecheck": "tsc && tsc -p tests/e2e/tsconfig.json",
     "typecheck:e2e": "tsc -p tests/e2e/tsconfig.json",
