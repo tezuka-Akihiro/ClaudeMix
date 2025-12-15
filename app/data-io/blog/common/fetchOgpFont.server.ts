@@ -2,7 +2,6 @@
 // Google Fonts APIからフォントを取得し、Cache APIでキャッシュ
 // Cloudflare Workers環境での動的フォント取得を担当
 
-import { debugLog, errorLog } from '~/lib/blog/common/logger';
 import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { BlogCommonSpec } from '~/specs/blog/types';
 
@@ -13,15 +12,10 @@ import type { BlogCommonSpec } from '~/specs/blog/types';
  * @returns フォントのArrayBuffer
  */
 export async function fetchOgpFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
-  debugLog('[OGP/Font] Starting font fetch process');
-
-  // spec.yamlからフォント取得設定を読み込む（SSoTパターン）
   const spec = loadSpec<BlogCommonSpec>('blog/common');
   const fontFetchConfig = spec.ogp.font.fetch;
 
   try {
-    // Google Fonts APIからCSSを取得してフォントURLを抽出
-    debugLog('[OGP/Font] Fetching CSS from Google Fonts API...');
     const cssResponse = await fetch(fontFetchConfig.apiUrl, {
       headers: {
         'User-Agent': fontFetchConfig.userAgent,
@@ -33,9 +27,7 @@ export async function fetchOgpFont(ctx?: ExecutionContext): Promise<ArrayBuffer>
     }
 
     const cssText = await cssResponse.text();
-    debugLog('[OGP/Font] CSS fetched, extracting TTF URL...');
 
-    // CSSからTTFのURLを抽出（url(...)の部分）
     const urlRegex = new RegExp(fontFetchConfig.urlRegex);
     const urlMatch = cssText.match(urlRegex);
     if (!urlMatch || !urlMatch[1]) {
@@ -43,31 +35,21 @@ export async function fetchOgpFont(ctx?: ExecutionContext): Promise<ArrayBuffer>
     }
 
     const fontFileUrl = urlMatch[1];
-    debugLog('[OGP/Font] TTF URL extracted:', fontFileUrl);
 
-    // Cache API を開く（フォントURLをキャッシュキーとして使用）
     const cache = await caches.open(fontFetchConfig.cacheName);
 
-    // キャッシュを確認
     const cached = await cache.match(fontFileUrl);
     if (cached) {
-      debugLog('[OGP/Font] Font loaded from cache');
-      const fontBuffer = await cached.arrayBuffer();
-      debugLog('[OGP/Font] Cached font size:', fontBuffer.byteLength);
-      return fontBuffer;
+      return await cached.arrayBuffer();
     }
 
-    // キャッシュミス: TTFファイルをダウンロード
-    debugLog('[OGP/Font] Cache miss, downloading font file...');
     const fontResponse = await fetch(fontFileUrl);
     if (!fontResponse.ok) {
       throw new Error(`Failed to fetch font file: ${fontResponse.status} ${fontResponse.statusText}`);
     }
 
     const fontBuffer = await fontResponse.arrayBuffer();
-    debugLog('[OGP/Font] Font downloaded, size:', fontBuffer.byteLength);
 
-    // バックグラウンドでキャッシュに保存（レスポンスをブロックしない）
     if (ctx) {
       const cacheResponse = new Response(fontBuffer, {
         headers: {
@@ -76,12 +58,11 @@ export async function fetchOgpFont(ctx?: ExecutionContext): Promise<ArrayBuffer>
         },
       });
       ctx.waitUntil(cache.put(fontFileUrl, cacheResponse));
-      debugLog('[OGP/Font] Font will be cached in background');
     }
 
     return fontBuffer;
   } catch (error) {
-    errorLog('[OGP/Font] Error fetching font:', error);
+    console.error('[OGP/Font] Error fetching font:', error);
     throw error;
   }
 }
