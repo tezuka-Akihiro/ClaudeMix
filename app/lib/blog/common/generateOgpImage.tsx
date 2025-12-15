@@ -73,7 +73,7 @@ export async function generateOgpImage(metadata: PostMetadata, baseUrl: string):
           alignItems: 'flex-start',
           padding: `${ogpConfig.layout.paddingY} ${ogpConfig.layout.paddingX}`,
           background: `linear-gradient(${ogpConfig.colors.background.gradientAngle}, ${ogpConfig.colors.background.gradientStart} 0%, ${ogpConfig.colors.background.gradientEnd} 100%)`,
-          fontFamily: ogpConfig.font.family,
+          fontFamily: ogpConfig.font.name,
         }}
       >
         {/* タイトルと説明のコンテナ */}
@@ -126,7 +126,7 @@ export async function generateOgpImage(metadata: PostMetadata, baseUrl: string):
       height: ogpConfig.image.height,
       fonts: [
         {
-          name: ogpConfig.font.family,
+          name: ogpConfig.font.name,
           data: fontData,
           weight: 400,
           style: 'normal',

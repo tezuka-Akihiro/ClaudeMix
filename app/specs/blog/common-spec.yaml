@@ -142,4 +142,5 @@ ogp:
 
   # フォント設定
   font:
+    name: "Noto Sans JP"  # workers-ogに登録する単一フォント名
     family: "'Noto Sans JP', 'Hiragino Sans', 'ヒラギノ角ゴ ProN W3', 'メイリオ', Meiryo, sans-serif"
