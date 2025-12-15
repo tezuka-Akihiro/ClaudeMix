@@ -21,17 +21,17 @@ function truncateText(text: string, maxLength: number): string {
 }
 
 /**
- * フォントデータを取得（Cache API対応）
- * Google Fonts APIから動的にTTFを取得し、Cloudflare Edgeでキャッシュ
+ * フォントデータを取得（Cache API対応 - 静的ファイル版）
+ * public/フォルダの静的TTFをCloudflare Edgeでキャッシュ
+ * @param baseUrl - アプリケーションのベースURL
  * @param ctx - Cloudflare ExecutionContext（waitUntilでバックグラウンドキャッシュ用）
  * @returns フォントのArrayBuffer
  */
-async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
-  // Google Fonts API から Noto Sans JP の TTF を取得
-  // text パラメータで必要な文字のみをサブセット化
-  const fontUrl = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap';
+async function fetchFont(baseUrl: string, ctx?: ExecutionContext): Promise<ArrayBuffer> {
+  // 静的フォントファイルのURL（要: public/NotoSansJP-Regular.ttf を配置）
+  const fontUrl = `${baseUrl}/NotoSansJP-Regular.ttf`;
 
-  console.log('[OGP/Font] Fetching font from Google Fonts API');
+  console.log('[OGP/Font] Fetching font from:', fontUrl);
 
   try {
     // Cache API を開く
@@ -47,35 +47,12 @@ async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
       return fontBuffer;
     }
 
-    // Google Fonts CSS を取得してTTF URLを抽出
-    console.log('[OGP/Font] Cache miss, fetching from Google Fonts...');
-    const cssResponse = await fetch(fontUrl, {
-      headers: {
-        // TTFフォーマットを要求（User-Agentでフォーマットが変わる）
-        'User-Agent': 'Mozilla/5.0 (compatible; Cloudflare-Workers/1.0; +http://www.cloudflare.com)',
-      },
-    });
+    // キャッシュミス: 静的ファイルを取得
+    console.log('[OGP/Font] Cache miss, fetching from static file...');
+    const fontResponse = await fetch(fontUrl);
 
-    if (!cssResponse.ok) {
-      throw new Error(`Failed to fetch font CSS: ${cssResponse.status}`);
-    }
-
-    const cssText = await cssResponse.text();
-    console.log('[OGP/Font] Font CSS received, extracting TTF URL...');
-
-    // CSSからTTFのURLを抽出（例: url(https://fonts.gstatic.com/...))
-    const urlMatch = cssText.match(/url\((https:\/\/[^)]+\.(?:ttf|otf))\)/);
-    if (!urlMatch) {
-      throw new Error('Could not extract font URL from Google Fonts CSS');
-    }
-
-    const ttfUrl = urlMatch[1];
-    console.log('[OGP/Font] Downloading TTF from:', ttfUrl);
-
-    // TTFファイルをダウンロード
-    const fontResponse = await fetch(ttfUrl);
     if (!fontResponse.ok) {
-      throw new Error(`Failed to fetch TTF: ${fontResponse.status}`);
+      throw new Error(`Failed to fetch font: ${fontResponse.status} ${fontResponse.statusText}`);
     }
 
     const fontBuffer = await fontResponse.arrayBuffer();
@@ -90,7 +67,7 @@ async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
         },
       });
       ctx.waitUntil(cache.put(cacheKey, cacheResponse));
-      console.log('[OGP/Font] Font cached in background');
+      console.log('[OGP/Font] Font will be cached in background');
     }
 
     return fontBuffer;
@@ -103,11 +80,12 @@ async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
 /**
  * OGP画像を生成する
  * @param metadata - 記事のメタデータ（title, description, author）
+ * @param baseUrl - アプリケーションのベースURL
  * @param ctx - Cloudflare ExecutionContext（フォントキャッシュ用）
  * @returns ImageResponse
  */
-export async function generateOgpImage(metadata: PostMetadata, ctx?: ExecutionContext): Promise<Response> {
-  console.log('[OGP/Generate] Starting OGP image generation');
+export async function generateOgpImage(metadata: PostMetadata, baseUrl: string, ctx?: ExecutionContext): Promise<Response> {
+  console.log('[OGP/Generate] Starting OGP image generation with baseUrl:', baseUrl);
 
   // spec.yamlからOGP設定を読み込む（ビルド時に生成された静的データ）
   const spec = loadSpec<BlogCommonSpec>('blog/common');
@@ -119,9 +97,9 @@ export async function generateOgpImage(metadata: PostMetadata, ctx?: ExecutionCo
   const author = `${ogpConfig.author.prefix}${metadata.author}`;
   console.log('[OGP/Generate] Text prepared:', { title, description, author });
 
-  // フォントデータを取得（Cache API経由）
+  // フォントデータを取得（Cache API経由で静的ファイルをキャッシュ）
   console.log('[OGP/Generate] Fetching font...');
-  const fontData = await fetchFont(ctx);
+  const fontData = await fetchFont(baseUrl, ctx);
 
   console.log('[OGP/Generate] Creating ImageResponse...');
   return new ImageResponse(

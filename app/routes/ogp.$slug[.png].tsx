@@ -15,7 +15,10 @@ import type { BlogCommonSpec } from '~/specs/blog/types';
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   let { slug } = params;
 
-  console.log('[OGP] Starting OGP image generation for slug:', slug);
+  // リクエストURLからベースURLを取得
+  const url = new URL(request.url);
+  const baseUrl = `${url.protocol}//${url.host}`;
+  console.log('[OGP] Starting OGP image generation for slug:', slug, 'baseUrl:', baseUrl);
 
   // Cloudflare ExecutionContext を取得（キャッシュ用）
   // @ts-expect-error - Cloudflare Pages specific context
@@ -48,7 +51,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   try {
     console.log('[OGP] Starting image generation...');
     // OGP画像を生成（ImageResponseを返す、Cache API経由でフォント取得）
-    const response = await generateOgpImage(metadata, ctx);
+    const response = await generateOgpImage(metadata, baseUrl, ctx);
 
     // spec.yamlからキャッシュ設定を取得（ビルド時に生成された静的データ）
     const spec = loadSpec<BlogCommonSpec>('blog/common');
