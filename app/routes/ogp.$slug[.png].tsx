@@ -33,24 +33,19 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
     throw new Response('Not Found', { status: 404 });
   }
 
-  try {
-    const fontData = await fetchOgpFont(ctx);
-    const response = await generateOgpImage(metadata, fontData);
+  const fontData = await fetchOgpFont(ctx);
+  const response = await generateOgpImage(metadata, fontData);
 
-    const spec = loadSpec<BlogCommonSpec>('blog/common');
-    const cacheDirective = spec.ogp.cache.directive;
+  const spec = loadSpec<BlogCommonSpec>('blog/common');
+  const cacheDirective = spec.ogp.cache.directive;
 
-    const imageData = await response.arrayBuffer();
+  const imageData = await response.arrayBuffer();
 
-    const headers = new Headers(response.headers);
-    headers.set('Cache-Control', cacheDirective);
+  const headers = new Headers(response.headers);
+  headers.set('Cache-Control', cacheDirective);
 
-    return new Response(imageData, {
-      status: 200,
-      headers,
-    });
-  } catch (error) {
-    console.error(`[OGP] Failed to generate OGP image for slug "${slug}":`, error);
-    throw new Response('Internal Server Error', { status: 500 });
-  }
+  return new Response(imageData, {
+    status: 200,
+    headers,
+  });
 }
