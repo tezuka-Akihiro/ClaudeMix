@@ -34,7 +34,7 @@ async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
   try {
     // Cache API を開く
     const cache = await caches.open('ogp-fonts-v1');
-    const fontCacheKey = new Request('noto-sans-jp-400-font-file');
+    const fontCacheKey = 'noto-sans-jp-400-font-file';
 
     // キャッシュを確認
     const cached = await cache.match(fontCacheKey);
