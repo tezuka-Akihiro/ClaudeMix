@@ -32,21 +32,8 @@ async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
   console.log('[OGP/Font] Starting font fetch process');
 
   try {
-    // Cache API を開く
-    const cache = await caches.open('ogp-fonts-v1');
-    const fontCacheKey = 'noto-sans-jp-400-font-file';
-
-    // キャッシュを確認
-    const cached = await cache.match(fontCacheKey);
-    if (cached) {
-      console.log('[OGP/Font] Font loaded from cache');
-      const fontBuffer = await cached.arrayBuffer();
-      console.log('[OGP/Font] Cached font size:', fontBuffer.byteLength);
-      return fontBuffer;
-    }
-
-    // キャッシュミス: Google Fonts APIからCSSを取得
-    console.log('[OGP/Font] Cache miss, fetching from Google Fonts API...');
+    // Google Fonts APIからCSSを取得してフォントURLを抽出
+    console.log('[OGP/Font] Fetching CSS from Google Fonts API...');
     const cssResponse = await fetch(FONT_API_URL, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -69,7 +56,20 @@ async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
     const fontFileUrl = urlMatch[1];
     console.log('[OGP/Font] TTF URL extracted:', fontFileUrl);
 
-    // TTFファイルをダウンロード
+    // Cache API を開く（フォントURLをキャッシュキーとして使用）
+    const cache = await caches.open('ogp-fonts-v1');
+
+    // キャッシュを確認
+    const cached = await cache.match(fontFileUrl);
+    if (cached) {
+      console.log('[OGP/Font] Font loaded from cache');
+      const fontBuffer = await cached.arrayBuffer();
+      console.log('[OGP/Font] Cached font size:', fontBuffer.byteLength);
+      return fontBuffer;
+    }
+
+    // キャッシュミス: TTFファイルをダウンロード
+    console.log('[OGP/Font] Cache miss, downloading font file...');
     const fontResponse = await fetch(fontFileUrl);
     if (!fontResponse.ok) {
       throw new Error(`Failed to fetch font file: ${fontResponse.status} ${fontResponse.statusText}`);
@@ -86,7 +86,7 @@ async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
           'Cache-Control': 'public, max-age=31536000, immutable',
         },
       });
-      ctx.waitUntil(cache.put(fontCacheKey, cacheResponse));
+      ctx.waitUntil(cache.put(fontFileUrl, cacheResponse));
       console.log('[OGP/Font] Font will be cached in background');
     }
 
