@@ -3,9 +3,11 @@
 
 import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { loadPostMetadata } from '~/data-io/blog/common/loadPostMetadata.server';
+import { fetchOgpFont } from '~/data-io/blog/common/fetchOgpFont.server';
 import { generateOgpImage } from '~/lib/blog/common/generateOgpImage';
 import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { BlogCommonSpec } from '~/specs/blog/types';
+import { debugLog, errorLog } from '~/lib/blog/common/logger';
 
 /**
  * OGP画像生成のloader
@@ -15,10 +17,7 @@ import type { BlogCommonSpec } from '~/specs/blog/types';
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   let { slug } = params;
 
-  // リクエストURLからベースURLを取得
-  const url = new URL(request.url);
-  const baseUrl = `${url.protocol}//${url.host}`;
-  console.log('[OGP] Starting OGP image generation for slug:', slug, 'baseUrl:', baseUrl);
+  debugLog('[OGP] Starting OGP image generation for slug:', slug);
 
   // Cloudflare ExecutionContext を取得（キャッシュ用）
   // @ts-expect-error - Cloudflare Pages specific context
@@ -26,44 +25,48 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
 
   // slugが存在しない場合は404
   if (!slug) {
-    console.error('[OGP] No slug provided');
+    errorLog('[OGP] No slug provided', new Error('Slug is undefined'));
     throw new Response('Not Found', { status: 404 });
   }
 
   // .png拡張子を除去（/ogp/slug.pngの形式で呼ばれる場合に対応）
   if (slug.endsWith('.png')) {
     slug = slug.slice(0, -4);
-    console.log('[OGP] Removed .png extension, slug is now:', slug);
+    debugLog('[OGP] Removed .png extension, slug is now:', slug);
   }
 
   // 記事のメタデータを取得
-  console.log('[OGP] Loading post metadata for:', slug);
+  debugLog('[OGP] Loading post metadata for:', slug);
   const metadata = await loadPostMetadata(slug);
 
   // 記事が存在しない場合は404
   if (!metadata) {
-    console.error('[OGP] Post not found for slug:', slug);
+    errorLog('[OGP] Post not found for slug:', slug);
     throw new Response('Not Found', { status: 404 });
   }
 
-  console.log('[OGP] Metadata loaded:', { title: metadata.title, author: metadata.author });
+  debugLog('[OGP] Metadata loaded:', { title: metadata.title, author: metadata.author });
 
   try {
-    console.log('[OGP] Starting image generation...');
-    // OGP画像を生成（ImageResponseを返す、Cache API経由でフォント取得）
-    const response = await generateOgpImage(metadata, baseUrl, ctx);
+    debugLog('[OGP] Fetching font...');
+    // フォントデータを取得（Cache API経由でGoogle Fonts APIから動的取得）
+    const fontData = await fetchOgpFont(ctx);
+
+    debugLog('[OGP] Starting image generation...');
+    // OGP画像を生成（純粋関数）
+    const response = await generateOgpImage(metadata, fontData);
 
     // spec.yamlからキャッシュ設定を取得（ビルド時に生成された静的データ）
     const spec = loadSpec<BlogCommonSpec>('blog/common');
     const cacheDirective = spec.ogp.cache.directive;
 
     // ImageResponseのbodyを完全に読み取る（ReadableStreamは一度しか読めないため）
-    console.log('[OGP] Reading image data from response...');
+    debugLog('[OGP] Reading image data from response...');
     const imageData = await response.arrayBuffer();
-    console.log('[OGP] Image data size:', imageData.byteLength, 'bytes');
+    debugLog('[OGP] Image data size:', imageData.byteLength, 'bytes');
 
     // キャッシュヘッダーを追加してレスポンスを返す
-    console.log('[OGP] Creating response with cache headers');
+    debugLog('[OGP] Creating response with cache headers');
     const headers = new Headers(response.headers);
     headers.set('Cache-Control', cacheDirective);
 
@@ -73,9 +76,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
     });
   } catch (error) {
     // 画像生成に失敗した場合は500エラー
-    console.error(`[OGP] Failed to generate OGP image for slug "${slug}":`, error);
-    console.error('[OGP] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    console.error('[OGP] Error cause:', error instanceof Error && 'cause' in error ? error.cause : 'No cause');
+    errorLog(`[OGP] Failed to generate OGP image for slug "${slug}"`, error);
     throw new Response('Internal Server Error', { status: 500 });
   }
 }

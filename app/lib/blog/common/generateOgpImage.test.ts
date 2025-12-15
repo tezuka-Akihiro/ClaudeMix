@@ -37,38 +37,8 @@ vi.mock('workers-og', () => ({
 import { generateOgpImage } from '~/lib/blog/common/generateOgpImage';
 
 describe('generateOgpImage - Pure Logic Layer', () => {
-  beforeEach(() => {
-    // Cache APIをモック（キャッシュなしの状態をシミュレート）
-    const mockCache = {
-      match: vi.fn(async () => undefined), // 常にキャッシュミス
-      put: vi.fn(async () => {}),
-    };
-    global.caches = {
-      open: vi.fn(async () => mockCache),
-    } as any;
-
-    // RequestをモックしてURLチェックを回避
-    global.Request = vi.fn().mockImplementation((input) => {
-      return { url: input };
-    }) as any;
-
-    // fetchをモックして、Google Fonts APIのレスポンスを返す
-    global.fetch = vi.fn(async (url: string) => {
-      if (typeof url === 'string' && url.includes('fonts.googleapis.com/css2')) {
-        // CSSレスポンス
-        return {
-          ok: true,
-          text: async () => `@font-face { font-family: 'Noto Sans JP'; src: url(https://fonts.gstatic.com/s/notosansjp/test.ttf) format('truetype'); }`,
-        };
-      } else {
-        // TTFファイルレスポンス
-        return {
-          ok: true,
-          arrayBuffer: async () => new ArrayBuffer(8),
-        };
-      }
-    }) as any;
-  });
+  // テスト用のモックフォントデータ
+  const mockFontData = new ArrayBuffer(8);
 
   describe('generateOgpImage function', () => {
     it('should generate PNG response from metadata', async () => {
@@ -80,7 +50,7 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const response = await generateOgpImage(metadata, 'https://example.com');
+      const response = await generateOgpImage(metadata, mockFontData);
       const buffer = await response.arrayBuffer();
       const view = new Uint8Array(buffer);
 
@@ -99,7 +69,7 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const response = await generateOgpImage(metadata, 'https://example.com');
+      const response = await generateOgpImage(metadata, mockFontData);
       const buffer = await response.arrayBuffer();
       const view = new Uint8Array(buffer);
 
@@ -121,7 +91,7 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const response = await generateOgpImage(metadata, 'https://example.com');
+      const response = await generateOgpImage(metadata, mockFontData);
       const buffer = await response.arrayBuffer();
 
       // Assert
@@ -140,7 +110,7 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const response = await generateOgpImage(metadata, 'https://example.com');
+      const response = await generateOgpImage(metadata, mockFontData);
       const buffer = await response.arrayBuffer();
 
       // Assert
@@ -157,7 +127,7 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const response = await generateOgpImage(metadata, 'https://example.com');
+      const response = await generateOgpImage(metadata, mockFontData);
       const buffer = await response.arrayBuffer();
       const view = new Uint8Array(buffer);
 
@@ -177,7 +147,7 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const response = await generateOgpImage(metadata, 'https://example.com');
+      const response = await generateOgpImage(metadata, mockFontData);
       const buffer = await response.arrayBuffer();
 
       // Assert
@@ -194,7 +164,7 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const response = await generateOgpImage(metadata, 'https://example.com');
+      const response = await generateOgpImage(metadata, mockFontData);
       const buffer = await response.arrayBuffer();
 
       // Assert
