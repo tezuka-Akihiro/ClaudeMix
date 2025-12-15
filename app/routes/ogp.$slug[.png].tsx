@@ -12,13 +12,14 @@ import type { BlogCommonSpec } from '~/specs/blog/types';
  * @param params.slug - 記事のslug（.png拡張子を含む場合は除去）
  * @returns PNG画像のResponse
  */
-export async function loader({ params, request }: LoaderFunctionArgs) {
+export async function loader({ params, request, context }: LoaderFunctionArgs) {
   let { slug } = params;
 
-  // リクエストURLからベースURLを取得（Cloudflare Workers環境で必要）
-  const url = new URL(request.url);
-  const baseUrl = `${url.protocol}//${url.host}`;
-  console.log('[OGP] Starting OGP image generation for slug:', slug, 'baseUrl:', baseUrl);
+  console.log('[OGP] Starting OGP image generation for slug:', slug);
+
+  // Cloudflare ExecutionContext を取得（キャッシュ用）
+  // @ts-expect-error - Cloudflare Pages specific context
+  const ctx = context?.cloudflare?.ctx as ExecutionContext | undefined;
 
   // slugが存在しない場合は404
   if (!slug) {
@@ -46,8 +47,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   try {
     console.log('[OGP] Starting image generation...');
-    // OGP画像を生成（ImageResponseを返す）
-    const response = await generateOgpImage(metadata, baseUrl);
+    // OGP画像を生成（ImageResponseを返す、Cache API経由でフォント取得）
+    const response = await generateOgpImage(metadata, ctx);
 
     // spec.yamlからキャッシュ設定を取得（ビルド時に生成された静的データ）
     const spec = loadSpec<BlogCommonSpec>('blog/common');
