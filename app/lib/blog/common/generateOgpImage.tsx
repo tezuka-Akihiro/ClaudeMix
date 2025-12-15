@@ -21,25 +21,23 @@ function truncateText(text: string, maxLength: number): string {
 }
 
 /**
- * フォントデータを取得（Cache API対応 - 静的ファイル版）
- * public/フォルダの静的TTFをCloudflare Edgeでキャッシュ
- * @param baseUrl - アプリケーションのベースURL
+ * フォントデータを取得（Cache API対応 - Google Fonts API版）
+ * Google Fonts APIから動的にTTFを取得し、Cloudflare Edgeでキャッシュ
  * @param ctx - Cloudflare ExecutionContext（waitUntilでバックグラウンドキャッシュ用）
  * @returns フォントのArrayBuffer
  */
-async function fetchFont(baseUrl: string, ctx?: ExecutionContext): Promise<ArrayBuffer> {
-  // 静的フォントファイルのURL（要: public/NotoSansJP-Regular.ttf を配置）
-  const fontUrl = `${baseUrl}/NotoSansJP-Regular.ttf`;
+async function fetchFont(ctx?: ExecutionContext): Promise<ArrayBuffer> {
+  const FONT_API_URL = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap';
 
-  console.log('[OGP/Font] Fetching font from:', fontUrl);
+  console.log('[OGP/Font] Starting font fetch process');
 
   try {
     // Cache API を開く
     const cache = await caches.open('ogp-fonts-v1');
-    const cacheKey = new Request(fontUrl);
+    const fontCacheKey = new Request('noto-sans-jp-400-font-file');
 
     // キャッシュを確認
-    const cached = await cache.match(cacheKey);
+    const cached = await cache.match(fontCacheKey);
     if (cached) {
       console.log('[OGP/Font] Font loaded from cache');
       const fontBuffer = await cached.arrayBuffer();
@@ -47,12 +45,34 @@ async function fetchFont(baseUrl: string, ctx?: ExecutionContext): Promise<Array
       return fontBuffer;
     }
 
-    // キャッシュミス: 静的ファイルを取得
-    console.log('[OGP/Font] Cache miss, fetching from static file...');
-    const fontResponse = await fetch(fontUrl);
+    // キャッシュミス: Google Fonts APIからCSSを取得
+    console.log('[OGP/Font] Cache miss, fetching from Google Fonts API...');
+    const cssResponse = await fetch(FONT_API_URL, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      },
+    });
 
+    if (!cssResponse.ok) {
+      throw new Error(`Failed to fetch font CSS: ${cssResponse.status} ${cssResponse.statusText}`);
+    }
+
+    const cssText = await cssResponse.text();
+    console.log('[OGP/Font] CSS fetched, extracting TTF URL...');
+
+    // CSSからTTFのURLを抽出（url(...)の部分）
+    const urlMatch = cssText.match(/url\((https:\/\/[^)]+\.ttf)\)/);
+    if (!urlMatch || !urlMatch[1]) {
+      throw new Error('Failed to extract font URL from CSS');
+    }
+
+    const fontFileUrl = urlMatch[1];
+    console.log('[OGP/Font] TTF URL extracted:', fontFileUrl);
+
+    // TTFファイルをダウンロード
+    const fontResponse = await fetch(fontFileUrl);
     if (!fontResponse.ok) {
-      throw new Error(`Failed to fetch font: ${fontResponse.status} ${fontResponse.statusText}`);
+      throw new Error(`Failed to fetch font file: ${fontResponse.status} ${fontResponse.statusText}`);
     }
 
     const fontBuffer = await fontResponse.arrayBuffer();
@@ -66,7 +86,7 @@ async function fetchFont(baseUrl: string, ctx?: ExecutionContext): Promise<Array
           'Cache-Control': 'public, max-age=31536000, immutable',
         },
       });
-      ctx.waitUntil(cache.put(cacheKey, cacheResponse));
+      ctx.waitUntil(cache.put(fontCacheKey, cacheResponse));
       console.log('[OGP/Font] Font will be cached in background');
     }
 
@@ -97,9 +117,9 @@ export async function generateOgpImage(metadata: PostMetadata, baseUrl: string, 
   const author = `${ogpConfig.author.prefix}${metadata.author}`;
   console.log('[OGP/Generate] Text prepared:', { title, description, author });
 
-  // フォントデータを取得（Cache API経由で静的ファイルをキャッシュ）
+  // フォントデータを取得（Cache API経由でGoogle Fonts APIから動的取得）
   console.log('[OGP/Generate] Fetching font...');
-  const fontData = await fetchFont(baseUrl, ctx);
+  const fontData = await fetchFont(ctx);
 
   console.log('[OGP/Generate] Creating ImageResponse...');
   return new ImageResponse(
