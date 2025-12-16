@@ -23,7 +23,7 @@ tests/lint/
 .cache/
 coverage-output.txt
 
-chat.md
+chat.*
 scripts/_local/
 .claude/key
 tests/scripts/generation.log
