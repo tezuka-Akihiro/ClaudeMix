@@ -1,0 +1,18 @@
+{
+  "markdownlint.config": {
+    "default": true
+  },
+  "markdownlint.ignore": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/CLAUDE.md",
+    "**/README.md",
+    "**/develop/**",
+    "**/docs/**",
+    "**/scripts/**",
+    "**/tests/**",
+    "**/*.template.md",
+    "**/不具合発生テンプレート.md",
+    "**/仕様変更提案テンプレート.md"
+  ]
+}
