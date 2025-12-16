@@ -54,5 +54,6 @@ export default defineConfig({
     resolve: {
       externalConditions: ["workerd", "worker"],
     },
+    external: ["workers-og"],
   },
 });
