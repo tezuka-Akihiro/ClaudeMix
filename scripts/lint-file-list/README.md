@@ -50,6 +50,7 @@ node scripts/lint-file-list/check-diff.js <develop-section-path>
 ```
 
 **例**:
+
 ```bash
 # implementation-flowセクションを検証
 node scripts/lint-file-list/check-diff.js develop/service-name/implementation-flow/
@@ -186,8 +187,10 @@ npx vitest run scripts/lint-file-list/tests/ --config scripts/lint-file-list/vit
 **原因**: 指定されたパス配下に`file-list.md`が存在しない場合に表示されます。
 
 **対処法**:
+
 1. パスが正しいか確認してください
 2. `file-list.md`が存在するか確認してください
+
    ```bash
    ls develop/service-name/implementation-flow/file-list.md
    ```
@@ -201,6 +204,7 @@ npx vitest run scripts/lint-file-list/tests/ --config scripts/lint-file-list/vit
 **原因**: プロジェクトルートから実行されていない可能性があります。
 
 **対処法**: プロジェクトルートディレクトリで実行してください。
+
 ```bash
 cd /path/to/Remix-boilerplate
 node scripts/lint-file-list/check-diff.js develop/service-name/implementation-flow/

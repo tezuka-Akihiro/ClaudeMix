@@ -15,12 +15,12 @@
 
 - **Outside-In TDD (外側から内側へのTDD)**: ユーザーの振る舞いを定義するE2Eテスト（外側）から開発を始め、それをパスさせるために必要な各層の機能（内側）をユニットTDDで実装します。これは **受け入れテスト駆動開発 (ATDD)** の一種です。
 - **段階的E2Eテスト戦略**:
-    1.  **E2Eファースト**: 最初に主要な成功シナリオ（Happy Path）のE2Eテストを1つだけ作成し、開発の最終ゴールを定義します。
-    2.  **Double-Loop TDD**: E2Eテスト（Outer Loop）をパスさせるために、各層（UI, Logic, Data-IO）でユニットテスト（Inner Loop）のTDDサイクルを回して実装を進めます。
-    3.  **E2E拡張**: 最初のE2Eテストが成功した後、エラーケースや境界値などの詳細なE2Eテストを追加し、品質を盤石にします。
+    1. **E2Eファースト**: 最初に主要な成功シナリオ（Happy Path）のE2Eテストを1つだけ作成し、開発の最終ゴールを定義します。
+    2. **Double-Loop TDD**: E2Eテスト（Outer Loop）をパスさせるために、各層（UI, Logic, Data-IO）でユニットテスト（Inner Loop）のTDDサイクルを回して実装を進めます。
+    3. **E2E拡張**: 最初のE2Eテストが成功した後、エラーケースや境界値などの詳細なE2Eテストを追加し、品質を盤石にします。
 - **段階的強化 (Progressive Enhancement)**:
-    1.  **ステップ1（モック実装）**: UI層とRoute層を固定データで実装し、ブラウザで表示確認
-    2.  **ステップ2（機能強化）**: data-io層とlib層を実装し、実データと接続
+    1. **ステップ1（モック実装）**: UI層とRoute層を固定データで実装し、ブラウザで表示確認
+    2. **ステップ2（機能強化）**: data-io層とlib層を実装し、実データと接続
 
 ---
 
@@ -41,7 +41,7 @@
     5. カードをクリックすると `/blog/${slug}` へ遷移する
 
 - **2. テストの失敗を確認**: `npm run test:e2e` を実行し、実装がまだ存在しないため、このテストが失敗すること（RED）を確認します。
-   - この失敗したテストが、Phase 2で実装すべき機能の明確なゴールとなります。
+  - この失敗したテストが、Phase 2で実装すべき機能の明確なゴールとなります。
 
 ---
 
@@ -50,6 +50,7 @@
 **目的**: `uiux-spec.md` で設計した内容を、実際のCSSファイルとして実装します。
 
 **実装対象**:
+
 1. **Layer 2**: `app/styles/blog/layer2.css`（PostCard、PostsSectionのコンポーネントクラス）
 2. **Layer 3**: `app/styles/blog/layer3.ts`（PostCardGridのレスポンシブグリッドレイアウト）
 3. **Layer 4**: 不要（例外構造なし）
@@ -57,7 +58,9 @@
 **postsセクションの実装内容**:
 
 #### Layer 2 実装
+
 `app/styles/blog/layer2.css` に以下のコンポーネントクラスを追加：
+
 - `.posts-section`: 記事一覧のメインコンテナ
 - `.posts-section__title`: ページタイトルエリア
 - `.post-card`: 記事カード
@@ -68,18 +71,22 @@
 **注意**: すべての値は `var(--*)` でLayer 1トークンを参照すること
 
 #### Layer 3 実装
+
 `app/styles/blog/layer3.ts` に以下のレイアウトクラスを追加：
+
 - `.post-card-grid`: レスポンシブグリッドレイアウト
   - モバイル（< 768px）: 1列
   - タブレット（768px ~ 1024px）: 2列
   - デスクトップ（> 1024px）: 3列
 
 **検証**:
+
 ```bash
 npm run lint:css-arch
 ```
 
 **確認事項**:
+
 - ✅ Layer 2で色・サイズ・タイポグラフィが定義されている
 - ✅ Layer 3でグリッドレイアウトのみが定義されている
 - ✅ margin が使用されていない（gap統一の原則）
@@ -95,6 +102,7 @@ npm run lint:css-arch
 **実装順序**: Outside-In TDDに従い、data-io層から実装開始
 
 ##### 3.1.1. fetchPosts.server.ts の実装
+
 - **1. ファイル生成**: `@GeneratorOperator` に依頼
   - **依頼例**: `@GeneratorOperator "blog サービスの posts セクションに、fetchPosts という名前のdata-ioファイルを作成してください。category: data-io"`
   - **責務**: ファイルシステムから記事メタデータを読み込み、PostSummary[]を返す
@@ -142,6 +150,7 @@ npm run lint:css-arch
 **モック実装方針**: `MOCK_POLICY.md` に従い、UI層は固定データで実装します。
 
 ##### 3.3.1. PostCard.tsx の実装
+
 - **1. ファイル生成**: `@GeneratorOperator` に依頼
   - **依頼例**: `@GeneratorOperator "blog サービスの posts セクションに、PostCard という名前のUIコンポーネントを作成してください。category: ui, ui-type: component"`
   - **責務**: 個別記事の表示カード（タイトルと投稿日を表示）
@@ -160,6 +169,7 @@ npm run lint:css-arch
 - **4. リファクタリング**: コードの可読性を改善
 
 ##### 3.3.2. PostsSection.tsx の実装
+
 - **1. ファイル生成**: `@GeneratorOperator` に依頼
   - **依頼例**: `@GeneratorOperator "blog サービスの posts セクションに、PostsSection という名前のUIコンポーネントを作成してください。category: ui, ui-type: component"`
   - **責務**: 記事一覧のメインコンテナ
@@ -182,6 +192,7 @@ npm run lint:css-arch
 #### 3.4. Route層の実装（Phase 2.4: モック実装）
 
 ##### 3.4.1. blog.tsx の実装（モック版）
+
 - **1. ファイル生成**: `@GeneratorOperator` に依頼
   - **依頼例**: `@GeneratorOperator "blog サービスに、blog という名前のRouteを作成してください。category: ui, ui-type: route"`
   - **責務**: 記事一覧ページのRoute
@@ -192,6 +203,7 @@ npm run lint:css-arch
 
 - **3. モック実装 (GREEN)**: `blog.tsx` を実装
   - **モック版loader**（`MOCK_POLICY.md` 参照）:
+
     ```typescript
     export async function loader() {
       // 固定データを返す（モック実装）
@@ -203,6 +215,7 @@ npm run lint:css-arch
       return json({ posts: mockPosts });
     }
     ```
+
   - BlogLayout（commonセクション）を使用
   - PostsSectionをレンダリング
 
@@ -215,7 +228,9 @@ npm run lint:css-arch
 #### 3.5. Route層の実装（Phase 2.5: 正実装への切り替え）
 
 ##### 3.5.1. blog.tsx の正実装への切り替え
+
 - **1. loaderを実データ取得に変更**:
+
   ```typescript
   import { fetchPosts } from "~/data-io/blog/posts/fetchPosts.server";
 
@@ -260,22 +275,28 @@ npm run lint:css-arch
 以下は `file-list.md` から抽出した実装対象ファイルです：
 
 ### E2Eテスト
+
 - `tests/e2e/section/blog/posts.spec.ts`
 
 ### Route層
+
 - `app/routes/blog.tsx`
 
 ### UI層
+
 - `app/components/blog/posts/PostsSection.tsx`
 - `app/components/blog/posts/PostCard.tsx`
 
 ### 純粋ロジック層
+
 - `app/lib/blog/posts/formatPublishedDate.ts`
 
 ### 副作用層
+
 - `app/data-io/blog/posts/fetchPosts.server.ts`
 
 ### 共通コンポーネント（commonセクションで実装済み）
+
 - `app/components/blog/common/BlogLayout.tsx`
 - `app/components/blog/common/BlogHeader.tsx`
 - `app/components/blog/common/BlogFooter.tsx`
@@ -288,15 +309,16 @@ npm run lint:css-arch
 
 開発中に予期せぬ不具合が発見された場合、それはテストの抜け漏れを意味します。以下の手順でテストスイートを強化し、同じ不具合の再発を恒久的に防ぎます。
 
-1.  **再現テストの作成 (E2E or ユニット)**: まず、発見された不具合を再現する**失敗するテスト**を記述します。
-2.  **原因特定とユニットテストの強化**: デバッグを行い、不具合の根本原因を特定し、最小単位で再現する**失敗するユニットテスト**を追加します。
-3.  **実装の修正 (GREEN)**: 追加したユニットテストがパスするように、原因となったコードを修正します。
-4.  **再現テストの成功確認 (GREEN)**: 最初に作成した再現テスト（E2E/統合テスト）を実行し、こちらもパスすることを確認します。
-5.  **知見の共有**: この経験を「学んだこと・気づき」セクションに記録し、チームの知識として蓄積します。
+1. **再現テストの作成 (E2E or ユニット)**: まず、発見された不具合を再現する**失敗するテスト**を記述します。
+2. **原因特定とユニットテストの強化**: デバッグを行い、不具合の根本原因を特定し、最小単位で再現する**失敗するユニットテスト**を追加します。
+3. **実装の修正 (GREEN)**: 追加したユニットテストがパスするように、原因となったコードを修正します。
+4. **再現テストの成功確認 (GREEN)**: 最初に作成した再現テスト（E2E/統合テスト）を実行し、こちらもパスすることを確認します。
+5. **知見の共有**: この経験を「学んだこと・気づき」セクションに記録し、チームの知識として蓄積します。
 
 ---
 
 ## 6. 進捗ログ
+
 | 日付 | 作業内容 | 完了項目 | 次回予定 |
 |------|----------|----------|----------|
 | 2025-11-14 | 設計ドキュメント作成完了 | func-spec.md, uiux-spec.md, spec.yaml, file-list.md, data-flow-diagram.md, MOCK_POLICY.md, TDD_WORK_FLOW.md | Phase 1: E2Eテスト作成 |
@@ -315,6 +337,7 @@ npm run lint:css-arch
 ## 6.1. 現在の状態
 
 ### ✅ 完了したフェーズ
+
 - **Phase 1**: E2Eテスト作成 → Happy Pathシナリオ2件実装済み
 - **Phase 2**: CSS実装 → Layer 2/3のスタイル定義完了
 - **Phase 3**: 層別TDD実装 → 全5サブフェーズ（3.1～3.5）完了
@@ -326,15 +349,18 @@ npm run lint:css-arch
 - **Phase 4**: 統合確認 → サンプルデータ作成、CSS lint完了、E2Eテスト全パス（2025-11-17実施）
 
 ### ⚠️ 参考：過去の制約事項（解決済み）
+
 - E2Eテストの実行は別環境で実施 → ✅ 2025-11-17に実施完了
 - CSS architecture lintで1件の誤検知（"post-card-grid"内の"grid"文字列を検出）→ 実質的な違反なし
 
 ### 📊 実装統計
+
 - **テストファイル**: 計6ファイル、テストケース計42件（すべて成功）
 - **実装ファイル**: 計6ファイル（data-io 1件、lib 1件、component 2件、route 1件、test 1件）
 - **サンプルデータ**: markdown記事3件
 
 ### 🎯 現在のステータス
+
 **postsセクション（記事一覧）の実装は完全に完了しています** ✅
 
 すべてのフェーズ（Phase 1-4）が完了し、E2Eテストも全パスしています。
@@ -342,6 +368,7 @@ npm run lint:css-arch
 ---
 
 ## 7. 学んだこと・気づき
+
 - 記事カードの表示項目をタイトルと投稿日のみに簡略化することで、シンプルなUIを実現
 - モック実装はUI層とRoute層のみで、lib層とdata-io層は直接実装する方針を決定
 - 段階的強化により、早期にブラウザで表示確認が可能
@@ -349,6 +376,7 @@ npm run lint:css-arch
 ---
 
 ## 8. さらなる改善提案
+
 - 記事一覧のページネーション機能（将来的な拡張）
 - 記事の検索・フィルター機能（スコープ外だが要望があれば検討）
 - 記事カードのサムネイル画像表示（デザイン次第）

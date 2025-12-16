@@ -1,6 +1,7 @@
 # file-list.md - post-detail Section
 
 ## 目的
+
 post-detailセクションの実装に必要な全ファイルを3大層分離アーキテクチャに基づきリストアップ
 
 ---
@@ -8,6 +9,7 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 ## 1. E2Eテスト（Phase 1）
 
 ### 1.1 セクションレベルE2E
+
 | ファイル名 | パス | 説明 |
 |:---|:---|:---|
 | post-detail.spec.ts | tests/e2e/section/blog/post-detail.spec.ts | post-detailセクション単独のE2Eテスト。記事詳細表示、マークダウン変換、画像・Mermaid図のレンダリング、404エラー処理を検証 |
@@ -17,6 +19,7 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 ## 2. UI層（Phase 2.3）
 
 ### 2.1 Routes
+
 | ファイル名 | パス | URL | 説明 |
 |:---|:---|:---|:---|
 | blog.$slug.tsx | app/routes/blog.$slug.tsx | /blog/:slug | 記事詳細ページのRoute。URLパラメータ（slug）から記事データを取得し、マークダウン変換を実行してUIに渡す。**meta関数でOGP/Twitter Cardメタデータを生成し、SEO対応** |
@@ -25,6 +28,7 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 **注**: Flat Routes規則により、`$slug`で動的パラメータを表現します（例: /blog/remix-tips-2024）。
 
 ### 2.2 Components (post-detail固有)
+
 | ファイル名 | パス | 説明 |
 |:---|:---|:---|
 | PostDetailSection.tsx | app/components/blog/post-detail/PostDetailSection.tsx | 記事詳細セクションのメインコンポーネント。記事のメタデータ（タイトル、投稿日、著者、**タグバッジ**）と本文（マークダウン変換後のHTML）を表示。**useEffectでMermaid.jsを初期化し、クラス付与されたMermaidコードブロックをSVG図表に変換** |

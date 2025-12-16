@@ -3,17 +3,21 @@
 ## 📋 機能概要
 
 ### 機能名
+
 **Posts List (記事一覧)**
 
 ### 所属サービス
+
 **blog** の **posts** セクションに配置
 
 ### 機能の目的・価値
+
 - **解決する課題**: ユーザーが投稿されたブログ記事を一目で把握し、読みたい記事を探せるようにする
 - **提供する価値**: 時系列で整理された記事一覧を提供し、各記事へのスムーズなアクセスを実現する
 - **ビジネス効果**: コンテンツの可視性向上、ユーザーの回遊性向上、技術情報発信の効率化
 
 ### 実装優先度
+
 **HIGH** - ブログの主要機能であり、記事詳細ページへの導線となるため最優先で実装する
 
 ## 🎯 機能要件
@@ -49,6 +53,7 @@
    - 共有ボタン、固定記事
 
 ### 開発戦略: 段階的強化 (Progressive Enhancement)
+
 1. **ステップ1: モック実装 (UIの確立)**
    - UI層はまず、固定値や単純なPropsを用いて「ガワ」を実装します。この段階では、`loader`や`action`からの実データ連携は行いません。
 2. **ステップ2: 機能強化 (ロジックの接続)**
@@ -57,6 +62,7 @@
 ## 🔄 データフロー・処理（3大層分離アーキテクチャ）
 
 ### 入力データ
+
 ~~~typescript
 // loaderが受け取るデータ（リクエストパラメータ）
 interface PostsLoaderRequest {
@@ -69,6 +75,7 @@ interface PostsLoaderRequest {
 ~~~
 
 ### 出力データ
+
 ~~~typescript
 // loaderがUIに返すデータの型定義
 interface PostsLoaderData {
@@ -103,6 +110,7 @@ interface FilterData {
 ~~~
 
 ### app/components要件（app/routes, app/components）
+
 ~~~
 1. [UI層の責務]
    Route:
@@ -181,6 +189,7 @@ interface FilterData {
 ~~~
 
 ### 🧠 純粋ロジック要件（app/lib/blog/posts）
+
 ~~~
 2. [純粋ロジック層の責務]
    このセクションには以下の処理を実装します：
@@ -228,6 +237,7 @@ interface FilterData {
 ~~~
 
 ### 🔌 副作用要件（app/data-io/blog/posts）
+
 ~~~
 3. [副作用層の責務]
    - fetchPosts.server.ts: 記事一覧データの取得

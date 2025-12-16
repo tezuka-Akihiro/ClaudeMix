@@ -13,6 +13,7 @@
 すべてのファイル生成は、必ず専門のサブエージェントである **`@GeneratorOperator`** を介して実行されなければなりません。
 
 ### なぜ直接実行が禁止されるのか？
+
 `@GeneratorOperator`を介さずにコマンドを直接実行することは、アーキテクチャの「ガードレール」から逸脱し、以下のような致命的なリスクを生み出します。
 
 - **アーキテクチャ違反**: 純粋ロジック層(`lib`)に副作用のあるコードが混入するなど、3大層分離の原則が破壊されます。
@@ -28,6 +29,7 @@
 | **効率** | コマンドの調査や間違いによる手戻りが発生 | **`@GeneratorOperator` に任せることで、最初から規約に準拠したコードで開発を開始できる** |
 
 詳細は `docs/knowledges/テンプレート起点コーディング.md` を参照してください。
+
 - **規律の強制**: `@GeneratorOperator` は、コマンドの引数を正しく構築し、アーキテクチャ規律に沿ったファイル生成を保証する唯一の担当者です。
 - **品質の担保**: 直接実行は、引数の渡し間違いや規約違反のコード生成につながり、後工程で大規模な手戻りを発生させる原因となります。
 - **思想の具現化**: このルールは、「規約をドキュメントとして書く」のではなく、「規約をサブエージェントの振る舞いとして実装する」という、このボイラープレートの核心思想を具現化するものです。
@@ -52,25 +54,28 @@ npm run generate -- --category <category> [--ui-type <ui-type>] --service <servi
 ### 例
 
 **例1 (純粋ロジック層):** `app/lib/sales/summary/ProfitCalculator.ts` とそのテストを生成する場合
+
 ~~~bash
 npm run generate -- --category lib --service sales --section summary --name ProfitCalculator
 ~~~
 
 **例2 (UI層 - コンポーネント):** `app/components/sales/summary/SalesChart.tsx` とそのテストを生成する場合
+
 ~~~bash
 npm run generate -- --category ui --ui-type component --service sales --section summary --name SalesChart
 ~~~
 
 **例3 (ドキュメント - spec.yaml):** `app/specs/sales/summary-spec.yaml` を生成する場合
+
 ~~~bash
 npm run generate -- --category documents --document-type spec-yaml --service sales --section summary
 ~~~
 
 ### 生成されるファイル
 
--   **実装ファイル**: `app/` ディレクトリ配下の適切な場所に生成されます。
--   **テストファイル**: 実装ファイルと同時に、対応するテストファイル（`.test.ts` または `.test.tsx`）も自動で生成されます。これにより、TDD（テスト駆動開発）が自然に促進されます。
--   **設計ドキュメント**: `develop/` ディレクトリ配下に、機能設計書や画面仕様書などの設計ドキュメントが生成されます。
+- **実装ファイル**: `app/` ディレクトリ配下の適切な場所に生成されます。
+- **テストファイル**: 実装ファイルと同時に、対応するテストファイル（`.test.ts` または `.test.tsx`）も自動で生成されます。これにより、TDD（テスト駆動開発）が自然に促進されます。
+- **設計ドキュメント**: `develop/` ディレクトリ配下に、機能設計書や画面仕様書などの設計ドキュメントが生成されます。
 
 ## 📜 生成履歴の管理
 
@@ -78,7 +83,7 @@ npm run generate -- --category documents --document-type spec-yaml --service sal
 
 ### 履歴ファイルの場所
 
--   **パス**: `tests/scripts/generate/generation.log`
+- **パス**: `tests/scripts/generate/generation.log`
 
 このファイルはGitの追跡対象に含めることを推奨します。これにより、コードレビュー時に「どのファイルが自動生成されたか」の背景情報として役立ちます。
 
@@ -91,9 +96,11 @@ npm run generate -- --category documents --document-type spec-yaml --service sal
 ~~~
 
 **例:**
+
 ~~~
 [2024-05-22T10:30:00.123Z] npm run generate -- --category lib --service blog --section posts --name PostFetcher
 ~~~
+
 ## 設定
 
 生成可能なファイルの種類、パス、使用するテンプレートは、すべて `scripts/generate/config.json` ファイルで一元管理されています。新しい種類のファイルを追加したい場合や、既存のパスを変更したい場合は、このファイルを編集してください。

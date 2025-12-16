@@ -5,6 +5,7 @@
 **このフローの最終成果物は、`app/styles/globals.css` 内の `/* LINT-LAYER: 1 */` セクションです。**
 
 ## ファイル管理ポリシー
+
 - **中間生成物の保存**: このフローで生成される `concept.md`、`style-guide.md`、`tokens-studio.json` は、デザイン決定の経緯を記録する重要なドキュメントとして `docs/CSS_structure/design-token/` ディレクトリに保存します。
 - **共通言語としての役割**: これらのファイルは、AIと人間がデザインについて議論する際の「共通言語」として機能します。
 - **Figma連携の媒介**: `tokens-studio.json` は、Tokens Studio for Figmaプラグインを介してFigmaと双方向同期し、視覚的な調整を経て `globals.css` のLayer 1を生成するための重要な中間フォーマットです。
@@ -44,11 +45,13 @@ graph TD
 **目的**: 抽象的な「世界観」から、デザインの方向性を言語化・視覚化する。
 **実行者**: AIエージェント
 **入力**:
+
 - `project.toml` の **world_view_url**（世界観の参考URL）
 - `app\styles\service-name\ワイヤーフレーム.png`（Figmaで作成したレイアウト設計図）
 **出力**: `docs/CSS_structure/design-token/{サービス名}-concept.md`（例: `service-name-concept.md`）
 
 **内容**:
+
 - **キーワード抽出**: 世界観を表現する感情的なキーワード（例: "Cyberpunk", "Terminal", "Hologram"）
 - **ムードボード**: 参考URLや画像から、デザインの雰囲気を伝えるビジュアル集
 - **レイアウト構造分析**: Figmaワイヤーフレームから、以下の**構造のみ**を抽出
@@ -66,6 +69,7 @@ graph TD
   - **ボタンラベル**: 世界観に合わせたテキスト（例: 「更新」→「RELOAD」、「リトライ」→「RETRY」）
 
 **重要な注意事項**:
+
 - ワイヤーフレームは**レイアウト構造のみ**を示します。色・フォント・ボーダー・背景色はワイヤーフレームから抽出しないでください。
 - `template-name` は実際のコンポーネント名（例: CheckpointNode）に置き換えられます。
 - design flowの分岐数（ワイヤーフレームでは3つ）は例示であり、実際のセクション数は可変です（1〜N個）。
@@ -78,6 +82,7 @@ graph TD
 **入力**: `docs/CSS_structure/design-token/concept.md`
 **出力**: `docs/CSS_structure/design-token/style-guide.md`
 **内容**:
+
 - **カラーパレット**: 主要色、アクセント色、ステータス色などの具体的なHEXコードを定義
 - **タイポグラフィ**: 見出し用・本文用フォント、フォントサイズとウェイトのスケールを定義
 - **スペーシング**: 余白の基本単位とスケール（例: 8px, 16px, 24px...）を定義
@@ -92,6 +97,7 @@ graph TD
 **出力**: `docs/CSS_structure/design-token/tokens-studio.json`
 
 **JSON構造**:
+
 ~~~json
 {
   "$metadata": {
@@ -114,6 +120,7 @@ graph TD
 ~~~
 
 **注意事項**:
+
 - トークン名は、CSS変数名から自動変換（`--foundation-color-cyan-400` → `foundation.color.cyan.400`）
 - 参照は `{トークンパス}` 形式で記述（例: `{foundation.color.cyan.400}`）
 - 3層アーキテクチャを維持（Foundation → Application → Service の依存方向を厳守）
@@ -128,6 +135,7 @@ graph TD
 **出力**: Figma上でトークンが利用可能な状態
 
 **手順**:
+
 1. **Figmaを開く**
    - 対象プロジェクトの「Design System」ページを開く
 
@@ -163,6 +171,7 @@ graph TD
 `tokens-studio.json` の `foundation` セットのみが、`globals.css` のLayer 1セクションに変換されます。
 
 **内容**:
+
 - **Application Tokens**: JSON の `foundation` セクションを、`globals.css` の `:root` 内、`/* LINT-LAYER: 1 */` コメントブロック配下のCSS変数として定義します。
 
 **注意**: このステップでは `tailwind.config.ts` や `globals.css` のLayer 2セクションは変更しません。
@@ -177,6 +186,7 @@ graph TD
 **出力**: 検証レポート（PASS/FAIL）
 
 **検証項目**:
+
 1. **Layer 1の規約遵守**:
    - Application Tokensがプリミティブ値（HEX, pxなど）のみを定義し、`var()` を使用していないこと。
 
@@ -187,6 +197,7 @@ graph TD
    - `!important` が使用されていないこと。
 
 **実行方法**:
+
 ~~~bash
 npm run lint:css-arch
 ~~~
@@ -207,6 +218,7 @@ AIエージェントは自動的にStep 2（スタイルガイド）に戻り、
 AIエージェントが、実装されたLayer 1トークンを網羅したスタンドアロンHTMLファイル (`docs/CSS_structure/design-token/design-token-preview.html`) を自動生成します。
 
 **プレビューHTML仕様**:
+
 - **スタンドアロン形式**: globals.cssの内容を`<style>`タグ内に埋め込み、単体で動作
 - **セクション構成**:
   1. **Application Tokens**: カラーパレット（色見本 + HEX + トークン名）
@@ -215,12 +227,14 @@ AIエージェントが、実装されたLayer 1トークンを網羅したス�
   4. **Review Checklist**: 以下の項目をチェックボックス形式で提供
 
 **レビューチェックリスト**:
+
 - [ ] 色のトーンがconcept.mdの世界観と一致している
 - [ ] コントラスト比がWCAG AA基準を満たしている（特にStatus色）
 - [ ] フォントサイズのスケールが視覚的に自然な階層を形成している
 
 **フィードバック方法**:
 修正が必要な場合、オペレーターは以下のいずれかを選択します：
+
 1. **Figmaで調整** (推奨): Step 3.1に戻り、Tokens Studioプラグイン内でトークン値を調整 → エクスポート → Step 3.2（CSS実装）を再実行
 2. **スタイルガイド修正**: `docs/CSS_structure/design-token/style-guide.md` を直接編集 → Step 3（JSON生成）から再実行
 

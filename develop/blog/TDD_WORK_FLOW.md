@@ -4,10 +4,12 @@
 
 **開発名**: Blog記事一覧のメタデータ拡張とフィルタ機能の実装
 **目的**:
+
 1. **メタデータ拡張**: 記事に `description` と `tags` フィールドを追加し、SEO対策とコンテンツ検索性を向上させる
 2. **フィルタ機能**: カテゴリとタグによる記事絞り込み機能を提供し、ユーザーが目的の記事を効率的に探せるようにする
 
 **実装対象機能**:
+
 - `blog-metadata-enhancement.md`: description と tags フィールドの追加
 - `blog-filter-feature.md`: モーダル形式のフィルタパネル (CategorySelector + TagGrid)
 
@@ -17,9 +19,9 @@
 
 - **Outside-In TDD (外側から内側へのTDD)**: ユーザーの振る舞いを定義するE2Eテスト（外側）から開発を始め、それをパスさせるために必要な各層の機能（内側）をユニットTDDで実装します。これは **受け入れテスト駆動開発 (ATDD)** の一種です。
 - **段階的E2Eテスト戦略**:
-    1.  **E2Eファースト**: 最初に主要な成功シナリオ（Happy Path）のE2Eテストを1つだけ作成し、開発の最終ゴールを定義します。
-    2.  **Double-Loop TDD**: E2Eテスト（Outer Loop）をパスさせるために、各層（UI, Logic, Data-IO）でユニットテスト（Inner Loop）のTDDサイクルを回して実装を進めます。
-    3.  **E2E拡張**: 最初のE2Eテストが成功した後、エラーケースや境界値などの詳細なE2Eテストを追加し、品質を盤石にします。
+    1. **E2Eファースト**: 最初に主要な成功シナリオ（Happy Path）のE2Eテストを1つだけ作成し、開発の最終ゴールを定義します。
+    2. **Double-Loop TDD**: E2Eテスト（Outer Loop）をパスさせるために、各層（UI, Logic, Data-IO）でユニットテスト（Inner Loop）のTDDサイクルを回して実装を進めます。
+    3. **E2E拡張**: 最初のE2Eテストが成功した後、エラーケースや境界値などの詳細なE2Eテストを追加し、品質を盤石にします。
 
 ---
 
@@ -71,6 +73,7 @@
 ```bash
 npm run test:e2e
 ```
+
 - 実装がまだ存在しないため、このテストが失敗すること（RED）を確認します
 - この失敗したテストが、Phase 2以降で実装すべき機能の明確なゴールとなります
 
@@ -81,11 +84,13 @@ npm run test:e2e
 **目的**: `posts/uiux-spec.md` と `post-detail/uiux-spec.md` で設計した内容を、実際のCSSファイルとして実装
 
 **実装対象**:
+
 1. **Layer 2**: `app/styles/blog/layer2.css` (既存ファイルに追記)
 2. **Layer 3**: `app/styles/blog/layer3.ts` (既存ファイルに追記、必要に応じて)
 3. **Layer 4**: `app/styles/blog/layer4.ts` (必要な場合のみ)
 
 **段階的更新の運用**:
+
 - **既存サービスへの追加**: blogサービスは既存なので、既存CSS実装ファイルに追記します
 - **共通化の検討**: 既存セクションに類似コンポーネントがある場合、必ず共通化を検討してください
 - **整合性の確認**: 追加時は、既存実装との整合性（命名規則、トークン使用等）を確認してください
@@ -148,6 +153,7 @@ npm run test:e2e
 ```bash
 npm run lint:css-arch
 ```
+
 - 違反が検出された場合は `tests/lint/css-arch-layer-report.md` の内容に従って修正
 
 #### 2.4 確認事項
@@ -171,6 +177,7 @@ npm run lint:css-arch
 **対象ファイル**: `content/blog/posts/*.md` (既存記事ファイルに追記)
 
 - **フロントマター追加**:
+
   ```yaml
   ---
   title: "記事タイトル"
@@ -190,6 +197,7 @@ npm run lint:css-arch
 **対象ファイル**: `app/data-io/blog/posts/fetchPosts.server.ts` (既存ファイルを編集)
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/data-io/blog/posts/fetchPosts.server.test.ts` (既存ファイルに追記)
 - **追加テストケース**:
   1. **メタデータ取得確認**:
@@ -200,6 +208,7 @@ npm run lint:css-arch
      - `fetchPosts({ category: "Claude Best Practices", tags: ["AI"] })` で複合フィルタが機能
 
 **実装 (GREEN)**:
+
 - `FetchPostsOptions` 型に `category?: string` と `tags?: string[]` を追加
 - `fetchPosts()` 関数内で:
   1. `getAllPosts()` から全記事を取得
@@ -216,11 +225,13 @@ npm run lint:css-arch
 **対象ファイル**: `app/data-io/blog/posts/fetchAvailableFilters.server.ts` (新規作成)
 
 **ファイル生成**:
+
 ```
 @GeneratorOperator "blog サービスの posts セクションに、fetchAvailableFilters という名前のdata-ioファイルを作成して"
 ```
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/data-io/blog/posts/fetchAvailableFilters.server.test.ts` (自動生成)
 - **テストケース**:
   1. **利用可能なカテゴリ一覧の取得**:
@@ -231,13 +242,16 @@ npm run lint:css-arch
      - アルファベット順にソート
 
 **実装 (GREEN)**:
+
 - `AvailableFilters` 型を定義:
+
   ```typescript
   interface AvailableFilters {
     categories: string[]
     tags: string[]
   }
   ```
+
 - `fetchAvailableFilters()` 関数を実装:
   1. `getAllPosts()` から全記事を取得
   2. `Set<string>` を使ってカテゴリとタグを重複なく抽出
@@ -255,11 +269,13 @@ npm run lint:css-arch
 **対象ファイル**: `app/lib/blog/posts/filterPosts.ts` (新規作成)
 
 **ファイル生成**:
+
 ```
 @GeneratorOperator "blog サービスの posts セクションに、filterPosts という名前のlibファイルを作成して"
 ```
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/lib/blog/posts/filterPosts.test.ts` (自動生成)
 - **テストケース**:
   1. **カテゴリフィルタ**:
@@ -275,13 +291,16 @@ npm run lint:css-arch
      - 該当する記事が0件の場合、空配列を返す
 
 **実装 (GREEN)**:
+
 - `FilterOptions` 型を定義:
+
   ```typescript
   interface FilterOptions {
     category?: string
     tags?: string[]
   }
   ```
+
 - `filterPosts(posts: PostSummary[], filters: FilterOptions): PostSummary[]` 関数を実装:
   1. カテゴリフィルタ: `filters.category` が空文字列または `undefined` の場合スキップ、それ以外は `post.category === filters.category`
   2. タグフィルタ: `filters.tags` が空配列または `undefined` の場合スキップ、それ以外は `filters.tags.every(tag => post.tags.includes(tag))`（AND条件）
@@ -298,6 +317,7 @@ npm run lint:css-arch
 **対象ファイル**: `app/components/blog/posts/PostCard.tsx` (既存ファイルを編集)
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/components/blog/posts/PostCard.test.tsx` (既存ファイルに追記)
 - **追加テストケース**:
   1. **description 表示確認**: PostCard に `description` が表示されること
@@ -305,6 +325,7 @@ npm run lint:css-arch
   3. **TagBadge の data-testid**: 各タグに `[data-testid='tag-badge']` が付与されていること
 
 **実装 (GREEN)**:
+
 - `PostCardProps` 型に `description: string` と `tags: string[]` を追加
 - PostCard コンポーネントに以下を追加:
   1. `<p className="post-description">{description}</p>`
@@ -318,11 +339,13 @@ npm run lint:css-arch
 **対象ファイル**: `app/components/blog/posts/FilterToggleButton.tsx` (新規作成)
 
 **ファイル生成**:
+
 ```
 @GeneratorOperator "blog サービスの posts セクションに、FilterToggleButton という名前のUIコンポーネントを作成して"
 ```
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/components/blog/posts/FilterToggleButton.test.tsx` (自動生成)
 - **テストケース**:
   1. **ボタン表示確認**: `[data-testid='filter-toggle-button']` が表示されること
@@ -330,6 +353,7 @@ npm run lint:css-arch
   3. **アクセシビリティ**: `aria-label="フィルタを開く"` が付与されていること
 
 **実装 (GREEN)**:
+
 ```typescript
 interface FilterToggleButtonProps {
   onClick: () => void
@@ -358,11 +382,13 @@ export const FilterToggleButton: React.FC<FilterToggleButtonProps> = ({ onClick,
 **対象ファイル**: `app/components/blog/posts/CategorySelector.tsx` (新規作成)
 
 **ファイル生成**:
+
 ```
 @GeneratorOperator "blog サービスの posts セクションに、CategorySelector という名前のUIコンポーネントを作成して"
 ```
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/components/blog/posts/CategorySelector.test.tsx` (自動生成)
 - **テストケース**:
   1. **セレクター表示確認**: `[data-testid='category-selector']` が表示されること
@@ -370,6 +396,7 @@ export const FilterToggleButton: React.FC<FilterToggleButtonProps> = ({ onClick,
   3. **カテゴリオプション表示**: `availableCategories` の各項目が `<option>` として表示されること
 
 **実装 (GREEN)**:
+
 ```typescript
 interface CategorySelectorProps {
   availableCategories: string[]
@@ -405,11 +432,13 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
 **対象ファイル**: `app/components/blog/posts/TagGrid.tsx` (新規作成)
 
 **ファイル生成**:
+
 ```
 @GeneratorOperator "blog サービスの posts セクションに、TagGrid という名前のUIコンポーネントを作成して"
 ```
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/components/blog/posts/TagGrid.test.tsx` (自動生成)
 - **テストケース**:
   1. **グリッド表示確認**: `[data-testid='tag-grid']` が表示されること
@@ -419,6 +448,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
   5. **hidden input**: 選択されたタグが `<input type="hidden" name="tags" value={tag}>` として追加されること
 
 **実装 (GREEN)**:
+
 ```typescript
 interface TagGridProps {
   availableTags: string[]
@@ -467,17 +497,20 @@ export const TagGrid: React.FC<TagGridProps> = ({ availableTags, selectedTags })
 **対象ファイル**: `app/components/blog/posts/FilterSubmitButton.tsx` (新規作成)
 
 **ファイル生成**:
+
 ```
 @GeneratorOperator "blog サービスの posts セクションに、FilterSubmitButton という名前のUIコンポーネントを作成して"
 ```
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/components/blog/posts/FilterSubmitButton.test.tsx` (自動生成)
 - **テストケース**:
   1. **ボタン表示確認**: `[data-testid='filter-submit-button']` が表示されること
   2. **type="submit"**: ボタンが `type="submit"` であること
 
 **実装 (GREEN)**:
+
 ```typescript
 export const FilterSubmitButton: React.FC = () => {
   return (
@@ -499,11 +532,13 @@ export const FilterSubmitButton: React.FC = () => {
 **対象ファイル**: `app/components/blog/posts/FilterPanel.tsx` (新規作成)
 
 **ファイル生成**:
+
 ```
 @GeneratorOperator "blog サービスの posts セクションに、FilterPanel という名前のUIコンポーネントを作成して"
 ```
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/components/blog/posts/FilterPanel.test.tsx` (自動生成)
 - **テストケース**:
   1. **パネル表示確認**: `isOpen={true}` の場合、`[data-testid='filter-panel']` が表示されること
@@ -512,6 +547,7 @@ export const FilterSubmitButton: React.FC = () => {
   4. **子コンポーネント**: CategorySelector, TagGrid, FilterSubmitButton が含まれること
 
 **実装 (GREEN)**:
+
 ```typescript
 interface FilterPanelProps {
   availableCategories: string[]
@@ -557,6 +593,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 **対象ファイル**: `app/components/blog/posts/PostsSection.tsx` (既存ファイルを編集)
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: `app/components/blog/posts/PostsSection.test.tsx` (既存ファイルに追記)
 - **追加テストケース**:
   1. **FilterToggleButton表示**: PostsSection に FilterToggleButton が表示されること
@@ -564,13 +601,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   3. **FilterPanel開閉**: FilterToggleButton クリックで FilterPanel が表示/非表示されること
 
 **実装 (GREEN)**:
+
 - `PostsSectionProps` 型に以下を追加:
+
   ```typescript
   availableCategories: string[]
   availableTags: string[]
   selectedCategory?: string
   selectedTags?: string[]
   ```
+
 - PostsSection コンポーネントに以下を追加:
   1. `const [isPanelOpen, setIsPanelOpen] = useState(false)` で状態管理
   2. `<FilterToggleButton onClick={() => setIsPanelOpen(!isPanelOpen)} isOpen={isPanelOpen} />`
@@ -583,18 +623,21 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 **対象ファイル**: `app/routes/blog._index.tsx` (既存ファイルを編集)
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: Remixのloaderは通常E2Eテストでカバー（ユニットテストはスキップ可能）
 - E2Eテストで以下を確認:
   1. URLクエリパラメータ `?category=...&tags=...` が正しくパースされること
   2. フィルタされた記事一覧が表示されること
 
 **実装 (GREEN)**:
+
 - `loader` 関数を拡張:
   1. `new URL(request.url).searchParams` から `category` と `tags` を取得
   2. `fetchPosts({ category, tags, limit, offset })` を呼び出し
   3. `fetchAvailableFilters()` を呼び出し
   4. `return json({ posts, pagination, filters: { availableCategories, availableTags, selectedCategory, selectedTags } })`
 - コンポーネントレンダリング:
+
   ```tsx
   <PostsSection
     posts={posts}
@@ -613,12 +656,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 **対象ファイル**: `app/routes/blog.$slug.tsx` (既存ファイルを編集)
 
 **テスト実装 (RED)**:
+
 - **テストファイル**: E2Eテストでカバー
 - E2Eテストで以下を確認:
   1. 記事詳細ページに `description` が表示されること
   2. 記事詳細ページに `tags` がピル型バッジで表示されること
 
 **実装 (GREEN)**:
+
 - コンポーネントに以下を追加:
   1. `<p className="post-description">{post.description}</p>`
   2. `<div className="tag-list">{post.tags.map(tag => <span className="tag-badge" data-testid="tag-badge">{tag}</span>)}</div>`
@@ -634,6 +679,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 ```bash
 npm run test:e2e
 ```
+
 - Phase 1で作成したHappy PathのE2Eテストが完全に成功すること（GREEN）を確認
 
 #### 4.2 詳細E2Eテスト実装
@@ -681,6 +727,7 @@ npm run test:e2e
 ```bash
 npm run test:e2e
 ```
+
 - すべてのE2Eテストが成功することを確認
 
 #### 4.4 スタイリング規律確認
@@ -688,6 +735,7 @@ npm run test:e2e
 ```bash
 npm run lint:css-arch
 ```
+
 - `globals.css` 内に配置プロパティ（width, height, margin, padding, display, flex, grid など）が含まれていないことを確認
 - 違反が検出された場合は `tests/lint/css-arch-layer-report.md` の内容に従って修正
 
@@ -696,6 +744,7 @@ npm run lint:css-arch
 ```bash
 npm run dev
 ```
+
 - ブラウザで以下を最終確認:
   1. `/blog` で記事一覧が正しく表示されること
   2. 各記事カードに description と tags が表示されること
@@ -707,6 +756,7 @@ npm run dev
   8. `/blog/remix-tips-2024` などの記事詳細ページで description と tags が表示されること
 
 **🚨 重要: 実装前の必須確認**
+
 - **オペレーターの許可を得てから実装を開始すること**
 - 各Phase完了後、必ずオペレーターに報告し、承認を得ること
 
@@ -716,23 +766,25 @@ npm run dev
 
 開発中に予期せぬ不具合が発見された場合、それはテストの抜け漏れを意味します。以下の手順でテストスイートを強化し、同じ不具合の再発を恒久的に防ぎます。
 
-1.  **再現テストの作成 (E2E or ユニット)**: まず、発見された不具合を再現する**失敗するテスト**を記述します。これは多くの場合、E2Eテストか、特定のコンポーネントの統合テストになります。
-2.  **原因特定とユニットテストの強化**:
+1. **再現テストの作成 (E2E or ユニット)**: まず、発見された不具合を再現する**失敗するテスト**を記述します。これは多くの場合、E2Eテストか、特定のコンポーネントの統合テストになります。
+2. **原因特定とユニットテストの強化**:
     - デバッグを行い、不具合の根本原因となっている純粋ロジック（lib）やコンポーネントを特定します。
     - その原因を最小単位で再現する**失敗するユニットテスト**を追加します。
-3.  **実装の修正 (GREEN)**: 追加したユニットテストがパスするように、原因となったコードを修正します。
-4.  **再現テストの成功確認 (GREEN)**: 最初に作成した再現テスト（E2E/統合テスト）を実行し、こちらもパスすることを確認します。
-5.  **知見の共有**: この経験を「学んだこと・気づき」セクションに記録し、チームの知識として蓄積します。
+3. **実装の修正 (GREEN)**: 追加したユニットテストがパスするように、原因となったコードを修正します。
+4. **再現テストの成功確認 (GREEN)**: 最初に作成した再現テスト（E2E/統合テスト）を実行し、こちらもパスすることを確認します。
+5. **知見の共有**: この経験を「学んだこと・気づき」セクションに記録し、チームの知識として蓄積します。
 
 ---
 
 ## 5. 進捗ログ
+
 | 日付 | 作業内容 | 完了項目 | 次回予定 |
 |------|----------|----------|----------|
 | 2025-11-25 | TDD_WORK_FLOW.md 統合版作成 | 設計書完成、ワークフロー定義 | Phase 1: E2Eテスト作成 (オペレーター承認待ち) |
 | 2025-11-26 | Phase 1-4完全実装 | メタデータ拡張+フィルタ機能実装完了、全E2Eテスト合格(32/32)、設計書更新(記事詳細からタグ/概要表示削除) | 機能完成 ✅ |
 
 ## 6. 学んだこと・気づき
+
 - **設計段階での気づき**:
   - モーダル/オーバーレイ形式のFilterPanelは、モバイルファーストで優れたUXを提供する
   - "All Categories" をデフォルト値にすることで、タグのみでのフィルタリングが自然に実現できる
@@ -744,6 +796,7 @@ npm run dev
   - Outside-In TDD により、両機能を段階的に実装できる
 
 ## 7. さらなる改善提案
+
 - **今回のスコープ外**:
   1. **検索機能**: タイトル・本文での全文検索
   2. **ソート機能**: 投稿日の昇順/降順切り替え

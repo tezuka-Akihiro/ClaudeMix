@@ -28,6 +28,7 @@ graph TD;
 **目的**: `file-list.md` に記載された**新規作成ファイル**を生成するために、`@GeneratorOperator` サブエージェントへの依頼リストを作成する。
 
 **入力**:
+
 - `file-list.md`（ファイル構成）
 - `scripts/generate/README.md`（@GeneratorOperatorの使用ルール）
 - `scripts/generate/config.json`（正しいパラメータ定義）
@@ -35,6 +36,7 @@ graph TD;
 **出力**: `generate-requests.md`
 
 **重要な原則**:
+
 - このリストには**新規作成ファイルのみ**を記載する
 - 既存ファイルの差分修正は、TDD_WORK_FLOW.mdで指示する
 - **テストファイルは自動生成される**ため、個別依頼は不要
@@ -42,6 +44,7 @@ graph TD;
   - 例外: E2Eテストは別途依頼が必要（`category: documents`, `document-type: e2e-section-test`）
 
 **指示**:
+
 1. `file-list.md`の各ファイルを確認し、既存実装があるかを判定する
 2. 新規作成ファイルについてのみ、`@GeneratorOperator`を呼び出すための自然言語による依頼文を作成する
 3. 依頼文は、`scripts/generate/config.json`に定義された正しいパラメータを含める:
@@ -115,9 +118,9 @@ generate-requests.mdには記載せず、末尾に参考情報として既存フ
 **出力**: `MOCK_POLICY.md`
 **指示**:
 1：`MOCK_POLICY.md`のテンプレート生成
-   - **例**:@GeneratorOperator “{{service}} サービスの {{section}} セクションに、I/O 層のモック設計方針（MOCK_POLICY.md）を生成して”
-2：モック対象を洗い出し、それぞれの計画を記述する。
 
+- **例**:@GeneratorOperator “{{service}} サービスの {{section}} セクションに、I/O 層のモック設計方針（MOCK_POLICY.md）を生成して”
+2：モック対象を洗い出し、それぞれの計画を記述する。
 
 ### ステップ 3: TDD作業手順書の最終生成
 
@@ -125,9 +128,11 @@ generate-requests.mdには記載せず、末尾に参考情報として既存フ
 **入力**: `generate-requests.md`, `MOCK_POLICY.md`
 **出力**: `TDD_WORK_FLOW.md`
 **指示**:
-1.  `TDD_WORK_FLOW.md` のテンプレート生成
-   - **例**:@GeneratorOperator “{{service}} サービスの {{section}} セクションに、I/O 層のモック設計方針（TDD_WORK_FLOW.md）を生成して”
 
-2.  `generate-requests.md` の内容を反映させる。
-3.  機能名や目的などを記述し、最終的な手順書を完成させる。
-4.  **重要**: `generate-requests.md` と `MOCK_POLICY.md` が存在しない場合は、このステップを実行せず、ステップ1または2に戻るようオペレーターに報告してください。
+1. `TDD_WORK_FLOW.md` のテンプレート生成
+
+- **例**:@GeneratorOperator “{{service}} サービスの {{section}} セクションに、I/O 層のモック設計方針（TDD_WORK_FLOW.md）を生成して”
+
+2. `generate-requests.md` の内容を反映させる。
+3. 機能名や目的などを記述し、最終的な手順書を完成させる。
+4. **重要**: `generate-requests.md` と `MOCK_POLICY.md` が存在しない場合は、このステップを実行せず、ステップ1または2に戻るようオペレーターに報告してください。

@@ -1,6 +1,7 @@
 # 🚨 Vitest fs モック問題 - 解決済みレポート
 
 ## 検索キーワード
+
 `vi.mock('fs')`, `vi.mock('node:fs')`, `existsSync`, `モックが効かない`, `Number of calls: 0`, `expected { path:`, `exists: false } to deeply equal`, `exists: true`, `AssertionError`, `vitest mock not working`, `fs.existsSync mock`
 
 ---
@@ -20,6 +21,7 @@
 ## 2. 発生したエラーメッセージ（完全版）
 
 ### エラー1: exists値の不一致
+
 ~~~
 FAIL app/data-io/service-name/implementation-flow/checkImplementationFiles.server.test.ts >
   checkImplementationFiles - Side Effects Layer > 正常系テスト >
@@ -40,6 +42,7 @@ AssertionError: expected { path: 'app/test.ts', exists: false } to deeply equal 
 ~~~
 
 ### エラー2: モック関数が呼ばれていない
+
 ~~~
 FAIL app/data-io/service-name/implementation-flow/checkImplementationFiles.server.test.ts >
   checkImplementationFiles - Side Effects Layer > 正常系テスト >
@@ -53,6 +56,7 @@ Number of calls: 0
 ~~~
 
 ### テスト結果サマリ
+
 ~~~
 Test Files  1 failed (1)
 Tests       3 failed | 1 passed (4)
@@ -127,14 +131,17 @@ export function checkImplementationFiles(filePaths: string[]): FileExistsResult[
 ## 4. 試行錯誤の記録
 
 ### 試行1: `vi.mock('node:fs')` のみ
+
 ~~~typescript
 vi.mock('node:fs', () => ({
   existsSync: vi.fn(),
 }));
 ~~~
+
 **結果**: ❌ `No "default" export is defined on the "node:fs" mock` エラー
 
 ### 試行2: `importOriginal` を使用
+
 ~~~typescript
 vi.mock('node:fs', async (importOriginal) => {
   const actual = await importOriginal<typeof import('node:fs')>();
@@ -144,9 +151,11 @@ vi.mock('node:fs', async (importOriginal) => {
   };
 });
 ~~~
+
 **結果**: ❌ モックが効かない（呼び出し回数0、実際のファイルシステムが使われる）
 
 ### 試行3: インポート順序の変更
+
 ~~~typescript
 import * as fs from 'node:fs';
 
@@ -154,9 +163,11 @@ vi.mock('node:fs', async (importOriginal) => { ... });
 
 import { checkImplementationFiles } from '~/data-io/...';
 ~~~
+
 **結果**: ❌ 効果なし
 
 ### 試行4: `node:fs` → `fs` に変更
+
 ~~~typescript
 // 実装ファイル
 import { existsSync } from 'fs'; // node: プレフィックスを削除
@@ -170,6 +181,7 @@ vi.mock('fs', async (importOriginal) => {
   };
 });
 ~~~
+
 **結果**: ❌ モックが効かない
 
 ---
@@ -207,6 +219,7 @@ const mockExistsSync = vi.mocked(fs.existsSync);
 ~~~
 
 テスト実行結果：
+
 ~~~
 Test Files  1 failed (1)
 Tests       5 failed | 4 passed (9)
@@ -232,11 +245,13 @@ Tests       5 failed | 4 passed (9)
 モックを諦め、**実際に存在するファイルをテスト対象にする**アプローチに変更。
 
 #### メリット
+
 - ✅ モック設定の複雑さを回避
 - ✅ 実際の動作を確実にテストできる
 - ✅ テストの保守性が向上（モックのメンテナンス不要）
 
 #### デメリットと対策
+
 - ⚠️ テストの独立性が低下 → **対策**: `package.json`, `tsconfig.json`など**確実に存在するファイル**を使用
 - ⚠️ 存在しないファイルのテストが難しい → **対策**: 明らかに存在しない名前（`THIS_FILE_DOES_NOT_EXIST_FOR_TESTING_12345.ts`）を使用
 

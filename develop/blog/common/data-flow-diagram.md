@@ -1,6 +1,7 @@
 # data-flow-diagram.md - common Section
 
 ## 目的
+
 `file-list.md`を基に、`common`セクションのコンポーネント間の依存関係とデータフローをMermaid図として可視化する。
 
 ---
@@ -65,6 +66,7 @@ graph TD
 ## フロー説明
 
 ### 初回ロード（1→4）
+
 1. ユーザーがページにアクセス
 2. Routeが`loader`を実行
    - `loadBlogConfig.server`: ブログ設定を読み込み
@@ -74,11 +76,13 @@ graph TD
    - `BlogLayout` → `BlogHeader`, `BlogFooter`をレンダリング
 
 ### メニュー開閉（5→6）
+
 5. ユーザーが`BlogHeader`のmenuボタンをクリック
 6. `BlogHeader`内でstate管理（`isMenuOpen`をトグル）
    - `NavigationMenu`が表示/非表示切り替え
 
 ### ページ遷移（7→8）
+
 7. ユーザーが`NavigationMenu`のメニュー項目をクリック
 8. 対応するページへ遷移（例: `/blog/welcome`, `/blog`）
 
@@ -98,6 +102,7 @@ graph TD
 ## データ依存関係
 
 ### loaderからの入力
+
 ```typescript
 interface CommonData {
   blogTitle: string        // "ClaudeMix Blog"
@@ -107,6 +112,7 @@ interface CommonData {
 ```
 
 ### 状態管理（Client Side）
+
 - `BlogHeader`: `isMenuOpen: boolean` - メニューの開閉状態
 
 ---
@@ -145,6 +151,7 @@ graph LR
 ### データ依存関係
 
 #### 入力データ（MDX Frontmatter）
+
 ```typescript
 interface PostMetadata {
   title: string        // 記事タイトル
@@ -154,6 +161,7 @@ interface PostMetadata {
 ```
 
 #### 出力データ（PNG画像）
+
 - **フォーマット**: PNG
 - **サイズ**: 1200px × 630px
 - **Content-Type**: `image/png`
