@@ -298,6 +298,18 @@
     padding-bottom: var(--spacing-1);
   }
 
+  /* Task list items (checkboxes) */
+  .post-detail-section__content li.task-list-item {
+    list-style: none;
+    position: relative;
+  }
+
+  .post-detail-section__content .task-list-item-checkbox {
+    margin-right: var(--spacing-1);
+    cursor: not-allowed;
+    accent-color: var(--color-interactive-primary);
+  }
+
   .post-detail-section__content blockquote {
     border-left: var(--shadow-offset-sm) solid var(--color-interactive-primary);
     padding-left: var(--spacing-3);
