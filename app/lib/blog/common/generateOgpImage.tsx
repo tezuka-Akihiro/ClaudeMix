@@ -1,6 +1,6 @@
 // generateOgpImage - 🧠 純粋ロジック層
 // OGP画像を生成する純粋関数
-// PostMetadataを受け取り、ImageResponseを返す
+// PostMetadataとフォントデータを受け取り、ImageResponseを返す
 
 import { ImageResponse } from 'workers-og';
 import type { PostMetadata } from '~/data-io/blog/common/loadPostMetadata.server';
@@ -21,31 +21,12 @@ function truncateText(text: string, maxLength: number): string {
 }
 
 /**
- * フォントデータを取得
- * @param baseUrl - アプリケーションのベースURL（例: https://example.com）
- * @returns フォントのArrayBuffer
- */
-async function fetchFont(baseUrl: string): Promise<ArrayBuffer> {
-  const fontUrl = `${baseUrl}/NotoSansJP-Regular.ttf`;
-  console.log('[OGP/Font] Fetching font from:', fontUrl);
-  const response = await fetch(fontUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch font: ${response.status} ${response.statusText}`);
-  }
-  const fontBuffer = await response.arrayBuffer();
-  console.log('[OGP/Font] Font loaded, size:', fontBuffer.byteLength);
-  return fontBuffer;
-}
-
-/**
- * OGP画像を生成する
+ * OGP画像を生成する（純粋関数）
  * @param metadata - 記事のメタデータ（title, description, author）
- * @param baseUrl - アプリケーションのベースURL（例: https://example.com）
+ * @param fontData - フォントファイルのArrayBuffer
  * @returns ImageResponse
  */
-export async function generateOgpImage(metadata: PostMetadata, baseUrl: string): Promise<Response> {
-  console.log('[OGP/Generate] Starting OGP image generation with baseUrl:', baseUrl);
-
+export async function generateOgpImage(metadata: PostMetadata, fontData: ArrayBuffer): Promise<Response> {
   // spec.yamlからOGP設定を読み込む（ビルド時に生成された静的データ）
   const spec = loadSpec<BlogCommonSpec>('blog/common');
   const ogpConfig = spec.ogp;
@@ -54,13 +35,6 @@ export async function generateOgpImage(metadata: PostMetadata, baseUrl: string):
   const title = truncateText(metadata.title, ogpConfig.title.maxLength);
   const description = truncateText(metadata.description, ogpConfig.description.maxLength);
   const author = `${ogpConfig.author.prefix}${metadata.author}`;
-  console.log('[OGP/Generate] Text prepared:', { title, description, author });
-
-  // フォントデータを取得
-  console.log('[OGP/Generate] Fetching font...');
-  const fontData = await fetchFont(baseUrl);
-
-  console.log('[OGP/Generate] Creating ImageResponse...');
   return new ImageResponse(
     (
       <div

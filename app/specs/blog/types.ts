@@ -214,6 +214,14 @@ export interface BlogCommonSpec {
     font: {
       name: string;
       family: string;
+      fetch: {
+        apiUrl: string;
+        userAgent: string;
+        cacheName: string;
+        contentType: string;
+        cacheControl: string;
+        urlRegex: string;
+      };
     };
   };
 }
