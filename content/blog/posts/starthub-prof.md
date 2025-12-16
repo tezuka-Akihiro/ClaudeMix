@@ -5,7 +5,7 @@ description: "相談用のプロフィール"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-15"
 category: "起業"
-tags: ["スタハブ多摩"] # app\specs\blog\posts-spec.yaml で許可されているもののみ使用可
+tags: ["スタハブ多摩"]
 ---
 
 ## 🏢 スタハブ利用履歴

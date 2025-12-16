@@ -5,7 +5,7 @@ description: "セミナーの概要を簡潔に説明します。どんなテー
 author: "成功する起業家"
 publishedAt: "2025-MM-DD"
 category: "起業"
-tags: ["セミナー"] # app\specs\blog\posts-spec.yaml で許可されているもののみ使用可
+tags: ["セミナー"]
 ---
 
 ## 📋 講師
