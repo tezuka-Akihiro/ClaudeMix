@@ -15,42 +15,33 @@ vi.mock('~/spec-loader/specLoader.server', () => ({
   loadSpec: vi.fn((): BlogCommonSpec => actualSpec),
 }));
 
-// satoriとResvgをモック
-vi.mock('satori', () => ({
-  default: vi.fn(async () => '<svg>mock svg</svg>'),
-}));
+// workers-ogをモック
+vi.mock('workers-og', () => ({
+  ImageResponse: vi.fn().mockImplementation(() => {
+    // 有効なPNGシグネチャを持つArrayBuffer
+    const buffer = new ArrayBuffer(100);
+    const view = new Uint8Array(buffer);
+    view[0] = 0x89;
+    view[1] = 0x50; // 'P'
+    view[2] = 0x4e; // 'N'
+    view[3] = 0x47; // 'G'
 
-vi.mock('@resvg/resvg-wasm', () => ({
-  initWasm: vi.fn(async () => Promise.resolve()),
-  Resvg: vi.fn().mockImplementation(() => ({
-    render: vi.fn(() => ({
-      asPng: vi.fn(() => {
-        // 有効なPNGシグネチャを持つBuffer
-        const buffer = Buffer.alloc(100);
-        buffer[0] = 0x89;
-        buffer[1] = 0x50; // 'P'
-        buffer[2] = 0x4e; // 'N'
-        buffer[3] = 0x47; // 'G'
-        return buffer;
-      }),
-    })),
-  })),
+    return {
+      arrayBuffer: async () => buffer,
+      headers: new Headers({ 'Content-Type': 'image/png' }),
+    };
+  }),
 }));
 
 // モックの後にインポート
 import { generateOgpImage } from '~/lib/blog/common/generateOgpImage';
 
 describe('generateOgpImage - Pure Logic Layer', () => {
-  beforeEach(() => {
-    // fetchをモックして、ダミーフォントデータを返す
-    global.fetch = vi.fn(async () => ({
-      ok: true,
-      arrayBuffer: async () => new ArrayBuffer(8),
-    })) as any;
-  });
+  // テスト用のモックフォントデータ
+  const mockFontData = new ArrayBuffer(8);
 
   describe('generateOgpImage function', () => {
-    it('should generate PNG buffer from metadata', async () => {
+    it('should generate PNG response from metadata', async () => {
       // Arrange
       const metadata: PostMetadata = {
         title: 'Test Blog Post',
@@ -59,11 +50,14 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const result = await generateOgpImage(metadata);
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+      const view = new Uint8Array(buffer);
 
       // Assert
-      expect(result).toBeInstanceOf(Buffer);
-      expect(result.length).toBeGreaterThan(0);
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+      expect(view.length).toBeGreaterThan(0);
     });
 
     it('should generate valid PNG image with correct signature', async () => {
@@ -75,13 +69,15 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const result = await generateOgpImage(metadata);
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+      const view = new Uint8Array(buffer);
 
       // Assert - PNGファイルシグネチャ: 89 50 4E 47 0D 0A 1A 0A
-      expect(result[0]).toBe(0x89);
-      expect(result[1]).toBe(0x50); // 'P'
-      expect(result[2]).toBe(0x4e); // 'N'
-      expect(result[3]).toBe(0x47); // 'G'
+      expect(view[0]).toBe(0x89);
+      expect(view[1]).toBe(0x50); // 'P'
+      expect(view[2]).toBe(0x4e); // 'N'
+      expect(view[3]).toBe(0x47); // 'G'
     });
 
     it('should truncate long title', async () => {
@@ -95,11 +91,12 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const result = await generateOgpImage(metadata);
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
 
       // Assert
-      expect(result).toBeInstanceOf(Buffer);
-      expect(result.length).toBeGreaterThan(0);
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
     });
 
     it('should truncate long description', async () => {
@@ -113,11 +110,12 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const result = await generateOgpImage(metadata);
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
 
       // Assert
-      expect(result).toBeInstanceOf(Buffer);
-      expect(result.length).toBeGreaterThan(0);
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
     });
 
     it('should handle Japanese text', async () => {
@@ -129,13 +127,15 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const result = await generateOgpImage(metadata);
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+      const view = new Uint8Array(buffer);
 
       // Assert
-      expect(result).toBeInstanceOf(Buffer);
-      expect(result.length).toBeGreaterThan(0);
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
       // PNGシグネチャの確認
-      expect(result[0]).toBe(0x89);
+      expect(view[0]).toBe(0x89);
     });
 
     it('should handle empty description', async () => {
@@ -147,11 +147,12 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const result = await generateOgpImage(metadata);
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
 
       // Assert
-      expect(result).toBeInstanceOf(Buffer);
-      expect(result.length).toBeGreaterThan(0);
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
     });
 
     it('should handle special characters', async () => {
@@ -163,11 +164,85 @@ describe('generateOgpImage - Pure Logic Layer', () => {
       };
 
       // Act
-      const result = await generateOgpImage(metadata);
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
 
       // Assert
-      expect(result).toBeInstanceOf(Buffer);
-      expect(result.length).toBeGreaterThan(0);
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+    });
+
+    it('should handle emoji in metadata', async () => {
+      // Arrange
+      const metadata: PostMetadata = {
+        title: '🚀 Deploy Guide 🎉',
+        description: '📝 Learn how to deploy your app with ✨ ease',
+        author: '👨‍💻 Developer',
+      };
+
+      // Act
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+      const view = new Uint8Array(buffer);
+
+      // Assert
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+      expect(view[0]).toBe(0x89); // PNG signature
+    });
+
+    it('should handle very short fields', async () => {
+      // Arrange
+      const metadata: PostMetadata = {
+        title: 'A',
+        description: 'B',
+        author: 'C',
+      };
+
+      // Act
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+
+      // Assert
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+    });
+
+    it('should handle empty font data without crashing', async () => {
+      // Arrange
+      const metadata: PostMetadata = {
+        title: 'Test Title',
+        description: 'Test Description',
+        author: 'Test Author',
+      };
+      const emptyFontData = new ArrayBuffer(0);
+
+      // Act
+      const response = await generateOgpImage(metadata, emptyFontData);
+      const buffer = await response.arrayBuffer();
+
+      // Assert
+      // workers-og accepts empty font data without throwing
+      // (may produce broken image, but doesn't crash)
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
+    });
+
+    it('should handle all fields at maximum length', async () => {
+      // Arrange
+      const metadata: PostMetadata = {
+        title: 'A'.repeat(actualSpec.ogp.title.maxLength),
+        description: 'B'.repeat(actualSpec.ogp.description.maxLength),
+        author: 'Very Long Author Name That Exceeds Normal Length',
+      };
+
+      // Act
+      const response = await generateOgpImage(metadata, mockFontData);
+      const buffer = await response.arrayBuffer();
+
+      // Assert
+      expect(response).toBeDefined();
+      expect(buffer.byteLength).toBeGreaterThan(0);
     });
   });
 });

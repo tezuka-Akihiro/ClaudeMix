@@ -27,7 +27,7 @@ export interface PostDetailLoaderData {
   config: BlogConfig;
 }
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   const { slug } = params;
 
   if (!slug) {
@@ -59,6 +59,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const ogpImageWidth = spec.ogp.image.width;
   const ogpImageHeight = spec.ogp.image.height;
 
+  // リクエストから動的にベースURLを取得（環境に依存しない）
+  const url = new URL(request.url);
+  const baseUrl = `${url.protocol}//${url.host}`;
+
   return json({
     post: {
       slug: post.slug,
@@ -78,6 +82,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
       width: ogpImageWidth,
       height: ogpImageHeight,
     },
+    baseUrl, // 動的に取得したベースURLを追加
   });
 }
 
@@ -89,10 +94,10 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
     ];
   }
 
-  const { post, config, ogpImage } = data;
-  const siteUrl = config.siteUrl; // 例: "https://example.com"
-  const pageUrl = new URL(location.pathname, siteUrl).toString();
-  const ogpImageUrl = new URL(`/ogp/${params.slug}.png`, siteUrl).toString();
+  const { post, config, ogpImage, baseUrl } = data;
+  // リクエストから動的に取得したベースURLを使用（環境に依存しない）
+  const pageUrl = new URL(location.pathname, baseUrl).toString();
+  const ogpImageUrl = new URL(`/ogp/${params.slug}.png`, baseUrl).toString();
 
   return [
     { title: `${post.title} | ${config.siteName}` },

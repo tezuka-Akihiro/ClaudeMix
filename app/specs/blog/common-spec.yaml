@@ -116,16 +116,16 @@ ogp:
     paddingY: "60px"
     contentGap: "24px"
 
-  # 色設定
+  # 色設定（サイトデザイントークンと統一）
   colors:
     background:
-      gradientStart: "#667eea"
-      gradientEnd: "#764ba2"
+      gradientStart: "#0a0a0a"  # var(--color-surface-dark)
+      gradientEnd: "#1a1a1a"    # var(--color-background-secondary)
       gradientAngle: "135deg"
     text:
-      primary: "#ffffff"
-      description: "rgba(255, 255, 255, 0.7)"
-      author: "rgba(255, 255, 255, 0.6)"
+      primary: "#22d3ee"        # var(--color-interactive-primary) - タイトル
+      description: "#d4d4d4"    # var(--color-text-secondary) - 説明
+      author: "#b9b6b6"         # var(--color-text-primary) - 著者
 
   # テキスト設定
   title:
@@ -144,3 +144,12 @@ ogp:
   font:
     name: "Noto Sans JP"  # workers-ogに登録する単一フォント名
     family: "'Noto Sans JP', 'Hiragino Sans', 'ヒラギノ角ゴ ProN W3', 'メイリオ', Meiryo, sans-serif"
+
+    # フォント取得設定（Data-IO層で使用）
+    fetch:
+      apiUrl: "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      cacheName: "ogp-fonts-v1"
+      contentType: "font/ttf"
+      cacheControl: "public, max-age=31536000, immutable"
+      urlRegex: "url\\((https:\\/\\/[^)]+\\.ttf)\\)"
