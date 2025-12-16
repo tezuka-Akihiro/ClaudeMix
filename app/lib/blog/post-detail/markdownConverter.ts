@@ -61,6 +61,20 @@ export async function convertMarkdownToHtml(markdown: string): Promise<string> {
       // walkTokensでshikiによって変換されたHTMLがtextに入ってくるので、そのまま返す
       return text;
     },
+
+    listitem(this: unknown, token: Tokens.ListItem) {
+      const text = token.text;
+      const isChecked = token.checked;
+
+      // チェックボックスアイテムの場合
+      if (typeof isChecked === 'boolean') {
+        const checkbox = `<input type="checkbox" ${isChecked ? 'checked' : ''} disabled class="task-list-item-checkbox">`;
+        return `<li class="task-list-item">${checkbox} ${text}</li>\n`;
+      }
+
+      // 通常のリストアイテム
+      return `<li>${text}</li>\n`;
+    },
   };
 
   // markedの非同期プラグインとしてshikiを統合
@@ -97,6 +111,7 @@ export async function convertMarkdownToHtml(markdown: string): Promise<string> {
       'div', 'span',
       'strong', 'em', 'b', 'i',
       'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      'input',
     ],
     allowedAttributes: {
       'a': ['href', 'target', 'rel'],
@@ -111,12 +126,16 @@ export async function convertMarkdownToHtml(markdown: string): Promise<string> {
       'h4': ['id'],
       'h5': ['id'],
       'h6': ['id'],
+      'input': ['type', 'checked', 'disabled', 'class'],
+      'li': ['class'],
     },
     allowedClasses: {
       'pre': ['mermaid', 'shiki', theme], // shikiが生成するクラスを許可
       'code': ['language-*', 'has-line-numbers'],
       'span': ['line'],
       'div': ['class'],
+      'input': ['task-list-item-checkbox'],
+      'li': ['task-list-item'],
     },
     allowedStyles: {
       '*': {

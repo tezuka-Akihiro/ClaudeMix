@@ -28,10 +28,10 @@ html {
   --color-background-muted: #666666;
 
   /* --- Text (テキスト) --- */
-  --color-text-primary: #b9b6b6;
-  --color-text-secondary: #d4d4d4;
-  --color-text-muted: #999999;
-  --color-text-disabled: #9ca3af;
+  --color-text-primary: #E8E8E8;
+  --color-text-secondary: #FCFCFC;
+  --color-text-muted: #BFBFBF;
+  --color-text-disabled: #D4D4D4;
 
   /* --- Accent (アクセント) --- */
   --color-accent-gold: #BFA978;
