@@ -21,9 +21,9 @@
 
 1. **@GeneratorOperator** に依頼してテンプレートを生成します。
 
-   ~~~
+   ```bash
    @GeneratorOperator "func-spec.mdを生成してください。service: blog, section: {section}"
-   ~~~
+   ```
 
 2. **出力先**: `develop/blog/<section>/func-spec.md`（設計ドキュメントとして集約管理）
 3. `GUIDING_PRINCIPLES.md` を参考に、以下を**3大層分離の観点**で記述します：
@@ -36,9 +36,9 @@
 
 1. **@GeneratorOperator** に依頼してテンプレートを生成します。
 
-   ~~~
+   ```bash
    @GeneratorOperator "uiux-spec.mdを生成してください。service: blog, section: {section}"
-   ~~~
+   ```
 
 2. **出力先**: `develop/blog/<section>/uiux-spec.md`（設計ドキュメントとして集約管理）
 3. `GUIDING_PRINCIPLES.md` を参考に、**UI層の責務分離**を意識して記述します：
@@ -51,9 +51,9 @@
 
 1. **@GeneratorOperator** に依頼してテンプレートを生成します。
 
-   ~~~
+   ```bash
    @GeneratorOperator "spec.yamlを生成してください。service: blog, section: {section}"
-   ~~~
+   ```
 
 2. **出力先**: `develop/blog/<section>/spec.yaml`（設計ドキュメントとして集約管理）
 3. `GUIDING_PRINCIPLES.md` を参考に、**UIに依存しない設定値**として以下を記述します：
@@ -79,7 +79,7 @@
 
 5. リストアップするファイルは、以下の形式で記述する。
 
-    ~~~markdown
+    ```markdown
     # file-list.md - operation Section
     
     ## 2. UI層（Phase 2）
@@ -97,7 +97,7 @@
     | ファイル名 | パス |
     |:---|:---|
     | archiveFiles.server.ts | app/data-io/service-name/operation/archiveFiles.server.ts |
-    ~~~
+    ```
 
 - このファイルが、後述する「設計レビュー図」の元データとなります。
 

@@ -54,10 +54,8 @@ node scripts/lint-file-list/check-diff.js <develop-section-path>
 ```bash
 # implementation-flowセクションを検証
 node scripts/lint-file-list/check-diff.js develop/service-name/implementation-flow/
-
 # design-flowセクションを検証
 node scripts/lint-file-list/check-diff.js develop/service-name/design-flow/
-
 # commonセクションを検証
 node scripts/lint-file-list/check-diff.js develop/service-name/common/
 ```
@@ -71,7 +69,7 @@ node scripts/lint-file-list/check-diff.js develop/service-name/common/
 
 #### 差分なしの場合（成功）
 
-```
+```text
 ✅ file-list.mdと実装ファイルの整合性が確認されました
    定義ファイル数: 17
    実装ファイル数: 17
@@ -82,7 +80,7 @@ node scripts/lint-file-list/check-diff.js develop/service-name/common/
 
 #### 未定義ファイルが検出された場合（エラー）
 
-```
+```text
 ❌ file-list.mdに未定義のファイルが3件検出されました:
 
   📄 app/components/service-name/implementation-flow/UnexpectedComponent.tsx
@@ -102,7 +100,7 @@ file-list.md: develop/service-name/implementation-flow/file-list.md
 
 #### 不足ファイルがある場合（情報）
 
-```
+```text
 ℹ️  file-list.mdに定義されているが実在しないファイルが2件あります:
 
   📄 app/components/service-name/implementation-flow/PlannedComponent.tsx
@@ -149,7 +147,7 @@ file-list.md: develop/service-name/implementation-flow/file-list.md
 
 ## 7. ディレクトリ構造
 
-```
+```text
 scripts/lint-file-list/
 ├── check-diff.js                      # CLIエントリーポイント
 ├── lib/

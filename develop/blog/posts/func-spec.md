@@ -4,7 +4,7 @@
 
 ### 機能名
 
-**Posts List (記事一覧)**
+Posts List (記事一覧)
 
 ### 所属サービス
 
@@ -63,7 +63,7 @@
 
 ### 入力データ
 
-~~~typescript
+```typescript
 // loaderが受け取るデータ（リクエストパラメータ）
 interface PostsLoaderRequest {
   request: Request // Remixのloaderリクエスト
@@ -72,11 +72,11 @@ interface PostsLoaderRequest {
   // - ?category=Tutorials
   // - ?tags=Remix,Cloudflare
 }
-~~~
+```
 
 ### 出力データ
 
-~~~typescript
+```typescript
 // loaderがUIに返すデータの型定義
 interface PostsLoaderData {
   posts: PostSummary[] // 現在のページの記事一覧
@@ -107,11 +107,11 @@ interface FilterData {
   selectedCategory?: string // 現在選択されているカテゴリ（空文字列の場合は全カテゴリ表示）
   selectedTags?: string[] // 現在選択されているタグ
 }
-~~~
+```
 
 ### app/components要件（app/routes, app/components）
 
-~~~
+```text
 1. [UI層の責務]
    Route:
    - app/routes/blog._index.tsx:
@@ -186,11 +186,11 @@ interface FilterData {
        - **重要**: フィルタパラメータを保持すること
      - 現在のページをハイライト表示
      - アクセシビリティ対応（aria-label、キーボードナビゲーション）
-~~~
+```
 
 ### 🧠 純粋ロジック要件（app/lib/blog/posts）
 
-~~~
+```text
 2. [純粋ロジック層の責務]
    このセクションには以下の処理を実装します：
 
@@ -234,11 +234,11 @@ interface FilterData {
          - それ以外: filters.tags.every(tag => post.tags.includes(tag))
            - AND条件: 指定されたすべてのタグを含む記事のみ
      - 純粋関数（副作用なし）
-~~~
+```
 
 ### 🔌 副作用要件（app/data-io/blog/posts）
 
-~~~
+```text
 3. [副作用層の責務]
    - fetchPosts.server.ts: 記事一覧データの取得
      - ビルド時に生成されたバンドルから記事メタデータを読み込む
@@ -277,4 +277,4 @@ interface FilterData {
        4. groupTagsByCategory()を呼び出してtagGroups情報を生成
        5. categories[], tags[], tagGroups[]を返す
      - サーバー専用ファイル（`.server.ts`）
-~~~
+```

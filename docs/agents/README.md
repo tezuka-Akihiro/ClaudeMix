@@ -1,6 +1,4 @@
-# サブエージェント利用ガイド
-
-**開発支援専門サブエージェント群**
+# サブエージェント利用ガイド - 開発支援専門サブエージェント群
 
 **バージョン**: 4.0（Claude Code Skills準拠）
 **最終更新**: 2025-11-17
@@ -9,13 +7,13 @@
 
 ## 📋 概要
 
-このドキュメントは、Remixボイラープレート開発を支援する**5つの専門サブエージェント**の利用ガイドです。
+このドキュメントは、Remixボイラープレート開発を支援する5つの専門サブエージェントの利用ガイドです。
 
 **実体ファイル**: `.claude/skills/` 配下に Claude Code Skills フォーマットで配置されています。
 
 ### サブエージェント構成
 
-~~~
+```text
                   ┌─────────────────┐
                   │ メインエージェント  │
                   └────────┬────────┘
@@ -40,7 +38,7 @@
 ┌────────────────────────────────────────┐
 │      scripts/generate/ (既存ツール)      │
 └────────────────────────────────────────┘
-~~~
+```
 
 ---
 
@@ -151,7 +149,7 @@
 
 #### 1. ファイル生成依頼（GeneratorOperator）
 
-~~~
+```text
 ユーザー: ProgressSummaryコンポーネントを作成して
 
 ↓（メインエージェントが振り分け）
@@ -161,24 +159,24 @@ GeneratorOperator起動:
 2. 情報収集（service, section）
 3. コマンド実行
 4. 結果報告
-~~~
+```
 
 **呼び出し方（メインエージェント向け）**:
 
-~~~markdown
+```markdown
 @GeneratorOperator
 
 ユーザー依頼:
 「ProgressSummaryコンポーネントを作成して」
 
 対応をお願いします。
-~~~
+```
 
 ---
 
 #### 2. エラー対応（GeneratorOperator）
 
-~~~
+```text
 ユーザー: generate実行したらエラーが出た
 [エラーログ貼り付け]
 
@@ -189,13 +187,13 @@ GeneratorOperator起動:
 2. 責任範囲判定
 3-a. 対応可能 → 修正提案
 3-b. テンプレート問題 → GeneratorMaintainerへエスカレーション
-~~~
+```
 
 ---
 
 #### 3. テンプレート追加（GeneratorMaintainer）
 
-~~~
+```text
 ユーザー: 新しいドキュメントタイプ「デプロイメント手順書」を追加したい
 
 ↓
@@ -206,24 +204,24 @@ GeneratorMaintainer起動:
 3. 実装（config更新、テンプレート作成）
 4. 動作確認
 5. GeneratorOperatorへ通知
-~~~
+```
 
 **呼び出し方（メインエージェント向け）**:
 
-~~~markdown
+```markdown
 @GeneratorMaintainer
 
 ユーザー依頼:
 「デプロイメント手順書のテンプレートを追加したい」
 
 対応をお願いします。
-~~~
+```
 
 ---
 
 #### 4. エスカレーション（Operator → Maintainer）
 
-~~~
+```text
 GeneratorOperatorがテンプレート欠落を検知
 
 ↓
@@ -237,7 +235,7 @@ GeneratorMaintainer起動（エスカレーション受理）:
 ↓
 
 GeneratorOperator: ユーザーへ再実行を促す
-~~~
+```
 
 ---
 
@@ -265,7 +263,7 @@ GeneratorOperator: ユーザーへ再実行を促す
 
 **シーン**: テンプレート欠落エスカレーション
 
-~~~markdown
+```markdown
 @GeneratorMaintainer
 
 【エスカレーション】
@@ -282,13 +280,13 @@ API仕様書を作成したい
 
 【推奨対応】
 xxx.template.md の作成
-~~~
+```
 
 ### 連携パターン2: Maintainer → Operator
 
 **シーン**: テンプレート追加完了通知
 
-~~~markdown
+```markdown
 @GeneratorOperator
 
 【テンプレート追加完了】
@@ -303,13 +301,13 @@ Breaking: false
 - 利用方法: --category documents --document-type api-spec
 
 ユーザーのリクエストを再実行可能です。
-~~~
+```
 
 ### 連携パターン3: メインエージェント → CodeReviewer → Debugger
 
 **シーン**: コード実装後の品質保証とバグ修正
 
-~~~
+```text
 1. メインエージェント: コード実装完了
    ↓
 2. @CodeReviewer: レビュー実行 → テスト失敗を発見
@@ -321,13 +319,13 @@ Breaking: false
 5. メインエージェント: 修正実施
    ↓
 6. @CodeReviewer: 再レビュー → 承認
-~~~
+```
 
 ### 連携パターン4: GeneratorOperator → CodeReviewer
 
 **シーン**: ファイル生成後の品質チェック
 
-~~~
+```text
 1. @GeneratorOperator: ファイル生成完了
    ↓
 2. （オプション）@CodeReviewer: 生成コードのレビュー
@@ -335,7 +333,7 @@ Breaking: false
 3-a. 問題なし → 完了
 3-b. アーキテクチャ違反 → @GeneratorMaintainer（テンプレート修正）
 3-c. ロジックエラー → @Debugger（修正案提示）
-~~~
+```
 
 ---
 

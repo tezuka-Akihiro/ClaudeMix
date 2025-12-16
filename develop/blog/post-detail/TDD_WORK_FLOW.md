@@ -107,7 +107,7 @@
 
 - **1. ファイル生成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのpost-detailセクションに、fetchPostBySlugという名前のdata-ioファイルを作成してください。
 
   責務:
@@ -135,7 +135,7 @@
 
 - **1. ファイル生成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのpost-detailセクションに、markdownConverterという名前のlibファイルを作成してください。
 
   責務:
@@ -171,7 +171,7 @@
 
 - **1. Routeファイルの作成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのpost-detailセクションに、blog.$slugという名前のrouteファイルを作成してください。
 
   責務:
@@ -204,7 +204,7 @@
 
 - **1. UIコンポーネントの作成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのpost-detailセクションに、PostDetailSectionという名前のcomponentファイルを作成してください。
 
   責務:

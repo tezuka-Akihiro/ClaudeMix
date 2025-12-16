@@ -21,9 +21,9 @@
 
 1. **@GeneratorOperator** に依頼してテンプレートを生成します。
 
-   ~~~
+   ```bash
    @GeneratorOperator "func-spec.mdを生成してください。service: {{service}}, section: {section}"
-   ~~~
+   ```
 
 2. **出力先**: `develop/{{service}}/<section>/func-spec.md`（設計ドキュメントとして集約管理）
 3. `GUIDING_PRINCIPLES.md` を参考に、以下を**3大層分離の観点**で記述します：
@@ -36,9 +36,9 @@
 
 1. **@GeneratorOperator** に依頼してテンプレートを生成します。
 
-   ~~~
+   ```bash
    @GeneratorOperator "uiux-spec.mdを生成してください。service: {{service}}, section: {section}"
-   ~~~
+   ```
 
 2. **出力先**: `develop/{{service}}/<section>/uiux-spec.md`（設計ドキュメントとして集約管理）
 3. `GUIDING_PRINCIPLES.md` を参考に、**UI層の責務分離**を意識して記述します：
@@ -47,13 +47,13 @@
 4. ワイヤーフレーム、UIコンポーネント構成、インタラクションなどを定義します。
 5. `node scripts/lint-template/engine.js develop/{{service}}/<section>/uiux-spec.md` を実行して内容を検証します。
 
-## <section>-spec.yaml（外部変数仕様書）
+## spec.yaml（外部変数仕様書）
 
 1. **@GeneratorOperator** に依頼してテンプレートを生成します。
 
-   ~~~
-   @GeneratorOperator "<section>-spec.yamlを生成してください。service: {{service}}, section: <section>"
-   ~~~
+   ```bash
+   @GeneratorOperator "spec.yamlを生成してください。service: {{service}}, section: <section>"
+   ```
 
 2. **出力先**: `app/specs/{{service}}/<section>-spec.yaml`（設計ドキュメントとして集約管理）
 3. `GUIDING_PRINCIPLES.md` を参考に、**UIに依存しない設定値**として以下を記述します：
@@ -80,25 +80,25 @@
 
 5. リストアップするファイルは、以下の形式で記述する。
 
-    ~~~markdown
+    ```markdown
     # file-list.md - operation Section
-    
+
     ## 2. UI層（Phase 2）
     | ファイル名 | パス |
     |:---|:---|
     | OperationSection.tsx | app/components/service-name/operation/OperationSection.tsx |
     | RetryModal.tsx | app/components/service-name/operation/RetryModal.tsx |
-    
+
     ## 3. 純粋ロジック層（lib層、Phase 2）
     | ファイル名 | パス |
     |:---|:---|
     | retryTargetCalculator.ts | app/lib/service-name/operation/retryTargetCalculator.ts |
-    
+
     ## 4. 副作用層（data-io層、Phase 2）
     | ファイル名 | パス |
     |:---|:---|
     | archiveFiles.server.ts | app/data-io/service-name/operation/archiveFiles.server.ts |
-    ~~~
+    ```
 
 - このファイルが、後述する「設計レビュー図」の元データとなります。
 

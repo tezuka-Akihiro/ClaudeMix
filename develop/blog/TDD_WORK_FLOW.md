@@ -226,7 +226,7 @@ npm run lint:css-arch
 
 **ファイル生成**:
 
-```
+```text
 @GeneratorOperator "blog サービスの posts セクションに、fetchAvailableFilters という名前のdata-ioファイルを作成して"
 ```
 
@@ -270,7 +270,7 @@ npm run lint:css-arch
 
 **ファイル生成**:
 
-```
+```text
 @GeneratorOperator "blog サービスの posts セクションに、filterPosts という名前のlibファイルを作成して"
 ```
 
@@ -340,7 +340,7 @@ npm run lint:css-arch
 
 **ファイル生成**:
 
-```
+```text
 @GeneratorOperator "blog サービスの posts セクションに、FilterToggleButton という名前のUIコンポーネントを作成して"
 ```
 
@@ -383,7 +383,7 @@ export const FilterToggleButton: React.FC<FilterToggleButtonProps> = ({ onClick,
 
 **ファイル生成**:
 
-```
+```text
 @GeneratorOperator "blog サービスの posts セクションに、CategorySelector という名前のUIコンポーネントを作成して"
 ```
 
@@ -433,7 +433,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
 
 **ファイル生成**:
 
-```
+```text
 @GeneratorOperator "blog サービスの posts セクションに、TagGrid という名前のUIコンポーネントを作成して"
 ```
 
@@ -498,7 +498,7 @@ export const TagGrid: React.FC<TagGridProps> = ({ availableTags, selectedTags })
 
 **ファイル生成**:
 
-```
+```text
 @GeneratorOperator "blog サービスの posts セクションに、FilterSubmitButton という名前のUIコンポーネントを作成して"
 ```
 
@@ -533,7 +533,7 @@ export const FilterSubmitButton: React.FC = () => {
 
 **ファイル生成**:
 
-```
+```text
 @GeneratorOperator "blog サービスの posts セクションに、FilterPanel という名前のUIコンポーネントを作成して"
 ```
 
@@ -755,7 +755,7 @@ npm run dev
   7. URLパラメータが正しく反映されること（`?category=...&tags=...`）
   8. `/blog/remix-tips-2024` などの記事詳細ページで description と tags が表示されること
 
-**🚨 重要: 実装前の必須確認**
+## 🚨 重要: 実装前の必須確認
 
 - **オペレーターの許可を得てから実装を開始すること**
 - 各Phase完了後、必ずオペレーターに報告し、承認を得ること

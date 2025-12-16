@@ -10,7 +10,7 @@
 
 `tests` ディレクトリ配下は、テストの種類（`e2e`, `unit`, `lint`）ごとにディレクトリを分け、それぞれが自己完結するように構成されています。
 
-~~~plaintext
+```plaintext
 tests/
 ├── e2e/
 │   ├── playwright.config.ts    # E2Eテスト (Playwright) の設定
@@ -22,7 +22,7 @@ tests/
 │   ├── vitest.config.ts        # ユニットテスト (Vitest) の設定
 │   └── coverage/               # カバレッジレポート (Git管理外)
 └── lint-report/            # 静的解析のレポート (Git管理外)
-~~~
+```
 
 ## 3. テストコードの配置ルール
 
@@ -42,23 +42,23 @@ tests/
 
 ## 4. 関連コマンド
 
-### E2Eテスト (Playwright)
+### E2Eテストコマンド
 
 #### セットアップ
 
 E2Eテストを実行する前に、Playwrightのブラウザをインストールする必要があります。
 
-~~~bash
+```bash
 # Playwrightブラウザのインストール
 npx playwright install
 
 # システム依存関係も含めてインストール（Linux環境）
 npx playwright install --with-deps
-~~~
+```
 
-#### 実行コマンド
+#### E2Eテストの実行コマンド
 
-~~~bash
+```bash
 # 全てのE2Eテストを実行
 npm run test:e2e
 
@@ -76,7 +76,7 @@ npm run test:e2e:report
 
 # E2Eテストのタイプチェックのみ実行
 npm run typecheck:e2e
-~~~
+```
 
 #### トラブルシューティング
 
@@ -92,18 +92,18 @@ npm run typecheck:e2e
 
 特定のブラウザのみをインストールしたい場合:
 
-~~~bash
+```bash
 # Chromiumのみインストール
 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install
 npx playwright install chromium
-~~~
+```
 
-### ユニットテスト (Vitest)
+### ユニットテスト (Vitest) の実行コマンド
 
-~~~bash
+```bash
 # 全てのユニットテストを実行
 npm test
 
 # ユニットテストをUIモードで実行
 npm run test:ui
-~~~
+```

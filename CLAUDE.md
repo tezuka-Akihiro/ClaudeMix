@@ -29,7 +29,7 @@
 | **III. スタイリング規律の強制** | `docs/CSS_structure/STYLING_CHARTER.md` | **実装者は常に「Tailwindクラス」のみを参照すること**。`globals.css`のカスタムクラスやトークンへの直接参照は禁止。階層飛越も禁止。詳細: [`STYLING_CHARTER.md`](docs/CSS_structure/STYLING_CHARTER.md) |
 | **IV. スタイリング規律の検証** | `npm run lint:css-arch` | `globals.css`の規約違反や、実装層でのTailwindユーティリティクラスの直接使用を検出します。違反があった場合は、`tests/lint/css-arch-layer-report.md` の内容に従って修正してください。 |
 | **V. ファイルリスト整合性の検証** | `node scripts/lint-file-list/check-diff.js <develop-section-path>` | file-list.mdに未定義のファイルを検出。設計書への追加または不要ファイルの削除を実施してください。 |
-| **VI. Single Source of Truth (SSoT) の徹底** | コードレビュー, `specloader` | **`spec.yaml` を唯一の信頼できる情報源とします。**<br>・**値の一元管理**: カテゴリID、UIセレクタ、ビジネスルール等のリテラル値は `spec.yaml` で定義し、ハードコードを禁止します。<br>・**動的参照**: 実装・テストでは `specloader` 等のユーティリティを介して `spec.yaml` の値を動的に参照します。<br>・**汎用的な記述**: 設計書や実装コメントでは、「複数回」「特定の条件下で」のような汎用表現を用い、具体的な値を記述しません。（例: `3回` はNG）<br>・**参照案内の禁止**: 「`spec.yaml` を参照」といったコメントは、コードの自己説明性を損なうため禁止します。 |
+| **VI. Single Source of Truth (SSoT) の徹底** | コードレビュー, `specloader` | **`spec.yaml` を唯一の信頼できる情報源とします。** (1)値の一元管理: カテゴリID、UIセレクタ、ビジネスルール等のリテラル値は `spec.yaml` で定義し、ハードコードを禁止。(2)動的参照: 実装・テストでは `specloader` 等のユーティリティを介して `spec.yaml` の値を動的に参照。(3)汎用的な記述: 設計書や実装コメントでは、「複数回」「特定の条件下で」のような汎用表現を用い、具体的な値を記述しません（例: `3回` はNG）。(4)参照案内の禁止: 「`spec.yaml` を参照」といったコメントは、コードの自己説明性を損なうため禁止。 |
 
 ## 📐 4. 3大層アーキテクチャの責務（層別TDDの規範）
 

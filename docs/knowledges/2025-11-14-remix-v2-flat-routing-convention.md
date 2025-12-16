@@ -23,7 +23,7 @@ Remix v2 のデフォルトルーティング規約である「フラットル�
 
 ### 症状
 
-```
+```text
 Error: No route matches URL "/blog/sample-remix-tips-2024"
 ```
 
@@ -31,7 +31,7 @@ Error: No route matches URL "/blog/sample-remix-tips-2024"
 
 ### 試みた構成（失敗）
 
-```
+```text
 app/routes/
 ├── blog/
 │   ├── index.tsx      → /blog (成功)
@@ -93,7 +93,7 @@ remix({
 
 **変更前（失敗）**:
 
-```
+```text
 app/routes/
 ├── blog/
 │   ├── index.tsx      → /blog
@@ -102,7 +102,7 @@ app/routes/
 
 **変更後（成功）**:
 
-```
+```text
 app/routes/
 ├── blog._index.tsx    → /blog
 └── blog.$slug.tsx     → /blog/:slug

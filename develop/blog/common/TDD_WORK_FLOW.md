@@ -96,7 +96,7 @@
 
 - **1. ファイル生成**: `@GeneratorOperator` に依頼して、副作用層のファイルを生成します。
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、loadBlogConfigという名前のdata-ioファイルを作成してください。
   - ブログ設定情報（タイトル、メニュー項目、コピーライト）を返す
   - 固定の設定値を返す（外部ファイル読み込みは不要）
@@ -135,7 +135,7 @@
 
 - **1. ファイル生成**: `@GeneratorOperator` に依頼して、純粋ロジック層のファイルを生成します。
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、copyrightFormatterという名前のlibファイルを作成してください。
   - コピーライト文字列をフォーマットする純粋関数
   - 年の自動更新機能
@@ -168,7 +168,7 @@
 
 - **1. UIコンポーネントの作成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、BlogLayoutという名前のUIコンポーネントを作成してください。
   - ページ全体のレイアウトコンテナ（Header/Footer/Contentエリア）
   - childrenプロパティでメインコンテンツを受け取る
@@ -196,7 +196,7 @@
 
 - **1. UIコンポーネントの作成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、BlogHeaderという名前のUIコンポーネントを作成してください。
   - ブログヘッダー（タイトル、menuボタン）
   - メニュー開閉状態の管理
@@ -222,7 +222,7 @@
 
 - **1. UIコンポーネントの作成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、NavigationMenuという名前のUIコンポーネントを作成してください。
   - ナビゲーションメニュー（メニュー項目表示）
   - メニュー項目クリックでページ遷移
@@ -250,7 +250,7 @@
 
 - **1. UIコンポーネントの作成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、BlogFooterという名前のUIコンポーネントを作成してください。
   - ブログフッター（コピーライト表記）
 
@@ -272,7 +272,7 @@
 
 - **1. Routeファイルの作成**:
 
-  ```
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、blog/indexという名前のrouteファイルを作成してください。
   - ブログトップページのRoute
   - BlogLayoutを使用した最小限の実装

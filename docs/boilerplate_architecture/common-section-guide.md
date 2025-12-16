@@ -222,7 +222,7 @@ test.describe("Design Flow Section", () => {
 
 commonセクションの推奨実装順序:
 
-~~~
+~~~text
 Phase 1: E2Eテストファイル作成
   └─ tests/e2e/screen/{service}.screen.spec.ts を新規作成
 

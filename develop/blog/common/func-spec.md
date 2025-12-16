@@ -4,7 +4,7 @@
 
 ### 機能名
 
-**Common Components (共通コンポーネント)**
+Common Components (共通コンポーネント)
 
 ### 所属サービス
 
@@ -82,18 +82,18 @@
 
 ### 出力データ
 
-~~~typescript
+```typescript
 // loaderがUIに返すデータ（Routeレベル）
 interface CommonData {
   blogTitle: string // ブログタイトル: "ClaudeMix Blog"
   menuItems: MenuItem[] // メニュー項目リスト
   copyright: string // コピーライト: "© 2025 ClaudeMix"
 }
-~~~
+```
 
 ### app/components要件（app/routes, app/components）
 
-~~~
+```text
 1. [UI層の責務]
    Header Components:
    - BlogHeader:
@@ -117,22 +117,22 @@ interface CommonData {
    - BlogLayout: ヘッダー、フッター、メインコンテンツエリアを配置
      - 構造: [BlogHeader] [children] [BlogFooter]
      - レスポンシブ対応
-~~~
+```
 
 ### 🧠 純粋ロジック要件（app/lib/blog/common）
 
-~~~
+```text
 2. [純粋ロジック層の責務]
    このセクションには複雑なビジネスロジックは不要です。
    必要に応じて、以下のような軽微な処理のみ実装します：
 
    - copyrightFormatter.ts: コピーライト文字列のフォーマット
      - 年の自動更新など
-~~~
+```
 
 ### 🔌 副作用要件（app/data-io/blog/common）
 
-~~~
+```text
 3. [副作用層の責務]
    このセクションには外部データ取得は不要です。
    必要に応じて、以下のような処理のみ実装します：
@@ -143,11 +143,11 @@ interface CommonData {
    - loadPostMetadata.server.ts: 記事メタデータの読み込み（OGP画像生成用）
      - MDXファイルのFrontmatter（タイトル、説明、著者など）を読み込む
      - 記事が存在しない場合はnullを返す
-~~~
+```
 
 ### 🖼️ OGP画像生成のデータフロー
 
-~~~
+```text
 OGP画像生成 (Route: /ogp/$slug.png):
 1. [Route層の責務]
    - URLパラメータから記事のslugを取得
@@ -162,4 +162,4 @@ OGP画像生成 (Route: /ogp/$slug.png):
 3. [Logic層の責務]
    - generateOgpImage.ts: 記事メタデータからOGP画像（PNG）を生成
    - Satoriライブラリを使用してHTML/CSSから画像を生成
-~~~
+```

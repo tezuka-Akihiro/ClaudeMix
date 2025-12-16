@@ -4,7 +4,7 @@
 
 ### 機能名
 
-**{{name}}**
+{{name}}
 
 ### 所属サービス
 
@@ -41,18 +41,16 @@
 
 ### app/components要件（app/routes, app/components）
 
-~~~
-// ユーザーインタラクション、表示制御など
-~~~
+UI層の責務
 
-### 🧠 純粋ロジック要件（app/lib）
+### 純粋ロジック要件（app/lib）
 
-~~~
+```typescript
 // ビジネスロジック、計算処理など（副作用なし）
-~~~
+```
 
-### 🔌 副作用要件（app/data-io）
+### 副作用要件（app/data-io）
 
-~~~
+```typescript
 // DBアクセス、API通信など
-~~~
+```

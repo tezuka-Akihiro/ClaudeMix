@@ -211,12 +211,12 @@ graph TD
 
 ### 異常系フロー
 
-**パターン1: 記事が存在しない**
+#### パターン1: 記事が存在しない
 
 1. `fetchPostBySlug.server.ts` が null を返す
 2. Route が ErrorBoundary を通じて404エラーを表示
 
-**パターン2: 参照元ファイルが存在しない / 不正なパス**
+#### パターン2: 参照元ファイルが存在しない / 不正なパス
 
 1. `fetchExternalMarkdown.server.ts` がエラーをthrow
 2. Route が ErrorBoundary を通じて500エラーを表示

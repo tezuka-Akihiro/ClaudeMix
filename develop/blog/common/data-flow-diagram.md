@@ -134,7 +134,7 @@ graph LR
     I --> J[Cache-Control設定]
 ```
 
-### フロー説明
+### OGP画像生成のフロー説明
 
 1. **リクエスト受信**: ユーザー（またはSNSクローラー）が `/ogp/:slug.png` にアクセス
 2. **Route処理**: `ogp.$slug.tsx` がリクエストを受信し、slugパラメータを取得
@@ -148,7 +148,7 @@ graph LR
    - Content-Type: `image/png`
    - Cache-Control: `public, max-age=31536000, immutable`（1年間キャッシュ）
 
-### データ依存関係
+### OGP画像生成のデータ依存関係
 
 #### 入力データ（MDX Frontmatter）
 

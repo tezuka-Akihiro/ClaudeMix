@@ -30,6 +30,8 @@
 
 詳細は `docs/knowledges/テンプレート起点コーディング.md` を参照してください。
 
+## メリットの詳細
+
 - **規律の強制**: `@GeneratorOperator` は、コマンドの引数を正しく構築し、アーキテクチャ規律に沿ったファイル生成を保証する唯一の担当者です。
 - **品質の担保**: 直接実行は、引数の渡し間違いや規約違反のコード生成につながり、後工程で大規模な手戻りを発生させる原因となります。
 - **思想の具現化**: このルールは、「規約をドキュメントとして書く」のではなく、「規約をサブエージェントの振る舞いとして実装する」という、このボイラープレートの核心思想を具現化するものです。
@@ -38,9 +40,9 @@
 
 ## 使い方
 
-~~~bash
+```bash
 npm run generate -- --category <category> [--ui-type <ui-type>] --service <service> --section <section> --name <name>
-~~~
+```
 
 ### 引数
 
@@ -55,21 +57,21 @@ npm run generate -- --category <category> [--ui-type <ui-type>] --service <servi
 
 **例1 (純粋ロジック層):** `app/lib/sales/summary/ProfitCalculator.ts` とそのテストを生成する場合
 
-~~~bash
+```bash
 npm run generate -- --category lib --service sales --section summary --name ProfitCalculator
-~~~
+```
 
 **例2 (UI層 - コンポーネント):** `app/components/sales/summary/SalesChart.tsx` とそのテストを生成する場合
 
-~~~bash
+```bash
 npm run generate -- --category ui --ui-type component --service sales --section summary --name SalesChart
-~~~
+```
 
 **例3 (ドキュメント - spec.yaml):** `app/specs/sales/summary-spec.yaml` を生成する場合
 
-~~~bash
+```bash
 npm run generate -- --category documents --document-type spec-yaml --service sales --section summary
-~~~
+```
 
 ### 生成されるファイル
 
@@ -91,15 +93,15 @@ npm run generate -- --category documents --document-type spec-yaml --service sal
 
 履歴は1行1レコードで、以下の形式で追記されます。
 
-~~~
+```text
 [ISO形式のタイムスタンプ] npm run generate -- <実行された引数>
-~~~
+```
 
 **例:**
 
-~~~
+```text
 [2024-05-22T10:30:00.123Z] npm run generate -- --category lib --service blog --section posts --name PostFetcher
-~~~
+```
 
 ## 設定
 

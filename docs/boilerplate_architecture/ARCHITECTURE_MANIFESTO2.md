@@ -17,17 +17,17 @@
 
 | 層 | シンボル | 配置ディレクトリ | 責務とAIへの指示 |
 |:---|:---:|:---|:---|
-| **UI層** | 🎨 | `routes/`<br>`components/` | **データフロー制御と表示**: loader/actionによるデータフロー制御、ユーザーへの表示とインタラクション。副作用層のみをimport可能。 |
+| **UI層** | 🎨 | `routes/` `components/` | **データフロー制御と表示**: loader/actionによるデータフロー制御、ユーザーへの表示とインタラクション。副作用層のみをimport可能。 |
 | **純粋ロジック層** | 🧠 | `lib/` | **副作用のないビジネスロジック**: 計算、データ変換、バリデーション等の純粋関数のみ。他の層のimport禁止。**テストカバレッジ100%必須**。 |
 | **副作用層** | 🔌 | `data-io/` | **外部世界との通信**: DBアクセス、APIコール、ファイルI/O等。純粋ロジック層のimport可能。UIコードのimport禁止。 |
 
 ### 依存関係の原則
 
-~~~
+```text
 app/components (routes/components)
     ↓ import可能
 🔌 副作用層 (data-io) ← import可能 ← 🧠 純粋ロジック層 (lib)
-~~~
+```
 
 **絶対ルール**: 純粋ロジック層は完全独立。他の層をimport禁止。
 
@@ -41,7 +41,7 @@ app/components (routes/components)
 * **最小限のJSX**: 20行以下の単純な表示ロジック
 * **副作用層のみimport**: `data-io/`の関数のみ呼び出し可能
 
-~~~typescript
+```typescript
 // ✅ 正しい例
 export async function loader() {
   const data = await getSalesData() // data-io層から
@@ -55,7 +55,7 @@ export default function Sales() {
 
 // ❌ 禁止例
 import { calculateProfit } from '~/lib/sales' // lib層の直接import禁止
-~~~
+```
 
 #### components/ の責務
 
@@ -63,7 +63,7 @@ import { calculateProfit } from '~/lib/sales' // lib層の直接import禁止
 * **インタラクション制御**: ユーザー操作のハンドリング
 * **推奨構造**: `{service}/{section}/`での整理
 
-~~~typescript
+```typescript
 // ✅ 正しい例
 interface Props {
   data: SalesData
@@ -75,7 +75,7 @@ export function SalesDashboard({ data }: Props) {
 
 // ❌ 禁止例
 import { getSalesData } from '~/data-io/sales' // 副作用層の直接import禁止
-~~~
+```
 
 ### 🧠 **純粋ロジック層（lib/）**
 
@@ -86,7 +86,7 @@ import { getSalesData } from '~/data-io/sales' // 副作用層の直接import禁
 * **他層のimport禁止**: 完全独立状態を維持
 * **100%テストカバレッジ**: 例外なし
 
-~~~typescript
+```typescript
 // ✅ 正しい例
 export function calculateProfit(revenue: number, costs: number): number {
   if (revenue < 0 || costs < 0) {
@@ -100,7 +100,7 @@ export async function getProfit(id: string) { // async禁止（副作用の可�
   const data = await fetch(`/api/sales/${id}`) // 外部通信禁止
   return data.profit
 }
-~~~
+```
 
 ### 🔌 **副作用層（data-io/）**
 
@@ -110,7 +110,7 @@ export async function getProfit(id: string) { // async禁止（副作用の可�
 * **純粋ロジックの活用**: lib層の関数を呼び出し可能
 * **モック化対応**: テスト時の外部依存を切り離し可能
 
-~~~typescript
+```typescript
 // ✅ 正しい例
 import { validateSalesData } from '~/lib/sales/validation' // lib層は利用可能
 
@@ -121,13 +121,13 @@ export async function getSalesData(): Promise<SalesData> {
 
 // ❌ 禁止例
 import { SalesChart } from '~/components/sales' // UI層のimport禁止
-~~~
+```
 
 ## IV. 自動化による規約強制
 
 ### ESLintルール（必須実装）
 
-~~~javascript
+```javascript
 // .eslintrc.cjs
 module.exports = {
   rules: {
@@ -148,11 +148,11 @@ module.exports = {
     'custom/iframe-usage': 'error'
   }
 }
-~~~
+```
 
 ### 品質ゲート（CI/CD統合）
 
-~~~bash
+```bash
 # pre-commit hook
 npm run quality-gate
 
@@ -160,13 +160,13 @@ npm run quality-gate
 ✅ テストカバレッジ閾値チェック
 ✅ 依存関係違反検出
 ✅ 純粋ロジック層の独立性確認
-~~~
+```
 
 ## V. 開発プロセスの標準化
 
 ### 対話型ファイル生成（必須ツール）
 
-~~~bash
+```bash
 npm run new
 
 ? どの層のファイルを作成しますか？
@@ -176,7 +176,7 @@ npm run new
   🔌 副作用層（data-io）
 
 # 選択に応じて適切なテンプレートとテストファイルを自動生成
-~~~
+```
 
 ### TDD開発フロー（推奨）
 
@@ -196,7 +196,7 @@ npm run new
 
 ### 具体的な移行例
 
-~~~typescript
+```typescript
 // Before: 混在したlib層
 lib/sales.ts
 export async function getUserData() { /* 副作用 */ }
@@ -208,11 +208,12 @@ export function validateUser() { /* 純粋関数のみ */ }
 
 data-io/sales/user.ts
 export async function getUserData() { /* 副作用のみ */ }
-~~~
+```
 
 ## VII. 成功指標
 
 ### 必達目標
+
 * [ ] 純粋ロジック層テストカバレッジ: 100%
 * [ ] 副作用層テストカバレッジ: 80%+
 * [ ] アーキテクチャ違反: 0件（自動検出）

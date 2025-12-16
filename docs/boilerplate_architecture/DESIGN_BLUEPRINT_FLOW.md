@@ -56,7 +56,7 @@ graph TD;
 
 **依頼文の例**:
 
-~~~
+~~~text
 # UIコンポーネント（新規作成）
 @GeneratorOperator "service-nameサービスのimplementation-flowセクションに、FileCardという名前のUIコンポーネントを作成してください。
 - 個別ファイル表示カード
