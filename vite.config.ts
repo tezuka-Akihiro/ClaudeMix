@@ -43,6 +43,13 @@ export default defineConfig({
         /\.spec\.(ts|tsx|js|jsx)$/,
       ],
       output: {
+        // 手動チャンク分割: 記事一覧専用コンポーネントを分離
+        manualChunks(id) {
+          // 記事一覧専用コンポーネント（FilterPanel, PostCard, Pagination等）を別チャンクに
+          if (id.includes('components/blog/posts/') && !id.includes('post-detail')) {
+            return 'posts-list';
+          }
+        },
         // アセットファイル名の最適化（キャッシュ効率化）
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name?.split('.');
