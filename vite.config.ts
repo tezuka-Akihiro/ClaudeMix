@@ -34,6 +34,8 @@ export default defineConfig({
   build: {
     cssCodeSplit: true, // CSSをルートごとに分割
     cssMinify: true, // CSS圧縮を有効化
+    minify: 'esbuild', // esbuild（高速）で圧縮
+    target: 'es2020', // ターゲットブラウザを最新化してポリフィル削減
     rollupOptions: {
       external: [
         // テストファイルをビルドから除外
