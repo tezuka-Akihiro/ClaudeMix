@@ -144,7 +144,9 @@
       "Bash(npx markdownlint:*)",
       "Bash(npm run test:*)",
       "Bash(npm install:*)",
-      "Bash(npm run prebuild:*)"
+      "Bash(npm run prebuild:*)",
+      "Bash(for file in \"content/blog/posts/cloudflare-workers-sqlite-d1.md\" \"content/blog/posts/css-architecture-design-token.md\" \"content/blog/posts/domain-implementation-best-practices.md\" \"content/blog/posts/local-dev-vs-deploy-env.md\" \"content/blog/posts/pre-build-system.md\" \"content/blog/posts/refactoring-single-source-of-truth.md\" \"content/blog/posts/remix-cloudflare-workers-ogp-generation.md\" \"content/blog/posts/remix-css-loading-issue.md\" \"content/blog/posts/skills-guide.md\")",
+      "Bash(do:*)"
     ],
     "deny": [],
     "ask": []

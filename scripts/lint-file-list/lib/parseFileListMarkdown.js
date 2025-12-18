@@ -27,7 +27,7 @@ export function parseFileListMarkdown(markdownContent) {
       continue;
     }
 
-    // 区切り行（|:---|:---|:---|）をスキップ
+    // 区切り行（| :--- | :--- | :--- |）をスキップ
     if (line.match(/^\|[\s:|-]+\|$/)) {
       continue;
     }
