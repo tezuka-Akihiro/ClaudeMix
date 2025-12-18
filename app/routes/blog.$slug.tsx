@@ -75,6 +75,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       category: post.category,
       source: post.source,
       headings: post.headings,
+      hasMermaid: post.hasMermaid, // Mermaidフラグを追加
     },
     headings,
     config,
@@ -125,7 +126,7 @@ export default function BlogPostDetail() {
 
   return (
     <BlogLayout config={config}>
-      <PostDetailSection post={post} headings={headings} />
+      <PostDetailSection post={post} headings={headings} hasMermaid={post.hasMermaid} />
     </BlogLayout>
   );
 }

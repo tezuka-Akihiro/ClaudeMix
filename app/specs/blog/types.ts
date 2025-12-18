@@ -55,6 +55,7 @@ export interface Post {
   source: string | null;
   description?: string;
   testOnly: boolean;
+  hasMermaid: boolean;
   content: string;
   headings: Heading[];
 }

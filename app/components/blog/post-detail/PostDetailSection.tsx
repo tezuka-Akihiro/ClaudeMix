@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-export function PostDetailSection({ post, headings }: { post: RenderedPost, headings: Heading[] }) {
+export function PostDetailSection({ post, headings, hasMermaid = false }: { post: RenderedPost, headings: Heading[], hasMermaid?: boolean }) {
   // publishedAtをフォーマット
   const formattedDate = new Date(post.publishedAt).toLocaleDateString('ja-JP', {
     year: 'numeric',
@@ -24,7 +24,9 @@ export function PostDetailSection({ post, headings }: { post: RenderedPost, head
   });
 
   useEffect(() => {
-    // Mermaidを動的にロード
+    // Mermaidダイアグラムが含まれる場合のみ動的にロード
+    if (!hasMermaid) return;
+
     if (typeof window !== 'undefined' && !window.mermaid) {
       import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
         .then((mermaid) => {
@@ -43,7 +45,7 @@ export function PostDetailSection({ post, headings }: { post: RenderedPost, head
         querySelector: '.mermaid',
       });
     }
-  }, []); // 空配列: コンポーネントマウント時のみ実行
+  }, [hasMermaid]); // hasMermaidの変更を監視
 
   return (
     <article

@@ -84,10 +84,12 @@ async function getHighlighter() {
 
 /**
  * convertMarkdownToHtml - マークダウンをHTMLに変換
+ * @returns {Promise<{html: string, hasMermaid: boolean}>}
  */
 async function convertMarkdownToHtml(markdown) {
   const marked = new Marked(); // 変換ごとに新しいインスタンスを生成
   const hl = await getHighlighter();
+  let hasMermaid = false; // Mermaidダイアグラムの有無を追跡
 
   const renderer = {
     image({ href, title, text }) {
@@ -109,6 +111,7 @@ async function convertMarkdownToHtml(markdown) {
     if (token.type === 'code') {
       const lang = token.lang || 'text';
       if (lang === 'mermaid') {
+        hasMermaid = true; // Mermaidダイアグラムを検出
         const unescapedCode = token.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
         token.text = `<pre class="mermaid">${unescapedCode}</pre>`;
         token.escaped = true;
@@ -129,7 +132,7 @@ async function convertMarkdownToHtml(markdown) {
   marked.use({ gfm: true, breaks: true, renderer, walkTokens, async: true });
   const rawHtml = await marked.parse(markdown);
 
-  return sanitizeHtml(rawHtml, {
+  const html = sanitizeHtml(rawHtml, {
     allowedTags: ['h1','h2','h3','h4','h5','h6','p','br','ul','ol','li','pre','code','blockquote','a','img','div','span','strong','em','b','i','table','thead','tbody','tr','th','td'],
     allowedAttributes: {
       'a': ['href','target','rel'],
@@ -172,6 +175,8 @@ async function convertMarkdownToHtml(markdown) {
       },
     },
   });
+
+  return { html, hasMermaid };
 }
 
 /**
@@ -236,10 +241,10 @@ async function generateBlogPosts() {
         console.log(`   🔄 Converting: ${slug}`);
 
         const headings = extractHeadings(finalContent);
-        const htmlContent = await convertMarkdownToHtml(finalContent);
+        const { html: htmlContent, hasMermaid } = await convertMarkdownToHtml(finalContent);
 
         const duration = Date.now() - startTime;
-        console.log(`   ✅ Completed: ${slug} (${duration}ms)`);
+        console.log(`   ✅ Completed: ${slug} (${duration}ms)${hasMermaid ? ' [Mermaid]' : ''}`);
 
         return {
           slug,
@@ -253,6 +258,7 @@ async function generateBlogPosts() {
             source: data.source || null,
             description: data.description || undefined,
             testOnly: data.testOnly === true,
+            hasMermaid, // Mermaid検出フラグを追加
           },
           content: htmlContent,
           headings,
@@ -318,6 +324,7 @@ export interface BlogPostFrontmatter {
   source: string | null; // 外部マークダウンファイルへの参照
   description?: string; // オプション: 記事の説明
   testOnly: boolean; // テスト専用記事フラグ（本番環境では除外）
+  hasMermaid: boolean; // Mermaidダイアグラムの有無（条件付き読み込み用）
 }
 
 export interface Heading {
