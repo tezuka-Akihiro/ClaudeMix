@@ -261,17 +261,17 @@
   }
 
   .post-detail-section__content p {
-    color: var(--color-text-disabled);
+    color: var(--color-text-primary);
     padding-bottom: var(--spacing-3);
   }
 
   .post-detail-section__content strong {
-    color: var(--color-text-disabled);
+    color: var(--color-text-primary);
     font-weight: var(--font-weight-bold);
   }
 
   .post-detail-section__content em {
-    color: var(--color-text-disabled);
+    color: var(--color-text-primary);
     font-weight: var(--font-weight-bold);
     font-style: normal;
   }
@@ -687,7 +687,7 @@
   }
 
   .post-description {
-    color: var(--color-text-disabled);
+    color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
     line-height: var(--line-height-relaxed);
     max-height: calc(var(--line-height-relaxed) * var(--text-line-clamp));
