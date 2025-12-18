@@ -91,7 +91,7 @@ graph TD
 ## コンポーネント責務
 
 | コンポーネント | 責務 | 依存先 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **BlogLayout** | 全体レイアウト管理 | BlogHeader, BlogFooter |
 | **BlogHeader** | タイトル表示、メニュー開閉制御 | NavigationMenu |
 | **NavigationMenu** | メニュー項目表示、ページ遷移 | - |

@@ -119,7 +119,7 @@ file-list.md: develop/service-name/implementation-flow/file-list.md
 ## セクション名
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | Component.tsx | app/components/Component.tsx | コンポーネント |
 | Logic.ts | app/lib/logic.ts | ロジック |
 ```
@@ -136,7 +136,7 @@ file-list.md: develop/service-name/implementation-flow/file-list.md
 このツールは、`CLAUDE.md`で定義された **第5のガードレール** として機能します。
 
 | ガードレール項目 | 対応するスクリプト | 違反時の対処 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **V. ファイルリスト整合性の検証** | `node scripts/lint-file-list/check-diff.js <develop-section-path>` | file-list.mdに未定義のファイルを検出。設計書への追加または不要ファイルの削除を実施。 |
 
 ### AI開発フローへの統合

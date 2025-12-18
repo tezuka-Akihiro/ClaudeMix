@@ -294,7 +294,7 @@ date_format:
 # アプリケーション全体で使用される定数値
 business_rules:
   pagination:
-    posts_per_page: 10 # 1ページあたりの表示記事数
+    posts_per_page: 6 # 1ページあたりの表示記事数（パフォーマンス最適化）
     default_page: 1 # デフォルトページ番号
 
   display:

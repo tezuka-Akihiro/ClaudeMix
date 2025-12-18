@@ -11,7 +11,7 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 ### 1.1 セクションレベルE2E
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | posts.spec.ts | tests/e2e/section/blog/posts.spec.ts | postsセクション単独のE2Eテスト |
 
 ---
@@ -19,7 +19,7 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 ## 2. Route層（Phase 2.4）
 
 | ファイル名 | パス | URL | 説明 |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | blog._index.tsx | app/routes/blog._index.tsx | /blog | 記事一覧ページのRoute。loaderでURLクエリパラメータ（page, category, tags）を取得し、記事データをフィルタリング・ページネーションして取得。PostsSectionをレンダリング |
 
 **注**: Flat Routes規則により、`_index.tsx`でインデックスルート（/blog）を表現します。
@@ -31,7 +31,7 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 ### 3.1 Components (posts固有)
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | PostsSection.tsx | app/components/blog/posts/PostsSection.tsx | 記事一覧のメインコンテナ。ページタイトル、**FilterPanel**、PostCardGrid、**Paginationコンポーネント**を配置 |
 | PostsSection.test.tsx | app/components/blog/posts/PostsSection.test.tsx | ユニットテスト |
 | PostCard.tsx | app/components/blog/posts/PostCard.tsx | 個別記事の表示カード。タイトル、投稿日、カテゴリバッジ、タグバッジを表示し、クリックで記事詳細へ遷移 |
@@ -54,7 +54,7 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 ## 4. 純粋ロジック層（lib層、Phase 2.2）
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | formatPublishedDate.ts | app/lib/blog/posts/formatPublishedDate.ts | 投稿日フォーマット処理。ISO形式（"2024-05-01"）を日本語形式（"2024年5月1日"）に変換する純粋関数 |
 | formatPublishedDate.test.ts | app/lib/blog/posts/formatPublishedDate.test.ts | ユニットテスト |
 | calculatePagination.ts | app/lib/blog/posts/calculatePagination.ts | ページネーション計算処理。総記事数と現在ページから、ページネーション情報（currentPage, totalPages, totalPosts, postsPerPage）を計算する純粋関数。ページ番号のバリデーションとページ番号リスト生成を含む |
@@ -71,7 +71,7 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 ## 5. 副作用層（data-io層、Phase 2.1）
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | fetchPosts.server.ts | app/data-io/blog/posts/fetchPosts.server.ts | 記事一覧データの取得。ファイルシステムから記事メタデータを読み込み、**category/tagsパラメータによるフィルタリング対応**、**limit/offsetパラメータによるページネーション対応**。FetchPostsResult（posts: PostSummary[], total: number）を返す |
 | fetchPosts.server.test.ts | app/data-io/blog/posts/fetchPosts.server.test.ts | ユニットテスト（フィルタリング、limit/offset対応の検証を含む） |
 | fetchAvailableFilters.server.ts | app/data-io/blog/posts/fetchAvailableFilters.server.ts | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、タググループ情報（tagGroups）も生成して返す。 |
