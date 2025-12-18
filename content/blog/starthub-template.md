@@ -5,7 +5,7 @@ description: "東京都スタートアップハブ多摩での活動レポート
 author: "ClaudeMix Team"
 publishedAt: "2025-MM-DD"
 category: "起業"
-tags: ["スタハブ多摩"] # app\specs\blog\posts-spec.yaml で許可されているもののみ使用可
+tags: ["スタハブ多摩"]
 ---
 
 ## 🏢 スタートアップハブ多摩について
@@ -99,6 +99,6 @@ tags: ["スタハブ多摩"] # app\specs\blog\posts-spec.yaml で許可されて
 
 ## 🔗 関連情報
 
-- スタートアップハブ多摩公式サイト：https://startup-station.jp/tama/
+- スタートアップハブ多摩公式サイト：<https://startup-station.jp/tama/>
 - 今回参加したイベントの詳細：
 - 関連記事：

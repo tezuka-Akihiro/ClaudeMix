@@ -53,6 +53,7 @@ This is most likely unintended because it can break your application at runtime.
 **問題**: `postcss.config.js` が存在せず、Vite が Tailwind CSS を正しく処理できなかった。
 
 **詳細**:
+
 - Vite は CSS ファイルを処理する際、デフォルトで PostCSS を使用
 - Tailwind CSS のディレクティブ（`@tailwind base;` など）を処理するには、PostCSS + Tailwind プラグインが必要
 - ローカル環境では何らかのキャッシュや設定により動作していた可能性
@@ -62,6 +63,7 @@ This is most likely unintended because it can break your application at runtime.
 **問題**: PostCSS の標準的なプラグインである `autoprefixer` がインストールされていなかった。
 
 **影響**:
+
 - CSS のベンダープレフィックスが自動付与されない
 - 一部のブラウザで CSS が正しく表示されない可能性
 
@@ -70,6 +72,7 @@ This is most likely unintended because it can break your application at runtime.
 **問題**: `app/root.jsx` で CSS をインポートしていたが、Remix v2 + Vite では `entry.client.tsx` でのインポートが推奨。
 
 **理由**:
+
 - `root.jsx` は SSR と CSR 両方で使用される
 - CSS バンドリングのタイミングが複雑になる可能性
 - `entry.client.tsx` はクライアントサイド専用で、CSS バンドリングがシンプル
@@ -79,6 +82,7 @@ This is most likely unintended because it can break your application at runtime.
 **問題**: Remix の Vite プラグインが `UNRESOLVED_IMPORT` 警告をエラーとして扱っていた。
 
 **詳細**:
+
 ```javascript
 // @remix-run/dev/dist/vite/plugin.js:630
 onwarn(warning, warn) {
@@ -93,6 +97,7 @@ onwarn(warning, warn) {
 **問題**: `app/root.jsx` が JSX ファイルだったため、TypeScript の型解決が不完全だった。
 
 **影響**:
+
 - `.tsx` ファイルからのインポートが一部解決されない
 - TypeScript の型チェックが一部スキップされる
 
@@ -118,6 +123,7 @@ export default {
 ### 2. autoprefixer のインストール
 
 **実施内容**:
+
 ```bash
 npm install -D autoprefixer
 ```
@@ -127,6 +133,7 @@ npm install -D autoprefixer
 ### 3. CSS インポート位置の変更
 
 **変更前** (`app/root.jsx`):
+
 ```javascript
 import globalStyles from "~/styles/globals.css";
 
@@ -136,6 +143,7 @@ export function links() {
 ```
 
 **変更後** (`app/entry.client.tsx`):
+
 ```javascript
 import "~/styles/globals.css";
 ```
@@ -170,6 +178,7 @@ export default defineConfig({
 ```
 
 **効果**:
+
 - モジュール解決が明示的になった
 - 不要な警告がエラーに昇格されなくなった
 - PostCSS 設定が明示的に参照されるようになった
@@ -177,6 +186,7 @@ export default defineConfig({
 ### 5. root.jsx を root.tsx に変換
 
 **実施内容**: ファイルをリネーム
+
 ```bash
 mv app/root.jsx app/root.tsx
 ```
@@ -205,12 +215,14 @@ mv app/root.jsx app/root.tsx
 ### 1. Vite + Tailwind CSS プロジェクトの必須設定
 
 **チェックリスト**:
+
 - ✅ `postcss.config.js` の存在確認
 - ✅ `autoprefixer` のインストール
 - ✅ `tailwindcss` の devDependencies 登録
 - ✅ Vite 設定での PostCSS パス指定
 
 **推奨設定**:
+
 ```typescript
 // vite.config.ts
 export default defineConfig({
@@ -223,22 +235,26 @@ export default defineConfig({
 ### 2. Remix v2 + Vite での CSS インポート
 
 **推奨方法**:
+
 1. **グローバル CSS**: `app/entry.client.tsx` で直接インポート
 2. **ルート固有 CSS**: 各ルートで直接インポート（サイドエフェクトとして）
 3. **CSS Modules**: 必要に応じて使用可能
 
 **非推奨**:
+
 - ❌ `links()` 関数を使った CSS インポート（Remix v1 スタイル）
 - ❌ `?url` サフィックスを使った URL インポート（複雑化する）
 
 ### 3. TypeScript プロジェクトでのファイル拡張子統一
 
 **推奨**:
+
 - React コンポーネント: `.tsx`
 - ユーティリティ関数（JSX なし）: `.ts`
 - サーバーサイドコード: `.ts` または `.server.ts`
 
 **理由**:
+
 - 型解決の安定性向上
 - IDE のサポート改善
 - ビルドツールの互換性向上
@@ -246,11 +262,13 @@ export default defineConfig({
 ### 4. Cloudflare Pages 特有の考慮事項
 
 **重要ポイント**:
+
 - ローカルで動作しても、Cloudflare Pages の厳格なビルド環境では失敗する可能性がある
 - Node.js のバージョンを揃える（`package.json` の `engines` フィールド推奨）
 - キャッシュに頼らない設定を心がける
 
 **推奨設定** (`package.json`):
+
 ```json
 {
   "engines": {
@@ -265,6 +283,7 @@ export default defineConfig({
 **状況に応じた対応**:
 
 **開発時**: すべての警告を表示
+
 ```typescript
 build: {
   rollupOptions: {
@@ -276,6 +295,7 @@ build: {
 ```
 
 **本番時**: 誤検知の警告を除外
+
 ```typescript
 build: {
   rollupOptions: {
@@ -297,6 +317,7 @@ build: {
 ### 1. プロジェクトテンプレートの改善
 
 **実施項目**:
+
 - [ ] ボイラープレートに `postcss.config.js` をデフォルトで含める
 - [ ] `autoprefixer` を devDependencies に追加
 - [ ] Vite 設定のベストプラクティスをドキュメント化
@@ -304,6 +325,7 @@ build: {
 ### 2. デプロイ前チェックリストの作成
 
 **必須チェック項目**:
+
 - [ ] `npm run build` がローカルで成功する
 - [ ] PostCSS 設定が存在する
 - [ ] すべての依存関係がインストールされている
@@ -313,6 +335,7 @@ build: {
 ### 3. CI/CD パイプラインの強化
 
 **推奨実装**:
+
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy
@@ -333,6 +356,7 @@ jobs:
 ### 4. ドキュメントの充実
 
 **作成すべきドキュメント**:
+
 - `docs/deployment/cloudflare-pages.md`: Cloudflare Pages 固有の設定ガイド
 - `docs/setup/vite-tailwind-setup.md`: Vite + Tailwind の設定手順
 - `TROUBLESHOOTING.md`: よくあるビルドエラーと解決策
@@ -342,12 +366,14 @@ jobs:
 ## 関連リソース
 
 ### 公式ドキュメント
+
 - [Remix v2 CSS Guide](https://remix.run/docs/en/main/guides/styling)
 - [Vite CSS Processing](https://vitejs.dev/guide/features.html#css)
 - [Tailwind CSS with Vite](https://tailwindcss.com/docs/guides/vite)
 - [Cloudflare Pages Build Configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/)
 
 ### 関連イシュー
+
 - GitHub Issue: "Remix v2 Vite CSS import not working in production"
 - Stack Overflow: "Rollup failed to resolve import in Cloudflare Pages"
 

@@ -54,12 +54,15 @@
 **注意**: このセクションではカスタムCSS実装は最小限です。マークダウン変換後のHTML要素には、Tailwind CSSの`prose`クラスを使用します。
 
 **依存パッケージのインストール**:
+
 1. **@tailwindcss/typography のインストール** (必須):
+
    ```bash
    npm install -D @tailwindcss/typography
    ```
 
 2. **tailwind.config.ts の設定**:
+
    ```typescript
    import typography from '@tailwindcss/typography'
 
@@ -72,11 +75,13 @@
    ```
 
 **実装対象**:
+
 1. **Layer 2**: `app/styles/blog/layer2.css` - 必要に応じて追記（post-detailセクション固有のコンポーネントスタイル）
 2. **Layer 3**: `app/styles/blog/layer3.ts` - 該当なし（可変アイテムの並列配置パターンなし）
 3. **Layer 4**: `app/styles/blog/layer4.ts` - 必要に応じて追記（マークダウン変換HTMLのスタイリング、Mermaid図、コードブロック）
 
 **手順**:
+
 1. **Layer 2 確認**:
    - PostDetailSection用のコンポーネントスタイルが必要か確認
    - 必要に応じて `.post-detail-section` などのクラスを追加
@@ -87,9 +92,11 @@
    - コードブロックのシンタックスハイライト用クラス
 
 3. **検証**:
+
    ```bash
    npm run lint:css-arch
    ```
+
    - 違反が検出された場合は `tests/lint/css-arch-layer-report.md` の内容に従って修正
 
 ### Phase 3: 層別TDD (ユニット/コンポーネント実装) ✅完了
@@ -99,7 +106,8 @@
 **目的**: 記事データを取得する副作用層を実装
 
 - **1. ファイル生成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのpost-detailセクションに、fetchPostBySlugという名前のdata-ioファイルを作成してください。
 
   責務:
@@ -126,7 +134,8 @@
 **目的**: マークダウンをHTMLに変換する純粋ロジックを実装
 
 - **1. ファイル生成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのpost-detailセクションに、markdownConverterという名前のlibファイルを作成してください。
 
   責務:
@@ -161,7 +170,8 @@
 ##### 3.3.1. Route実装
 
 - **1. Routeファイルの作成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのpost-detailセクションに、blog.$slugという名前のrouteファイルを作成してください。
 
   責務:
@@ -193,7 +203,8 @@
 ##### 3.3.2. Component実装
 
 - **1. UIコンポーネントの作成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのpost-detailセクションに、PostDetailSectionという名前のcomponentファイルを作成してください。
 
   責務:
@@ -280,6 +291,7 @@
 ## 6. 進捗ログ
 
 ### Phase 0: 設計フェーズ ✅ 完了（2025-11-14）
+
 - ✅ func-spec.md - 機能設計書完成
 - ✅ uiux-spec.md - UI/UX設計書完成
 - ✅ spec.yaml - 外部変数仕様書完成
@@ -289,7 +301,9 @@
 - ✅ TDD_WORK_FLOW.md - 作業手順書完成
 
 ### Phase 1: E2Eファースト ✅ 完了（2025-11-14）
+
 **実施内容**:
+
 - ✅ E2Eテストファイル確認: `tests/e2e/section/blog/post-detail.spec.ts`（既存）
 - ✅ テストデータ準備: `tests/fixtures/blog/posts/sample-remix-tips-2024.md` 作成
 - ✅ テストケース確認:
@@ -297,10 +311,13 @@
   - 404エラー処理（存在しないslug）
 
 **成果物**:
+
 - `tests/fixtures/blog/posts/sample-remix-tips-2024.md` - サンプル記事データ
 
 ### Phase 2: CSS実装 ✅ 完了（2025-11-14）
+
 **実施内容**:
+
 - ✅ **Layer 2 実装**: `app/styles/blog/layer2.css` に post-detail スタイル追加
   - `.post-detail-section` - セクションコンテナ
   - `.post-detail-section__meta` - メタデータエリア
@@ -313,11 +330,14 @@
 - ✅ **CSS検証**: `npm run lint:css-arch -- --service blog` - エラーなし
 
 **成果物**:
+
 - `app/styles/blog/layer2.css` (更新)
 - `app/styles/blog/layer3.ts` (更新)
 
 ### Phase 3.1: Data-IO層実装 ✅ 完了（2025-11-14）
+
 **実施内容**:
+
 - ✅ ファイル生成: `fetchPostBySlug.server.ts` + テスト
 - ✅ RED → GREEN → REFACTOR サイクル実施
 - ✅ **テスト結果**: 4/4 パス
@@ -329,14 +349,18 @@
   - publishedAt の Date → ISO文字列変換
 
 **成果物**:
+
 - `app/data-io/blog/post-detail/fetchPostBySlug.server.ts`
 - `app/data-io/blog/post-detail/fetchPostBySlug.server.test.ts`
 
 **依存パッケージ**:
+
 - `gray-matter` - frontmatter パース
 
 ### Phase 3.2: Pure Logic層実装 ✅ 完了（2025-11-14）
+
 **実施内容**:
+
 - ✅ ファイル生成: `markdownConverter.ts` + テスト
 - ✅ RED → GREEN → REFACTOR サイクル実施
 - ✅ **テスト結果**: 10/10 パス
@@ -352,16 +376,20 @@
   - 外部リンクに `target="_blank" rel="noopener noreferrer"` 自動付与
 
 **成果物**:
+
 - `app/lib/blog/post-detail/markdownConverter.ts`
 - `app/lib/blog/post-detail/markdownConverter.test.ts`
 
 **依存パッケージ**:
+
 - `marked` - マークダウン変換
 - `sanitize-html` - HTMLサニタイズ
 - `@types/sanitize-html` - TypeScript型定義
 
 ### Phase 3.3: UI層実装 ✅ 完了（2025-11-14）
+
 **実施内容**:
+
 - ✅ **Route実装**: `blog.$slug.tsx`
   - loader: URLパラメータ（slug）から記事取得 → マークダウン変換
   - ErrorBoundary: 404エラー処理
@@ -373,6 +401,7 @@
 - ✅ **テスト実装**: 基本的な単体テスト作成
 
 **成果物**:
+
 - `app/routes/blog.$slug.tsx`
 - `app/routes/blog.$slug.test.tsx`
 - `app/components/blog/post-detail/PostDetailSection.tsx`
@@ -389,6 +418,7 @@
 **実装手順**:
 
 1. **依存パッケージのインストール**:
+
    ```bash
    npm install shiki
    ```
@@ -400,6 +430,7 @@
    - サポート言語の設定
 
 3. **実装コード例**:
+
    ```typescript
    import { getHighlighter } from 'shiki';
 
@@ -426,10 +457,12 @@
    - [ ] 単体テストが全てパスする
 
 **成果物**:
+
 - 更新: `app/lib/blog/post-detail/markdownConverter.ts`
 - 更新: `app/lib/blog/post-detail/markdownConverter.test.ts`
 
 **依存パッケージ**:
+
 - `shiki` - シンタックスハイライトエンジン
 
 ---
@@ -441,6 +474,7 @@
 **実装手順**:
 
 1. **依存パッケージのインストール**:
+
    ```bash
    npm install mermaid
    ```
@@ -451,6 +485,7 @@
    - エラーハンドリング追加
 
 3. **実装コード例**:
+
    ```typescript
    import { useEffect } from 'react';
    import mermaid from 'mermaid';
@@ -489,17 +524,21 @@
    - [ ] E2Eテストが全てパスする
 
 **成果物**:
+
 - 更新: `app/components/blog/post-detail/PostDetailSection.tsx`
 - 更新: `app/components/blog/post-detail/PostDetailSection.test.tsx`
 - 更新: `tests/e2e/section/blog/post-detail.spec.ts`
 
 **依存パッケージ**:
+
 - `mermaid` - Mermaid図表レンダリング
 
 ---
 
 ### Phase 4: 統合検証 ✅ 完了（2025-11-14、E2Eテスト: 2025-11-17）
+
 **完了済み**:
+
 - ✅ **型チェック**: `npm run typecheck` - エラーなし
 - ✅ **ビルド**: `npm run build` - 成功（CSS import順序警告あり、動作に影響なし）
 - ✅ **ユニットテスト**: `npm run test:run` - 478/478 パス
@@ -526,6 +565,7 @@
   - すべてのE2Eテストが成功することを確認済み
 
 **実装完了条件達成状況**:
+
 1. ✅ すべての単体テストがパスする（`npm run test:unit`）
 2. ✅ すべてのE2Eテストがパスする（`npm run test:e2e`）
 3. ✅ Lintエラーがない（`npm run lint`）

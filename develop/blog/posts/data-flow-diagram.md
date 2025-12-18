@@ -1,6 +1,7 @@
 # data-flow-diagram.md - posts Section
 
 ## 目的
+
 postsセクションのコンポーネント間の依存関係とデータフローをMermaid図で可視化し、設計レビューを容易にする。
 
 ---
@@ -82,11 +83,13 @@ graph TD
 ## コンポーネント詳細
 
 ### Route層
+
 | コンポーネント | 責務 | 依存先 |
 |:---|:---|:---|
 | **blog._index.tsx** | 記事一覧ページのRoute。loaderでURLクエリパラメータ（page, category, tags）を取得し、fetchPosts.server、fetchAvailableFilters.serverを呼び出し、フィルタリング・ページネーション処理を実行してUIに渡す | fetchPosts.server, fetchAvailableFilters.server, filterPosts, calculatePagination |
 
 ### UI層（共通コンポーネント）
+
 | コンポーネント | 責務 | 依存先 |
 |:---|:---|:---|
 | **BlogLayout** | ページ全体のレイアウトコンテナ（commonセクション）。Header、Footer、Contentエリアを配置 | BlogHeader, BlogFooter |
@@ -94,6 +97,7 @@ graph TD
 | **BlogFooter** | フッターコンポーネント（commonセクション）。コピーライトを表示 | - |
 
 ### UI層（postsセクション固有）
+
 | コンポーネント | 責務 | 依存先 |
 |:---|:---|:---|
 | **PostsSection** | 記事一覧のメインコンテナ。ページタイトル、FilterPanel、記事カードグリッド、Paginationを配置 | FilterPanel, PostCard, Pagination |
@@ -102,6 +106,7 @@ graph TD
 | **Pagination** | ページネーションUIコンポーネント。「前へ」「次へ」ボタンとページ番号リンクを表示。フィルタパラメータを保持 | - |
 
 ### 純粋ロジック層（lib）
+
 | 関数 | 責務 | 依存先 |
 |:---|:---|:---|
 | **formatPublishedDate** | 投稿日フォーマット処理。ISO形式（"2024-05-01"）を日本語形式（"2024年5月1日"）に変換 | - |
@@ -110,6 +115,7 @@ graph TD
 | **groupTagsByCategory** | タググループ化処理。利用可能なタグリストとspec.yamlのタグ定義から、グループ別タグ情報（{ group: string; tags: string[] }[]）を生成する純粋関数 | - |
 
 ### 副作用層（data-io）
+
 | 関数 | 責務 | 依存先 |
 |:---|:---|:---|
 | **fetchPosts.server** | 記事一覧データの取得。ファイルシステムから記事メタデータを読み込み、category/tagsパラメータによるフィルタリング、limit/offsetパラメータによるページネーション対応。PostSummary[]とtotalを返す | ファイルシステム |
@@ -120,6 +126,7 @@ graph TD
 ## データフローの説明
 
 ### 1. 記事データの取得とフィルタリング（loader）
+
 1. ユーザーが `/blog` または `/blog?page=2&category=Tutorials&tags=Remix,AI` にアクセス
 2. `blog._index.tsx` の `loader` が実行される
 3. `loader` がURLクエリパラメータ（page, category, tags）を取得
@@ -132,6 +139,7 @@ graph TD
 10. `loader` がUIコンポーネントにデータ（posts, filters, pagination）を渡す
 
 ### 2. UIの構築
+
 1. `blog._index.tsx` が `BlogLayout` をレンダリング
 2. `BlogLayout` が `BlogHeader`、`PostsSection`（children）、`BlogFooter` を配置
 3. `PostsSection` が `FilterPanel` をレンダリング（利用可能なカテゴリ・タグを渡す）
@@ -141,6 +149,7 @@ graph TD
 7. `PostsSection` が `Pagination` をレンダリング（ページネーション情報とフィルタパラメータを渡す）
 
 ### 3. ユーザーインタラクション
+
 1. ユーザーが `FilterPanel` でカテゴリ・タグを選択し、「適用」ボタンをクリック
 2. `/blog?category=...&tags=...` へ遷移（フィルタ適用）
 3. ユーザーが `Pagination` のページ番号リンクをクリック
@@ -161,6 +170,7 @@ graph TD
 | **副作用層（data-io）** | 外部システムとの通信（ファイルI/O、API） | あり（ファイルシステムアクセス） |
 
 **重要**:
+
 - UI層は副作用を持たず、loaderから受け取ったデータを表示するのみ
 - lib層は純粋関数のみで構成され、副作用なし
 - data-io層のみが外部リソース（ファイルシステム）にアクセス可能

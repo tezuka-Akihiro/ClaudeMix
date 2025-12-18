@@ -17,6 +17,7 @@
 ⚠️ **最優先実装**: `common`セクションは、必ず他のどのセクションよりも**先に実装**してください。
 
 **理由**:
+
 - ページコンテナが他セクションの配置先となる
 - E2Eテストファイルの土台を提供する
 - セッション機能の初期統合を担当する
@@ -30,10 +31,12 @@
 各セクションを統合するルートファイル（例: `app/routes/service-name.tsx`）のレイアウトを実装します。
 
 **成果物**:
+
 - ルートファイル: `app/routes/{service-name}.tsx`
 - E2Eテストファイル: `tests/e2e/screen/{service-name}.screen.spec.ts`
 
 **実装例**:
+
 ~~~tsx
 // app/routes/service-name.tsx
 import { Header } from "~/components/service-name/common/Header";
@@ -59,11 +62,13 @@ export default function FlowAuditor() {
 **配置場所**: `app/components/{service-name}/common/`
 
 **成果物**:
+
 - `app/components/{service-name}/common/Header.tsx`
 - `app/components/{service-name}/common/Footer.tsx`
 - その他の共通UI要素
 
 **実装例**:
+
 ~~~tsx
 // app/components/service-name/common/Header.tsx
 import { useSession } from "~/components/providers/SessionProvider";
@@ -99,6 +104,7 @@ export function Header() {
 `common`セクションは、ボイラープレート標準のセッション機能を**最初に利用する**重要な責務を持ちます。
 
 **理由**:
+
 - Header/Footerは全ページで共有される → セッション情報の表示に最適
 - ページコンテナがセッション保護の対象となる
 - 他のセクションがセッション統合の実装例を参考にできる
@@ -161,6 +167,7 @@ export default function FlowAuditor() {
 **ファイルパス**: `tests/e2e/screen/{service-name}.screen.spec.ts`
 
 **実装例**:
+
 ~~~typescript
 // tests/e2e/screen/service-name.screen.spec.ts
 import { test, expect } from "@playwright/test";
@@ -200,6 +207,7 @@ commonセクションで実装すべきテストケース:
 他のセクション(`design-flow`, `implementation-flow`等)は、このE2Eテストファイルに自身の機能に関するテストを**追記**していきます。
 
 **例**: `design-flow`セクションが追記する場合
+
 ~~~typescript
 // 同じファイル内に追記
 test.describe("Design Flow Section", () => {
@@ -214,7 +222,7 @@ test.describe("Design Flow Section", () => {
 
 commonセクションの推奨実装順序:
 
-~~~
+~~~text
 Phase 1: E2Eテストファイル作成
   └─ tests/e2e/screen/{service}.screen.spec.ts を新規作成
 
@@ -251,6 +259,5 @@ commonセクション完了前に、以下を確認してください:
 
 - [セッション管理ガイド](./session-management-guide.md) - セッション機能の詳細
 - [commonセクション責務決定ログ](../develop/service-name/common/2025-10-13-common-section-responsibility-for-page-container.md) - 設計判断の背景
-
 
 ---

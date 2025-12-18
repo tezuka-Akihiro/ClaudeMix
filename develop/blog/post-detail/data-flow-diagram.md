@@ -1,6 +1,7 @@
 # data-flow-diagram.md - post-detail Section
 
 ## 目的
+
 post-detailセクションのコンポーネント間の依存関係とデータフローを可視化し、設計レビューを容易にする。
 
 ---
@@ -63,9 +64,11 @@ graph TD
 ## 層別の責務と依存関係
 
 ### 1. Route層（UI層）
+
 **ファイル**: `app/routes/blog.$slug.tsx`
 
 **責務**:
+
 - URLパラメータ（slug）の取得
 - Data-IO層への記事データ取得依頼
 - Pure Logic層でのマークダウン変換の実行
@@ -74,6 +77,7 @@ graph TD
 - エラーハンドリング（404）
 
 **依存先**:
+
 - `app/data-io/blog/post-detail/fetchPostBySlug.server.ts` （副作用層）
 - `app/lib/blog/post-detail/markdownConverter.ts` （純粋ロジック層）
 - `app/lib/blog/post-detail/extractHeadings.ts` （純粋ロジック層）
@@ -85,15 +89,18 @@ graph TD
 ---
 
 ### 2. Component層（UI層）
+
 **ファイル**: `app/components/blog/post-detail/PostDetailSection.tsx`
 
 **責務**:
+
 - 記事のメタデータ（タイトル、投稿日、著者）を表示
 - マークダウン変換後のHTML本文を表示
 - **Mermaidクライアント側レンダリング**: useEffectでMermaid.jsを初期化し、`.mermaid` クラスを持つ要素をSVG図表に変換
 - 適切なスタイリング（proseクラスなど）の適用
 
 **依存先**:
+
 - `mermaid` (npm パッケージ) - Mermaid図表レンダリング
 
 ---
@@ -103,6 +110,7 @@ graph TD
 **ファイル1**: `app/lib/blog/post-detail/markdownConverter.ts`
 
 **責務**:
+
 - マークダウン形式の文字列をHTML形式に変換
 - **シンタックスハイライト**: Shikiでコードブロック（` ```language ... ``` `）を変換し、インラインスタイル付きHTMLを生成
 - **画像処理**: 画像記法（`![alt](path)`）を処理し、遅延読み込み（`loading="lazy"`）とレスポンシブ対応（`max-width: 100%`）を付与
@@ -111,6 +119,7 @@ graph TD
 - **XSSサニタイズ**: 安全なHTMLのみ生成（h1-h6のid属性を許可）
 
 **依存先**:
+
 - `shiki` (npm パッケージ) - シンタックスハイライト
 - `marked` (npm パッケージ) - マークダウンパーサー
 - `sanitize-html` (npm パッケージ) - XSS対策
@@ -121,10 +130,12 @@ graph TD
 **ファイル2**: `app/lib/blog/post-detail/extractHeadings.ts`
 
 **責務**:
+
 - マークダウンから見出しを抽出（階層定義は [`func-spec.md`](func-spec.md) の「目次階層の定義」参照）
 - 見出しレベル、テキスト、スラグ化されたIDを配列で返す
 
 **依存先**:
+
 - `slugify.ts` - 見出しテキストのスラグ化
 
 ---
@@ -132,10 +143,12 @@ graph TD
 **ファイル3**: `app/lib/blog/post-detail/slugify.ts`
 
 **責務**:
+
 - 見出しテキストをURLセーフなスラグに変換
 - 日本語テキスト対応（エンコードまたはそのまま使用）
 
 **依存先**:
+
 - なし（純粋関数）
 
 ---
@@ -145,6 +158,7 @@ graph TD
 **ファイル1**: `app/data-io/blog/post-detail/fetchPostBySlug.server.ts`
 
 **責務**:
+
 - slugを受け取り、ファイルシステムから記事データ（frontmatter含む: title, description, publishedAt, author, tags, category, source）を取得
 - frontmatterパース時に `source` プロパティを取得（gray-matterを使用）
 - sourceが存在する場合、fetchExternalMarkdown.server.tsを呼び出して外部ファイルを読み込む
@@ -153,6 +167,7 @@ graph TD
 - 記事が存在しない場合はnullを返す
 
 **依存先**:
+
 - ファイルシステム（外部リソース）
 - `gray-matter` (npm パッケージ) - frontmatterパーサー
 - `fetchExternalMarkdown.server.ts` (source指定時のみ)
@@ -162,6 +177,7 @@ graph TD
 **ファイル2**: `app/data-io/blog/post-detail/fetchExternalMarkdown.server.ts`
 
 **責務**:
+
 - frontmatterのsourceプロパティで指定されたパスのファイルを読み込む
 - パスバリデーション（ディレクトリトラバーサル対策）を実施
   - 許可する拡張子: `.md` のみ
@@ -170,6 +186,7 @@ graph TD
 - ファイルが存在しない場合、または不正なパスの場合はエラーをthrow
 
 **依存先**:
+
 - ファイルシステム（外部リソース）
 - Node.js標準モジュール（`fs/promises`, `path`）
 
@@ -194,11 +211,13 @@ graph TD
 
 ### 異常系フロー
 
-**パターン1: 記事が存在しない**
+#### パターン1: 記事が存在しない
+
 1. `fetchPostBySlug.server.ts` が null を返す
 2. Route が ErrorBoundary を通じて404エラーを表示
 
-**パターン2: 参照元ファイルが存在しない / 不正なパス**
+#### パターン2: 参照元ファイルが存在しない / 不正なパス
+
 1. `fetchExternalMarkdown.server.ts` がエラーをthrow
 2. Route が ErrorBoundary を通じて500エラーを表示
 

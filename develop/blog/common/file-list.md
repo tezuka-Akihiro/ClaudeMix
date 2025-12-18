@@ -1,6 +1,7 @@
 # file-list.md - common Section
 
 ## 目的
+
 commonセクションの実装に必要な全ファイルを3大層分離アーキテクチャに基づきリストアップ
 
 ---
@@ -8,6 +9,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 ## 1. E2Eテスト（Phase 1）
 
 ### 1.1 セクションレベルE2E
+
 | ファイル名 | パス | 説明 |
 |:---|:---|:---|
 | common.spec.ts | tests/e2e/section/blog/common.spec.ts | commonセクション単独のE2Eテスト（OGP画像生成を含む） |
@@ -17,6 +19,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 ## 2. UI層（Phase 3.3 / 3.4）
 
 ### 2.1 Routes (common固有)
+
 | ファイル名 | パス | URL | 説明 |
 |:---|:---|:---|:---|
 | blog._index.tsx | app/routes/blog._index.tsx | /blog | ブログトップページのRoute（BlogLayoutを使用した最小限の実装） |
@@ -25,6 +28,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 **注**: blog._index.tsxはpostsセクションでも使用されます。commonセクションでは共通レイアウトの統合テスト用として定義しています。
 
 ### 2.2 Components (common固有)
+
 | ファイル名 | パス | 説明 |
 |:---|:---|:---|
 | BlogLayout.tsx | app/components/blog/common/BlogLayout.tsx | ページ全体のレイアウトコンテナ（Header/Footer/Contentエリア） |

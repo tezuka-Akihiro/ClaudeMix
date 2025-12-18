@@ -87,6 +87,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 - **ログアウト**: `/logout` にアクセスすると、セッションが破棄され、`/login` ページにリダイレクトされます。
 
 **ログインフローの例**:
+
 1. 未認証状態で `/dashboard` にアクセス → `/login?redirectTo=%2Fdashboard` にリダイレクト
 2. ログインフォームで `user` / `password` を入力してログイン
 3. `/` (トップページ) にリダイレクト
@@ -137,6 +138,7 @@ export const SERVER_FLAGS = {
 このフラグを実際の夜間アクセス制御として機能させる場合、以下のような実装パターンが考えられます:
 
 1. **`_protected.tsx` での時刻判定**:
+
 ~~~typescript
 import { isNightTime } from "~/lib/constants/server-flags";
 
@@ -156,6 +158,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 ~~~
 
 2. **環境変数からのフラグ読み込み**:
+
 ~~~typescript
 export const SERVER_FLAGS = {
   AUTOSHUTDOWN_NIGHT: process.env.AUTOSHUTDOWN_NIGHT === "true",
@@ -163,6 +166,7 @@ export const SERVER_FLAGS = {
 ~~~
 
 3. **実際の時刻判定ロジック**:
+
 ~~~typescript
 export function isNightTime(): boolean {
   if (!SERVER_FLAGS.AUTOSHUTDOWN_NIGHT) return false;
@@ -236,6 +240,7 @@ export function isNightTime(): boolean {
 **原因**: `.env` ファイルに `SESSION_SECRET` が設定されていない。
 
 **解決方法**:
+
 1. `.env` ファイルを作成または確認
 2. `SESSION_SECRET=your-secret-key-here-min-32-chars` を追加
 3. 開発サーバーを再起動
@@ -245,6 +250,7 @@ export function isNightTime(): boolean {
 **原因**: Cookie設定の問題、またはブラウザのプライベートモード。
 
 **解決方法**:
+
 1. ブラウザのCookie設定を確認
 2. プライベートモードを解除
 3. `session.server.ts` の `maxAge` 設定を確認
@@ -254,5 +260,6 @@ export function isNightTime(): boolean {
 **原因**: Layout Routeのファイル名が正しくない。
 
 **解決方法**:
+
 - ファイル名が `_protected.` で始まることを確認
 - 例: `_protected.dashboard.tsx` → `/dashboard` でアクセス可能

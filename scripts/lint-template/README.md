@@ -1,15 +1,15 @@
 # Content Linter - AIガードレール品質チェックシステム
 
-### 概要
+## 概要
 
 Content Linterは、プロジェクト固有の制約とボイラープレートの範囲を守るためのAIガードレール機能を持つLintシステムです。AIが提案・実装する内容がプロジェクトの適切な範囲内に収まるよう監視します。
 
 ### 基本的な使用方法
 
-~~~bash
+```bash
 # すべてのLintチェックを実行
 node scripts/lint-template/engine.js <ファイルパスまたはディレクトリ>
-~~~
+```
 
 ### チェック対象
 
@@ -55,6 +55,7 @@ node scripts/lint-template/engine.js <ファイルパスまたはディレクト
 #### 🎯 テンプレート固有ルール
 
 **作業手順書**（`workflow-structure`）:
+
 - 7つの必須フロー存在確認
 - TDD順序チェック（テストクラス実装 → 実装）
 - `template-generate.js` コマンド存在確認
@@ -64,7 +65,7 @@ node scripts/lint-template/engine.js <ファイルパスまたはディレクト
 
 #### `lint-config.json` - メインのLint設定
 
-~~~json
+```json
 {
   "version": "1.0.0",
   "commonRules": {
@@ -83,7 +84,7 @@ node scripts/lint-template/engine.js <ファイルパスまたはディレクト
     }
   }
 }
-~~~
+```
 
 #### `template-config.json` - テンプレート設定
 
@@ -93,7 +94,7 @@ node scripts/lint-template/engine.js <ファイルパスまたはディレクト
 
 #### コンソール出力
 
-~~~
+```text
 📄 develop/sample手順書.md
   ❌ 必須フロー「機能設計書作成」が見つかりません [workflow-structure]
   ⚠️ 禁止ワード「フェーズ2」が使用されています [banned-words:プロジェクト範囲外]
@@ -104,18 +105,18 @@ node scripts/lint-template/engine.js <ファイルパスまたはディレクト
   Files: 10
   Errors: 2
   Warnings: 3
-~~~
+```
 
 ### ディレクトリ構造
 
-~~~
+```text
 scripts/
 └── lint/
     ├── engine.js       # メインのLintエンジン
     ├── config.json          # Lint設定
     ├── core.js              # ルール実行エンジン
     └── rules/               # ルールライブラリ (skin.js, structure.js, etc.)
-~~~
+```
 
 ## 🛠️ カスタマイズ・拡張方法
 
@@ -123,7 +124,7 @@ scripts/
 
 1. `scripts/lint-rules/common/` に新しいルールファイルを作成:
 
-~~~javascript
+```javascript
 // scripts/lint-rules/common/my-rule.js
 const myRule = {
   name: 'my-rule',
@@ -138,22 +139,22 @@ const myRule = {
 };
 
 module.exports = myRule;
-~~~
+```
 
 2. `scripts/lint-rules/common/index.js` に追加:
 
-~~~javascript
+```javascript
 const myRule = require('./my-rule');
 
 const commonRules = {
   'my-rule': myRule,
   // ... 他のルール
 };
-~~~
+```
 
 3. `lint-config.json` で有効化:
 
-~~~json
+```json
 {
   "commonRules": {
     "my-rule": {
@@ -162,7 +163,7 @@ const commonRules = {
     }
   }
 }
-~~~
+```
 
 ### 新しいテンプレート固有ルールの追加
 
@@ -174,7 +175,7 @@ const commonRules = {
 
 #### 禁止ワードのカスタマイズ（AIガードレール）
 
-~~~json
+```json
 {
   "commonRules": {
     "banned-words": {
@@ -196,11 +197,11 @@ const commonRules = {
     }
   }
 }
-~~~
+```
 
 #### 行数制限のカスタマイズ
 
-~~~json
+```json
 {
   "commonRules": {
     "line-limit": {
@@ -214,11 +215,11 @@ const commonRules = {
     }
   }
 }
-~~~
+```
 
 #### デザイントークンのカスタマイズ
 
-~~~json
+```json
 {
   "commonRules": {
     "design-tokens": {
@@ -231,7 +232,7 @@ const commonRules = {
     }
   }
 }
-~~~
+```
 
 ## 🚀 パフォーマンス
 
@@ -242,7 +243,7 @@ const commonRules = {
 
 ## 📊 レポート機能
 
-### コンソール出力
+### レポート出力
 
 - **ファイル別グループ化**: 問題をファイルごとに整理
 - **重要度別色分け**: エラー（赤）、警告（黄）、情報（青）
@@ -255,19 +256,22 @@ const commonRules = {
 ### よくある問題
 
 1. **「設定ファイルが見つかりません」エラー**
-   ~~~bash
+
+   ```bash
    # lint-config.json が存在するか確認
    ls scripts/lint-config.json
-   ~~~
+   ```
 
 2. **「ルールの読み込みに失敗」警告**
-   ~~~bash
+
+   ```bash
    # DEBUG モードで詳細を確認
    DEBUG=1 node scripts/lint-template/engine.js
-   ~~~
+   ```
 
 3. **パフォーマンスが遅い**
-   ~~~json
+
+   ```json
    // lint-config.json で並列数を調整
    {
      "lintEngine": {
@@ -275,7 +279,7 @@ const commonRules = {
        "earlyExit": true
      }
    }
-   ~~~
+   ```
 
 ### ログレベル
 

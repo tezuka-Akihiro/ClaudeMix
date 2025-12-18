@@ -3,17 +3,21 @@
 ## 📋 機能概要
 
 ### 機能名
-**Common Components (共通コンポーネント)**
+
+Common Components (共通コンポーネント)
 
 ### 所属サービス
+
 **blog** の **common** セクションに配置
 
 ### 機能の目的・価値
+
 - **解決する課題**: ブログサービス全体で統一されたレイアウトとナビゲーションを提供する
 - **提供する価値**: サービス全体のUI一貫性を保ち、ユーザーが迷わず記事を閲覧できる導線を提供する
 - **ビジネス効果**: ブランディングの統一、ユーザー体験の向上
 
 ### 実装優先度
+
 **HIGH** - 他のセクション（posts、post-detail）が依存するため、最優先で実装する
 
 ## 🎯 機能要件
@@ -21,6 +25,7 @@
 ### 基本機能
 
 #### Header Components
+
 1. **BlogHeader**: ブログ全体のヘッダー
    - 左側: ブログタイトル表示（ホームリンク機能付き）
    - 右側: menuボタン
@@ -34,17 +39,20 @@
    - 配置: `app/components/blog/common/NavigationMenu.tsx`
 
 #### Footer Components
+
 1. **BlogFooter**: ブログ全体のフッター
    - コピーライト表示
    - 配置: `app/components/blog/common/BlogFooter.tsx`
 
 #### Layout Components
+
 1. **BlogLayout**: ページ全体のレイアウトコンテナ
    - ヘッダーとフッターを含む全体構造
    - 子コンポーネント（記事一覧、記事詳細）を表示するエリア
    - 配置: `app/components/blog/common/BlogLayout.tsx`
 
 #### OGP Image Generation
+
 1. **OGP画像生成**: 記事ごとのSNSシェア用画像を動的に生成
    - **エンドポイント**: `/ogp/$slug.png`
    - **機能概要**: 記事のスラッグに基づいてOGP画像を動的に生成し、PNG形式で返す
@@ -56,6 +64,7 @@
    - **配置**: `app/routes/ogp.$slug[.png].tsx`
 
 ### 開発戦略: 段階的強化 (Progressive Enhancement)
+
 1. **ステップ1: モック実装 (UIの確立)**
    - UI層はまず、固定値や単純なPropsを用いて「ガワ」を実装します。この段階では、`loader`や`action`からの実データ連携は行いません。
 2. **ステップ2: 機能強化 (ロジックの接続)**
@@ -64,6 +73,7 @@
 ## 🔄 データフロー・処理（3大層分離アーキテクチャ）
 
 ### 必要なデータ要件
+
 - **ブログタイトル**: ヘッダーに表示するための文字列。
 - **メニュー項目**: ナビゲーションメニューに表示するためのリスト。各項目は「表示ラベル」と「リンク先のパス」を持つ。
 - **コピーライト情報**: フッターに表示するための文字列。
@@ -71,17 +81,19 @@
 > **注意**: これらのデータの具体的な構造（キー名、型など）は `spec.yaml` で定義します。このドキュメントでは、機能を実現するために「どのようなデータが必要か」という要件のみを記述します。
 
 ### 出力データ
-~~~typescript
+
+```typescript
 // loaderがUIに返すデータ（Routeレベル）
 interface CommonData {
   blogTitle: string // ブログタイトル: "ClaudeMix Blog"
   menuItems: MenuItem[] // メニュー項目リスト
   copyright: string // コピーライト: "© 2025 ClaudeMix"
 }
-~~~
+```
 
 ### app/components要件（app/routes, app/components）
-~~~
+
+```text
 1. [UI層の責務]
    Header Components:
    - BlogHeader:
@@ -105,20 +117,22 @@ interface CommonData {
    - BlogLayout: ヘッダー、フッター、メインコンテンツエリアを配置
      - 構造: [BlogHeader] [children] [BlogFooter]
      - レスポンシブ対応
-~~~
+```
 
 ### 🧠 純粋ロジック要件（app/lib/blog/common）
-~~~
+
+```text
 2. [純粋ロジック層の責務]
    このセクションには複雑なビジネスロジックは不要です。
    必要に応じて、以下のような軽微な処理のみ実装します：
 
    - copyrightFormatter.ts: コピーライト文字列のフォーマット
      - 年の自動更新など
-~~~
+```
 
 ### 🔌 副作用要件（app/data-io/blog/common）
-~~~
+
+```text
 3. [副作用層の責務]
    このセクションには外部データ取得は不要です。
    必要に応じて、以下のような処理のみ実装します：
@@ -129,10 +143,11 @@ interface CommonData {
    - loadPostMetadata.server.ts: 記事メタデータの読み込み（OGP画像生成用）
      - MDXファイルのFrontmatter（タイトル、説明、著者など）を読み込む
      - 記事が存在しない場合はnullを返す
-~~~
+```
 
 ### 🖼️ OGP画像生成のデータフロー
-~~~
+
+```text
 OGP画像生成 (Route: /ogp/$slug.png):
 1. [Route層の責務]
    - URLパラメータから記事のslugを取得
@@ -147,4 +162,4 @@ OGP画像生成 (Route: /ogp/$slug.png):
 3. [Logic層の責務]
    - generateOgpImage.ts: 記事メタデータからOGP画像（PNG）を生成
    - Satoriライブラリを使用してHTML/CSSから画像を生成
-~~~
+```

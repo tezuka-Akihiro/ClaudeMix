@@ -1,6 +1,7 @@
 # file-list.md - posts Section
 
 ## 目的
+
 postsセクションの実装に必要な全ファイルを3大層分離アーキテクチャに基づきリストアップ
 
 ---
@@ -8,6 +9,7 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 ## 1. E2Eテスト（Phase 1）
 
 ### 1.1 セクションレベルE2E
+
 | ファイル名 | パス | 説明 |
 |:---|:---|:---|
 | posts.spec.ts | tests/e2e/section/blog/posts.spec.ts | postsセクション単独のE2Eテスト |
@@ -27,6 +29,7 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 ## 3. UI層（Phase 2.3）
 
 ### 3.1 Components (posts固有)
+
 | ファイル名 | パス | 説明 |
 |:---|:---|:---|
 | PostsSection.tsx | app/components/blog/posts/PostsSection.tsx | 記事一覧のメインコンテナ。ページタイトル、**FilterPanel**、PostCardGrid、**Paginationコンポーネント**を配置 |

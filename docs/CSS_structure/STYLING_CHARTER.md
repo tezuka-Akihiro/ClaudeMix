@@ -8,7 +8,7 @@
 
 ### 核心的な課題
 
-**「修正時に最も認知負荷が高い、親子関係のレイアウト問題」**
+修正時に最も認知負荷が高い、親子関係のレイアウト問題
 
 ここでは「複雑なレイアウトロジック」を「`flex`, `grid`, `gap`といった親子関係を伴うレイアウトロジック」と定義します。「複雑なレイアウトロジック」はこれら以外は含みません。
 複雑なレイアウトロジックが、実装層（TSXファイル）に散在していると、修正時に「どの親要素が原因か」を特定するのが極めて困難になります。この「修正の沼」が、開発速度を低下させる最大の要因です。
@@ -26,14 +26,13 @@
 
 ---
 
-
 ---
 
 ## 🏗️ 2. 5階層アーキテクチャ
 
 このアーキテクチャは、**「フロー制御」**を厳格に分離し、以下のファイル構造で各レイヤーの責務を定義します。
 
-~~~
+~~~text
 tailwind.config.ts
 app/
 └── styles/
@@ -51,11 +50,13 @@ app/
 **担当領域**: 見た目と大きさ | **定義場所**: `app/styles/globals.css`
 
 **アプリケーションでの役割**:
+
 - **アプリケーション全体（すべてのサービス）で共通使用される意味的な役割を持つトークンを定義**
 - service-name、user-managementなど、どのサービスでも「どのような役割で使うか」を示すトークンを提供
 - 各サービスは、この意味的なトークンを参照することで、アプリケーション全体の一貫性を保つ
 
 **責務**:
+
 - **サービスを横断して共通使用される、意味的な役割を持つトークンを定義**
 - 「背景色」「テキスト色」「アクセント色」など、**どう使われるか**を示す命名
 - アプリケーションの視覚的な一貫性とテーマを管理
@@ -64,12 +65,14 @@ app/
 **命名規則**: `--{category}-{role}-{variant?}`
 
 **命名パターンの構成**:
+
 - `{category}`: カテゴリ（例: `color`, `spacing`, `font`, `layout`）
 - `{role}`: **意味的な役割**（例: `background`, `text`, `interactive`, `status`）
 - `{variant}`: バリアント（例: `primary`, `secondary`, `success`, `error`）※省略可
 
 ✅ **定義する値の例（意味的な役割を持つトークン）**:
-```css
+
+~~~css
 /* アプリ全体の主要な背景色 */
 --color-background-primary: #111111;
 
@@ -116,10 +119,11 @@ app/
 
 /* アプリ全体のボタン */
 --layout-button-width-default: 100px;
-```
+~~~
 
 ❌ **定義しない値の例**:
-```css
+
+~~~css
 /* サービス固有の意味的トークン → Layer 2で定義 */
 --color-flow-checkpoint-active: #xxx;
 --color-user-card-background: #xxx;
@@ -130,9 +134,10 @@ app/
 
 /* 抽象的なスケールトークン（意味的な役割を持たせること） */
 --layout-width-lg: 800px;  /* 非推奨: --layout-page-container-width, --layout-section-width など意味的なトークンを使用 */
-```
+~~~
 
 **Layer 1とLayer 2の関係**:
+
 - **Layer 1（globals.css）**: サービス全体の意味的トークン
   - 例: `--color-background-primary`, `--color-text-primary`, `--layout-section-width`, `--layout-header-height`
 - **Layer 2（{service-name}/layer2.css）**: サービス固有のコンポーネントスタイル
@@ -140,6 +145,7 @@ app/
   - 例: `.checkpoint { background: var(--color-background-primary); color: var(--color-text-primary); }`
 
 **制約**:
+
 - ❌ **変数参照の禁止**: Layer 1では他のCSS変数を参照してはならない（`color: var(--other-token)`は不可）
 - ❌ **直接参照禁止**: 実装（TSX）やLayer 3/4から直接参照してはならない
 - ✅ **具体値のみ許可**: HEXコード（`#111111`）、px値（`16px`）、rgb値（`rgb(0 0 0 / 0.5)`）など
@@ -152,10 +158,12 @@ app/
 **担当領域**: 見た目と大きさ | **定義場所**: `app/styles/{service-name}/layer2.css`
 
 **責務**:
+
 - **コンポーネント単位でCSSセレクタを定義**し、Layer 1のApplication Tokenを組み合わせて「見た目」と「サイズ」を定義する。
 - このレイヤーでコンポーネントのスタイルを**99%完成**させる。Layer 3では複雑なレイアウトロジック（flex, grid, gap）のみを追加する。
 
 **命名規則（CSSセレクタ）**:
+
 - **フォーマット**: `.{component}-{variant?}` または `.{category}-{component}-{variant?}`
 - **例**: `.checkpoint`, `.button-primary`, `.page-header`, `.select-input`
 - **構成要素**:
@@ -179,10 +187,12 @@ app/
   - 用途: 特定のドメインロジックに紐づくコンポーネント
 
 **禁止される命名パターン**:
+
 - ❌ **サービス名プレフィックス**: `.service-name-*`, `.user-management-*` などのサービス名をプレフィックスとして使用することは禁止
 - ❌ **過度に汎用的な名前**: `.container`, `.wrapper`, `.box` などの単独使用は避け、より具体的な名前を使用すること
 
 **定義内容**:
+
 - 色（color, background-color, border-colorなど）
 - サイズ（width, height, paddingなど）
 - **コンポーネント自体の外側余白**（`margin`）。**注意**: Flex/Gridアイテム間の余白はLayer 3の`gap`で定義します。
@@ -193,6 +203,7 @@ app/
 - 状態別スタイル（`:hover`, `.completed`, `.pending`など）
 
 **制約**:
+
 - ❌ **Layer 5からの直接参照禁止**: 実装（TSX）から`.checkpoint`を直接使用してはならない。Layer 3経由で使用すること。
 - ❌ **CSS変数（トークン）の定義禁止**: Layer 2では新しいCSS変数（例: `--blog-font-2xl`, `--custom-size`）を定義してはなりません。すべてのCSS変数はLayer 1で定義されます。
 - ❌ **マジックナンバーの禁止**: 以下のような具体的な値を直接定義してはなりません。**必ずLayer 1のApplication Tokensを `var()` で参照してください。**
@@ -218,21 +229,25 @@ app/
 **担当領域**: フレックスとグリッド構造 | **定義場所**: `app/styles/{service-name}/layer3.ts`
 
 **責務**:
+
 - Layer 2で定義されたコンポーネントセレクタに、**フレックスとグリッドに関するレイアウトロジック**のみを追加する。
 - `addComponents` を使ってTailwind pluginとして登録し、Layer 2のCSSと統合する。
 - **gap統一の原則**: Flexbox/Gridの**アイテム間の余白**は`margin`を使用せず、必ず`gap`で統一する。
 
 **命名規則**:
+
 - **Layer 2と同じセレクタ名を使用**: `.{component}-{variant?}`
 - **例**: `.checkpoint`, `.button-primary`（layer2.cssと同じ）
 
 **定義内容（フレックス・グリッドレイアウトのみ）**:
+
 - フロー制御（display: flex, display: grid）
 - 配置（align-items, justify-content, flex-direction, grid-template-columns など）
 - 間隔（**gap, row-gap, column-gap のみ**）
 - フレックス・グリッド関連プロパティ（flex-grow, flex-shrink, grid-area など）
 
 **禁止事項**:
+
 - ❌ 色の定義（color, background-color, border-colorなど）← Layer 2の責務
 - ❌ サイズの定義（width, height, padding など）← Layer 2の責務
 - ❌ **アイテム間余白のための`margin`使用**（`margin-top` など）← `gap`で統一すること
@@ -240,6 +255,7 @@ app/
 - ❌ 見た目（box-shadow, border-radius, transitionなど）← Layer 2の責務
 
 **制約**:
+
 - ❌ **Layer 1直接参照原則禁止**: 基本的に`var(--color-*)`、`var(--spacing-*)`などLayer 1トークンの直接参照は禁止。
 - ✅ **gap例外**: **gap/row-gap/column-gapのみ**、Layer 1の`var(--spacing-*)`トークンを直接参照可能。これにより、Layer 2で中間変数を定義する必要がなくなる。
 - ❌ **`!important` の使用禁止**: このレイヤーで `!important` を使用することは禁止します。
@@ -251,14 +267,17 @@ app/
 **担当領域**: 構造（例外） | **定義場所**: `app/styles/{service-name}/layer4.ts`
 
 **責務**:
+
 - Layer 3のフロー制御ではカバーできない、より例外的な構造を定義する。
 
 **対象パターン（例外のみ）**:
+
 1. **疑似要素** (`::before`, `::after`)
 3. **子孫セレクタ** (`.parent .child`)
 4. **カスタムアニメーション** (`@keyframes` の定義と `animation` プロパティ)
 
 **制約**:
+
 - ✅ **Skin Tokens参照**: `--app-*`, `--{service}-*`を`var()`で参照可能
 - ❌ **`!important` の使用禁止**: このレイヤーで `!important` を使用することは禁止します。
 
@@ -269,19 +288,24 @@ app/
 **定義場所**: `app/**/*.tsx`
 
 **責務**:
+
 - Layer 3, 4で定義・生成されたTailwindクラスのみを使用してUIを実装する。
 
 **制約**:
+
 - ❌ **フロー制御クラスの直接使用禁止**: `flex`, `grid`, `gap` は直接使用せず、Layer 3で定義された構造クラス（`.card-list-container`など）を使用する。
 - ❌ **マジックナンバーの使用禁止**: `p-4`, `w-1/2` のようなマジックナンバー的なクラスは使用せず、Layer 2のトークンから生成されたクラス（`p-app-md`など）を使用する。
 
 ---
 
-# 絶対にしてはいけない勘違い
+## 絶対にしてはいけない勘違い
+
 ## 不要な層と禁止パターン
+
 以下の層および命名パターンはこれまで何回も生み出され、提案され、その度に廃止してきた根強い不要な層および有害なパターンである。
 
 ### 不要な層
+
 ・サービストークン層
 ・サポートトークン層
 ・tailwind theme層
@@ -290,10 +314,13 @@ app/
 絶対に使用、提案はしないこと。
 
 ### 禁止される命名パターン
+
 ・**サービス名プレフィックス** (例: `.service-name-*`, `.user-management-*`)
-  - 理由: サービス名をクラス名に含めると、命名が冗長になり認知負荷が増加する。
-  - コンポーネントの役割を示すカテゴリプレフィックス（`.page-*`, `.select-*`）を使用すること。
+
+- 理由: サービス名をクラス名に含めると、命名が冗長になり認知負荷が増加する。
+- コンポーネントの役割を示すカテゴリプレフィックス（`.page-*`, `.select-*`）を使用すること。
 
 ## スキンと構造の分離
+
 この分離は本ボイラープレートに存在しない。よくレイヤー2がスキンでレイヤー3が構造と勘違いが起きるが、これらはコンポーネント単位で複雑なレイアウトを分離したに過ぎない。
 この勘違いが起きると、cssアーキテクチャが崩壊し、修正ができなくなり、多大な損害が発生する。絶対に勘違いしないこと。スキンという言葉も構造という言葉も使用しないことを徹底する。

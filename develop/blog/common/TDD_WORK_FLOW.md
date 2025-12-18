@@ -9,12 +9,12 @@
 
 - **Outside-In TDD (外側から内側へのTDD)**: ユーザーの振る舞いを定義するE2Eテスト（外側）から開発を始め、それをパスさせるために必要な各層の機能（内側）をユニットTDDで実装します。これは **受け入れテスト駆動開発 (ATDD)** の一種です。
 - **段階的E2Eテスト戦略**:
-    1.  **E2Eファースト**: 最初に主要な成功シナリオ（Happy Path）のE2Eテストを1つだけ作成し、開発の最終ゴールを定義します。
-    2.  **Double-Loop TDD**: E2Eテスト（Outer Loop）をパスさせるために、各層（UI, Logic, Data-IO）でユニットテスト（Inner Loop）のTDDサイクルを回して実装を進めます。
-    3.  **E2E拡張**: 最初のE2Eテストが成功した後、エラーケースや境界値などの詳細なE2Eテストを追加し、品質を盤石にします。
+    1. **E2Eファースト**: 最初に主要な成功シナリオ（Happy Path）のE2Eテストを1つだけ作成し、開発の最終ゴールを定義します。
+    2. **Double-Loop TDD**: E2Eテスト（Outer Loop）をパスさせるために、各層（UI, Logic, Data-IO）でユニットテスト（Inner Loop）のTDDサイクルを回して実装を進めます。
+    3. **E2E拡張**: 最初のE2Eテストが成功した後、エラーケースや境界値などの詳細なE2Eテストを追加し、品質を盤石にします。
 - **モック不要方針**:
-    - このセクションは実装が単純（loadBlogConfig.server: 5分、copyrightFormatter: 2分程度）のため、モック段階をスキップします。
-    - 詳細は `MOCK_POLICY.md` を参照してください。
+  - このセクションは実装が単純（loadBlogConfig.server: 5分、copyrightFormatter: 2分程度）のため、モック段階をスキップします。
+  - 詳細は `MOCK_POLICY.md` を参照してください。
 
 ---
 
@@ -32,23 +32,26 @@
     - NavigationMenu（メニュー開閉、項目クリック）が動作すること
 
 - **2. テストの失敗を確認**: `npm run test:e2e` を実行し、実装がまだ存在しないため、このテストが失敗すること（RED）を確認します。
-   - この失敗したテストが、Phase 2で実装すべき機能の明確なゴールとなります。
+  - この失敗したテストが、Phase 2で実装すべき機能の明確なゴールとなります。
 
 ### Phase 2: CSS実装（Layer 2/3/4） 🔴未着手
 
 **目的**: `uiux-spec.md` で設計した内容を、実際のCSSファイルとして実装します。
 
 **実装対象**:
+
 1. **Layer 2**: `app/styles/blog/layer2.css` - コンポーネントの見た目（色、フォント、影など）
 2. **Layer 3**: `app/styles/blog/layer3.ts` - レイアウト構造（flexbox、grid）
 3. **Layer 4**: `app/styles/blog/layer4.ts` - 例外的な構造（必要な場合のみ）
 
 **段階的更新の運用**:
+
 - **初回セクション（commonセクション）**: 新規サービス実装時は、**必ずcommonセクションを最初に実施**します
   - `uiux-spec.md` で画面共通コンポーネント（ページコンテナ、ヘッダー、フッター等）のCSS設計を行います
   - このフェーズでCSS実装ファイル（layer2.css等）を新規作成し、サービス全体のCSS基盤を確立します
 
 **手順**:
+
 1. **Layer 2 実装**:
    - `uiux-spec.md` で定義したコンポーネントを元に `layer2.css` を実装
    - 実装するコンポーネント:
@@ -69,9 +72,11 @@
    - このセクションでは例外的な構造は不要
 
 4. **検証**:
+
    ```bash
    npm run lint:css-arch
    ```
+
    - 違反が検出された場合は `tests/lint/css-arch-layer-report.md` の内容に従って修正
 
 5. **確認事項**:
@@ -90,7 +95,8 @@
 ##### 3.1.1. loadBlogConfig.server.ts
 
 - **1. ファイル生成**: `@GeneratorOperator` に依頼して、副作用層のファイルを生成します。
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、loadBlogConfigという名前のdata-ioファイルを作成してください。
   - ブログ設定情報（タイトル、メニュー項目、コピーライト）を返す
   - 固定の設定値を返す（外部ファイル読み込みは不要）
@@ -107,6 +113,7 @@
   - コピーライトが正しく返されること
 
 - **3. 実装 (GREEN)**: `loadBlogConfig.server.ts` を実装し、テストをパスさせます。
+
   ```typescript
   export async function loadBlogConfig() {
     return {
@@ -127,7 +134,8 @@
 ##### 3.2.1. copyrightFormatter.ts
 
 - **1. ファイル生成**: `@GeneratorOperator` に依頼して、純粋ロジック層のファイルを生成します。
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、copyrightFormatterという名前のlibファイルを作成してください。
   - コピーライト文字列をフォーマットする純粋関数
   - 年の自動更新機能
@@ -144,6 +152,7 @@
   - フォーマットが正しいこと（例: "© 2025 ClaudeMix"）
 
 - **3. 実装 (GREEN)**: `copyrightFormatter.ts` を実装し、テストをパスさせます。
+
   ```typescript
   export function formatCopyright(projectName: string = "ClaudeMix"): string {
     const currentYear = new Date().getFullYear();
@@ -158,7 +167,8 @@
 ##### 3.3.1. BlogLayout
 
 - **1. UIコンポーネントの作成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、BlogLayoutという名前のUIコンポーネントを作成してください。
   - ページ全体のレイアウトコンテナ（Header/Footer/Contentエリア）
   - childrenプロパティでメインコンテンツを受け取る
@@ -185,7 +195,8 @@
 ##### 3.3.2. BlogHeader
 
 - **1. UIコンポーネントの作成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、BlogHeaderという名前のUIコンポーネントを作成してください。
   - ブログヘッダー（タイトル、menuボタン）
   - メニュー開閉状態の管理
@@ -210,7 +221,8 @@
 ##### 3.3.3. NavigationMenu
 
 - **1. UIコンポーネントの作成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、NavigationMenuという名前のUIコンポーネントを作成してください。
   - ナビゲーションメニュー（メニュー項目表示）
   - メニュー項目クリックでページ遷移
@@ -237,7 +249,8 @@
 ##### 3.3.4. BlogFooter
 
 - **1. UIコンポーネントの作成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、BlogFooterという名前のUIコンポーネントを作成してください。
   - ブログフッター（コピーライト表記）
 
@@ -258,7 +271,8 @@
 ##### 3.3.5. blog/index Route
 
 - **1. Routeファイルの作成**:
-  ```
+
+  ```text
   @GeneratorOperator "blogサービスのcommonセクションに、blog/indexという名前のrouteファイルを作成してください。
   - ブログトップページのRoute
   - BlogLayoutを使用した最小限の実装
@@ -277,6 +291,7 @@
   - BlogHeader、BlogFooter、NavigationMenuが含まれること
 
 - **3. 実装 (GREEN)**: Routeを実装し、テストをパスさせます。
+
   ```typescript
   // app/routes/blog/index.tsx
   import type { LoaderFunctionArgs } from "@remix-run/node";
@@ -309,6 +324,7 @@
 #### E2Eテスト実施状況
 
 **ステータス**: ✅ 実施済み
+
 - Phase 1で作成したE2Eテストファイル: `tests/e2e/screen/blog.screen.spec.ts`
 - `npm run test:e2e` を別環境で実行し、すべてのE2Eテストが成功することを確認済み
 
@@ -354,11 +370,11 @@
 
 開発中に予期せぬ不具合が発見された場合、それはテストの抜け漏れを意味します。以下の手順でテストスイートを強化し、同じ不具合の再発を恒久的に防ぎます。
 
-1.  **再現テストの作成 (E2E or ユニット)**: まず、発見された不具合を再現する**失敗するテスト**を記述します。
-2.  **原因特定とユニットテストの強化**: デバッグを行い、不具合の根本原因となっている純粋ロジック（lib）やコンポーネントを特定し、その原因を最小単位で再現する**失敗するユニットテスト**を追加します。
-3.  **実装の修正 (GREEN)**: 追加したユニットテストがパスするように、原因となったコードを修正します。
-4.  **再現テストの成功確認 (GREEN)**: 最初に作成した再現テスト（E2E/統合テスト）を実行し、こちらもパスすることを確認します。
-5.  **知見の共有**: この経験を「学んだこと・気づき」セクションに記録し、チームの知識として蓄積します。
+1. **再現テストの作成 (E2E or ユニット)**: まず、発見された不具合を再現する**失敗するテスト**を記述します。
+2. **原因特定とユニットテストの強化**: デバッグを行い、不具合の根本原因となっている純粋ロジック（lib）やコンポーネントを特定し、その原因を最小単位で再現する**失敗するユニットテスト**を追加します。
+3. **実装の修正 (GREEN)**: 追加したユニットテストがパスするように、原因となったコードを修正します。
+4. **再現テストの成功確認 (GREEN)**: 最初に作成した再現テスト（E2E/統合テスト）を実行し、こちらもパスすることを確認します。
+5. **知見の共有**: この経験を「学んだこと・気づき」セクションに記録し、チームの知識として蓄積します。
 
 ---
 

@@ -8,30 +8,71 @@ category: "Claude Best Practices"
 tags: ["Workers", "troubleshooting", "Vite"]
 ---
 
+## はじめに
+
+### Cloudflare Workersへのデプロイでこんなことありませんか？
+
+ローカル環境では完璧に動くブログ。特に、Shikiで実装したコードブロックのシンタックスハイライトも綺麗に表示されて満足していた。
+しかし、いざCloudflare Pagesにデプロイしてみると、記事ページだけが「Application Error」で真っ白に。ログには `WebAssembly.instantiate(): Wasm code generation disallowed` という謎のエラーが…。
+とりあえずシンタックスハイライトを無効にしたら動いたけど、技術ブログとして致命的だし、根本的な解決にはなっていない。
+
+### この記事をお勧めしない人
+
+- ローカル環境と本番環境の違いなんて、その場でググって解決すればいいと思っている人。
+- シンタックスハイライトのためだけにビルドプロセスを複雑にするなんて、馬鹿げていると考える人。
+- サーバーレス環境の制約は、単なる技術選定のミスであり、アーキテクチャで乗り越える課題ではないと考える人。
+
+もし一つでも当てはまらないなら、読み進める価値があるかもしれません。
+
+### このままでは危険です
+
+- その場しのぎの修正を続けることで、あなたのコードベースには「環境依存の地雷」が静かに埋め込まれていきます。
+- やがて、新しいライブラリを導入した途端、別のWASM関連エラーが再発し、デプロイが失敗するでしょう。
+- ついに、あなたは本番環境の制約に怯え、新しい技術の導入をためらうようになり、あなたのプロダクトは時代遅れの技術スタックに取り残されてしまいます。
+
+### こんな未来が手に入ります
+
+- この記事を読めば、Cloudflare Workersの制約を逆手に取り、パフォーマンスを向上させる設計思想が手に入ります。
+- 具体的には、重い処理をビルド時に完了させる「プレビルドHTML変換」というアプローチで、サーバーレス環境の制約を回避しつつ、高速な表示を実現する**設計図**を手に入れられます。
+- この方法は、机上の空論ではありません。まさに**このブログ自身のシンタックスハイライト機能として実証済み**です。
+- この情報は、単なるエラー解決策ではなく、実行環境の制約を「最適化の機会」に変える**未来の開発現場から得られた一次情報**です。
+
+### 私も同じでした
+
+筆者も過去に同じWASMエラーで悩み抜き、このブログを「AIによる実装」と「人間による設計」で作り上げる過程でこの解決策を見つけました。
+この記事で、サーバーレス環境の制約を理解し、安定したデプロイを実現するための基本的な考え方と、明日から試せるTipsを持ち帰れるように書きました。
+さらに深掘りして、ビルドプロセスを最適化する具体的なアーキテクチャ設計を知りたい方は、その詳細な実装方法を確認できます。
+
 ## 📝 概要
 
-Cloudflare Pages（Workers環境）にデプロイしたRemixブログで、記事詳細ページを開くと「Application Error!」が表示される問題に遭遇しました。ローカル開発環境では正常に動作していたため、Cloudflare Workers特有の制約が原因でした。この記事では、問題の発見から原因の特定、そしてビルド時HTML変換による解決に至るまでの全プロセスを記録します。
+Cloudflare Pages（Workers環境）にデプロイしたRemixブログで、記事詳細ページを開くと「Application Error!」が表示される問題に遭遇しました。
+ローカル開発環境では正常に動作していたため、Cloudflare Workers特有の制約が原因でした。
+この記事では、問題の発見から原因の特定、そして**ビルド時（※）**にHTMLへ変換するというアプローチで解決するまでの全プロセスを記録します。
+
+> ※ **ビルド時**: ウェブサイトを公開する前の準備段階のこと。
 
 ### 発生環境
 
 - **フレームワーク**: Remix v2
 - **ホスティング**: Cloudflare Pages/Workers
 - **ビルドツール**: Vite
-- **シンタックスハイライター**: Shiki
+- **シンタックスハイライター**: Shiki（※）
 - **記事数**: 21記事
+
+> ※ **Shiki**: ソースコードを綺麗に色付けしてくれるライブラリ（道具）。
 
 ---
 
 ## ⚠️ 問題の発見と症状
 
-stg環境（`https://stg.claudemix.pages.dev/blog`）にデプロイ後、記事一覧ページは表示されるが、記事詳細ページ（例: `/blog/welcome`）を開くと「Application Error!」が表示される。
+stg環境（テスト用の公開環境）にデプロイ後、記事一覧ページは表示されるものの、記事詳細ページ（例: `/blog/welcome`）を開くと「Application Error!」と表示されてしまいました。
 
 **エラーメッセージ:**
 
-```text
+~~~text
 CompileError: WebAssembly.instantiate(): Wasm code generation disallowed by embedder
   at shiki/engine-oniguruma
-```
+~~~
 
 **症状:**
 
@@ -40,31 +81,13 @@ CompileError: WebAssembly.instantiate(): Wasm code generation disallowed by embe
 - ❌ 記事詳細ページ: Application Error
 - ローカル開発環境では再現せず、デプロイ後にのみ発生
 
-**問題箇所:**
-[app/lib/blog/post-detail/markdownConverter.ts:16](app/lib/blog/post-detail/markdownConverter.ts#L16) でShikiのハイライター初期化時にエラー発生。
-
-```typescript
-// 問題のコード
-import { createHighlighter } from 'shiki/bundle/full';
-
-async function getHighlighter() {
-  if (!highlighter) {
-    highlighter = await createHighlighter({ // ← ここでWASMエラー
-      themes: [theme],
-      langs: ['javascript', 'typescript', ...],
-    });
-  }
-  return highlighter;
-}
-```
-
 ---
 
 ## 🔍 調査と試行錯誤のプロセス
 
-### 仮説1: Cloudflare Workersの制約を調査
+### 仮説1: Cloudflare Workersの制約が原因ではないか？
 
-まず、Cloudflare Workers環境の制約を確認しました。公式ドキュメントによると、**動的なWebAssembly生成は許可されていない**ことが判明。Shikiはシンタックスハイライトのために内部でWebAssembly（oniguruma正規表現エンジン）を使用しているため、Workers環境では動作しない。
+まず、Cloudflare Workers環境の制約を確認しました。公式ドキュメントによると、**動的なWebAssembly（※）生成は許可されていない**ことが判明。Shikiはコードの色付けのために内部でWebAssembly（oniguruma正規表現エンジン）を使っているため、これが原因でエラーになっている可能性が高いと推測しました。
 
 **判明した事実:**
 
@@ -72,9 +95,11 @@ async function getHighlighter() {
 - ランタイムでの動的WASM生成は禁止
 - Shikiは初期化時に動的にWASMを生成
 
-### 仮説2: クライアントサイドレンダリングを検討
+> ※ **WebAssembly (WASM)**: ウェブブラウザで高速に動くプログラムの形式。
 
-次に、マークダウンをそのまま配信し、ブラウザ側でHTMLに変換する方法を検討しました。しかし、この方法には以下の問題がありました:
+### 仮説2: ブラウザ側での変換を試す
+
+次に、サーバー側での処理を諦め、マークダウンをそのままブラウザに送り、ユーザーの画面でHTMLに変換する方法を検討しました。しかし、この方法には以下の問題がありました。
 
 **問題点:**
 
@@ -82,11 +107,11 @@ async function getHighlighter() {
 - SEO的に不利（HTMLが初期状態では存在しない）
 - ユーザー体験の低下
 
-結論: **クライアントサイドレンダリングは最終手段として保留**
+この方法はデメリットが大きいため、最終手段として保留しました。
 
-### 仮説3: ビルド時HTML変換を試す
+### 仮説3: ビルド時にHTML変換するアプローチ
 
-最終的に、「ビルド時にマークダウンをHTMLに変換すれば、Workers環境ではHTMLを配信するだけでよい」というアプローチに行き着きました。
+最終的に、「ビルド時にあらかじめマークダウンをHTMLに変換しておけば、サーバー（Workers環境）では完成したHTMLを配信するだけで済む」というアプローチに行き着きました。
 
 **メリット:**
 
@@ -99,29 +124,29 @@ async function getHighlighter() {
 
 ## 💡 根本原因の特定
 
-調査の結果、根本原因は以下の通りでした:
+調査の結果、根本原因は以下の3つの組み合わせでした。
 
-1. **Workers環境のWASM制約**: Cloudflare WorkersはセキュリティとパフォーマンスのためWASM動的生成を禁止
-2. **Shikiの依存関係**: Shikiはoniguruma（WASM実装）に依存
-3. **ランタイム変換の試み**: アプリケーションがランタイムでマークダウン→HTML変換を実行していた
+1. **Workers環境のWASM制約**: Cloudflare Workersはセキュリティとパフォーマンスのため、動的なWebAssembly生成を禁止している。
+2. **Shikiの依存関係**: Shikiは内部でonigurumaというWebAssembly実装に依存している。
+3. **ランタイム変換の試み**: アプリケーションが、ユーザーからのリクエスト時に（ランタイムで）マークダウンからHTMLへの変換を実行しようとしていた。
 
 **問題の本質:**
-Workers環境の制約に対して、**実行タイミング（ランタイム vs ビルド時）**を見直す必要があった。
+サーバーレス環境の制約に対して、**処理の実行タイミング（ランタイム vs ビルド時）**を見直す必要があったのです。
 
 ---
 
 ## 🔧 解決策
 
-### 1. プレビルドスクリプトの実装
+### プレビルドスクリプトの実装
 
-[scripts/prebuild/generate-blog-posts.js](scripts/prebuild/generate-blog-posts.js) にHTML変換ロジックを追加:
+`scripts/prebuild/generate-blog-posts.js` に、ビルド時にMarkdownをHTMLに変換するロジックを追加しました。
 
-```javascript
+~~~javascript
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import { createHighlighter } from 'shiki/bundle/full';
 
-// Shikiハイライターをシングルトンで管理
+// Shikiハイライターをシングルトン（※）で管理
 let highlighter = null;
 
 async function getHighlighter() {
@@ -137,36 +162,21 @@ async function getHighlighter() {
 
 async function convertMarkdownToHtml(markdown) {
   const hl = await getHighlighter();
-
-  // marked設定とShiki統合
-  const walkTokens = (token) => {
-    if (token.type === 'code') {
-      const lang = token.lang || 'text';
-      try {
-        token.text = hl.codeToHtml(token.text, { lang, theme: 'github-dark' });
-        token.escaped = true;
-      } catch (error) {
-        // サポートされていない言語はtextにフォールバック
-        console.warn(`⚠️ Language "${lang}" not supported, using plain text`);
-        token.text = hl.codeToHtml(token.text, { lang: 'text', theme: 'github-dark' });
-        token.escaped = true;
-      }
-    }
-  };
-
-  marked.use({ walkTokens, async: true });
+  // ...（markedとShikiを連携させてHTMLに変換する処理）...
   const rawHtml = await marked.parse(markdown);
   return sanitizeHtml(rawHtml, { /* サニタイズ設定 */ });
 }
-```
+~~~
 
-### 2. 並列処理の最適化（重要）
+> ※ **シングルトン**: プログラム全体でインスタンス（実体）が1つしか作られないことを保証するデザインパターン。
 
-**問題:** 21記事を`Promise.all`で並列処理すると、複数のプロセスが同時に`getHighlighter()`を呼び出し、競合が発生してハング。
+#### 並列処理の最適化
 
-**解決策:** 並列処理前に事前初期化:
+**ぶつかった壁:** 21記事を並列処理（`Promise.all`）すると、複数の処理が同時に`getHighlighter()`を呼び出してしまい、リソースの競合が起きてハングアップしました。
 
-```diff
+**解決方法:** 並列処理を開始する前に、一度だけShikiの初期化処理を呼び出すように修正しました。
+
+~~~diff
 async function generateBlogPosts() {
   try {
     console.log('🚀 Starting blog posts generation...');
@@ -182,13 +192,13 @@ async function generateBlogPosts() {
         return { slug, content: htmlContent, ... };
       })
     );
-```
+~~~
 
 **効果:**
 
 - ✅ ハング問題を完全解決
 - ✅ 並列処理の高速性を維持
-- ✅ シングルトンパターンで1つのインスタンスのみ生成
+- ✅ シングルトンパターンで1つのインスタンスのみ生成されることを保証
 
 ---
 
@@ -196,45 +206,24 @@ async function generateBlogPosts() {
 
 ### 技術的な学び
 
-1. **実行環境の制約を理解する**
-   - Cloudflare Workersは軽量・高速だが、WebAssembly動的生成は禁止
-   - 制約を回避するには「実行タイミングをずらす」発想が有効
-
-2. **ビルド時 vs ランタイムのトレードオフ**
-   - ビルド時処理: 初期コスト高、ランタイム高速
-   - ランタイム処理: 柔軟性高、実行環境の制約を受けやすい
-
-3. **並列処理とシングルトンの重要性**
-   - 並列処理前の事前初期化でリソースの競合を防止
-   - グローバル変数のシングルトンパターンが有効
-
-4. **エラーハンドリングの重要性**
-   - サポートされていない言語のフォールバック機構
-   - try-catchでビルドを止めずに警告表示
+- **実行環境の制約を理解する**: Cloudflare Workersは軽量・高速ですが、WebAssemblyの動的生成は禁止されています。制約を回避するには「実行タイミングをずらす」という発想が有効です。
+- **ビルド時 vs ランタイムのトレードオフ**: ビルド時に重い処理を済ませることで、ユーザーアクセス時（ランタイム）のパフォーマンスを最大化できます。
+- **並列処理とシングルトンの重要性**: 重い初期化処理を伴うリソースを並列処理で使う場合、処理の開始前に一度だけ初期化を行うことでリソースの競合を防げます。
 
 ### パフォーマンス結果
 
-```text
+~~~text
 📊 ビルド時変換の結果:
 - 最速: 1ms (welcome)
 - 最長: 322ms (cloudflare-pages-deployment-challenge)
 - 平均: 約30-40ms
 - 合計: 21記事を数秒で変換完了
-```
+~~~
 
 ### 今後のベストプラクティス
 
-1. **サーバーレス環境での開発時は制約を事前確認**
-   - Cloudflare Workers、AWS Lambda、Vercel Edge Functionsなど、それぞれ異なる制約がある
-   - ライブラリ選定時に実行環境との互換性を確認
-
-2. **ビルド時生成を積極的に活用**
-   - 静的サイトジェネレーション（SSG）の考え方を応用
-   - ビルド時に可能な処理はできる限りビルド時に実行
-
-3. **並列処理の競合対策**
-   - リソースの初期化は並列処理の外で実行
-   - シングルトンパターンで唯一のインスタンスを保証
+- **サーバーレス環境の制約を事前確認する**: ライブラリを選定する際は、デプロイ先の実行環境（Cloudflare Workers, AWS Lambdaなど）との互換性を確認することが重要です。
+- **ビルド時生成を積極的に活用する**: 静的サイトジェネレーション（SSG）の考え方を応用し、ビルド時に可能な処理はできる限り前倒しで実行することで、パフォーマンスと安定性が向上します。
 
 ---
 
@@ -243,11 +232,3 @@ async function generateBlogPosts() {
 - [Cloudflare Workers - WebAssembly制約](https://developers.cloudflare.com/workers/runtime-apis/webassembly/)
 - [Shiki公式ドキュメント](https://shiki.style/)
 - [Marked.js - マークダウンパーサー](https://marked.js.org/)
-- [Remix - Server-Side Rendering](https://remix.run/docs/en/main/guides/streaming)
-
----
-
-**関連記事:**
-
-- [Cloudflare Pagesデプロイで遭遇した3つの壁とその解決策](./cloudflare-pages-deployment-challenge)
-- [React HooksのCloudflare Workers互換性チャレンジ](./react-hooks-cloudflare-workers-challenge)

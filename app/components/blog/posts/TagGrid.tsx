@@ -1,7 +1,7 @@
 // TagGrid - Component (components層)
 // タグ選択用のグリッド表示
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { TagGroup } from '~/specs/blog/types';
 
 interface TagGridProps {
@@ -16,6 +16,23 @@ export const TagGrid: React.FC<TagGridProps> = ({
   selectedTags = [],
 }) => {
   const [selected, setSelected] = useState<Set<string>>(new Set(selectedTags));
+  const prevSelectedTagsRef = useRef<string[]>([]);
+
+  // selectedTags プロップの内容が実際に変更された場合のみ selected ステートを同期
+  useEffect(() => {
+    // 配列の内容を比較（順序を無視）
+    const prevSet = new Set(prevSelectedTagsRef.current);
+    const currentSet = new Set(selectedTags);
+
+    const isDifferent =
+      prevSet.size !== currentSet.size ||
+      !Array.from(currentSet).every(tag => prevSet.has(tag));
+
+    if (isDifferent) {
+      setSelected(new Set(selectedTags));
+      prevSelectedTagsRef.current = [...selectedTags];
+    }
+  }, [selectedTags]);
 
   const toggleTag = (tag: string) => {
     const newSelected = new Set(selected);

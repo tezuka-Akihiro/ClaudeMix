@@ -139,7 +139,12 @@
       "Bash(npx tsc:*)",
       "Bash(npx tsc --noEmit)",
       "Bash(npm run test:e2e:screen:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(npm run lint:md:*)",
+      "Bash(npx markdownlint:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run prebuild:*)"
     ],
     "deny": [],
     "ask": []

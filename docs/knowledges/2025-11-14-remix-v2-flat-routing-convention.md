@@ -23,7 +23,7 @@ Remix v2 のデフォルトルーティング規約である「フラットル�
 
 ### 症状
 
-```
+```text
 Error: No route matches URL "/blog/sample-remix-tips-2024"
 ```
 
@@ -31,7 +31,7 @@ Error: No route matches URL "/blog/sample-remix-tips-2024"
 
 ### 試みた構成（失敗）
 
-```
+```text
 app/routes/
 ├── blog/
 │   ├── index.tsx      → /blog (成功)
@@ -50,6 +50,7 @@ app/routes/
 Remix v2 では、**フラットルーティング (Flat Routes)** がデフォルトの規約となっています。
 
 **フラットルーティングの特徴**:
+
 - すべてのルートファイルを `app/routes/` 直下に配置
 - ネストされた URL 構造はファイル名で表現（`.` や `_` を使用）
 - ネストディレクトリ構造は、親レイアウトファイル（`blog.tsx`）が必要
@@ -57,10 +58,12 @@ Remix v2 では、**フラットルーティング (Flat Routes)** がデフォ�
 ### 2. ネストディレクトリ構造での要件
 
 もし `app/routes/blog/$slug.tsx` のようなネスト構造を使う場合：
+
 1. 親レイアウトファイル `app/routes/blog.tsx` が必要
 2. または、`blog/` ディレクトリを使わず、フラットルーティングに従う
 
 **なぜ `/blog` (index.tsx) は動作したのか？**
+
 - `blog/index.tsx` は特別扱いで、親レイアウトなしでも `/blog` として機能する
 - しかし、同じディレクトリ内の `$slug.tsx` は親レイアウトファイルがないと子ルートとして認識されない
 
@@ -89,7 +92,8 @@ remix({
 ネストディレクトリ構造を捨て、Remix v2 のデフォルトであるフラットルーティング規約に従いました。
 
 **変更前（失敗）**:
-```
+
+```text
 app/routes/
 ├── blog/
 │   ├── index.tsx      → /blog
@@ -97,7 +101,8 @@ app/routes/
 ```
 
 **変更後（成功）**:
-```
+
+```text
 app/routes/
 ├── blog._index.tsx    → /blog
 └── blog.$slug.tsx     → /blog/:slug
@@ -143,6 +148,7 @@ npm run dev
 ネストディレクトリ構造を維持し、`app/routes/blog.tsx` を追加する方法。
 
 **構成**:
+
 ```
 app/routes/
 ├── blog.tsx           → 親レイアウト
@@ -152,6 +158,7 @@ app/routes/
 ```
 
 **不採用理由**:
+
 - 現時点でブログ全体の共通レイアウトが不要
 - `BlogLayout` コンポーネントは各ページで個別にインポート済み
 - フラットルーティングの方がシンプルで Remix v2 の思想に沿っている
@@ -161,6 +168,7 @@ app/routes/
 `vite.config.ts` で `routesDirectory` を変更し、カスタムルーティング規約を定義する方法。
 
 **不採用理由**:
+
 - プロジェクト標準から逸脱する
 - 他の開発者の混乱を招く
 - Remix v2 のデフォルト規約に従う方が保守性が高い
@@ -222,6 +230,7 @@ npm run dev
 ```
 
 ルートが認識されない場合：
+
 1. ファイル名がフラットルーティング規約に従っているか確認
 2. `.cache` と `build` ディレクトリを削除して再ビルド
 3. 開発サーバーを再起動
