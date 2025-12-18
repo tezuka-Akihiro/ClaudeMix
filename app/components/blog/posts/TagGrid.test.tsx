@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { TagGrid } from './TagGrid';
+import React from 'react';
 
 describe('TagGrid', () => {
   describe('Rendering', () => {
@@ -153,6 +154,59 @@ describe('TagGrid', () => {
       fireEvent.click(aiButton);
       hiddenInputs = document.querySelectorAll('input[type="hidden"][name="tags"]');
       expect(hiddenInputs).toHaveLength(0);
+    });
+  });
+
+  describe('Props Synchronization', () => {
+    it('should update selected state when selectedTags prop changes', () => {
+      // Arrange
+      const availableTags = ['AI', 'Claude', 'TDD'];
+      const { rerender } = render(
+        <TagGrid availableTags={availableTags} selectedTags={['AI']} />
+      );
+
+      // Assert initial state
+      const aiButton = screen.getByRole('button', { name: 'AI' });
+      const claudeButton = screen.getByRole('button', { name: 'Claude' });
+      const tddButton = screen.getByRole('button', { name: 'TDD' });
+
+      expect(aiButton).toHaveAttribute('aria-pressed', 'true');
+      expect(claudeButton).toHaveAttribute('aria-pressed', 'false');
+      expect(tddButton).toHaveAttribute('aria-pressed', 'false');
+
+      // Act - update selectedTags prop
+      rerender(
+        <TagGrid availableTags={availableTags} selectedTags={['Claude', 'TDD']} />
+      );
+
+      // Assert - state should sync with new prop
+      expect(aiButton).toHaveAttribute('aria-pressed', 'false');
+      expect(claudeButton).toHaveAttribute('aria-pressed', 'true');
+      expect(tddButton).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('should clear selection when selectedTags prop becomes empty', () => {
+      // Arrange
+      const availableTags = ['AI', 'Claude'];
+      const { rerender } = render(
+        <TagGrid availableTags={availableTags} selectedTags={['AI', 'Claude']} />
+      );
+
+      // Assert initial state
+      const aiButton = screen.getByRole('button', { name: 'AI' });
+      const claudeButton = screen.getByRole('button', { name: 'Claude' });
+
+      expect(aiButton).toHaveAttribute('aria-pressed', 'true');
+      expect(claudeButton).toHaveAttribute('aria-pressed', 'true');
+
+      // Act - clear selectedTags
+      rerender(
+        <TagGrid availableTags={availableTags} selectedTags={[]} />
+      );
+
+      // Assert - all tags should be deselected
+      expect(aiButton).toHaveAttribute('aria-pressed', 'false');
+      expect(claudeButton).toHaveAttribute('aria-pressed', 'false');
     });
   });
 

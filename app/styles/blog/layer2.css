@@ -633,8 +633,7 @@
   }
 
   .tag-button:focus {
-    outline: var(--border-width-sm) solid var(--color-interactive-primary);
-    outline-offset: var(--shadow-offset-xs);
+    outline: none;
   }
 
   /* TagButton - Selected state (aria-pressed="true") */
@@ -642,7 +641,6 @@
     background-color: var(--color-interactive-primary-bg);
     border-color: var(--color-interactive-primary);
     color: var(--color-text-primary);
-    font-weight: var(--font-weight-medium);
     box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
   }
 
