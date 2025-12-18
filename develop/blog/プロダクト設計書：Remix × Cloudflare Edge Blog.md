@@ -43,7 +43,7 @@ Remixの構造的合理性を利用し、非機能要件（パフォーマンス
 優作さんの「正しさ」を具現化する構成です。
 
 | レイヤー | 技術選定 | 選定理由・アピールポイント |
-|:---|:---|:---|
+| --------- | --------- | --- |
 | Framework | Remix | Web標準準拠。Nested Routesによるデータ取得の最適化。 |
 | Platform | Cloudflare Pages | エッジへのデプロイ。コールドスタート0msによるUX保証。 |
 | Runtime | Cloudflare Workers | エッジでのSSR実行環境。世界中どこでも爆速。 |
