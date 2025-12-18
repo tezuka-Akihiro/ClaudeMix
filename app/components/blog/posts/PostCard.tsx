@@ -32,9 +32,9 @@ const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category,
         {categoryEmoji}
       </div>
       <div className="post-card__content-structure">
-        <h3 className="post-card__title" data-testid="post-card-title">
+        <h2 className="post-card__title" data-testid="post-card-title">
           {title}
-        </h3>
+        </h2>
         <p className="post-card__date" data-testid="post-card-date">
           {formattedDate}
         </p>

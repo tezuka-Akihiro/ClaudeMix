@@ -46,7 +46,7 @@
   .blog-header__menu-button {
     background-color: var(--color-interactive-primary-bg-subtle);
     border: var(--border-width-sm) solid var(--color-interactive-primary);
-    color: var(--color-interactive-primary);
+    color: var(--color-text-secondary);
     cursor: pointer;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
@@ -57,7 +57,7 @@
 
   .blog-header__menu-button:hover {
     background-color: var(--color-interactive-primary-bg);
-    color: var(--color-text-primary);
+    color: var(--color-text-secondary);
     box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
   }
 
@@ -611,7 +611,7 @@
   /* TagGroupHeader - Header for a group of tags */
   .tag-group-header {
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-secondary);
   }
 

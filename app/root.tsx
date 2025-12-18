@@ -5,6 +5,29 @@ import {
   Scripts,
 } from "@remix-run/react";
 
+export function links() {
+  return [
+    {
+      rel: "preconnect",
+      href: "https://fonts.googleapis.com",
+    },
+    {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossOrigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      as: "style",
+      href: "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap",
+    },
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap",
+    },
+  ];
+}
+
 export default function App() {
   return (
     <html lang="ja">
@@ -20,16 +43,6 @@ export default function App() {
           <Outlet />
         </div>
         <Scripts />
-        <script
-          type="module"
-          dangerouslySetInnerHTML={{
-            __html: `
-              import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-              window.mermaid = mermaid;
-              mermaid.initialize({ startOnLoad: false, theme: 'dark' });
-            `,
-          }}
-        />
       </body>
     </html>
   );
