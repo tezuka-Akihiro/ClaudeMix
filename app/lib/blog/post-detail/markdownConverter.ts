@@ -8,7 +8,7 @@ import { createHighlighter, type Highlighter } from 'shiki/bundle/full';
 import { slugify } from './slugify';
 
 let highlighter: Highlighter | undefined;
-const theme = 'github-dark';
+const theme = 'github-dark-high-contrast';
 /**
  * Shikiハイライターを初期化する（シングルトン）
  */
