@@ -341,7 +341,6 @@ tags: ["tag1", "tag2", "tag3"]
 ```xml
 <template_selection>
   <standard_template>
-    <file_path>content/blog/template.md</file_path>
     <use_case>機能改修記事、新機能追加記事、まとめ記事（30-40%）</use_case>
     <structure>
       - 開発の進捗（Before/Current/Next）
@@ -353,7 +352,6 @@ tags: ["tag1", "tag2", "tag3"]
   </standard_template>
 
   <troubleshooting_template>
-    <file_path>content/blog/troubleshooting-template.md</file_path>
     <use_case>トラブルシュート記事（60-70%）</use_case>
     <structure>
       - 概要・発生環境
@@ -564,8 +562,6 @@ tags: ["tag1", "tag2", "tag3"]
 ## 参考リソース
 
 - **develop/blog/posts/spec.yaml**: タグマスタとカテゴリ定義
-- **content/blog/template.md**: 標準テンプレート
-- **content/blog/troubleshooting-template.md**: トラブルシューティングテンプレート
 
 ---
 
