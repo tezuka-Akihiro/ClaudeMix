@@ -43,10 +43,15 @@ export default defineConfig({
         /\.spec\.(ts|tsx|js|jsx)$/,
       ],
       output: {
-        // 手動チャンク分割: 記事一覧専用コンポーネントを分離
+        // 手動チャンク分割: 記事一覧専用のコンポーネントとユーティリティを分離
         manualChunks(id) {
-          // 記事一覧専用コンポーネント（FilterPanel, PostCard, Pagination等）を別チャンクに
-          if (id.includes('components/blog/posts/') && !id.includes('post-detail')) {
+          // 記事一覧専用: components/blog/posts/ と lib/blog/posts/ を分離
+          if (
+            (id.includes('components/blog/posts/') || id.includes('lib/blog/posts/')) &&
+            !id.includes('post-detail') &&
+            !id.includes('.test.') &&
+            !id.includes('.spec.')
+          ) {
             return 'posts-list';
           }
         },

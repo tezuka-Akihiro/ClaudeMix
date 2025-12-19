@@ -4,14 +4,17 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { lazy, Suspense } from "react";
 import BlogLayout from "~/components/blog/common/BlogLayout";
-import PostsSection from "~/components/blog/posts/PostsSection";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { fetchPosts } from "~/data-io/blog/posts/fetchPosts.server";
 import { fetchAvailableFilters } from "~/data-io/blog/posts/fetchAvailableFilters.server";
 import { calculatePagination } from "~/lib/blog/posts/calculatePagination";
 import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
 import "~/styles/blog/posts.css";
+
+// 記事一覧専用コンポーネントを動的インポートで遅延ロード
+const PostsSection = lazy(() => import("~/components/blog/posts/PostsSection"));
 
 export const meta: MetaFunction = () => {
   return [
@@ -91,13 +94,15 @@ export default function BlogIndex() {
 
   return (
     <BlogLayout config={config}>
-      <PostsSection
-        posts={posts}
-        pagination={pagination}
-        availableFilters={availableFilters}
-        selectedFilters={selectedFilters}
-        categorySpec={categorySpec}
-      />
+      <Suspense fallback={<div>Loading...</div>}>
+        <PostsSection
+          posts={posts}
+          pagination={pagination}
+          availableFilters={availableFilters}
+          selectedFilters={selectedFilters}
+          categorySpec={categorySpec}
+        />
+      </Suspense>
     </BlogLayout>
   );
 }
