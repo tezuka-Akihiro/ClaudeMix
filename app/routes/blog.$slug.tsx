@@ -12,6 +12,7 @@ import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogCommonSpec } from "~/specs/blog/types";
+import "~/styles/blog/post-detail.css";
 
 export interface PostDetailLoaderData {
   post: {

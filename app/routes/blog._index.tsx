@@ -11,6 +11,7 @@ import { fetchPosts } from "~/data-io/blog/posts/fetchPosts.server";
 import { fetchAvailableFilters } from "~/data-io/blog/posts/fetchAvailableFilters.server";
 import { calculatePagination } from "~/lib/blog/posts/calculatePagination";
 import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
+import "~/styles/blog/posts.css";
 
 export const meta: MetaFunction = () => {
   return [
