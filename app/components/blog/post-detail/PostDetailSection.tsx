@@ -24,9 +24,21 @@ export function PostDetailSection({ post, headings }: { post: RenderedPost, head
   });
 
   useEffect(() => {
-    // window.mermaidが利用可能かチェック
-    if (typeof window !== 'undefined' && window.mermaid) {
-      // Mermaid v11 の正しい API を使用
+    // Mermaidを動的にロード
+    if (typeof window !== 'undefined' && !window.mermaid) {
+      import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
+        .then((mermaid) => {
+          window.mermaid = mermaid.default;
+          window.mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+          window.mermaid.run({
+            querySelector: '.mermaid',
+          });
+        })
+        .catch((error) => {
+          console.error('Failed to load Mermaid:', error);
+        });
+    } else if (window.mermaid) {
+      // すでにロード済みの場合は実行のみ
       window.mermaid.run({
         querySelector: '.mermaid',
       });

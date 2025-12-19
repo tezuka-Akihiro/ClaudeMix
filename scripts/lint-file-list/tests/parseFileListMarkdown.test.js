@@ -8,12 +8,12 @@ describe('parseFileListMarkdown', () => {
 
 ## 1. E2Eテスト
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | test.spec.ts | tests/e2e/test.spec.ts | E2Eテスト |
 
 ## 2. UI層
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | Component.tsx | app/components/Component.tsx | コンポーネント |
 | Component.test.tsx | app/components/Component.test.tsx | ユニットテスト |
 `;
@@ -31,17 +31,17 @@ describe('parseFileListMarkdown', () => {
     const markdown = `
 ## 1. UI層
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | ComponentA.tsx | app/components/ComponentA.tsx | コンポーネントA |
 
 ## 2. ロジック層
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | logic.ts | app/lib/logic.ts | ロジック |
 
 ## 3. 副作用層
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | api.server.ts | app/data-io/api.server.ts | API |
 `;
 
@@ -57,7 +57,7 @@ describe('parseFileListMarkdown', () => {
   it('テストファイル（tests/配下）は除外される', () => {
     const markdown = `
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | test.spec.ts | tests/e2e/test.spec.ts | E2Eテスト |
 | unit.test.ts | tests/unit/unit.test.ts | ユニットテスト |
 | Component.tsx | app/components/Component.tsx | コンポーネント |
@@ -93,7 +93,7 @@ describe('parseFileListMarkdown', () => {
   it('パス列が空の行はスキップする', () => {
     const markdown = `
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | Component.tsx | app/components/Component.tsx | コンポーネント |
 |  |  | 空行 |
 | Logic.ts | app/lib/Logic.ts | ロジック |
@@ -110,7 +110,7 @@ describe('parseFileListMarkdown', () => {
   it('重複したパスは1つにまとめる', () => {
     const markdown = `
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | Component.tsx | app/components/Component.tsx | コンポーネント |
 | Component.tsx | app/components/Component.tsx | 重複 |
 `;
@@ -125,7 +125,7 @@ describe('parseFileListMarkdown', () => {
   it('パスの前後の空白をトリムする', () => {
     const markdown = `
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | Component.tsx |  app/components/Component.tsx  | コンポーネント |
 `;
 
@@ -139,7 +139,7 @@ describe('parseFileListMarkdown', () => {
   it('空のセルがある行でも正しくパースする（列位置がずれない）', () => {
     const markdown = `
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | Component.tsx | app/components/Component.tsx | コンポーネント |
 |  | app/data-io/dataAccess.ts | データアクセス（ファイル名が空） |
 | Logic.ts | app/lib/Logic.ts | ロジック |
@@ -158,7 +158,7 @@ describe('parseFileListMarkdown', () => {
   it('複数の空のセルがある行でも正しくパースする', () => {
     const markdown = `
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | Component.tsx | app/components/Component.tsx | コンポーネント |
 |  | app/lib/helper.ts |  |
 `;
