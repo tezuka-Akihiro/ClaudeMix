@@ -71,6 +71,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ menuItems, isOpen, onCl
             className="navigation-menu__item"
             onClick={onClose}
             data-testid="menu-item"
+            prefetch="none"
           >
             {item.label}
           </Link>

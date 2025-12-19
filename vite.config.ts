@@ -43,18 +43,6 @@ export default defineConfig({
         /\.spec\.(ts|tsx|js|jsx)$/,
       ],
       output: {
-        // 手動チャンク分割: 記事一覧専用のコンポーネントとユーティリティを分離
-        manualChunks(id) {
-          // 記事一覧専用: components/blog/posts/ と lib/blog/posts/ を分離
-          if (
-            (id.includes('components/blog/posts/') || id.includes('lib/blog/posts/')) &&
-            !id.includes('post-detail') &&
-            !id.includes('.test.') &&
-            !id.includes('.spec.')
-          ) {
-            return 'posts-list';
-          }
-        },
         // アセットファイル名の最適化（キャッシュ効率化）
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name?.split('.');
