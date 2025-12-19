@@ -84,18 +84,18 @@
     
     ## 2. UI層（Phase 2）
     | ファイル名 | パス |
-    |:---|:---|
+    | :--- | :--- |
     | OperationSection.tsx | app/components/service-name/operation/OperationSection.tsx |
     | RetryModal.tsx | app/components/service-name/operation/RetryModal.tsx |
     
     ## 3. 純粋ロジック層（lib層、Phase 2）
     | ファイル名 | パス |
-    |:---|:---|
+    | :--- | :--- |
     | retryTargetCalculator.ts | app/lib/service-name/operation/retryTargetCalculator.ts |
     
     ## 4. 副作用層（data-io層、Phase 2）
     | ファイル名 | パス |
-    |:---|:---|
+    | :--- | :--- |
     | archiveFiles.server.ts | app/data-io/service-name/operation/archiveFiles.server.ts |
     ```
 

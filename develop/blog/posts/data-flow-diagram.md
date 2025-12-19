@@ -85,13 +85,13 @@ graph TD
 ### Route層
 
 | コンポーネント | 責務 | 依存先 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **blog._index.tsx** | 記事一覧ページのRoute。loaderでURLクエリパラメータ（page, category, tags）を取得し、fetchPosts.server、fetchAvailableFilters.serverを呼び出し、フィルタリング・ページネーション処理を実行してUIに渡す | fetchPosts.server, fetchAvailableFilters.server, filterPosts, calculatePagination |
 
 ### UI層（共通コンポーネント）
 
 | コンポーネント | 責務 | 依存先 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **BlogLayout** | ページ全体のレイアウトコンテナ（commonセクション）。Header、Footer、Contentエリアを配置 | BlogHeader, BlogFooter |
 | **BlogHeader** | ヘッダーコンポーネント（commonセクション）。ブログタイトルとメニューボタンを表示 | - |
 | **BlogFooter** | フッターコンポーネント（commonセクション）。コピーライトを表示 | - |
@@ -99,7 +99,7 @@ graph TD
 ### UI層（postsセクション固有）
 
 | コンポーネント | 責務 | 依存先 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **PostsSection** | 記事一覧のメインコンテナ。ページタイトル、FilterPanel、記事カードグリッド、Paginationを配置 | FilterPanel, PostCard, Pagination |
 | **FilterPanel** | フィルタUIコンポーネント。カテゴリフィルタ（ラジオボタン）とタグフィルタ（チェックボックス）を提供 | - |
 | **PostCard** | 個別記事の表示カード。タイトル、投稿日、カテゴリバッジ、タグバッジを表示し、クリックで記事詳細へ遷移 | formatPublishedDate |
@@ -108,7 +108,7 @@ graph TD
 ### 純粋ロジック層（lib）
 
 | 関数 | 責務 | 依存先 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **formatPublishedDate** | 投稿日フォーマット処理。ISO形式（"2024-05-01"）を日本語形式（"2024年5月1日"）に変換 | - |
 | **filterPosts** | 記事フィルタリング処理。記事一覧を指定された条件（category, tags）でフィルタリング。タグ条件はAND条件 | - |
 | **calculatePagination** | ページネーション計算処理。総記事数と現在ページから、ページネーション情報（currentPage, totalPages, totalPosts, postsPerPage）を計算 | - |
@@ -117,7 +117,7 @@ graph TD
 ### 副作用層（data-io）
 
 | 関数 | 責務 | 依存先 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **fetchPosts.server** | 記事一覧データの取得。ファイルシステムから記事メタデータを読み込み、category/tagsパラメータによるフィルタリング、limit/offsetパラメータによるページネーション対応。PostSummary[]とtotalを返す | ファイルシステム |
 | **fetchAvailableFilters.server** | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、タググループ情報も生成して返す。AvailableFilters（categories: string[], tags: string[], tagGroups: { group: string; tags: string[] }[]）を返す | ファイルシステム、groupTagsByCategory |
 
@@ -164,7 +164,7 @@ graph TD
 この設計は、プロジェクトの3大層分離アーキテクチャを厳格に遵守しています：
 
 | 層 | 責務 | 副作用の有無 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **UI層** | ユーザーインターフェース、表示ロジック | なし（純粋なプレゼンテーション） |
 | **純粋ロジック層（lib）** | ビジネスロジック、計算処理 | なし（純粋関数） |
 | **副作用層（data-io）** | 外部システムとの通信（ファイルI/O、API） | あり（ファイルシステムアクセス） |

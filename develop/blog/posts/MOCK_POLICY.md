@@ -60,7 +60,7 @@
 ## 2. 関連ファイル（アーキテクチャ層別）
 
 | 層 | ファイルパス | モック設定 | 実装設定 |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | **Route層** | app/routes/blog.tsx | loader内で固定のPostSummary[]を返す | fetchPosts.server.tsを呼び出して実データを取得 |
 | **UI層** | app/components/blog/posts/PostsSection.tsx | 固定データをpropsで受け取り表示 | loaderデータを受け取り表示 |
 | **UI層** | app/components/blog/posts/PostCard.tsx | 固定データをpropsで受け取り表示 | PostSummaryをpropsで受け取り表示 |

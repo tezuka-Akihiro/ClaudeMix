@@ -155,7 +155,7 @@ ls app/components/service-name/roadmap/ProgressSummary.test.tsx
 エラーログから、以下のどれに該当するか判定:
 
 | エラー分類 | 具体例 | あなたの対応 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **設定エラー** | `SyntaxError: Unexpected token in config.json` | config.json修正を提案 |
 | **テンプレート欠落** | `Template file 'xxx.template.ts' not found` | GeneratorMaintainerへエスカレーション |
 | **パス解決エラー** | `Cannot resolve path pattern` | config.json修正を提案 |
@@ -182,7 +182,7 @@ ls scripts/generate/templates/*.template.*
 **あなたが対応しないエラー**（エスカレーション）:
 
 | エラー | エスカレーション先 | 理由 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | Node.jsバージョン問題 | ユーザー | 環境設定はユーザーの責任 |
 | 外部パッケージのバグ | メインエージェント | Issue報告が必要 |
 | ファイルシステム権限 | ユーザー | OS設定の問題 |
