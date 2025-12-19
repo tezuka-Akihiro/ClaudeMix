@@ -8,7 +8,10 @@ import { createHighlighter, type Highlighter } from 'shiki/bundle/full';
 import { slugify } from './slugify';
 
 let highlighter: Highlighter | undefined;
-const theme = 'github-dark-high-contrast';
+
+// tokyo-nightテーマはコメントのコントラスト比がWCAG AA基準を満たす
+const theme = 'tokyo-night';
+
 /**
  * Shikiハイライターを初期化する（シングルトン）
  */
