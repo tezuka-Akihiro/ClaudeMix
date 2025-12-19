@@ -16,26 +16,18 @@ export function formatPublishedDate(isoDate: string): string {
     throw new Error("Invalid date format");
   }
 
-  // Date型に変換
-  const date = new Date(isoDate);
-
-  // 有効な日付かチェック
-  if (isNaN(date.getTime())) {
-    throw new Error("Invalid date format");
-  }
-
   // ISO形式の文字列から年月日を直接パース（タイムゾーンの影響を避ける）
   const [yearStr, monthStr, dayStr] = isoDate.split("-");
   const year = parseInt(yearStr, 10);
   const month = parseInt(monthStr, 10);
   const day = parseInt(dayStr, 10);
 
-  // 日付の妥当性チェック（Date型の正規化による検証）
-  const expectedDate = new Date(year, month - 1, day);
+  // 基本的な範囲チェック（簡易的な妥当性検証）
+  // Dateオブジェクトを使用しないことで、サーバー/クライアント間の一貫性を保証
   if (
-    expectedDate.getFullYear() !== year ||
-    expectedDate.getMonth() !== month - 1 ||
-    expectedDate.getDate() !== day
+    year < 1900 || year > 2100 ||
+    month < 1 || month > 12 ||
+    day < 1 || day > 31
   ) {
     throw new Error("Invalid date format");
   }

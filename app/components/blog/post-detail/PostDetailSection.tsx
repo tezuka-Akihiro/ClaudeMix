@@ -3,6 +3,7 @@
 
 import { useEffect } from 'react';
 import { TableOfContents } from './TableOfContents';
+import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import type { Heading, RenderedPost } from '~/specs/blog/types';
 
 // Mermaid.jsのグローバル型定義を拡張
@@ -16,12 +17,8 @@ declare global {
 }
 
 export function PostDetailSection({ post, headings }: { post: RenderedPost, headings: Heading[] }) {
-  // publishedAtをフォーマット
-  const formattedDate = new Date(post.publishedAt).toLocaleDateString('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  // publishedAtをフォーマット（サーバー/クライアント間で一貫性のある純粋関数を使用）
+  const formattedDate = formatPublishedDate(post.publishedAt);
 
   useEffect(() => {
     // Mermaidを動的にロード
