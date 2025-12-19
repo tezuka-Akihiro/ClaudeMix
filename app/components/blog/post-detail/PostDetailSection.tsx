@@ -3,6 +3,7 @@
 
 import { useEffect } from 'react';
 import { TableOfContents } from './TableOfContents';
+import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import type { Heading, RenderedPost } from '~/specs/blog/types';
 
 // Mermaid.jsのグローバル型定義を拡張
