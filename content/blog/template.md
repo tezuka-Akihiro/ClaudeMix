@@ -19,7 +19,7 @@ tags: []
 
 ## はじめに
 
-（導入部は blog-introduction-writer スキルで作成します）
+（導入部は blog-writer スキルで作成します）
 
 ## 開発の進捗
 
