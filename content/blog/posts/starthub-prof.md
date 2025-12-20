@@ -1,7 +1,7 @@
 ---
 slug: "starthub-profile"
 title: "スタハブ用プロフィール"
-description: "相談用のプロフィール"
+description: "スタートアップハブ多摩での活動と開発進捗を記録したプロフィール"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-15"
 category: "起業"
