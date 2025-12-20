@@ -12,6 +12,10 @@ import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogCommonSpec } from "~/specs/blog/types";
+import "~/styles/blog/post-detail.css";
+
+// 記事詳細ページ専用のCSS（PostDetailSection, TableOfContents等）
+import "~/styles/blog/post-detail.css";
 
 export interface PostDetailLoaderData {
   post: {
@@ -75,6 +79,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       category: post.category,
       source: post.source,
       headings: post.headings,
+      hasMermaid: post.hasMermaid, // Mermaidフラグを追加
     },
     headings,
     config,
@@ -125,7 +130,7 @@ export default function BlogPostDetail() {
 
   return (
     <BlogLayout config={config}>
-      <PostDetailSection post={post} headings={headings} />
+      <PostDetailSection post={post} headings={headings} hasMermaid={post.hasMermaid} />
     </BlogLayout>
   );
 }

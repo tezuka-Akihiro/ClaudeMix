@@ -106,7 +106,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 セッション機能は、以下のファイル群によって構成されています。
 
 | カテゴリ | ファイル数 | 備考 |
-|:---|:---:|:---|
+| :--- |:---:| :--- |
 | セッション基盤 | 3ファイル | `session.server.ts`, `session.types.ts`, `server-flags.ts` |
 | SessionProvider | 1ファイル | `SessionProvider.tsx` |
 | 認証Route | 4ファイル | `_auth.login.tsx`, `_auth.logout.tsx`, `_protected.tsx`, `closed.tsx` |

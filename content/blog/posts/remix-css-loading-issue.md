@@ -321,7 +321,7 @@ export const links: LinksFunction = () => [
 開発環境とデプロイ環境の整合性が重要:
 
 | 環境 | レンダリングAPI | モジュールシステム |
-|------|----------------|-------------------|
+| --- | --- | --- |
 | Node.js | `renderToPipeableStream` | CommonJS/ESM |
 | Cloudflare Workers | `renderToReadableStream` | ESM only |
 

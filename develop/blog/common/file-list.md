@@ -11,7 +11,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 ### 1.1 セクションレベルE2E
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | common.spec.ts | tests/e2e/section/blog/common.spec.ts | commonセクション単独のE2Eテスト（OGP画像生成を含む） |
 
 ---
@@ -21,7 +21,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 ### 2.1 Routes (common固有)
 
 | ファイル名 | パス | URL | 説明 |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | blog._index.tsx | app/routes/blog._index.tsx | /blog | ブログトップページのRoute（BlogLayoutを使用した最小限の実装） |
 | ogp.$slug[.png].tsx | app/routes/ogp.$slug[.png].tsx | /ogp/:slug.png | OGP画像生成エンドポイント |
 
@@ -30,7 +30,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 ### 2.2 Components (common固有)
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | BlogLayout.tsx | app/components/blog/common/BlogLayout.tsx | ページ全体のレイアウトコンテナ（Header/Footer/Contentエリア） |
 | BlogLayout.test.tsx | app/components/blog/common/BlogLayout.test.tsx | ユニットテスト |
 | BlogHeader.tsx | app/components/blog/common/BlogHeader.tsx | ブログヘッダー（タイトル、menuボタン） |
@@ -45,7 +45,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 ## 3. 純粋ロジック層（lib層、Phase 2.2）
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | copyrightFormatter.ts | app/lib/blog/common/copyrightFormatter.ts | コピーライト文字列のフォーマット（年の自動更新など） |
 | copyrightFormatter.test.ts | app/lib/blog/common/copyrightFormatter.test.ts | ユニットテスト |
 | generateOgpImage.tsx | app/lib/blog/common/generateOgpImage.tsx | OGP画像生成ロジック（SatoriライブラリによるPNG生成） |
@@ -56,8 +56,10 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 ## 4. 副作用層（data-io層、Phase 2.1）
 
 | ファイル名 | パス | 説明 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | loadBlogConfig.server.ts | app/data-io/blog/common/loadBlogConfig.server.ts | ブログ設定情報の読み込み（タイトル、コピーライト、メニュー項目） |
 | loadBlogConfig.server.test.ts | app/data-io/blog/common/loadBlogConfig.server.test.ts | ユニットテスト |
 | loadPostMetadata.server.ts | app/data-io/blog/common/loadPostMetadata.server.ts | 記事メタデータの読み込み（MDX Frontmatter取得、OGP画像生成用） |
 | loadPostMetadata.server.test.ts | app/data-io/blog/common/loadPostMetadata.server.test.ts | ユニットテスト |
+| fetchOgpFont.server.ts | app/data-io/blog/common/fetchOgpFont.server.ts | OGPの生成 |
+| fetchOgpFont.server.test.ts | app/data-io/blog/common/fetchOgpFont.server.test.ts | ユニットテスト |

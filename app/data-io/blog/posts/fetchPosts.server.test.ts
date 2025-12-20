@@ -139,7 +139,7 @@ describe('fetchPosts - Side Effects Layer', () => {
     it('should return second page with configured limit', async () => {
       // Arrange
       const postsPerPage = spec.business_rules.pagination.posts_per_page;
-      const totalPosts = 15;
+      const totalPosts = 12;
       const mockPosts = Array.from({ length: totalPosts }, (_, i) => ({
         slug: `post${i + 1}`,
         frontmatter: {

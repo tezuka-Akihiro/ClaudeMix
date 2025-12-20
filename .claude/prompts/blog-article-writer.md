@@ -15,10 +15,10 @@
 
 記事執筆時、以下のフローに従ってタグを選定してください。
 
-### Step 1: spec.yamlを読み込む
+### Step 1: posts-spec.yamlを読み込む
 
-```xml
-<spec_yaml_path>develop/blog/posts/spec.yaml</spec_yaml_path>
+```
+app/specs/blog/posts-spec.yaml
 ```
 
 - 既存タグリストを確認
@@ -29,63 +29,24 @@
 
 記事の内容を以下の観点から分析し、適切なタグを選定してください（2-5個推奨）：
 
-```xml
-<tag_selection_criteria>
-  <technical_elements>
-    <!-- 技術要素タグ -->
-    <question>どの技術要素を扱っているか？</question>
-    <examples>
-      <example>Playwright, Vitest（テスト関連）</example>
-      <example>MCP, Skills, Prompts（Claude関連）</example>
-      <example>SSR, Loader, Action（Remix関連）</example>
-      <example>Workers, Pages, KV（Cloudflare関連）</example>
-    </examples>
-  </technical_elements>
+**技術要素タグ**: どの技術要素を扱っているか？
+- Playwright, Vitest（テスト関連）
+- MCP, Skills, Prompts（Claude関連）
+- SSR, Loader, Action（Remix関連）
+- Workers, Pages, KV（Cloudflare関連）
 
-  <nature_tags>
-    <!-- 性質タグ -->
-    <question>記事の起因や性質は何か？</question>
-    <examples>
-      <example>troubleshooting（トラブルシュート起因）</example>
-      <example>refactoring（リファクタリング起因）</example>
-      <example>UX（UX改善）</example>
-      <example>performance（パフォーマンス最適化）</example>
-    </examples>
-  </nature_tags>
-</tag_selection_criteria>
-```
+**性質タグ**: 記事の起因や性質は何か？
+- troubleshooting（トラブルシュート起因）
+- refactoring（リファクタリング起因）
+- performance（パフォーマンス最適化）
+- architecture（アーキテクチャ設計）
 
 ### Step 3: 新規タグが必要か判断
 
-既存タグに適切なものがない場合、以下のチェックリストに従って新規タグを提案してください：
-
-```xml
-<new_tag_checklist>
-  <step1>
-    <name>類似タグの確認</name>
-    <action>spec.yamlに類似するタグがないか確認</action>
-    <examples>
-      <bad>test, testing, tests（表記ゆれ）</bad>
-      <good>testing（統一）</good>
-    </examples>
-  </step1>
-
-  <step2>
-    <name>命名規則の確認</name>
-    <rules>
-      <rule>小文字を推奨（例外: 固有名詞・略語は大文字可）</rule>
-      <rule>ハイフン区切り（例: best-practices）</rule>
-      <rule>略語は大文字可（例: UX, SSR, MCP）</rule>
-      <rule>動名詞形を推奨（例: test → testing）</rule>
-    </rules>
-  </step2>
-
-  <step3>
-    <name>YAGNI原則の確認</name>
-    <question>本当に必要か？既存タグの組み合わせで代替できないか？</question>
-  </step3>
-</new_tag_checklist>
-```
+新規タグを提案する前に：
+1. posts-spec.yamlに類似タグがないか確認
+2. 命名規則を確認（小文字、ハイフン区切り、略語は大文字可）
+3. YAGNI原則: 既存タグの組み合わせで代替できないか？
 
 ### Step 4: 思考プロセスを明示（CoT）
 
@@ -100,7 +61,7 @@
    - 起因: [例: E2Eテストの失敗]
 
 2. **既存タグとのマッチング**
-   - Playwright: ✅ 該当（spec.yamlに存在）
+   - Playwright: ✅ 該当（posts-spec.yamlに存在）
    - troubleshooting: ✅ 該当（トラブルシュート起因）
    - UX: ⚠️ 未登録（Escapeキーによるモーダル閉鎖はUX改善）
 
@@ -167,6 +128,36 @@ new_tags:
     add_to_spec: true
 ```
 
+## 専門用語の注釈ガイドライン
+
+Remix、Cloudflare、Claude Code特有の技術用語には、読者の理解を助けるために注釈を追加してください。
+
+### 注釈が必要な用語の例
+
+- **Remix特有**: loader, action, SSR, Nested Routing, prefetch
+- **Cloudflare特有**: Workers, Edge, KV, Pages, Cache API
+- **Claude Code特有**: MCP, Skills, Projects, Prompts
+- **一般的な専門用語**: プレビルド、ランタイム、エッジ環境、メタデータ、アーキテクチャ、プラグイン
+
+### 注釈の書き方
+
+1. 本文中で用語を使用する際、末尾に「※」を追加
+2. その段落の後に、引用ブロック（>）で注釈を列挙
+3. 各注釈は「※ **用語**: 説明」という形式
+
+**例**:
+```markdown
+Cloudflare Workers（※）上でSSR（※）を実装し、初回読み込みを50%高速化しました。
+
+> ※ **Cloudflare Workers**: ユーザーに近いサーバーでプログラムを動かす環境。サイトが速くなります。
+> ※ **SSR**: Server-Side Rendering。サーバー側でHTMLを生成してから返す仕組み。
+```
+
+**注意点**:
+- 1つの段落で複数の専門用語を使う場合、まとめて注釈する
+- 同じ用語は記事内で初出時のみ注釈する
+- 注釈は平易な言葉で、1-2文で簡潔に説明する
+
 ## 具体例（マルチショット例示）
 
 ### 例1: トラブルシュート記事（60%）
@@ -184,7 +175,9 @@ tags: ["Playwright", "troubleshooting", "UX"]
 
 ## はじめに
 
-FilterPanelのE2Eテストでタイムアウトエラーが発生し...
+FilterPanelのE2Eテスト（※）でタイムアウトエラーが発生し...
+
+> ※ **E2Eテスト**: End-to-End テスト。ユーザーの操作を最初から最後まで自動で確認するテストのこと。
 ```
 
 **タグ選定の理由**:
@@ -217,7 +210,10 @@ tags: ["Workers", "SSR", "Vite", "performance"]
 
 ## はじめに
 
-ブログ記事一覧ページの初回読み込みが遅く...
+ブログ記事一覧ページの初回読み込みが遅く、Cloudflare Workers（※）上でSSR（※）を最適化することにしました。
+
+> ※ **Cloudflare Workers**: ユーザーに近いサーバーでプログラムを動かす環境。サイトが速くなります。
+> ※ **SSR**: Server-Side Rendering。サーバー側でHTMLを生成してから返す仕組み。
 ```
 
 **タグ選定の理由**:
@@ -236,38 +232,13 @@ new_tags:
     add_to_spec: true
 ```
 
-### 例3: 学んだことまとめ記事（5%）
-
-```yaml
----
-slug: "claude-code-skills-lessons"
-title: "Claude Code Skillsの実践で学んだプロンプトエンジニアリングの知見"
-description: "Claude Code Skillsを使った自動化実装から得られたプロンプト設計の教訓とベストプラクティス"
-author: "ClaudeMix Team"
-publishedAt: "2025-12-15"
-category: "ClaudeMix Philosophy"
-tags: ["Skills", "Prompts", "refactoring"]
----
-
-## はじめに
-
-Claude Code Skillsを使った自動化を進める中で...
-```
-
-**タグ選定の理由**:
-- `Skills`: Claude Code Skillsに関する記事
-- `Prompts`: プロンプトエンジニアリングの知見
-- `refactoring`: リファクタリングから得た学び
-
-**新規タグ提案**: なし（すべて既存タグ）
-
 ## 記事執筆時のチェックリスト
 
 記事を執筆する際、以下を確認してください：
 
 ### ✅ 必須項目
 
-- [ ] spec.yamlを読み込んで既存タグを確認した
+- [ ] posts-spec.yamlを読み込んで既存タグを確認した
 - [ ] タグを2-5個選定した（技術要素 + 性質）
 - [ ] カテゴリを適切に選定した（記事の価値で判断）
 - [ ] 新規タグが必要な場合、類似タグチェックと命名規則チェックを実施した
@@ -280,13 +251,11 @@ Claude Code Skillsを使った自動化を進める中で...
 - [ ] 記事は「はじめに」から始まっている
 - [ ] コード例には適切なコメントがある
 - [ ] 「学び」が明確に示されている（トラブルシュート記事の場合）
+- [ ] Remix/Cloudflare/Claude Code特有の技術用語には注釈（※）を追加している
 
 ## 参考リソース
 
-- **blog 記事戦略.md**: タグ・カテゴリ設計の決定事項
-- **develop/blog/posts/spec.yaml**: タグマスタとカテゴリ定義
-- **content/blog/posts/prompts-guide.md**: Claude公式プロンプトベストプラクティス
-- **content/blog/posts/refactoring-single-source-of-truth.md**: spec.yaml設計の実践例
+- **app/specs/blog/posts-spec.yaml**: タグマスタとカテゴリ定義
 
 ---
 
@@ -295,5 +264,5 @@ Claude Code Skillsを使った自動化を進める中で...
 1. ✅ **明確性と直接性**: タグ選定の具体的な指示
 2. ✅ **XMLタグ活用**: 構造化された情報提供
 3. ✅ **思考の連鎖（CoT）**: 推論プロセスの明示
-4. ✅ **マルチショット例示**: 3つの具体例
+4. ✅ **マルチショット例示**: 2つの具体例
 5. ✅ **システムプロンプト**: 役割と専門知識の明示

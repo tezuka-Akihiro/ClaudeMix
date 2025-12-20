@@ -1,0 +1,131 @@
+/* ========================================
+ * 共通コンポーネント (Common Components)
+ * BlogLayout, BlogHeader, NavigationMenu, BlogFooter
+ * ======================================== */
+
+.blog-layout {
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+  }
+
+  /* === BlogHeader === */
+  /* Header container styling */
+  .blog-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-index-fixed);
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-interactive-primary-bg-faint);
+    border-bottom-width: var(--border-width-sm);
+    border-bottom-style: solid;
+    border-bottom-color: var(--color-interactive-primary);
+    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
+  }
+
+  /* Title area in header */
+  .blog-header__title {
+    font-family: var(--font-heading-primary);
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-size-2xl);
+    color: var(--color-interactive-primary);
+    text-decoration: none;
+    text-shadow: 0 0 var(--spacing-2) var(--color-interactive-primary-bg);
+    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+  }
+
+  .blog-header__title:hover {
+    color: var(--color-text-primary);
+    text-shadow: 0 0 var(--spacing-3) var(--color-interactive-primary);
+  }
+
+  /* Menu button in header */
+  .blog-header__menu-button {
+    background-color: var(--color-interactive-primary-bg-subtle);
+    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-1) var(--spacing-3);
+    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
+    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+  }
+
+  .blog-header__menu-button:hover {
+    background-color: var(--color-interactive-primary-bg);
+    color: var(--color-text-secondary);
+    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+  }
+
+  /* === NavigationMenu === */
+  /* Menu container styling */
+  .navigation-menu {
+    background-color: var(--color-surface-dark-opaque);
+    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+    position: absolute;
+    right: var(--spacing-3);
+    top: calc(100% + var(--spacing-1));
+    z-index: var(--z-index-menu);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
+    min-width: var(--layout-card-width);
+    width: max-content;
+  }
+
+  /* Menu overlay for mobile */
+  .navigation-menu__overlay {
+    background-color: var(--color-overlay-strong);
+    inset: 0;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: calc(var(--z-index-menu) - 1);
+  }
+
+  /* Menu item styling */
+  .navigation-menu__item {
+    background-color: transparent;
+    color: var(--color-interactive-primary);
+    font-family: var(--font-heading-primary);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    padding: var(--spacing-1) var(--spacing-3);
+    text-decoration: none;
+    border-radius: 0;
+    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+  }
+
+  .navigation-menu__item:hover,
+  .navigation-menu__item:focus {
+    background-color: var(--color-interactive-primary-bg);
+    color: var(--color-text-primary);
+    outline: none;
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
+  }
+
+  /* === BlogFooter === */
+  /* Footer container styling */
+  .blog-footer {
+    height: var(--layout-footer-height);
+    background-color: var(--color-interactive-primary-bg-faint);
+    border-top: var(--border-width-sm) solid var(--color-interactive-primary);
+    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
+    font-size: var(--font-size-sm);
+  }
+
+  .blog-footer__copyright {
+    color: var(--color-text-secondary);
+    font-family: var(--font-heading-primary);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-normal);
+  }

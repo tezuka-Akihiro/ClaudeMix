@@ -5,7 +5,7 @@ author: "ClaudeMix Team"
 publishedAt: "2025-11-15"
 category: "ClaudeMix Philosophy"
 description: "ClaudeMixブログへようこそ。AI（Claude）との協調を前提に設計されたRemix & Cloudflare Edgeベースのモダンな開発体験を提供します。"
-tags: ["Workers", "MCP", "Skills"]
+tags: [""]
 ---
 
 ## Claudeと共に、次のレベルの開発体験へ

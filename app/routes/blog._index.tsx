@@ -1,7 +1,7 @@
 // blog/index - Route (routes層)
 // ブログトップページのRoute
 
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import BlogLayout from "~/components/blog/common/BlogLayout";
@@ -11,6 +11,20 @@ import { fetchPosts } from "~/data-io/blog/posts/fetchPosts.server";
 import { fetchAvailableFilters } from "~/data-io/blog/posts/fetchAvailableFilters.server";
 import { calculatePagination } from "~/lib/blog/posts/calculatePagination";
 import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
+import "~/styles/blog/posts.css";
+
+// 記事一覧ページ専用のCSS（PostCard, FilterPanel, Pagination等）
+import "~/styles/blog/posts.css";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Blog - Articles" },
+    {
+      name: "description",
+      content: "Browse our collection of articles covering web development, programming, and technology."
+    },
+  ];
+};
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);

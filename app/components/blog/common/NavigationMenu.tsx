@@ -64,6 +64,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ menuItems, isOpen, onCl
         className="navigation-menu navigation-menu-structure"
         data-testid="navigation-menu"
       >
+        {/* prefetch="none": ルート別バンドルの不要なプリフェッチを防止 */}
         {menuItems.map((item, index) => (
           <Link
             key={`${item.path}-${index}`}
@@ -71,6 +72,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ menuItems, isOpen, onCl
             className="navigation-menu__item"
             onClick={onClose}
             data-testid="menu-item"
+            prefetch="none"
           >
             {item.label}
           </Link>

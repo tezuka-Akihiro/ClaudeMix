@@ -1,0 +1,270 @@
+/* ========================================
+ * 記事詳細ページ (Post Detail Page)
+ * PostDetailSection, TableOfContents
+ * ======================================== */
+
+  .post-detail-section {
+    background-color: var(--color-background-primary);
+    padding: var(--spacing-4) var(--spacing-3);
+  }
+
+  /* Article metadata area */
+  .post-detail-section__meta {
+    border-bottom: var(--border-width-sm) solid var(--color-interactive-primary);
+    padding-bottom: var(--spacing-3);
+  }
+
+  /* Article title */
+  .post-detail-section__title {
+    font-family: var(--font-heading-primary);
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-primary);
+    text-shadow: 0 0 var(--spacing-2) var(--color-interactive-primary-bg);
+  }
+
+  /* Article metadata text (author, date) */
+  .post-detail-section__meta-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-normal);
+  }
+
+  /* Article content area with prose styling */
+  .post-detail-section__content {
+    padding-top: var(--spacing-4);
+  }
+
+  /* Code blocks (Shiki generates inline styles, minimal override) */
+  .post-detail-section__content pre.shiki {
+    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    border-radius: 0;
+    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+    padding: var(--spacing-3);
+    overflow-x: auto;
+    /* Shikiの背景色（インラインスタイル）を尊重するため、background-colorは指定しない */
+    /* backdrop-filterもShikiの背景色を邪魔するため削除 */
+  }
+
+  /* Mermaid用のpreタグ（Shikiではない） */
+  .post-detail-section__content pre.mermaid {
+    background-color: var(--color-interactive-primary-bg-faint);
+    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    border-radius: 0;
+    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
+  }
+
+  /* Inline code */
+  .post-detail-section__content :not(pre) > code {
+    background-color: var(--color-interactive-primary-bg-faint);
+    border-radius: var(--border-radius-sm);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-inline-code-vertical) var(--spacing-inline-code-horizontal);
+  }
+
+  /* Images (lazy loading + responsive handled by markdownConverter) */
+  .post-detail-section__content img {
+    border-radius: var(--border-radius-md);
+    /* max-width and height:auto are handled inline by markdownConverter */
+  }
+
+  /* --- Mermaid Diagram Styling --- */
+  .post-detail-section__content .mermaid {
+    padding: var(--spacing-4) 0;
+  }
+
+  /* Node styling (rectangles, diamonds, etc.) */
+  .post-detail-section__content .mermaid .node rect,
+  .post-detail-section__content .mermaid .node polygon {
+    fill: var(--color-interactive-primary-bg-faint);
+    stroke: var(--color-interactive-primary);
+    stroke-width: var(--border-width-sm);
+  }
+
+  /* Text inside nodes */
+  .post-detail-section__content .mermaid .nodeLabel {
+    font-family: var(--font-heading-primary);
+    fill: var(--color-text-primary);
+  }
+
+  /* Edge/Link styling */
+  .post-detail-section__content .mermaid .edgePaths .path {
+    stroke: var(--color-interactive-primary);
+  }
+
+  /* Arrowhead styling */
+  .post-detail-section__content .mermaid .arrowheadPath {
+    fill: var(--color-interactive-primary);
+  }
+
+  /* --- Prose Styling for Article Content --- */
+  .post-detail-section__content h1,
+  .post-detail-section__content h2,
+  .post-detail-section__content h3,
+  .post-detail-section__content h4 {
+    font-family: var(--font-heading-primary);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    padding-bottom: var(--spacing-2);
+    padding-top: var(--spacing-4);
+    border-bottom: var(--border-width-sm) solid var(--color-interactive-primary-bg);
+  }
+
+  .post-detail-section__content h2 {
+    scroll-margin-top: var(--layout-header-height);
+  }
+
+  .post-detail-section__content h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .post-detail-section__content h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  .post-detail-section__content h3 {
+    font-size: var(--font-size-lg);
+  }
+
+  .post-detail-section__content p {
+    color: var(--color-text-primary);
+    padding-bottom: var(--spacing-3);
+  }
+
+  .post-detail-section__content strong {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .post-detail-section__content em {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    font-style: normal;
+  }
+
+  .post-detail-section__content a {
+    color: var(--color-interactive-primary);
+    text-decoration: underline;
+    text-underline-offset: var(--shadow-offset-xs);
+  }
+
+  .post-detail-section__content a:hover {
+    color: var(--color-text-primary);
+    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary);
+  }
+
+  .post-detail-section__content ul,
+  .post-detail-section__content ol {
+    padding-left: var(--spacing-4);
+    padding-bottom: var(--spacing-3);
+  }
+
+  .post-detail-section__content li {
+    color: var(--color-text-primary);
+    padding-bottom: var(--spacing-1);
+  }
+
+  /* Task list items (checkboxes) */
+  .post-detail-section__content li.task-list-item {
+    list-style: none;
+    position: relative;
+  }
+
+  .post-detail-section__content .task-list-item-checkbox {
+    margin-right: var(--spacing-1);
+    cursor: not-allowed;
+    accent-color: var(--color-interactive-primary);
+  }
+
+  .post-detail-section__content blockquote {
+    border-left: var(--shadow-offset-sm) solid var(--color-interactive-primary);
+    padding-left: var(--spacing-3);
+    color: var(--color-text-secondary);
+  }
+
+  .post-detail-section__content hr {
+    border-color: var(--color-interactive-primary-bg);
+    margin: var(--spacing-5) 0;
+  }
+
+  /* --- Table Styling --- */
+  .post-detail-section__content table {
+    border-collapse: collapse;
+    margin: var(--spacing-5) 0;
+    width: 100%;
+  }
+
+  .post-detail-section__content th,
+  .post-detail-section__content td {
+    border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
+    padding: var(--spacing-2);
+    color: var(--color-text-primary); /* テーブル内のテキストを通常色に修正 */
+  }
+
+  .post-detail-section__content th {
+    background-color: var(--color-interactive-primary-bg-faint);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* === Table of Contents === */
+  /* 目次コンテナ */
+  .table-of-contents {
+    background-color: var(--color-interactive-primary-bg-faint);
+    border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
+  }
+
+  /* 目次タイトル */
+  .table-of-contents__title {
+    font-family: var(--font-heading-primary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    padding-bottom: var(--spacing-2);
+    border-bottom: var(--border-width-sm) solid var(--color-interactive-primary-bg);
+    margin: 0;
+  }
+
+  /* 目次リスト */
+  .table-of-contents__list {
+    list-style: none;
+    margin: 0;
+    padding-top: var(--spacing-2);
+  }
+
+  /* 目次アイテム */
+  .table-of-contents__item {
+    padding: 0;
+  }
+
+  /* 目次アイテム（h3レベル） */
+  .table-of-contents__item--level-3 {
+    padding-left: var(--spacing-3);
+  }
+
+  /* 目次アイテム（h4レベル） */
+  .table-of-contents__item--level-4 {
+    padding-left: var(--spacing-5);
+  }
+
+  /* 目次リンク - 詳細度を上げてグローバルaスタイルを上書き */
+  .table-of-contents .table-of-contents__link {
+    color: var(--color-interactive-primary);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    border-bottom: none;
+    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+  }
+
+  .table-of-contents .table-of-contents__link:hover {
+    color: var(--color-text-primary);
+    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary);
+    border-bottom: none;
+  }

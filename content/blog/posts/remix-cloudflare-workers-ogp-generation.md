@@ -68,7 +68,7 @@ OGP画像生成ライブラリは複数存在しますが、Cloudflare Workers�
 **検討したライブラリ:**
 
 | ライブラリ | Cloudflare Workers対応 | 問題点 |
-|:---|:---:|:---|
+| :--- | :---: | :--- |
 | @vercel/og | ❌ | Vercel環境専用 |
 | satori | △ | 設定が複雑、WASM読み込みに工夫が必要 |
 | **workers-og** | ✅ | Workers専用、即座に動作 |

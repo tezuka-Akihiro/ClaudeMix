@@ -9,7 +9,7 @@
 ## 1. エラー概要
 
 | 項目 | 内容 |
-|:---|:---|
+| :--- | :--- |
 | **エラー種別** | Vitestユニットテスト - モック機能不全 |
 | **発生日時** | 2025-10-24 |
 | **発生箇所** | `app/data-io/service-name/implementation-flow/checkImplementationFiles.server.test.ts` |
@@ -346,7 +346,7 @@ Duration    882ms
 ### 7.1 副作用層のテスト戦略
 
 | アプローチ | メリット | デメリット | 適用場面 |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | **モックを使用** | テストの独立性が高い | 設定が複雑、環境依存の問題 | 外部APIコール、DB操作など |
 | **実リソースを使用** | シンプル、実際の動作を保証 | テストの独立性が低い | ファイル存在確認など単純な操作 |
 
@@ -375,7 +375,7 @@ Duration    882ms
 ## 8. 関連ファイル
 
 | ファイル | 役割 | 状態 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | [checkImplementationFiles.server.ts](app/data-io/service-name/implementation-flow/checkImplementationFiles.server.ts) | 実装ファイル | ✅ 完成 |
 | [checkImplementationFiles.server.test.ts](app/data-io/service-name/implementation-flow/checkImplementationFiles.server.test.ts) | テストファイル | ✅ 全テストパス |
 | [TDD_WORK_FLOW.md](develop/service-name/implementation-flow/TDD_WORK_FLOW.md) | 進捗管理 | ✅ 更新済み |

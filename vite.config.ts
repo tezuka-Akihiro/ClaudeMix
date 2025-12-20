@@ -32,12 +32,30 @@ export default defineConfig({
     }
   },
   build: {
+    // Lighthouse最適化: CSS/JSのバンドルサイズ削減
+    cssCodeSplit: true,  // ルート別にCSS分割（未使用CSS削減）
+    cssMinify: true,     // CSS圧縮を有効化
+    minify: 'esbuild',   // 高速なesbuildで圧縮（terserより高速）
+    target: 'es2020',    // モダンブラウザ向けにポリフィル削減
     rollupOptions: {
       external: [
         // テストファイルをビルドから除外
         /\.test\.(ts|tsx|js|jsx)$/,
         /\.spec\.(ts|tsx|js|jsx)$/,
       ],
+      output: {
+        // アセットファイル名の最適化（キャッシュ効率化）
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name?.split('.');
+          const extType = info?.[info.length - 1];
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType || '')) {
+            return `assets/images/[name]-[hash][extname]`;
+          } else if (/woff2?|ttf|otf|eot/i.test(extType || '')) {
+            return `assets/fonts/[name]-[hash][extname]`;
+          }
+          return `assets/[name]-[hash][extname]`;
+        },
+      },
       onwarn(warning, warn) {
         // UNRESOLVED_IMPORT 警告を無視 (Viteが正しく解決するため)
         if (warning.code === 'UNRESOLVED_IMPORT') {

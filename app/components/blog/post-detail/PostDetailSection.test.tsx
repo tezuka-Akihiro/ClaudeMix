@@ -18,6 +18,7 @@ const createMockPost = (overrides: Partial<RenderedPost> = {}): RenderedPost => 
   tags: [],
   category: 'Test Category',
   source: null,
+  hasMermaid: false,
   headings: [],
   ...overrides,
 });

@@ -3,19 +3,30 @@
 
 import { useEffect } from 'react';
 import { TableOfContents } from './TableOfContents';
+import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import type { Heading, RenderedPost } from '~/specs/blog/types';
 
-// Mermaid.jsのグローバル型定義を拡張
+// Mermaid.jsのグローバル型定義
 declare global {
   interface Window {
     mermaid?: {
       run: (config?: { querySelector?: string }) => Promise<void>;
-      initialize: (config: unknown) => void;
+      initialize: (config: { startOnLoad: boolean; theme: string }) => void;
     };
   }
 }
 
-export function PostDetailSection({ post, headings }: { post: RenderedPost, headings: Heading[] }) {
+interface PostDetailSectionProps {
+  post: RenderedPost;
+  headings: Heading[];
+  hasMermaid?: boolean;
+}
+
+export function PostDetailSection({
+  post,
+  headings,
+  hasMermaid = false
+}: PostDetailSectionProps) {
   // publishedAtをフォーマット
   const formattedDate = new Date(post.publishedAt).toLocaleDateString('ja-JP', {
     year: 'numeric',
@@ -24,14 +35,28 @@ export function PostDetailSection({ post, headings }: { post: RenderedPost, head
   });
 
   useEffect(() => {
-    // window.mermaidが利用可能かチェック
-    if (typeof window !== 'undefined' && window.mermaid) {
-      // Mermaid v11 の正しい API を使用
+    // Mermaidダイアグラムが含まれる場合のみ動的にロード
+    if (!hasMermaid) return;
+
+    if (typeof window !== 'undefined' && !window.mermaid) {
+      import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
+        .then((mermaid) => {
+          window.mermaid = mermaid.default;
+          window.mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+          window.mermaid.run({
+            querySelector: '.mermaid',
+          });
+        })
+        .catch((error) => {
+          console.error('Failed to load Mermaid:', error);
+        });
+    } else if (window.mermaid) {
+      // すでにロード済みの場合は実行のみ
       window.mermaid.run({
         querySelector: '.mermaid',
       });
     }
-  }, []); // 空配列: コンポーネントマウント時のみ実行
+  }, [hasMermaid]); // hasMermaidの変更を監視
 
   return (
     <article

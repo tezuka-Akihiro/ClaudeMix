@@ -24,7 +24,8 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ blogTitle, menuItems }) => {
 
   return (
     <header className="blog-header blog-header-structure" data-testid="blog-header">
-      <Link to="/blog" className="blog-header__title" data-testid="blog-header-title">
+      {/* prefetch="none": 他ルートのバンドルをプリフェッチせず、未使用JSを削減 */}
+      <Link to="/blog" className="blog-header__title" data-testid="blog-header-title" prefetch="none">
         {blogTitle}
       </Link>
       <button

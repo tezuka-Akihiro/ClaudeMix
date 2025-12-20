@@ -175,8 +175,8 @@ describe('generateOgpImage - Pure Logic Layer', () => {
     it('should handle emoji in metadata', async () => {
       // Arrange
       const metadata: PostMetadata = {
-        title: '🚀 Deploy Guide 🎉',
-        description: '📝 Learn how to deploy your app with ✨ ease',
+        title: '🚀 test Guide 🎉',
+        description: '📝 Learn how to test your app with ✨ ease',
         author: '👨‍💻 Developer',
       };
 
