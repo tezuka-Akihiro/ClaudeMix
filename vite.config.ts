@@ -10,6 +10,10 @@ export default defineConfig({
       future: {
         // React Router v7のSplatルートの挙動をオプトインし、警告を解消
         v3_relativeSplatPath: true,
+        v3_fetcherPersist: true,
+        v3_lazyRouteDiscovery: true,
+        v3_singleFetch: true,
+        v3_throwAbortReason: true,
       },
       serverModuleFormat: "esm",
     }),

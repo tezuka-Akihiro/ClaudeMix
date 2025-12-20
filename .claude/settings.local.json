@@ -149,7 +149,12 @@
       "Bash(do:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git rebase:*)"
+      "Bash(git rebase:*)",
+      "Bash(if [ -f .git/MERGE_HEAD ])",
+      "Bash(then echo \"Merge in progress\")",
+      "Bash(else echo \"No merge in progress\")",
+      "Bash(npm run lint:blog-metadata:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
