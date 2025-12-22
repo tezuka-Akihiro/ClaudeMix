@@ -23,11 +23,8 @@
 
 | コマンド | 目的 | 備考 |
 |:---|:---|:---|
-| `npm run dev` | 開発サーバー起動 | ポート5173でVite開発サーバーが起動 |
-| `npm run build` | 本番ビルド | prebuildスクリプトも自動実行される |
-| `npm test` | ユニットテスト実行 | Vitestを使用 |
-| `npm run test:e2e` | E2Eテスト実行 | Playwrightを使用 |
-| `npm run test:e2e:ui` | E2Eテスト（UI モード） | デバッグに便利 |
+| `npm run dev:wrangler` | 開発サーバー起動 | Wranglerでランタイム制約を反映した開発環境を起動（必須） |
+| `npm test` | ユニットテスト実行 | Vitestを使用（E2Eはオペレーターが実行） |
 | `npm run typecheck` | 型チェック | すべてのTypeScriptファイルを検証 |
 | `npm run lint:all` | 全リント実行 | テンプレート、CSS、ブログメタデータを検証 |
 | `npm run lint:template` | テンプレートリント | 行数制限、ハードコード検出 |
@@ -70,13 +67,14 @@ scripts/
 content/
 └── blog/
     ├── posts/               # ブログ記事（Markdown）
-    └── spec.yaml            # ブログ機能の単一真実の源（SSoT）
+    └── blog-spec.yaml       # ブログ機能の単一真実の源（SSoT）
 ```
 
 ### 重要なファイル
 
-- `content/blog/spec.yaml`: **すべてのリテラル値の定義源**（SSoT原則）
-- `app/spec-loader/specLoader.server.ts`: spec.yamlを動的に読み込むユーティリティ
+- `content/{section}/{section}-spec.yaml`: **すべてのリテラル値の定義源**（SSoT原則）
+  - 例: `content/blog/blog-spec.yaml`
+- `app/spec-loader/specLoader.server.ts`: {section}-spec.yamlを動的に読み込むユーティリティ
 - `docs/CSS_structure/STYLING_CHARTER.md`: スタイリング規律の詳細定義
 - `package.json`: すべてのnpmスクリプトの定義
 
@@ -102,12 +100,12 @@ content/
 
 ### Single Source of Truth (SSoT) 原則
 
-**`spec.yaml`を唯一の信頼できる情報源とします。**
+**`{section}-spec.yaml`を唯一の信頼できる情報源とします。**
 
-1. **値の一元管理**: カテゴリID、UIセレクタ、ビジネスルール等のリテラル値は`spec.yaml`で定義し、ハードコードを禁止
-2. **動的参照**: 実装・テストでは`specloader`等のユーティリティを介して`spec.yaml`の値を動的に参照
+1. **値の一元管理**: カテゴリID、UIセレクタ、ビジネスルール等のリテラル値は`{section}-spec.yaml`で定義し、ハードコードを禁止
+2. **動的参照**: 実装・テストでは`specloader`等のユーティリティを介して`{section}-spec.yaml`の値を動的に参照
 3. **汎用的な記述**: 設計書や実装コメントでは、「複数回」「特定の条件下で」のような汎用表現を用い、具体的な値を記述しません（例: `3回`はNG）
-4. **参照案内の禁止**: 「`spec.yaml`を参照」といったコメントは、コードの自己説明性を損なうため禁止
+4. **参照案内の禁止**: 「`{section}-spec.yaml`を参照」といったコメントは、コードの自己説明性を損なうため禁止
 
 ### スタイリング規律（Tailwind + 4層CSS）
 
@@ -180,8 +178,8 @@ npm install
 # Playwrightブラウザのインストール
 npx playwright install
 
-# 開発サーバー起動
-npm run dev
+# 開発サーバー起動（ランタイム制約を反映）
+npm run dev:wrangler
 ```
 
 ### ビルドプロセスの理解
@@ -224,7 +222,7 @@ npm run dev:wrangler
 
 1. **`app/specs/`は自動生成される**:
    - 手動編集禁止
-   - 元データは`content/blog/spec.yaml`
+   - 元データは`content/{section}/{section}-spec.yaml`（例: `content/blog/blog-spec.yaml`）
 
 2. **メモリ不足の可能性**:
    - 開発サーバーは`--max-old-space-size=4096`で起動
@@ -233,7 +231,7 @@ npm run dev:wrangler
 ### リントエラーの対処
 
 - **`npm run lint:css-arch`でエラー**: `tests/lint/css-arch-layer-report.md`の内容に従って修正
-- **`npm run lint:template`でエラー**: 行数制限超過またはハードコード検出。ファイルを分割するか、`spec.yaml`に定義を移行
+- **`npm run lint:template`でエラー**: 行数制限超過またはハードコード検出。ファイルを分割するか、`{section}-spec.yaml`に定義を移行
 
 ---
 
