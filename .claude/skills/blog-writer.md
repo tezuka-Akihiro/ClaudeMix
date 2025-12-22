@@ -1,3 +1,9 @@
+---
+name: blog-writer
+description: Writes blog articles for ClaudeMix project following BAB (Before-After-Bridge) format. Use when you have an approved article proposal and need to write the full article with metadata, introduction (5-part fear-based BAB structure), and main content. Requires prior article proposal from blog-planner skill.
+allowed-tools: Read, Write, Edit
+---
+
 # ブログ記事執筆スキル
 
 ## あなたの役割
