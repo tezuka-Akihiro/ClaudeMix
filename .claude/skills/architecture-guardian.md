@@ -172,17 +172,17 @@
 
 開発者が新機能の設計を開始する際や、アーキテクチャに関する相談をしたい時に明示的に呼び出す。
 
-~~~
+~~~text
 @ArchitectureGuardian "ユーザー認証機能の設計を提案して"
-~~~
+~~~text
 
-~~~
+~~~text
 @ArchitectureGuardian "このコードのアーキテクチャをチェックして"
-~~~
+~~~text
 
-~~~
+~~~text
 @ArchitectureGuardian "どのサブエージェントを使えばいい？"
-~~~
+~~~text
 
 #### 自動起動（監査モード）
 
@@ -205,7 +205,7 @@ sequenceDiagram
     AG-->>User: 修正ガイドを提示
     AG->>GO: 必要なファイル生成コマンドを提示
     User->>GO: 推奨に基づき実行
-~~~
+~~~text
 
 ---
 
@@ -227,7 +227,7 @@ graph TD
 
     AG -- "教育/Q&A" --> User_Design
     AG -- "教育/Q&A" --> User_Impl
-~~~
+~~~text
 
 ---
 
@@ -235,7 +235,7 @@ graph TD
 
 ### 【設計フェーズ】
 
-~~~
+~~~text
 開発者: @ArchitectureGuardian 「ダッシュボード画面を作りたい。どういう設計がいい？」
 
 Guardian: 「承知しました。ダッシュボード画面の設計を提案します...（中略）...
@@ -250,7 +250,7 @@ Phase 1: E2Eテスト作成 (tests/e2e/screen/dashboard.screen.spec.ts)
 Phase 2: ユニットテスト + 実装 (lib → data-io → UI)
 
 次に、@GeneratorOperator を呼び出してこれらのファイルを生成しましょうか？」
-~~~
+~~~text
 
 ### 【実装フェーズ】
 
@@ -258,7 +258,7 @@ Phase 2: ユニットテスト + 実装 (lib → data-io → UI)
 
 ### 【レビューフェーズ】
 
-~~~
+~~~text
 開発者: @CodeReviewer 「ダッシュボード機能の実装が終わったのでレビューをお願いします」
 
 CodeReviewer: 「レビューを開始します... 違反を1件検知しました。@ArchitectureGuardian に詳細なガイダンスを依頼します。」
@@ -279,7 +279,7 @@ Guardian: (自動起動)
 **修正コマンド:**
 ~~~bash
 npm run generate -- --category data-io --service dashboard --name dashboardLoader
-~~~
+~~~text
 
 修正後、以下を実行してください：
 
@@ -288,7 +288,7 @@ npm run generate -- --category data-io --service dashboard --name dashboardLoade
 3. `@CodeReviewer` - 再レビュー依頼
 」
 
-~~~
+~~~text
 
 ---
 
@@ -446,7 +446,7 @@ npm run generate -- --category data-io --service dashboard --name dashboardLoade
 - npm run generate -- --category lib --service auth --name passwordValidator
 - npm run generate -- --category data-io --service auth --name authService
 - npm run generate -- --category ui --ui-type route --service auth --name login
-~~~
+~~~text
 
 ### B.2 ArchitectureGuardian → CodeReviewer
 
@@ -464,7 +464,7 @@ npm run generate -- --category data-io --service dashboard --name dashboardLoade
 - lib層から data-io層のimportが検出されました
 
 詳細レビュー（命名規則、TypeScript品質含む）をお願いします。
-~~~
+~~~text
 
 ### B.3 CodeReviewer → ArchitectureGuardian（自動起動）
 
@@ -479,7 +479,7 @@ npm run generate -- --category data-io --service dashboard --name dashboardLoade
 違反: lib層でfetchを使用（副作用の実行）
 
 ArchitectureGuardian、修正ガイダンスをお願いします。
-~~~
+~~~text
 
 **ArchitectureGuardianの応答**:
 
@@ -513,13 +513,13 @@ export function validateEmail(email: string): boolean {
 export function validatePassword(password: string): boolean {
   return password.length >= 8;
 }
-~~~
+~~~text
 
 Step 2: data-io層にfetch処理を移動
 
 ~~~bash
 npm run generate -- --category data-io --service auth --name loginService
-~~~
+~~~text
 
 Step 3: UI層から data-io層を呼び出す
 
@@ -541,7 +541,7 @@ export async function action({ request }: ActionArgs) {
   // API呼び出し（data-io層）
   return await loginUser(email, password);
 }
-~~~
+~~~text
 
 修正後、以下を実行してください：
 
@@ -549,7 +549,7 @@ export async function action({ request }: ActionArgs) {
 2. `npm run test` - ユニットテスト実行
 3. `@CodeReviewer` - 再レビュー依頼
 
-~~~
+~~~text
 
 ---
 

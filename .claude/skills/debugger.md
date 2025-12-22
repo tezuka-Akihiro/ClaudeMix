@@ -38,11 +38,11 @@ type ErrorType =
   | 'logic-error'        // ロジックエラー
   | 'integration-error'  // 統合エラー
   | 'performance-issue'; // パフォーマンス問題
-~~~
+~~~text
 
 ### 2. デバッグプロセス
 
-~~~
+~~~text
 1. エラー情報収集
    ↓
 2. スタックトレース分析
@@ -58,7 +58,7 @@ type ErrorType =
 7. 修正案生成
    ↓
 8. テスト戦略提案
-~~~
+~~~text
 
 ### 3. 対応するエラー分類
 
@@ -111,7 +111,7 @@ const libDebugStrategy = {
     "配列/オブジェクトの不変性違反"
   ]
 };
-~~~
+~~~text
 
 #### data-io層のデバッグ
 
@@ -131,7 +131,7 @@ const dataIoDebugStrategy = {
     "レスポンス型の不一致"
   ]
 };
-~~~
+~~~text
 
 #### ui層のデバッグ
 
@@ -151,7 +151,7 @@ const uiDebugStrategy = {
     "イベントハンドラーのバインディング"
   ]
 };
-~~~
+~~~text
 
 ---
 
@@ -180,7 +180,7 @@ const uiDebugStrategy = {
 
 5. **実際の動作**
    - 何が起きているか
-~~~
+~~~text
 
 ### 2. 根本原因分析（5 Whys法）
 
@@ -206,7 +206,7 @@ Why5: なぜエッジケースのテストが不足したか？
 
 **根本原因**: TDDプロセスの不完全な実行
 **再発防止**: TDDチェックリストの厳格化
-~~~
+~~~text
 
 ### 3. 修正案生成
 
@@ -225,7 +225,7 @@ interface FixApproach {
   cons: string[];
   code?: string;
 }
-~~~
+~~~text
 
 ---
 
@@ -257,20 +257,20 @@ progressCalculator のユニットテストが失敗。total が 0 の場合に 
 **テストケース**: "should return 0 when total is 0"
 
 **エラーメッセージ**:
-~~~
+~~~text
 
 Expected: 0
 Received: NaN
 
-~~~
+~~~text
 
 **スタックトレース**:
-~~~
+~~~text
 
 at progressCalculator.test.ts:42:23
 at progressCalculator.ts:18:15
 
-~~~
+~~~text
 
 ---
 
@@ -283,7 +283,7 @@ at progressCalculator.ts:18:15
 // 問題のコード (line 18)
 const progress = (completed / total) * 100;
 // total が 0 の場合、NaN になる
-~~~
+~~~text
 
 ### 根本原因
 
@@ -321,7 +321,7 @@ export function progressCalculator(completed: number, total: number): number {
   const progress = (completed / total) * 100;
   return Math.min(progress, 100);
 }
-~~~
+~~~text
 
 **Pros**:
 
@@ -343,7 +343,7 @@ export function progressCalculator(completed: number, total: number): number {
   const progress = (completed / Math.max(total, 1)) * 100;
   return Math.min(progress, 100);
 }
-~~~
+~~~text
 
 **Pros**:
 
@@ -378,7 +378,7 @@ describe('progressCalculator edge cases', () => {
     expect(progressCalculator(15, 10)).toBe(100);
   });
 });
-~~~
+~~~text
 
 ---
 
@@ -415,7 +415,7 @@ describe('progressCalculator edge cases', () => {
 **策定者**: Debugger Agent
 **承認**: 修正実施前にコードレビュー推奨
 
-~~~
+~~~text
 
 ---
 
@@ -437,7 +437,7 @@ app/lib/service-name/roadmap/stepStatusEvaluator.ts:25
 **再現手順**:
 1. npm test を実行
 2. stepStatusEvaluator のテストが失敗
-~~~
+~~~text
 
 ### テスト失敗の場合
 
@@ -450,7 +450,7 @@ E2Eテストが失敗しました:
 **エラー**: Locator not found: [data-testid="progress-percentage"]
 
 調査と修正案をお願いします。
-~~~
+~~~text
 
 ### パフォーマンス問題の場合
 
@@ -459,7 +459,7 @@ E2Eテストが失敗しました:
 
 Roadmapページの表示が遅いです（5秒以上）。
 パフォーマンス調査と改善案をお願いします。
-~~~
+~~~text
 
 ---
 
@@ -477,7 +477,7 @@ Debugger: 根本原因分析 + 修正案提示
 メインエージェント: 修正実施
    ↓
 @CodeReviewer で再レビュー
-~~~
+~~~text
 
 ### GeneratorOperator → Debugger
 
@@ -489,7 +489,7 @@ GeneratorOperator: ファイル生成後にテスト失敗
 Debugger: テンプレート起因のバグを発見
    ↓
 @GeneratorMaintainer へエスカレーション（テンプレート修正）
-~~~
+~~~text
 
 ### Debugger → CodeReviewer
 
@@ -499,7 +499,7 @@ Debugger: 修正完了
 @CodeReviewer へ修正コードのレビュー依頼
    ↓
 CodeReviewer: アーキテクチャ準拠チェック
-~~~
+~~~text
 
 ---
 
@@ -525,7 +525,7 @@ const debugTools = {
     "Lighthouse（パフォーマンス）"
   ]
 };
-~~~
+~~~text
 
 ### デバッグコマンド
 
@@ -541,7 +541,7 @@ npm run typecheck
 
 # Lint エラー確認
 npm run lint
-~~~
+~~~text
 
 ---
 
@@ -584,7 +584,7 @@ const debuggerConfig = {
   suggestMultipleFixes: true, // 複数の修正案を提示
   includePreventionPlan: true // 再発防止策を含める
 };
-~~~
+~~~text
 
 ---
 

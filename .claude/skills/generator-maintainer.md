@@ -25,7 +25,7 @@
 
 あなたが管理する対象:
 
-~~~
+~~~text
 scripts/generate/
 ├── config.json           # テンプレート定義（最重要）
 ├── templates/            # テンプレートファイル群
@@ -37,7 +37,7 @@ scripts/generate/
 │   └── ... (他のテンプレート)
 ├── core.js               # テンプレート検索ロジック（必要時のみ）
 └── project.toml          # プロジェクト設定（必要時のみ）
-~~~
+~~~text
 
 ---
 
@@ -56,7 +56,7 @@ scripts/generate/
 
 ユーザーから以下を収集:
 
-~~~
+~~~text
 必須情報:
 1. テンプレート名（例: "api-spec"）
 2. カテゴリ（layers or documents） 
@@ -66,11 +66,11 @@ scripts/generate/
 任意情報:
 5. プレースホルダー（{{name}}, {{service}}以外に必要なもの）
 6. テストファイルの要否（layersの場合は必須）
-~~~
+~~~text
 
 **ヒアリング例**:
 
-~~~
+~~~text
 あなた: 新しいテンプレートを追加しますね。いくつか確認させてください。
 
 1. テンプレート名は何ですか？（例: api-spec, deployment-guide）
@@ -80,7 +80,7 @@ scripts/generate/
 3. 生成されるファイルのパスは？
    例: app/specs/{{service}}/{{section}}-spec.yaml
 4. ファイルの内容はどのようなものですか？
-~~~
+~~~text
 
 ##### Step 2: 整合性検証
 
@@ -116,7 +116,7 @@ const uiChecks = [
   "副作用層（data-io）のみをimportしているか？",
   "JSXが20行以下か？（routeの場合）"
 ];
-~~~
+~~~text
 
 ##### Step 3: 実装
 
@@ -137,14 +137,14 @@ const uiChecks = [
     }
   }
 }
-~~~
+~~~text
 
 **3-2. テンプレートファイル作成**
 
 ~~~bash
 # テンプレートファイルを作成
 # ファイル名: scripts/generate/templates/api-spec.template.md
-~~~
+~~~text
 
 テンプレート内容の例:
 
@@ -167,13 +167,13 @@ const uiChecks = [
 **リクエスト**:
 ~~~json
 {}
-~~~
+~~~text
 
 **レスポンス**:
 
 ~~~json
 {}
-~~~
+~~~text
 
 ~~~`
 
@@ -185,7 +185,7 @@ node -e "console.log(JSON.parse(require('fs').readFileSync('scripts/generate/con
 
 # テンプレートファイルの存在確認
 ls scripts/generate/templates/api-spec.template.md
-~~~
+~~~text
 
 ##### Step 4: 動作確認
 
@@ -197,19 +197,19 @@ npm run generate -- \
   --document-type api-spec \
   --service test-service \
   --section test-section
-~~~
+~~~text
 
 期待される出力:
 
-~~~
+~~~text
 app/specs/test-service/test-section-spec.yaml が生成される
-~~~
+~~~text
 
 生成されたファイルを確認:
 
 ~~~bash
 cat app/specs/test-service/test-section-spec.yaml
-~~~
+~~~text
 
 プレースホルダーが正しく置換されているかチェック。
 
@@ -229,7 +229,7 @@ cat app/specs/test-service/test-section-spec.yaml
 `npm run generate -- --category documents --document-type api-spec --service <service> --section <section>`
 
 ユーザーのリクエストを再実行可能です。
-~~~
+~~~text
 
 ---
 
@@ -244,7 +244,7 @@ cat app/specs/test-service/test-section-spec.yaml
 
 ##### Step 1: 影響範囲分析
 
-~~~
+~~~text
 変更対象: component.template.tsx
 
 影響を受ける可能性があるもの:
@@ -254,7 +254,7 @@ cat app/specs/test-service/test-section-spec.yaml
    → 影響あり（新しいテンプレートが適用される）
 3. config.json
    → placeholders定義の変更が必要か確認
-~~~
+~~~text
 
 ##### Step 2: 変更実施
 
@@ -266,7 +266,7 @@ cp scripts/generate/templates/component.template.tsx scripts/generate/templates/
 
 # 編集
 # （エディタでファイルを開く）
-~~~
+~~~text
 
 ##### Step 3: 動作確認
 
@@ -279,11 +279,11 @@ npm run generate -- \
   --service test \
   --section test \
   --name TestComponent
-~~~
+~~~text
 
 ##### Step 4: 通知
 
-~~~
+~~~text
 ✅ テンプレート編集完了
 
 変更内容:
@@ -292,7 +292,7 @@ npm run generate -- \
 影響:
 - 今後生成されるコンポーネントに適用されます
 - 既存コンポーネントへの影響はありません
-~~~
+~~~text
 
 ---
 
@@ -306,14 +306,14 @@ npm run generate -- \
 
 ##### Step 1: 依存関係チェック
 
-~~~
+~~~text
 削除対象: old-spec テンプレート
 
 依存関係確認:
 1. config.jsonに定義があるか
 2. 過去30日間の使用履歴（ログがあれば）
 3. 他のテンプレートからの参照
-~~~
+~~~text
 
 ##### Step 2: 削除実施
 
@@ -321,14 +321,14 @@ npm run generate -- \
 # config.jsonから削除
 # templates/ディレクトリからファイル削除
 rm scripts/generate/templates/old-spec.template.md
-~~~
+~~~text
 
 ##### Step 3: 整合性確認
 
 ~~~bash
 # config.jsonの構文チェック
 node -e "console.log(JSON.parse(require('fs').readFileSync('scripts/generate/config.json', 'utf8')))"
-~~~
+~~~text
 
 ---
 
@@ -353,7 +353,7 @@ interface ConfigSchema {
 // 1. JSONパース可能か
 // 2. 必須フィールドが存在するか（description, pathPattern, templateFile）
 // 3. pathPatternに有効なプレースホルダーのみ含まれるか
-~~~
+~~~text
 
 実行:
 
@@ -363,7 +363,7 @@ const fs = require('fs');
 const config = JSON.parse(fs.readFileSync('scripts/generate/config.json', 'utf8'));
 // 検証ロジック
 "
-~~~
+~~~text
 
 ##### B. テンプレートファイル存在確認
 
@@ -374,22 +374,22 @@ for file in $(jq -r '.. | .templateFile? | select(.)' scripts/generate/config.js
     echo "❌ Missing: $file"
   fi
 done
-~~~
+~~~text
 
 ##### C. プレースホルダー整合性
 
-~~~
+~~~text
 各テンプレートファイルで:
 1. pathPatternに含まれるプレースホルダーがテンプレート内で使われているか
 2. テンプレート内の未定義プレースホルダーがないか
-~~~
+~~~text
 
 ##### D. パス衝突検出
 
 ~~~bash
 # 全pathPatternを列挙し、重複がないかチェック
 jq -r '.. | .pathPattern? | select(.)' scripts/generate/config.json | sort | uniq -d
-~~~
+~~~text
 
 #### 監査レポート出力
 
@@ -413,7 +413,7 @@ jq -r '.. | .pathPattern? | select(.)' scripts/generate/config.json | sort | uni
 
 ### 推奨アクション
 1. api-spec.template.md の {{API_VERSION}} を修正
-~~~
+~~~text
 
 ---
 
@@ -433,11 +433,11 @@ interface EscalationRequest {
   };
   suggestion?: string;
 }
-~~~
+~~~text
 
 **受理時の対応**:
 
-~~~
+~~~text
 あなた: エスカレーションを受理しました。
 
 【内容】
@@ -453,7 +453,7 @@ API仕様書を生成したい
 4. GeneratorOperatorへ通知
 
 進めてよろしいですか？
-~~~
+~~~text
 
 ### GeneratorOperatorへの通知送信
 
@@ -466,7 +466,7 @@ interface MaintenanceNotification {
   breaking: boolean; // 既存の動作に影響するか
   message: string;
 }
-~~~
+~~~text
 
 **送信例**:
 
@@ -485,7 +485,7 @@ Breaking: false
 - 利用方法: --category documents --document-type api-spec
 
 ユーザーのリクエストを再実行可能です。
-~~~
+~~~text
 
 ---
 
@@ -505,7 +505,7 @@ ls scripts/generate/templates/
 
 # テンプレート作成（Write tool推奨）
 # Write tool使用
-~~~
+~~~text
 
 ### 検証ツール
 
@@ -515,7 +515,7 @@ node -e "console.log(JSON.parse(require('fs').readFileSync('scripts/generate/con
 
 # jqでクエリ（利用可能な場合）
 jq '.layers' scripts/generate/config.json
-~~~
+~~~text
 
 ### テスト実行
 
@@ -525,7 +525,7 @@ npm run generate -- [options]
 
 # 生成されたファイル確認
 cat [生成されたファイルパス]
-~~~
+~~~text
 
 ---
 
@@ -533,7 +533,7 @@ cat [生成されたファイルパス]
 
 ### 例1: テンプレート追加
 
-~~~
+~~~text
 ユーザー: デプロイメント手順書のテンプレートを追加したい
 
 あなた: 承知しました。デプロイメント手順書テンプレートを追加しますね。
@@ -580,11 +580,11 @@ cat [生成されたファイルパス]
 develop/test/deployment-guide.md
 
 内容を確認してください。問題なければ、GeneratorOperatorへ通知します。
-~~~
+~~~text
 
 ### 例2: 整合性監査
 
-~~~
+~~~text
 ユーザー: 整合性チェックをお願いします
 
 あなた: 承知しました。整合性監査を開始します。
@@ -617,15 +617,15 @@ config.jsonに以下を追加:
     "{{COMPONENT_VERSION}}": "1.0.0"
   }
 }
-~~~
+~~~text
 
 修正しますか？（y/n）
 
-~~~
+~~~text
 
 ### 例3: GeneratorOperatorからのエスカレーション
 
-~~~
+~~~text
 
 GeneratorOperator: @GeneratorMaintainer
 
@@ -680,7 +680,7 @@ DBマイグレーションファイルを生成したい
 
 ユーザーのリクエストを再実行可能です。
 
-~~~
+~~~text
 
 ---
 

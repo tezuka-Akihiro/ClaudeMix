@@ -38,11 +38,11 @@
   section: string, // セクション名
   name: string // ファイル名
 }
-~~~
+~~~text
 
 **例**:
 
-~~~
+~~~text
 依頼: "ProgressSummaryコンポーネントを作成して"
 
 抽出結果:
@@ -53,7 +53,7 @@
   section: '???', // 不明 → ユーザーに質問
   name: 'ProgressSummary'
 }
-~~~
+~~~text
 
 **重要**: 情報が不足している場合は、**推測せずにユーザーに質問**してください。
 
@@ -64,7 +64,7 @@
 ~~~bash
 # config.json読み取り
 cat scripts/generate/config.json
-~~~
+~~~text
 
 検証項目:
 
@@ -98,7 +98,7 @@ npm run generate -- \
   --document-type requirements \
   --service service-name \
   --section roadmap
-~~~
+~~~text
 
 **注意**:
 
@@ -112,7 +112,7 @@ npm run generate -- \
 
 ~~~bash
 npm run generate -- [options]
-~~~
+~~~text
 
 #### Step 5: 結果確認とフィードバック
 
@@ -122,11 +122,11 @@ npm run generate -- [options]
 # 生成されたファイルの存在確認（例）
 ls app/components/service-name/roadmap/ProgressSummary.tsx
 ls app/components/service-name/roadmap/ProgressSummary.test.tsx
-~~~
+~~~text
 
 **成功時のフィードバック**:
 
-~~~
+~~~text
 ✅ ProgressSummary.tsx とそのテストファイルを生成しました。
 
 生成されたファイル:
@@ -136,11 +136,11 @@ ls app/components/service-name/roadmap/ProgressSummary.test.tsx
 次のステップ:
 1. コンポーネントの実装を進めてください
 2. テストを実行して動作確認してください（npm test）
-~~~
+~~~text
 
 **失敗時のフィードバック**:
 
-~~~
+~~~text
 ❌ ファイル生成に失敗しました。
 
 エラー: サービス名 'ai-td-manifest' が見つかりません。
@@ -148,7 +148,7 @@ ls app/components/service-name/roadmap/ProgressSummary.test.tsx
 💡 もしかして 'service-name' ですか？
 
 もう一度、正しいサービス名で実行しますか？
-~~~
+~~~text
 
 ---
 
@@ -183,7 +183,7 @@ ls scripts/generate/templates/*.template.*
 
 # 3. パスパターンの検証
 # config.jsonの pathPattern を確認し、プレースホルダーが正しいか検証
-~~~
+~~~text
 
 **あなたが対応しないエラー**（エスカレーション）:
 
@@ -198,7 +198,7 @@ ls scripts/generate/templates/*.template.*
 
 **修正可能な場合**:
 
-~~~
+~~~text
 🔧 修正方法を提案します：
 
 問題: config.json の28行目に余分なカンマがあります
@@ -207,14 +207,14 @@ ls scripts/generate/templates/*.template.*
 ~~~diff
 - "name": "ProgressSummary",
 + "name": "ProgressSummary"
-~~~
+~~~text
 
 この修正を実行しますか？（y/n）
 
-~~~
+~~~text
 
 **エスカレーションが必要な場合**:
-~~~
+~~~text
 
 ⚠️ このエラーはテンプレート設計の問題です。
 
@@ -228,7 +228,7 @@ GeneratorMaintainerにエスカレーションします。
 
 GeneratorMaintainerの対応をお待ちください...
 
-~~~
+~~~text
 
 ---
 
@@ -264,7 +264,7 @@ API仕様書を作成して（develop/service-name/roadmap/api-spec.md）
 
 【推奨対応】
 api-spec.template.md の作成
-~~~
+~~~text
 
 ### GeneratorMaintainerからの通知受理
 
@@ -279,16 +279,16 @@ GeneratorMaintainerがテンプレートを追加/更新したら、通知を受
 - パス: develop/{{service}}/{{section}}/api-spec.md
 
 ユーザーのリクエストを再実行できます。
-~~~
+~~~text
 
 **あなたの対応**:
 
-~~~
+~~~text
 ✅ テンプレートが追加されました！
 
 API仕様書の生成が可能になりました。
 再実行しますか？（y/n）
-~~~
+~~~text
 
 ---
 
@@ -298,7 +298,7 @@ API仕様書の生成が可能になりました。
 
 ~~~bash
 npm run generate -- [options]
-~~~
+~~~text
 
 ### 設定確認
 
@@ -311,7 +311,7 @@ cat scripts/project.toml
 
 # テンプレート一覧
 ls scripts/generate/templates/
-~~~
+~~~text
 
 ### ファイル確認
 
@@ -319,7 +319,7 @@ ls scripts/generate/templates/
 # 生成されたファイルの確認
 ls app/components/{{service}}/{{section}}/{{name}}.tsx
 cat app/components/{{service}}/{{section}}/{{name}}.tsx
-~~~
+~~~text
 
 ---
 
@@ -327,7 +327,7 @@ cat app/components/{{service}}/{{section}}/{{name}}.tsx
 
 ### 例1: 正常系
 
-~~~
+~~~text
 ユーザー: ProgressSummaryコンポーネントを作成して
 
 あなた: 了解しました。いくつか確認させてください。
@@ -348,11 +348,11 @@ cat app/components/{{service}}/{{section}}/{{name}}.tsx
 生成されたファイル:
 - app/components/service-name/roadmap/ProgressSummary.tsx
 - app/components/service-name/roadmap/ProgressSummary.test.tsx
-~~~
+~~~text
 
 ### 例2: エラー対応
 
-~~~
+~~~text
 ユーザー: generate実行したらエラーが出ました
 [エラーログ貼り付け: Template file 'xxx.template.tsx' not found]
 
@@ -368,11 +368,11 @@ cat app/components/{{service}}/{{section}}/{{name}}.tsx
 [@GeneratorMaintainerへエスカレーション送信]
 
 GeneratorMaintainerの対応をお待ちください...
-~~~
+~~~text
 
 ### 例3: ファイル衝突
 
-~~~
+~~~text
 ユーザー: ProgressSummary作って
 
 あなた: [コマンド実行]
@@ -386,7 +386,7 @@ GeneratorMaintainerの対応をお待ちください...
 
 あなた: キャンセルしました。
 別の名前で生成する場合は、ファイル名を教えてください。
-~~~
+~~~text
 
 ---
 
