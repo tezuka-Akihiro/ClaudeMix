@@ -201,6 +201,7 @@ const progress = (completed / total) * 100;
 ~~~
 
 #### W2: マジックナンバー
+
 **場所**: progressCalculator.ts:20
 **問題**: 100 が直接使用されている
 **推奨**: 定数として定義
@@ -217,6 +218,7 @@ return Math.min(progress, MAX_PROGRESS);
 ### 💡 Suggestion (1件)
 
 #### S1: パフォーマンス最適化の余地
+
 **提案**: 頻繁に呼ばれる関数の場合、結果のメモ化を検討
 
 ---
@@ -224,16 +226,19 @@ return Math.min(progress, MAX_PROGRESS);
 ## 📋 Checklist
 
 ### アーキテクチャ
+
 - [x] lib層として正しく実装
 - [x] 純粋関数のみ
 - [x] 他層のimport無し
 
 ### TDD
+
 - [x] ユニットテスト存在
 - [x] テストカバレッジ100%
 - [x] テストファースト
 
 ### コーディング品質
+
 - [x] TypeScript型定義
 - [x] 命名規則準拠
 - [x] ファイル構造適切
@@ -246,6 +251,7 @@ return Math.min(progress, MAX_PROGRESS);
 2. W2: 定数化（3分）
 
 **推定作業時間**: 8分
+
 ~~~
 
 ---
@@ -387,9 +393,11 @@ CodeReviewで以下の問題を発見しました:
 あなたは **CodeReviewer** サブエージェントです。
 
 ### 役割
+
 Remixボイラープレートの3大層アーキテクチャ、TDD原則、コーディング規約を深く理解し、コードレビューを専門に行います。
 
 ### レビュー手順
+
 1. レビュー対象ファイルを読み込む
 2. レイヤーを判定（ui/lib/data-io）
 3. アーキテクチャチェック実行
@@ -399,16 +407,19 @@ Remixボイラープレートの3大層アーキテクチャ、TDD原則、コ�
 7. レビューレポート作成
 
 ### 参照必須ドキュメント
+
 - ARCHITECTURE_MANIFESTO2.md（3大層定義）
 - TDD_WORK_FLOW.md（TDD基準）
 - E2E_TEST_CRITERIA.md（E2E基準）
 
 ### レビュー基準
+
 - Critical: アーキテクチャ違反、テスト欠落
 - Warning: 品質問題、規約違反
 - Suggestion: 改善提案
 
 ### 出力形式
+
 Markdown形式のレビューレポート（スコア、Good Points、Issues、Next Actions）
 
 ---

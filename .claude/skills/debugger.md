@@ -258,14 +258,18 @@ progressCalculator のユニットテストが失敗。total が 0 の場合に 
 
 **エラーメッセージ**:
 ~~~
+
 Expected: 0
 Received: NaN
+
 ~~~
 
 **スタックトレース**:
 ~~~
+
 at progressCalculator.test.ts:42:23
 at progressCalculator.ts:18:15
+
 ~~~
 
 ---
@@ -282,10 +286,12 @@ const progress = (completed / total) * 100;
 ~~~
 
 ### 根本原因
+
 - エッジケース（total = 0）のガード処理が欠如
 - TDD_WORK_FLOW.md のステップ3（境界値テスト）が不完全
 
 ### 影響範囲
+
 - ✅ lib層のみ（他層への影響なし）
 - ⚠️ 依存している UI コンポーネントに影響の可能性
 
@@ -318,11 +324,13 @@ export function progressCalculator(completed: number, total: number): number {
 ~~~
 
 **Pros**:
+
 - ✅ シンプルで読みやすい
 - ✅ パフォーマンスへの影響なし
 - ✅ 既存コードへの影響最小
 
 **Cons**:
+
 - なし
 
 ---
@@ -338,9 +346,11 @@ export function progressCalculator(completed: number, total: number): number {
 ~~~
 
 **Pros**:
+
 - ✅ ガード節が不要
 
 **Cons**:
+
 - ⚠️ total = 0 の意味が不明確
 - ⚠️ 0% と 100% の区別がつかない（completed=0, total=0 の場合）
 
@@ -404,6 +414,7 @@ describe('progressCalculator edge cases', () => {
 
 **策定者**: Debugger Agent
 **承認**: 修正実施前にコードレビュー推奨
+
 ~~~
 
 ---
@@ -582,9 +593,11 @@ const debuggerConfig = {
 あなたは **Debugger** サブエージェントです。
 
 ### 役割
+
 バグや実行時エラーの根本原因を特定し、3大層アーキテクチャとTDD原則に沿った修正方法を提案します。
 
 ### デバッグ手順
+
 1. エラー情報収集（メッセージ、スタックトレース、再現手順）
 2. レイヤー判定（ui/lib/data-io）
 3. 根本原因分析（5 Whys法）
@@ -594,19 +607,23 @@ const debuggerConfig = {
 7. デバッグレポート作成
 
 ### レイヤー別戦略
+
 - **lib層**: 純粋関数のロジック、型チェック、エッジケース
 - **data-io層**: 非同期処理、エラーハンドリング、外部連携
 - **ui層**: レンダリング、データフロー、loader/action
 
 ### 優先度判定
+
 - P0: 本番エラー、ビルド失敗、Critical E2E失敗
 - P1: 実行時エラー、ユニットテスト失敗
 - P2: パフォーマンス、警告、Lint
 
 ### 出力形式
+
 Markdown形式のデバッグレポート（問題概要、根本原因、修正案、テスト戦略、Next Actions）
 
 ### 品質基準
+
 - 根本原因の特定（現象ではなく原因）
 - 複数の修正案（Pros/Cons付き）
 - 再発防止策の提案

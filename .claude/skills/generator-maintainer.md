@@ -1,4 +1,5 @@
 # GeneratorMaintainer サブエージェント
+
 **`npm run generate` 保守専門エージェント**
 
 **バージョン**: 1.0
@@ -45,6 +46,7 @@ scripts/generate/
 ### 1. テンプレート追加
 
 #### トリガー
+
 - ユーザー: 「新しいドキュメントタイプを追加したい」
 - GeneratorOperator: 「テンプレート欠落エラーをエスカレーション」
 
@@ -67,6 +69,7 @@ scripts/generate/
 ~~~
 
 **ヒアリング例**:
+
 ~~~
 あなた: 新しいテンプレートを追加しますね。いくつか確認させてください。
 
@@ -144,6 +147,7 @@ const uiChecks = [
 ~~~
 
 テンプレート内容の例:
+
 ~~~`markdown
 # {{API_TITLE}}
 
@@ -166,9 +170,11 @@ const uiChecks = [
 ~~~
 
 **レスポンス**:
+
 ~~~json
 {}
 ~~~
+
 ~~~`
 
 **3-3. 整合性確認**
@@ -194,11 +200,13 @@ npm run generate -- \
 ~~~
 
 期待される出力:
+
 ~~~
 app/specs/test-service/test-section-spec.yaml が生成される
 ~~~
 
 生成されたファイルを確認:
+
 ~~~bash
 cat app/specs/test-service/test-section-spec.yaml
 ~~~
@@ -228,6 +236,7 @@ cat app/specs/test-service/test-section-spec.yaml
 ### 2. テンプレート編集
 
 #### トリガー
+
 - ユーザー: 「テンプレートを修正したい」
 - 既存テンプレートの改善要望
 
@@ -290,6 +299,7 @@ npm run generate -- \
 ### 3. テンプレート削除
 
 #### トリガー
+
 - ユーザー: 「不要なテンプレートを削除したい」
 
 #### 実行フロー
@@ -325,6 +335,7 @@ node -e "console.log(JSON.parse(require('fs').readFileSync('scripts/generate/con
 ### 4. 整合性監査
 
 #### トリガー
+
 - 定期実行（週1回推奨）
 - ユーザー: 「整合性チェックして」
 
@@ -345,6 +356,7 @@ interface ConfigSchema {
 ~~~
 
 実行:
+
 ~~~bash
 node -e "
 const fs = require('fs');
@@ -608,11 +620,13 @@ config.jsonに以下を追加:
 ~~~
 
 修正しますか？（y/n）
+
 ~~~
 
 ### 例3: GeneratorOperatorからのエスカレーション
 
 ~~~
+
 GeneratorOperator: @GeneratorMaintainer
 
 テンプレートエラーが発生しました。
@@ -624,6 +638,7 @@ Template file 'migration.template.sql' not found
 DBマイグレーションファイルを生成したい
 
 【診断】
+
 - config.jsonに定義あり（documents.migration）
 - テンプレートファイルが存在しない
 
@@ -634,10 +649,12 @@ DBマイグレーションファイルを生成したい
 あなた: エスカレーション受理しました。
 
 【状況確認】
+
 - config.jsonに documents.migration の定義あり
 - テンプレートファイル migration.template.sql が欠落
 
 【対応方針】
+
 1. migration.template.sql を作成
 2. 動作確認
 3. GeneratorOperatorへ通知
@@ -656,11 +673,13 @@ DBマイグレーションファイルを生成したい
 @GeneratorOperator
 
 テンプレート追加完了:
+
 - タイプ: migration
 - ファイル: migration.template.sql
 - パス: db/migrations/{{service}}_{{section}}.sql
 
 ユーザーのリクエストを再実行可能です。
+
 ~~~
 
 ---

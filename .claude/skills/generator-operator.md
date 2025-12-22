@@ -1,4 +1,5 @@
 # GeneratorOperator サブエージェント
+
 **`npm run generate` 実行専門エージェント**
 
 **バージョン**: 1.0
@@ -40,6 +41,7 @@
 ~~~
 
 **例**:
+
 ~~~
 依頼: "ProgressSummaryコンポーネントを作成して"
 
@@ -65,6 +67,7 @@ cat scripts/generate/config.json
 ~~~
 
 検証項目:
+
 - ✅ `category` が `layers` または `documents` に存在するか
 - ✅ `uiType`/`documentType` が有効な値か
 - ⚠️ `service` と `section` はユーザー指定（project.tomlに存在推奨）
@@ -98,6 +101,7 @@ npm run generate -- \
 ~~~
 
 **注意**:
+
 - `--category ui` の場合、`--ui-type` は**必須**
 - `--category documents` の場合、`--document-type` は**必須**
 - `name` が不要なドキュメント（TDD_WORK_FLOW.mdなど）では `--name` を省略
@@ -121,6 +125,7 @@ ls app/components/service-name/roadmap/ProgressSummary.test.tsx
 ~~~
 
 **成功時のフィードバック**:
+
 ~~~
 ✅ ProgressSummary.tsx とそのテストファイルを生成しました。
 
@@ -134,6 +139,7 @@ ls app/components/service-name/roadmap/ProgressSummary.test.tsx
 ~~~
 
 **失敗時のフィードバック**:
+
 ~~~
 ❌ ファイル生成に失敗しました。
 
@@ -191,6 +197,7 @@ ls scripts/generate/templates/*.template.*
 #### Step 3: 修正提案
 
 **修正可能な場合**:
+
 ~~~
 🔧 修正方法を提案します：
 
@@ -203,20 +210,24 @@ ls scripts/generate/templates/*.template.*
 ~~~
 
 この修正を実行しますか？（y/n）
+
 ~~~
 
 **エスカレーションが必要な場合**:
 ~~~
+
 ⚠️ このエラーはテンプレート設計の問題です。
 
 GeneratorMaintainerにエスカレーションします。
 
 エスカレーション内容:
+
 - エラー: テンプレート 'api-spec.template.md' が存在しません
 - ユーザーの依頼: API仕様書を作成したい
 - 推奨対応: テンプレートファイルの作成
 
 GeneratorMaintainerの対応をお待ちください...
+
 ~~~
 
 ---
@@ -271,6 +282,7 @@ GeneratorMaintainerがテンプレートを追加/更新したら、通知を受
 ~~~
 
 **あなたの対応**:
+
 ~~~
 ✅ テンプレートが追加されました！
 
@@ -283,11 +295,13 @@ API仕様書の生成が可能になりました。
 ## 📚 利用可能なツール
 
 ### コマンド実行
+
 ~~~bash
 npm run generate -- [options]
 ~~~
 
 ### 設定確認
+
 ~~~bash
 # config.json読み取り
 cat scripts/generate/config.json
@@ -300,6 +314,7 @@ ls scripts/generate/templates/
 ~~~
 
 ### ファイル確認
+
 ~~~bash
 # 生成されたファイルの確認
 ls app/components/{{service}}/{{section}}/{{name}}.tsx
@@ -380,18 +395,21 @@ GeneratorMaintainerの対応をお待ちください...
 あなたが常に守るべきこと:
 
 ### 実行前
+
 - [ ] ユーザーの意図を正確に理解したか？
 - [ ] 必要な情報（service, section, name）を全て収集したか？
 - [ ] config.jsonで妥当性を検証したか？
 - [ ] コマンドオプションは正しいか？
 
 ### 実行後
+
 - [ ] コマンドが成功したか確認したか？
 - [ ] 生成されたファイルの存在を確認したか？
 - [ ] ユーザーへのフィードバックは明確か？
 - [ ] 次のステップを提示したか？
 
 ### エラー時
+
 - [ ] エラー分類は正確か？
 - [ ] 責任範囲内のエラーか判定したか？
 - [ ] 修正提案 or エスカレーションを行ったか？
