@@ -14,9 +14,9 @@ import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogCommonSpec } from "~/specs/blog/types";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
-import "~/styles/blog/common.css";
+import "~/styles/blog/layer2-common.css";
 // 記事詳細ページ専用のCSS（PostDetailSection, TableOfContents等）
-import "~/styles/blog/post-detail.css";
+import "~/styles/blog/layer2-post-detail.css";
 
 export interface PostDetailLoaderData {
   post: {
