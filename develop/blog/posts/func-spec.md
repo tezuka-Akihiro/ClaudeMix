@@ -61,53 +61,40 @@ Posts List (記事一覧)
 
 ## 🔄 データフロー・処理（3大層分離アーキテクチャ）
 
-### 入力データ
+### 入力データ要件
 
-```typescript
-// loaderが受け取るデータ（リクエストパラメータ）
-interface PostsLoaderRequest {
-  request: Request // Remixのloaderリクエスト
-  // URLクエリパラメータ:
-  // - ?page=2
-  // - ?category=Tutorials
-  // - ?tags=Remix,Cloudflare
-}
-```
+loaderが受け取るリクエスト情報：
 
-### 出力データ
+- **ページ番号**: URLクエリパラメータ（例: `?page=2`）
+- **カテゴリフィルタ**: URLクエリパラメータ（例: `?category=Tutorials`）
+- **タグフィルタ**: URLクエリパラメータ（例: `?tags=Remix,Cloudflare`、AND条件）
 
-```typescript
-// loaderがUIに返すデータの型定義
-interface PostsLoaderData {
-  posts: PostSummary[] // 現在のページの記事一覧
-  pagination: PaginationData // ページネーション情報
-  filters: FilterData // フィルタ情報
-}
+### 出力データ要件
 
-interface PostSummary {
-  slug: string // URL識別子（例: "remix-tips-2024"）
-  title: string // 記事タイトル
-  description: string // 記事の要約
-  publishedAt: string // 投稿日（ISO形式: "2024-05-01"）
-  category: string // カテゴリ
-  tags: string[] // タグ配列
-}
+loaderがUIに提供すべきデータ：
 
-interface PaginationData {
-  currentPage: number // 現在のページ番号（1始まり）
-  totalPages: number // 総ページ数
-  totalPosts: number // 総記事数
-  postsPerPage: number // 1ページあたりの記事数
-}
+- **記事一覧**: 現在のページに表示する記事の情報。各記事は以下を含む
+  - URL識別子（slug）
+  - 記事タイトル
+  - 記事の要約
+  - 投稿日
+  - カテゴリ
+  - タグ配列
 
-interface FilterData {
-  availableCategories: string[] // 利用可能なカテゴリ一覧
-  availableTags: string[] // 利用可能なタグ一覧
-  tagGroups: { group: string; tags: string[] }[] // タググループ情報（グループ名とそのグループに属するタグの配列）
-  selectedCategory?: string // 現在選択されているカテゴリ（空文字列の場合は全カテゴリ表示）
-  selectedTags?: string[] // 現在選択されているタグ
-}
-```
+- **ページネーション情報**: ページ切り替えに必要な情報
+  - 現在のページ番号
+  - 総ページ数
+  - 総記事数
+  - 1ページあたりの記事数
+
+- **フィルタ情報**: フィルタUIに必要な情報
+  - 利用可能なカテゴリ一覧
+  - 利用可能なタグ一覧
+  - タググループ情報（グループ名とそのグループに属するタグの配列）
+  - 現在選択されているカテゴリ
+  - 現在選択されているタグ
+
+> **注意**: 具体的なデータ構造（キー名、型定義など）は`app/specs/blog/types.ts`を参照してください。このドキュメントでは、機能を実現するために「どのようなデータが必要か」という要件のみを記述します。
 
 ### app/components要件（app/routes, app/components）
 
