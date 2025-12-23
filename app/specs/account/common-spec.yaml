@@ -1,0 +1,226 @@
+# spec.yaml - 外部変数仕様書
+# 実装・テスト・仕様書で共通参照するリテラル値定義
+
+# ==========================================
+# メタデータ
+# ==========================================
+metadata:
+  feature_name: "account-common"
+  slug: "common"
+  created_date: "2025-12-23"
+  last_updated: "2025-12-23"
+  version: "1.0.0"
+
+# ==========================================
+# サーバー処理設定 (Loader/Action)
+# ==========================================
+server_io:
+  loader:
+    # loader処理のタイムアウト設定 (ms)
+    timeout: 5000
+  action:
+    # このセクションではactionは不要（共通コンポーネントは表示と認証保護のみ）
+    intents: {}
+
+# ==========================================
+# セッション管理設定
+# ==========================================
+session:
+  # Cookie設定
+  cookie:
+    name: "session_id"
+    max_age: 604800  # 7日間 (秒)
+    http_only: true
+    secure: true
+    same_site: "Lax"
+    path: "/"
+
+  # セッション有効期限
+  expiry:
+    duration_seconds: 604800  # 7日間
+
+  # Cloudflare Workers KV設定
+  kv:
+    namespace_binding: "SESSION_KV"
+    key_prefix: "session:"
+
+# ==========================================
+# ナビゲーションメニュー設定
+# ==========================================
+navigation:
+  menu_items:
+    - label: "マイページ"
+      path: "/account"
+      icon: "home"
+    - label: "設定"
+      path: "/account/settings"
+      icon: "settings"
+    - label: "サブスクリプション"
+      path: "/account/subscription"
+      icon: "payment"
+
+  # アクティブ状態の判定
+  active_detection:
+    exact_match: true  # パスの完全一致で判定
+
+# ==========================================
+# UI要素セレクタ
+# ==========================================
+ui_selectors:
+  layout:
+    account_layout: "[data-testid='account-layout']"
+    main_content: "[data-testid='main-content']"
+
+  navigation:
+    account_nav: "[data-testid='account-nav']"
+    nav_item: "[data-testid='nav-item']"
+    nav_item_active: "[data-testid='nav-item-active']"
+
+  auth:
+    auth_guard: "[data-testid='auth-guard']"
+    loading_spinner: "[data-testid='loading-spinner']"
+
+  form:
+    form_field: "[data-testid='form-field']"
+    label: "[data-testid='label']"
+    input: "[data-testid='input']"
+    error_text: "[data-testid='error-text']"
+    button: "[data-testid='button']"
+
+  error:
+    error_message: "[data-testid='error-message']"
+    error_icon: "[data-testid='error-icon']"
+    close_button: "[data-testid='close-button']"
+
+# ==========================================
+# フォームバリデーション
+# ==========================================
+validation:
+  email:
+    pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    max_length: 254
+    error_message: "有効なメールアドレスを入力してください"
+
+  password:
+    min_length: 8
+    max_length: 128
+    pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
+    error_message: "パスワードは8文字以上で、大文字・小文字・数字を含む必要があります"
+
+  required:
+    error_message: "この項目は必須です"
+
+# ==========================================
+# エラーメッセージ
+# ==========================================
+error_messages:
+  auth:
+    session_expired: "セッションが期限切れです。再度ログインしてください。"
+    unauthorized: "ログインが必要です。"
+    invalid_credentials: "メールアドレスまたはパスワードが正しくありません"
+    session_invalid: "セッションが無効です。再度ログインしてください。"
+
+  network:
+    timeout: "タイムアウトしました。再度お試しください。"
+    server_error: "サーバーエラーが発生しました。しばらくしてから再度お試しください。"
+
+  general:
+    unknown_error: "エラーが発生しました。再度お試しください。"
+
+# ==========================================
+# リダイレクト設定
+# ==========================================
+redirect:
+  login_path: "/login"
+  after_login_default: "/account"
+  query_param_name: "redirect-url"
+
+# ==========================================
+# ボタンバリアント設定
+# ==========================================
+button:
+  variants:
+    primary:
+      aria_label: "主要アクション"
+    secondary:
+      aria_label: "補助アクション"
+    danger:
+      aria_label: "危険なアクション"
+
+  states:
+    loading:
+      text: "処理中..."
+      aria_label: "処理中です"
+    disabled:
+      aria_label: "このアクションは現在利用できません"
+
+# ==========================================
+# エラーメッセージ表示設定
+# ==========================================
+error_display:
+  types:
+    error:
+      icon: "×"
+      auto_dismiss: false
+    warning:
+      icon: "!"
+      auto_dismiss: true
+      auto_dismiss_delay_ms: 5000
+    info:
+      icon: "i"
+      auto_dismiss: true
+      auto_dismiss_delay_ms: 5000
+
+# ==========================================
+# レスポンシブ設定
+# ==========================================
+responsive:
+  breakpoints:
+    mobile: 768 # px
+    tablet: 1024 # px
+
+  navigation_layout:
+    mobile: "vertical"     # 縦並びスタック
+    tablet: "horizontal"   # 横並びタブ
+    desktop: "horizontal"  # 横並びタブ
+
+  button_width:
+    mobile: "100%"     # 全幅
+    tablet: "auto"     # 内容に合わせる
+    desktop: "auto"    # 内容に合わせる
+
+# ==========================================
+# アクセシビリティ (ARIA)
+# ==========================================
+accessibility:
+  aria_labels:
+    account_nav: "アカウントナビゲーション"
+    loading_spinner: "読み込み中"
+    error_message: "エラーメッセージ"
+    close_error: "エラーメッセージを閉じる"
+
+  aria_live:
+    error_message: "assertive"  # エラーは即座に通知
+    success_message: "polite"   # 成功メッセージは丁寧に通知
+
+  keyboard_shortcuts:
+    close_error: "Escape"
+
+# ==========================================
+# セキュリティ設定
+# ==========================================
+security:
+  # パスワードハッシュ化設定（実装時に使用）
+  password_hash:
+    algorithm: "bcrypt"
+    salt_rounds: 10
+
+  # セッションID生成
+  session_id:
+    algorithm: "crypto.randomUUID"
+    min_length: 32
+
+  # CSRF対策
+  csrf:
+    enabled: true
+    header_name: "X-CSRF-Token"
