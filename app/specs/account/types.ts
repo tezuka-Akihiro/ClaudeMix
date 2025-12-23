@@ -600,3 +600,401 @@ export interface AccountAuthenticationSpec {
     };
   };
 }
+
+/**
+ * メールアドレス変更フォームデータ
+ */
+export interface EmailChangeFormData {
+  newEmail: string;
+  currentPassword: string;
+}
+
+/**
+ * パスワード変更フォームデータ
+ */
+export interface PasswordChangeFormData {
+  currentPassword: string;
+  newPassword: string;
+  newPasswordConfirm: string;
+}
+
+/**
+ * アカウント削除フォームデータ
+ */
+export interface DeleteAccountFormData {
+  currentPassword: string;
+  confirmation: boolean;
+}
+
+/**
+ * プロフィール表示データ
+ */
+export interface ProfileDisplayData {
+  user: User;
+}
+
+/**
+ * EmailChangeFormのProps
+ */
+export interface EmailChangeFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  errors?: ValidationError[];
+  defaultValues?: Partial<EmailChangeFormData>;
+}
+
+/**
+ * PasswordChangeFormのProps
+ */
+export interface PasswordChangeFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  errors?: ValidationError[];
+  defaultValues?: Partial<PasswordChangeFormData>;
+}
+
+/**
+ * DeleteAccountModalのProps
+ */
+export interface DeleteAccountModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  errors?: ValidationError[];
+}
+
+/**
+ * ProfileDisplayのProps
+ */
+export interface ProfileDisplayProps {
+  user: User;
+  onEmailChange: () => void;
+  onPasswordChange: () => void;
+  onDeleteAccount: () => void;
+}
+
+/**
+ * Account profileセクションのspec.yamlの型定義
+ */
+export interface AccountProfileSpec {
+  metadata: {
+    feature_name: string;
+    slug: string;
+    created_date: string;
+    last_updated: string;
+    version: string;
+  };
+  server_io: {
+    loader: {
+      timeout: number;
+    };
+    action: {
+      timeout: number;
+      intents: {
+        email_change: string;
+        password_change: string;
+        delete_account: string;
+      };
+    };
+  };
+  routes: {
+    settings: {
+      path: string;
+      title: string;
+    };
+  };
+  forms: {
+    email_change: {
+      title: string;
+      fields: {
+        new_email: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          autocomplete: string;
+          required: boolean;
+        };
+        current_password: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          autocomplete: string;
+          required: boolean;
+        };
+      };
+      submit_button: {
+        label: string;
+        loading_label: string;
+      };
+      cancel_button: {
+        label: string;
+      };
+    };
+    password_change: {
+      title: string;
+      fields: {
+        current_password: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          autocomplete: string;
+          required: boolean;
+        };
+        new_password: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          autocomplete: string;
+          required: boolean;
+        };
+        new_password_confirm: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          autocomplete: string;
+          required: boolean;
+        };
+      };
+      submit_button: {
+        label: string;
+        loading_label: string;
+      };
+      cancel_button: {
+        label: string;
+      };
+    };
+    delete_account: {
+      title: string;
+      warning_message: string;
+      fields: {
+        current_password: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          autocomplete: string;
+          required: boolean;
+        };
+        confirmation: {
+          name: string;
+          label: string;
+          type: string;
+          required: boolean;
+        };
+      };
+      submit_button: {
+        label: string;
+        loading_label: string;
+      };
+      cancel_button: {
+        label: string;
+      };
+    };
+  };
+  profile_display: {
+    sections: {
+      info: {
+        title: string;
+        fields: {
+          email: {
+            label: string;
+          };
+          subscription_status: {
+            label: string;
+            values: {
+              active: string;
+              inactive: string;
+              trial: string;
+            };
+          };
+          created_at: {
+            label: string;
+          };
+          updated_at: {
+            label: string;
+          };
+        };
+      };
+      actions: {
+        title: string;
+        buttons: Array<{
+          label: string;
+          action: string;
+          variant: string;
+        }>;
+      };
+    };
+  };
+  validation: {
+    new_email: {
+      pattern: string;
+      max_length: number;
+      error_messages: {
+        required: string;
+        invalid_format: string;
+        already_exists: string;
+        same_as_current: string;
+      };
+    };
+    new_password: {
+      min_length: number;
+      max_length: number;
+      pattern: string;
+      error_messages: {
+        required: string;
+        too_short: string;
+        too_long: string;
+        weak: string;
+        same_as_current: string;
+      };
+    };
+    new_password_confirm: {
+      error_messages: {
+        required: string;
+        mismatch: string;
+      };
+    };
+    current_password: {
+      error_messages: {
+        required: string;
+        incorrect: string;
+      };
+    };
+    confirmation: {
+      error_messages: {
+        required: string;
+      };
+    };
+  };
+  error_messages: {
+    email_change: {
+      email_exists: string;
+      same_as_current: string;
+      update_failed: string;
+    };
+    password_change: {
+      incorrect_current: string;
+      same_as_current: string;
+      update_failed: string;
+    };
+    delete_account: {
+      incorrect_password: string;
+      not_confirmed: string;
+      delete_failed: string;
+    };
+    server: {
+      timeout: string;
+      internal_error: string;
+    };
+  };
+  success_messages: {
+    email_change: {
+      completed: string;
+    };
+    password_change: {
+      completed: string;
+    };
+    delete_account: {
+      completed: string;
+    };
+  };
+  modal: {
+    overlay: {
+      background: string;
+      z_index: number;
+    };
+    container: {
+      max_width: string;
+      padding: string;
+      border_radius: string;
+    };
+    close_on_overlay_click: boolean;
+    close_on_escape: boolean;
+  };
+  responsive: {
+    breakpoints: {
+      mobile: number;
+      tablet: number;
+    };
+    container: {
+      mobile: string;
+      tablet: string;
+      desktop: string;
+    };
+    modal: {
+      mobile: string;
+      tablet: string;
+      desktop: string;
+    };
+  };
+  accessibility: {
+    aria_labels: {
+      profile_display: string;
+      email_change_modal: string;
+      password_change_modal: string;
+      delete_account_modal: string;
+      email_field: string;
+      password_field: string;
+      save_button: string;
+      cancel_button: string;
+      delete_button: string;
+    };
+    modal: {
+      role: string;
+      aria_modal: boolean;
+      focus_trap: boolean;
+      close_on_escape: boolean;
+    };
+    error_announcement: {
+      aria_live: string;
+      aria_atomic: boolean;
+    };
+  };
+  security: {
+    password_change: {
+      delete_all_sessions: boolean;
+      regenerate_current_session: boolean;
+    };
+    delete_account: {
+      delete_all_sessions: boolean;
+      delete_user_data: boolean;
+      redirect_after_delete: string;
+    };
+  };
+  test: {
+    fixtures: {
+      existing_user: {
+        email: string;
+        password: string;
+        new_email: string;
+        new_password: string;
+      };
+      duplicate_email: {
+        email: string;
+      };
+    };
+    selectors: {
+      profile_display: string;
+      email_change_button: string;
+      password_change_button: string;
+      delete_account_button: string;
+      email_change_modal: string;
+      password_change_modal: string;
+      delete_account_modal: string;
+      new_email_input: string;
+      current_password_input: string;
+      new_password_input: string;
+      new_password_confirm_input: string;
+      confirmation_checkbox: string;
+      save_button: string;
+      cancel_button: string;
+      delete_button: string;
+      error_message: string;
+      success_message: string;
+    };
+  };
+}
