@@ -85,25 +85,21 @@ Common Components (共通コンポーネント)
 
 > **注意**: これらのデータの具体的な構造（キー名、型など）は `spec.yaml` で定義します。このドキュメントでは、機能を実現するために「どのようなデータが必要か」という要件のみを記述します。
 
-### 出力データ
+### 出力データ要件
 
-```typescript
-// loaderがUIに返すデータ（Routeレベル）
-interface CommonData {
-  user: {
-    id: string // ユーザーID
-    email: string // メールアドレス
-    subscriptionStatus: 'active' | 'inactive' | 'trial' // サブスクリプション状態
-  }
-  navItems: NavItem[] // ナビゲーション項目リスト
-}
+loaderがUIに渡すべきデータ：
 
-interface NavItem {
-  label: string // 表示ラベル: "マイページ"
-  path: string // リンク先: "/account"
-  isActive: boolean // 現在のページか
-}
-```
+- **認証済みユーザー情報**:
+  - ユーザーを一意に識別する情報
+  - 連絡先情報（メールアドレス等）
+  - サブスクリプションの契約状態（アクティブ、非アクティブ、トライアル期間等）
+
+- **ナビゲーション項目リスト**:
+  - 各ナビゲーション項目の表示ラベル
+  - 各項目のリンク先パス
+  - 現在表示中のページを示すアクティブ状態
+
+> **注**: 具体的な型定義（インターフェース名、フィールド名、型名）は `app/specs/account/types.ts` で定義します。
 
 ### app/components要件（app/routes, app/components）
 
