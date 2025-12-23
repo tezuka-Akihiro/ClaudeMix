@@ -1,0 +1,290 @@
+# spec.yaml - 外部変数仕様書
+# 実装・テスト・仕様書で共通参照するリテラル値定義
+
+# ==========================================
+# メタデータ
+# ==========================================
+metadata:
+  feature_name: "account-authentication"
+  slug: "authentication"
+  created_date: "2025-12-23"
+  last_updated: "2025-12-23"
+  version: "1.0.0"
+
+# ==========================================
+# サーバー処理設定 (Loader/Action)
+# ==========================================
+server_io:
+  loader:
+    # loader処理のタイムアウト設定 (ms)
+    timeout: 5000
+    # 既にログイン済みの場合のリダイレクト先
+    authenticated_redirect: "/account"
+
+  action:
+    # 認証成功時のデフォルトリダイレクト先
+    default_redirect: "/account"
+    # 処理タイムアウト設定 (ms)
+    timeout: 10000
+
+    # actionの種類
+    intents:
+      register: "register"
+      login: "login"
+      logout: "logout"
+
+# ==========================================
+# ルーティング設定
+# ==========================================
+routes:
+  register:
+    path: "/register"
+    title: "会員登録"
+  login:
+    path: "/login"
+    title: "ログイン"
+    # リダイレクトURLパラメータ名
+    redirect_param: "redirect-url"
+  logout:
+    path: "/logout"
+    # ログアウト後のリダイレクト先
+    redirect_after: "/login"
+
+# ==========================================
+# フォーム設定
+# ==========================================
+forms:
+  register:
+    fields:
+      email:
+        name: "email"
+        label: "メールアドレス"
+        type: "email"
+        placeholder: "example@example.com"
+        autocomplete: "email"
+        required: true
+      password:
+        name: "password"
+        label: "パスワード"
+        type: "password"
+        placeholder: "8文字以上、大文字・小文字・数字を含む"
+        autocomplete: "new-password"
+        required: true
+      password_confirm:
+        name: "passwordConfirm"
+        label: "パスワード確認"
+        type: "password"
+        placeholder: "パスワードを再入力してください"
+        autocomplete: "new-password"
+        required: true
+
+    submit_button:
+      label: "登録する"
+      loading_label: "登録中..."
+
+    links:
+      login:
+        label: "既にアカウントをお持ちの方はこちら"
+        path: "/login"
+
+  login:
+    fields:
+      email:
+        name: "email"
+        label: "メールアドレス"
+        type: "email"
+        placeholder: "example@example.com"
+        autocomplete: "email"
+        required: true
+      password:
+        name: "password"
+        label: "パスワード"
+        type: "password"
+        placeholder: "パスワードを入力してください"
+        autocomplete: "current-password"
+        required: true
+
+    submit_button:
+      label: "ログイン"
+      loading_label: "ログイン中..."
+
+    links:
+      register:
+        label: "新規会員登録はこちら"
+        path: "/register"
+
+# ==========================================
+# バリデーション設定
+# ==========================================
+validation:
+  email:
+    # 正規表現パターン（commonから継承）
+    pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    max_length: 254
+    error_messages:
+      required: "メールアドレスを入力してください"
+      invalid_format: "有効なメールアドレスを入力してください"
+      already_exists: "このメールアドレスは既に登録されています"
+
+  password:
+    # パスワード強度要件
+    min_length: 8
+    max_length: 128
+    # 大文字・小文字・数字を含む
+    pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
+    error_messages:
+      required: "パスワードを入力してください"
+      too_short: "パスワードは8文字以上で入力してください"
+      too_long: "パスワードは128文字以下で入力してください"
+      weak: "パスワードは大文字、小文字、数字を含む必要があります"
+
+  password_confirm:
+    error_messages:
+      required: "パスワード確認を入力してください"
+      mismatch: "パスワードが一致しません"
+
+# ==========================================
+# エラーメッセージ設定
+# ==========================================
+error_messages:
+  authentication:
+    # セキュリティ原則: 具体的な失敗理由を開示しない
+    invalid_credentials: "メールアドレスまたはパスワードが正しくありません"
+    account_locked: "アカウントがロックされています。しばらく時間をおいてから再度お試しください"
+    session_creation_failed: "ログインに失敗しました。もう一度お試しください"
+
+  registration:
+    email_exists: "このメールアドレスは既に登録されています"
+    creation_failed: "会員登録に失敗しました。もう一度お試しください"
+
+  server:
+    timeout: "処理がタイムアウトしました。もう一度お試しください"
+    internal_error: "エラーが発生しました。しばらく時間をおいてから再度お試しください"
+
+# ==========================================
+# 成功メッセージ設定
+# ==========================================
+success_messages:
+  registration:
+    completed: "会員登録が完了しました"
+  login:
+    completed: "ログインしました"
+  logout:
+    completed: "ログアウトしました"
+
+# ==========================================
+# セキュリティ設定
+# ==========================================
+security:
+  # パスワードハッシュ化設定（commonから継承）
+  password_hash:
+    algorithm: "bcrypt"
+    salt_rounds: 10
+
+  # アカウントロック設定（将来実装）
+  account_lock:
+    enabled: false
+    max_failed_attempts: 5
+    lock_duration_seconds: 1800  # 30分
+
+  # レート制限設定（将来実装）
+  rate_limit:
+    enabled: false
+    max_requests_per_minute: 10
+
+# ==========================================
+# データベーススキーマ定義
+# ==========================================
+database:
+  # usersテーブル定義
+  users:
+    table_name: "users"
+    columns:
+      id:
+        type: "TEXT"
+        constraints: "PRIMARY KEY"
+        description: "ユーザーID（UUID）"
+      email:
+        type: "TEXT"
+        constraints: "UNIQUE NOT NULL"
+        description: "メールアドレス"
+      password:
+        type: "TEXT"
+        constraints: "NOT NULL"
+        description: "ハッシュ化されたパスワード"
+      subscription_status:
+        type: "TEXT"
+        constraints: "NOT NULL"
+        default: "'inactive'"
+        description: "サブスクリプション状態: 'active', 'inactive', 'trial'"
+      created_at:
+        type: "TEXT"
+        constraints: "NOT NULL"
+        description: "作成日時（ISO 8601形式）"
+      updated_at:
+        type: "TEXT"
+        constraints: "NOT NULL"
+        description: "更新日時（ISO 8601形式）"
+
+    # インデックス定義
+    indexes:
+      - name: "idx_users_email"
+        columns: ["email"]
+        unique: true
+
+# ==========================================
+# レスポンシブ設定
+# ==========================================
+responsive:
+  # ブレークポイント（commonから継承）
+  breakpoints:
+    mobile: 768
+    tablet: 1024
+
+  # フォームコンテナ幅
+  form_container:
+    mobile: "100%"  # padding適用
+    tablet: "480px"
+    desktop: "480px"
+
+# ==========================================
+# アクセシビリティ設定
+# ==========================================
+accessibility:
+  # ARIAラベル
+  aria_labels:
+    register_form: "会員登録フォーム"
+    login_form: "ログインフォーム"
+    email_field: "メールアドレス入力"
+    password_field: "パスワード入力"
+    password_confirm_field: "パスワード確認入力"
+    submit_button: "フォーム送信"
+
+  # エラーメッセージのaria-live設定
+  error_announcement:
+    aria_live: "assertive"
+    aria_atomic: true
+
+# ==========================================
+# テスト設定
+# ==========================================
+test:
+  # テストユーザーデータ
+  fixtures:
+    valid_user:
+      email: "test@example.com"
+      password: "Password123"
+
+    invalid_credentials:
+      email: "invalid@example.com"
+      password: "WrongPassword123"
+
+  # E2Eテスト用セレクタ
+  selectors:
+    register_form: "[data-testid='register-form']"
+    login_form: "[data-testid='login-form']"
+    email_input: "[data-testid='email-input']"
+    password_input: "[data-testid='password-input']"
+    password_confirm_input: "[data-testid='password-confirm-input']"
+    submit_button: "[data-testid='submit-button']"
+    error_message: "[data-testid='error-message']"
