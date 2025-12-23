@@ -33,7 +33,7 @@
 **成果物**:
 
 - ルートファイル: `app/routes/{service-name}.tsx`
-- E2Eテストファイル: `tests/e2e/screen/{service-name}.screen.spec.ts`
+- E2Eテストファイル: `tests/e2e/{service-name}/common.spec.ts`
 
 **実装例**:
 
@@ -164,7 +164,7 @@ export default function FlowAuditor() {
 
 ### 4.2. テストファイルの作成
 
-**ファイルパス**: `tests/e2e/screen/{service-name}.screen.spec.ts`
+**ファイルパス**: `tests/e2e/{service-name}/common.spec.ts`
 
 **実装例**:
 
@@ -224,7 +224,7 @@ commonセクションの推奨実装順序:
 
 ~~~text
 Phase 1: E2Eテストファイル作成
-  └─ tests/e2e/screen/{service}.screen.spec.ts を新規作成
+  └─ tests/e2e/{service}/common.spec.ts を新規作成
 
 Phase 2: ページコンテナ実装
   └─ app/routes/{service}.tsx を新規作成
@@ -247,7 +247,7 @@ Phase 5: テスト確認
 commonセクション完了前に、以下を確認してください:
 
 - [ ] ページコンテナが実装されている (`app/routes/{service}.tsx`)
-- [ ] E2Eテストファイルが作成されている (`tests/e2e/screen/{service}.screen.spec.ts`)
+- [ ] E2Eテストファイルが作成されている (`tests/e2e/{service}/common.spec.ts`)
 - [ ] Headerコンポーネントが実装されている
 - [ ] Footerコンポーネントが実装されている
 - [ ] `useSession`フックが適切に統合されている

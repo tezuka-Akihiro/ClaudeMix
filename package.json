@@ -14,7 +14,7 @@
     "coverage": "vitest run --coverage -c tests/unit/vitest.config.ts",
     "test:ui": "vitest --ui -c tests/unit/vitest.config.ts",
     "test:run": "vitest run -c tests/unit/vitest.config.ts",
-    "test:e2e": "playwright test tests/e2e/screen/blog.screen.spec.ts tests/e2e/section/blog -c tests/e2e/playwright.config.ts",
+    "test:e2e": "playwright test tests/e2e/blog -c tests/e2e/playwright.config.ts",
     "test:e2e:ui": "playwright test --ui -c tests/e2e/playwright.config.ts",
     "test:e2e:headed": "playwright test --headed -c tests/e2e/playwright.config.ts",
     "test:e2e:debug": "playwright test --debug -c tests/e2e/playwright.config.ts",

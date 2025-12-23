@@ -82,14 +82,14 @@
       "templateFile": "docs/spec.yaml"
     },
     "e2e-screen-test": {
-      "description": "E2Eテスト (画面レベル)",
-      "pathPattern": "tests/e2e/screen/{{service}}.screen.spec.ts",
+      "description": "E2Eテスト (commonセクション)",
+      "pathPattern": "tests/e2e/{{service}}/common.spec.ts",
       "templateFile": "test/e2e-screen-test.template.ts",
       "placeholders": {}
     },
     "e2e-section-test": {
-      "description": "E2Eテスト (セクションレベル)",
-      "pathPattern": "tests/e2e/section/{{service}}/{{section}}.spec.ts",
+      "description": "E2Eテスト (各セクション)",
+      "pathPattern": "tests/e2e/{{service}}/{{section}}.spec.ts",
       "templateFile": "test/e2e-section-test.template.ts",
       "placeholders": {}
     },
