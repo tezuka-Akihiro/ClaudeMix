@@ -27,7 +27,7 @@ const DIR_STRUCTURE_CONFIG = [
     { path: path.join('..', 'app', 'lib'), type: 'section' },
     { path: path.join('..', 'app', 'data-io'), type: 'section' },
     { path: path.join('..', 'app', 'styles'), type: 'service' },
-    { path: path.join('..', 'tests', 'e2e', 'section'), type: 'service' },
+    { path: path.join('..', 'tests', 'e2e'), type: 'service' },
 ];
 // コピーするフローファイル名 (あなたの定義に基づく)
 const FLOW_FILES = [
