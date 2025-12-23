@@ -10,9 +10,9 @@ value_proposition = "このプロジェクトが提供する価値を記述し�
 world_view_site_url = "https://remix.run"
 app_url = "https://zenn.dev/topics/blog"
 
-# --- 開発ブログ サービスの定義---
+# --- ブログ サービスの定義---
 [services.blog]
-name = "開発ブログ"
+name = "ブログ"
 description = "Remixとclaude code専用のブログ"
 doc_path = "develop/blog/GUIDING_PRINCIPLES.md"
 
@@ -39,9 +39,46 @@ doc_path = "develop/blog/GUIDING_PRINCIPLES.md"
   # --- セクション 3: 記事詳細 ---
   [services.blog.sections.post-detail]
   name = "記事詳細ページ"
-  abstract_purpose = "個別のブログ記事の詳細を表示する。"
-  specific_purpose = "記事のタイトル、本文、投稿日、著者などの詳細情報を表示するページを実装する。"
-  input = "記事のIDまたはスラッグ"
-  processing = "指定された記事データを取得し、マークダウンをHTMLに変換して整形・表示する。"
-  output = "記事詳細UIコンポーネント"
+  abstract_purpose = "個別のブログ記事の詳細を表示し、サブスクリプション状態に応じたアクセス制御を行う。"
+  specific_purpose = "記事のタイトル、本文、投稿日、著者などの詳細情報を表示するページを実装する。note型の「導入部分は公開、本編は会員限定」という表示制御を行い、未契約ユーザーには購読促進UIを表示する。"
+  input = "記事のIDまたはスラッグ、ユーザーのサブスクリプション状態"
+  processing = "指定された記事データを取得し、マークダウンをHTMLに変換して整形・表示する。サブスクリプション状態に基づいて記事の可視範囲を判定し、未契約ユーザーにはペイウォールを表示する。"
+  output = "記事詳細UIコンポーネント、部分表示UI、購読促進バナー"
   doc_path = "develop/blog/post-detail/func-spec.md"
+
+
+  # --- アカウント サービスの定義 ---
+[services.account]
+name = "アカウント"
+description = "会員登録、認証、プロフィール管理、サブスクリプション管理を提供するアカウントシステム"
+doc_path = "develop/account/GUIDING_PRINCIPLES.md"
+
+  # --- セクション 1: 認証 (Authentication) ---
+  [services.account.sections.authentication]
+  name = "Authentication"
+  abstract_purpose = "ユーザーの会員登録、ログイン、ログアウト、OAuth連携を管理する。"
+  specific_purpose = "メールアドレス/パスワードによる認証と、Google/Apple OAuthによるソーシャルログインを実装し、Cloudflare Workers KVでセッションを管理する。"
+  input = "ユーザーの認証情報（メール、パスワード、OAuthトークン）"
+  processing = "認証情報の検証、セッションの生成・破棄、OAuth認可フローの処理"
+  output = "認証済みセッション、ログイン/ログアウトUI"
+  doc_path = "develop/account/authentication/func-spec.md"
+
+  # --- セクション 2: プロフィール管理 (Profile) ---
+  [services.account.sections.profile]
+  name = "Profile Management"
+  abstract_purpose = "ユーザーの登録情報の閲覧・編集・退会処理を管理する。"
+  specific_purpose = "/account配下でユーザー自身のプロフィール情報を表示・編集し、パスワード変更や退会処理を実装する。"
+  input = "ユーザーID、更新する情報（メール、パスワード等）"
+  processing = "プロフィール情報の取得・更新、パスワードのハッシュ化、退会時のデータ削除"
+  output = "プロフィール表示・編集UI、退会確認フロー"
+  doc_path = "develop/account/profile/func-spec.md"
+
+  # --- セクション 3: サブスクリプション (Subscription) ---
+  [services.account.sections.subscription]
+  name = "Subscription Management"
+  abstract_purpose = "Stripeを使った有料プランのサブスクリプション管理を行う。"
+  specific_purpose = "1ヶ月/3ヶ月/6ヶ月プランの選択、Stripe Checkoutによる決済、サブスクリプション状態の管理を実装する。"
+  input = "プラン選択、Stripe決済情報"
+  processing = "Stripe APIとの連携、サブスクリプション状態の同期、Webhookによる更新通知の処理"
+  output = "プラン選択UI、決済フロー、サブスクリプション状態表示"
+  doc_path = "develop/account/subscription/func-spec.md"
