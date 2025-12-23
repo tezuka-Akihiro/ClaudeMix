@@ -59,7 +59,7 @@ app/routes/service-name.tsx  ← このファイルの実装手順が不明確
 **具体的な成果物**:
 
 - ルートファイル: `app/routes/{service-name}.tsx`
-- E2Eテストファイル: `tests/e2e/screen/{service-name}.screen.spec.ts`
+- E2Eテストファイル: `tests/e2e/{service-name}/common.spec.ts`
 - レイアウト定義: 各セクションの配置順序、スタイリング
 
 **実装例**:

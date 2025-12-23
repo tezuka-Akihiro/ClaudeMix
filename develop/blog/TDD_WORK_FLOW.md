@@ -33,7 +33,7 @@
 
 #### 1.1 メタデータ拡張のE2Eテスト作成
 
-- **対象ファイル**: `tests/e2e/screen/blog.screen.spec.ts` (既存ファイルに追記)
+- **対象ファイル**: `tests/e2e/blog/common.spec.ts` (既存ファイルに追記)
 - **テストシナリオ**:
   1. **記事一覧画面でのメタデータ表示**:
      - `/blog` ページにアクセス
@@ -47,7 +47,7 @@
 
 #### 1.2 フィルタ機能のE2Eテスト作成
 
-- **対象ファイル**: `tests/e2e/screen/blog.screen.spec.ts` (既存ファイルに追記)
+- **対象ファイル**: `tests/e2e/blog/common.spec.ts` (既存ファイルに追記)
 - **テストシナリオ** (Happy Path):
   1. **FilterToggleButton表示確認**:
      - `/blog` ページにアクセス
@@ -684,7 +684,7 @@ npm run test:e2e
 
 #### 4.2 詳細E2Eテスト実装
 
-**対象ファイル**: `tests/e2e/screen/blog.screen.spec.ts` (既存ファイルに追記)
+**対象ファイル**: `tests/e2e/blog/common.spec.ts` (既存ファイルに追記)
 
 **追加テストシナリオ**:
 

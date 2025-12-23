@@ -144,7 +144,7 @@ test_articles:
 テストコードを、`spec.yaml`を参照する形に修正しました：
 
 ```typescript
-// tests/e2e/screen/blog.screen.spec.ts
+// tests/e2e/blog/common.spec.ts
 
 // ✅ 修正後: spec.yaml参照、存在確認
 it('should filter posts by category', async ({ page }) => {
@@ -308,4 +308,4 @@ const flowSpec = await loadSpec<FlowSpec>('develop/service-name/spec.yaml');
 
 - [REFACTORING_PLAN.md](https://github.com/yourusername/claudemix/blob/main/REFACTORING_PLAN.md) - 技術的実装計画の詳細
 - [develop/blog/posts/spec.yaml](https://github.com/yourusername/claudemix/blob/main/develop/blog/posts/spec.yaml) - 実際のspec.yaml
-- [tests/e2e/screen/blog.screen.spec.ts](https://github.com/yourusername/claudemix/blob/main/tests/e2e/screen/blog.screen.spec.ts) - リファクタリング後のE2Eテスト
+- [tests/e2e/blog/common.spec.ts](https://github.com/yourusername/claudemix/blob/main/tests/e2e/blog/common.spec.ts) - リファクタリング後のE2Eテスト

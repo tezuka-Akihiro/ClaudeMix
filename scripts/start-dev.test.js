@@ -91,8 +91,8 @@ describe('scripts/start-dev.js', () => {
             path.join(__dirname, '..', 'app', 'data-io', MOCK_SLUG, 'section-b'),
             // app/styles (service)
             path.join(__dirname, '..', 'app', 'styles', MOCK_SLUG),
-            // tests/e2e/section (service)
-            path.join(__dirname, '..', 'tests', 'e2e', 'section', MOCK_SLUG),
+            // tests/e2e (service)
+            path.join(__dirname, '..', 'tests', 'e2e', MOCK_SLUG),
         ];
 
         // 期待されるディレクトリがすべて作成されようとしたか確認
@@ -162,7 +162,7 @@ describe('scripts/start-dev.js', () => {
             // --- 検証 ---
             // 1. ロールバック処理が呼ばれたことを確認
             //    fs.rmdirSync が呼ばれているはず
-            const expectedDirCount = 14; // 正常系テストで作成されるディレクトリの数
+            const expectedDirCount = 14; // 正常系テストで作成されるディレクトリの数 (develop=3, components=3, lib=3, data-io=3, styles=1, e2e=1)
             expect(rmdirSyncMock).toHaveBeenCalledTimes(expectedDirCount);
 
             // 2. エラーメッセージが表示されたか

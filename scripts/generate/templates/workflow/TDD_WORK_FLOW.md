@@ -20,9 +20,9 @@
 ### Phase 1: E2Eファースト (Happy Pathの定義) 🔴未着手
 
 - **1. E2Eテストの準備**:
-  - **`common`セクションの場合**: 画面レベルのE2Eテストファイル `tests/e2e/screen/{{service}}.screen.spec.ts` を**新規作成**します。
+  - **`common`セクションの場合**: 画面レベルのE2Eテストファイル `tests/e2e/{{service}}/common.spec.ts` を**新規作成**します。
     - **依頼例**: `@GeneratorOperator "{{service}} サービスの画面レベルE2Eテストを作成して"`
-  - **`common`セクション以外の場合**: 既存のE2Eテストファイルに、このセクションのHappy Pathを検証するテストを**追記**します。
+  - **`common`セクション以外の場合**: E2Eテストファイル `tests/e2e/{{service}}/{{section}}.spec.ts` に、このセクションのHappy Pathを検証するテストを作成します。
   - **テスト基準**: `E2E_TEST_CRITERIA.md` の以下を参考に、開発のゴールを定義します。
     - **画面レベル**: ページが正常に表示され、主要なセクションが描画されること。
     - **セクションレベル**: 最も重要なユーザーアクションが成功するシナリオ。
