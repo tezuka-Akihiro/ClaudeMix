@@ -10,13 +10,11 @@ value_proposition = "このプロジェクトが提供する価値を記述し�
 world_view_site_url = "https://remix.run"
 app_url = "https://zenn.dev/topics/blog"
 
-# --- ブログ サービスの定義---
 [services.blog]
 name = "ブログ"
 description = "Remixとclaude code専用のブログ"
 doc_path = "develop/blog/GUIDING_PRINCIPLES.md"
 
-  # --- セクション 1 ---
   [services.blog.sections.common]
   name = "Common Components"
   abstract_purpose = "サービス全体のページレイアウトと、共有コンポーネント（ヘッダー、フッターなど）の設計・実装を管理する。"
@@ -26,7 +24,6 @@ doc_path = "develop/blog/GUIDING_PRINCIPLES.md"
   output = "app/components/blog/配下に配置された共通UIコンポーネント"
   doc_path = "develop/blog/common/func-spec.md"
 
-  # --- セクション 2: 記事一覧 ---
   [services.blog.sections.posts]
   name = "Articles"
   abstract_purpose = "投稿されたブログ記事を時系列で一覧表示する。"
@@ -36,7 +33,6 @@ doc_path = "develop/blog/GUIDING_PRINCIPLES.md"
   output = "記事一覧UIコンポーネント"
   doc_path = "develop/blog/posts/func-spec.md"
 
-  # --- セクション 3: 記事詳細 ---
   [services.blog.sections.post-detail]
   name = "記事詳細ページ"
   abstract_purpose = "個別のブログ記事の詳細を表示し、サブスクリプション状態に応じたアクセス制御を行う。"
@@ -46,24 +42,29 @@ doc_path = "develop/blog/GUIDING_PRINCIPLES.md"
   output = "記事詳細UIコンポーネント、部分表示UI、購読促進バナー"
   doc_path = "develop/blog/post-detail/func-spec.md"
 
-
-  # --- アカウント サービスの定義 ---
 [services.account]
 name = "アカウント"
 description = "会員登録、認証、プロフィール管理、サブスクリプション管理を提供するアカウントシステム"
 doc_path = "develop/account/GUIDING_PRINCIPLES.md"
 
-  # --- セクション 1: 認証 (Authentication) ---
+  [services.account.sections.common]
+  name = "Common Components"
+  abstract_purpose = "アカウントサービス全体のページレイアウト、セッション管理基盤、認証保護、共有UIコンポーネントの設計・実装を管理する。"
+  specific_purpose = "/account配下の全ページで共有されるレイアウトコンテナを定義し、Cloudflare Workers KVを使ったセッション管理ユーティリティを提供する。さらに、認証が必要なページの保護機能、ナビゲーション、フォーム部品、エラー表示などの共通UIコンポーネントを実装する。"
+  input = "ワイヤーフレームで定義された/account配下のレイアウト構造、認証要件"
+  processing = "共通コンポーネントとセッション管理ユーティリティの詳細設計を行い、TDDプロセスに従って実装する。Cloudflare Workers KVからのセッション取得・検証機能を提供する。"
+  output = "app/components/account/common/配下に配置された共通UIコンポーネント、app/lib/account/common/配下のセッション管理ユーティリティ、認証保護付きレイアウト"
+  doc_path = "develop/account/common/func-spec.md"
+
   [services.account.sections.authentication]
   name = "Authentication"
   abstract_purpose = "ユーザーの会員登録、ログイン、ログアウト、OAuth連携を管理する。"
-  specific_purpose = "メールアドレス/パスワードによる認証と、Google/Apple OAuthによるソーシャルログインを実装し、Cloudflare Workers KVでセッションを管理する。"
+  specific_purpose = "メールアドレス/パスワードによる認証と、Google/Apple OAuthによるソーシャルログインを実装し、ログイン/ログアウト時のセッション生成・破棄を行う。"
   input = "ユーザーの認証情報（メール、パスワード、OAuthトークン）"
-  processing = "認証情報の検証、セッションの生成・破棄、OAuth認可フローの処理"
-  output = "認証済みセッション、ログイン/ログアウトUI"
+  processing = "認証情報の検証、ログイン成功時のセッション生成、ログアウト時のセッション破棄、OAuth認可フローの処理"
+  output = "ログイン/ログアウト/会員登録UI、認証結果"
   doc_path = "develop/account/authentication/func-spec.md"
 
-  # --- セクション 2: プロフィール管理 (Profile) ---
   [services.account.sections.profile]
   name = "Profile Management"
   abstract_purpose = "ユーザーの登録情報の閲覧・編集・退会処理を管理する。"
@@ -73,7 +74,6 @@ doc_path = "develop/account/GUIDING_PRINCIPLES.md"
   output = "プロフィール表示・編集UI、退会確認フロー"
   doc_path = "develop/account/profile/func-spec.md"
 
-  # --- セクション 3: サブスクリプション (Subscription) ---
   [services.account.sections.subscription]
   name = "Subscription Management"
   abstract_purpose = "Stripeを使った有料プランのサブスクリプション管理を行う。"
