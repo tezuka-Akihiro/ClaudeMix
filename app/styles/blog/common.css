@@ -27,6 +27,13 @@
     -webkit-backdrop-filter: blur(var(--blur-glass-effect));
   }
 
+  /* Header layout structure (title left, actions right) */
+  .blog-header-structure {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   /* Title area in header */
   .blog-header__title {
     font-family: var(--font-heading-primary);
@@ -41,6 +48,35 @@
   .blog-header__title:hover {
     color: var(--color-text-primary);
     text-shadow: 0 0 var(--spacing-3) var(--color-interactive-primary);
+  }
+
+  /* Header actions container (theme button + menu button) */
+  .blog-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  /* Theme toggle button in header */
+  .blog-header__theme-button {
+    width: var(--spacing-6);
+    height: var(--spacing-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-md);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-duration-fast) var(--transition-timing-function-default);
+  }
+
+  .blog-header__theme-button:hover {
+    background-color: var(--color-interactive-primary-bg-subtle);
+  }
+
+  .blog-header__theme-icon {
+    font-size: var(--font-size-xl);
   }
 
   /* Menu button in header */

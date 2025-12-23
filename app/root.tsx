@@ -37,6 +37,18 @@ export default function App() {
         <link rel="icon" href="/favicon.ico" />
         <Meta />
         <Links />
+        {/* FOUC防止: テーマをlocalStorageから即座に適用 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const theme = localStorage.getItem('theme') ||
+                  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
         <div id="root">

@@ -176,6 +176,112 @@ test.describe('E2E Screen Test for blog - Navigation Menu', () => {
 });
 
 /**
+ * グループ3: ThemeToggleButtonのテーマ切り替え確認
+ * @description ThemeToggleButtonによるライト/ダークモード切り替えとlocalStorage保存を確認
+ */
+test.describe('E2E Screen Test for blog - Theme Toggle', () => {
+
+  test.beforeEach(async ({ page }) => {
+    // localStorageをクリアして初期状態を確保
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => localStorage.clear());
+    // ページをリロードして初期テーマを適用
+    await page.reload({ waitUntil: 'domcontentloaded' });
+  });
+
+  /**
+   * 統合テスト1: ThemeToggleButtonの表示と初期テーマ確認
+   * @description ThemeToggleButtonが表示され、初期テーマ（ダークモード）が適用されること
+   */
+  test('should display ThemeToggleButton with initial dark theme', async ({ page }) => {
+    // 1. ThemeToggleButtonが表示されること
+    const themeToggleButton = page.getByTestId('theme-toggle-button');
+    await expect(themeToggleButton).toBeVisible();
+
+    // 2. 初期状態でdata-theme属性がダークモードに設定されること
+    const dataTheme = await page.locator('html').getAttribute('data-theme');
+    expect(dataTheme).toBe('dark');
+
+    // 3. ボタンに正しいaria-labelが設定されること
+    const ariaLabel = await themeToggleButton.getAttribute('aria-label');
+    expect(ariaLabel).toBe(commonSpec.accessibility.aria_labels.theme_toggle_button_dark);
+  });
+
+  /**
+   * 統合テスト2: テーマ切り替え動作確認
+   * @description ThemeToggleButtonクリックでテーマが切り替わり、localStorage に保存されること
+   */
+  test('should toggle theme and save to localStorage', async ({ page }) => {
+    const themeToggleButton = page.getByTestId('theme-toggle-button');
+
+    // 初期状態がダークモードであることを確認
+    let dataTheme = await page.locator('html').getAttribute('data-theme');
+    expect(dataTheme).toBe('dark');
+
+    // 1. ThemeToggleButtonをクリックしてライトモードに切り替え
+    await themeToggleButton.click();
+    await page.waitForTimeout(100); // テーマ切り替えの反映を待つ
+
+    // 2. data-theme属性がlightに変更されること
+    dataTheme = await page.locator('html').getAttribute('data-theme');
+    expect(dataTheme).toBe('light');
+
+    // 3. localStorageにテーマが保存されること
+    const savedTheme = await page.evaluate(() => localStorage.getItem('theme'));
+    expect(savedTheme).toBe('light');
+
+    // 4. aria-labelが更新されること
+    let ariaLabel = await themeToggleButton.getAttribute('aria-label');
+    expect(ariaLabel).toBe(commonSpec.accessibility.aria_labels.theme_toggle_button_light);
+
+    // 5. もう一度クリックしてダークモードに戻す
+    await themeToggleButton.click();
+    await page.waitForTimeout(100);
+
+    // 6. data-theme属性がdarkに戻ること
+    dataTheme = await page.locator('html').getAttribute('data-theme');
+    expect(dataTheme).toBe('dark');
+
+    // 7. localStorageが更新されること
+    const savedThemeAfterToggle = await page.evaluate(() => localStorage.getItem('theme'));
+    expect(savedThemeAfterToggle).toBe('dark');
+
+    // 8. aria-labelが元に戻ること
+    ariaLabel = await themeToggleButton.getAttribute('aria-label');
+    expect(ariaLabel).toBe(commonSpec.accessibility.aria_labels.theme_toggle_button_dark);
+  });
+
+  /**
+   * 統合テスト3: テーマの永続化確認
+   * @description localStorageに保存されたテーマがページリロード後も保持されること
+   */
+  test('should persist theme after page reload', async ({ page }) => {
+    const themeToggleButton = page.getByTestId('theme-toggle-button');
+
+    // 1. ライトモードに切り替え
+    await themeToggleButton.click();
+    await page.waitForTimeout(100);
+
+    let dataTheme = await page.locator('html').getAttribute('data-theme');
+    expect(dataTheme).toBe('light');
+
+    // 2. ページをリロード
+    await page.reload({ waitUntil: 'domcontentloaded' });
+
+    // 3. リロード後もライトモードが保持されること（FOUC防止スクリプトによる即座の適用）
+    dataTheme = await page.locator('html').getAttribute('data-theme');
+    expect(dataTheme).toBe('light');
+
+    // 4. ThemeToggleButtonが表示されること
+    await expect(themeToggleButton).toBeVisible();
+
+    // 5. localStorageの値が保持されること
+    const savedTheme = await page.evaluate(() => localStorage.getItem('theme'));
+    expect(savedTheme).toBe('light');
+  });
+});
+
+/**
  * @see docs/E2E_TEST_CRITERIA.md
  * @description
  * セクションレベルのテスト（メタデータ拡張 + フィルタ機能）:

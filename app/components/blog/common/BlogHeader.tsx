@@ -1,9 +1,10 @@
 // BlogHeader - Component (components層)
-// ブログヘッダー（タイトル、メニューボタン）
+// ブログヘッダー（タイトル、テーマ切り替えボタン、メニューボタン）
 
 import React, { useState } from 'react';
 import { Link } from '@remix-run/react';
 import NavigationMenu from './NavigationMenu';
+import { ThemeToggleButton } from './ThemeToggleButton';
 import type { MenuItem } from '~/data-io/blog/common/loadBlogConfig.server';
 
 interface BlogHeaderProps {
@@ -28,14 +29,17 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ blogTitle, menuItems }) => {
       <Link to="/blog" className="blog-header__title" data-testid="blog-header-title" prefetch="none">
         {blogTitle}
       </Link>
-      <button
-        className="blog-header__menu-button"
-        onClick={toggleMenu}
-        data-testid="blog-header-menu-button"
-        aria-label="Toggle menu"
-      >
-        Menu
-      </button>
+      <div className="blog-header__actions" data-testid="header-actions">
+        <ThemeToggleButton />
+        <button
+          className="blog-header__menu-button"
+          onClick={toggleMenu}
+          data-testid="blog-header-menu-button"
+          aria-label="Toggle menu"
+        >
+          Menu
+        </button>
+      </div>
       <NavigationMenu
         menuItems={menuItems}
         isOpen={isMenuOpen}

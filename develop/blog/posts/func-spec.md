@@ -125,6 +125,8 @@ interface FilterData {
        - FilterPanelとPostsSectionコンポーネントをレンダリング
      - エラーハンドリング: ErrorBoundaryで記事取得失敗時のフォールバック表示
 
+   NOTE: すべてのコンポーネントは、commonセクションで管理されるテーマ状態に応じて配色が自動的に切り替わります。
+
    Components:
    - FilterToggleButton.tsx:
      - フィルタパネルの表示/非表示を切り替えるトグルボタン

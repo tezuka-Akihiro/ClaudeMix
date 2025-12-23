@@ -37,6 +37,8 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 | BlogHeader.test.tsx | app/components/blog/common/BlogHeader.test.tsx | ユニットテスト |
 | NavigationMenu.tsx | app/components/blog/common/NavigationMenu.tsx | ナビゲーションメニュー（メニュー項目表示） |
 | NavigationMenu.test.tsx | app/components/blog/common/NavigationMenu.test.tsx | ユニットテスト |
+| ThemeToggleButton.tsx | app/components/blog/common/ThemeToggleButton.tsx | テーマ切り替えボタン（ライト/ダークモード） |
+| ThemeToggleButton.test.tsx | app/components/blog/common/ThemeToggleButton.test.tsx | ユニットテスト |
 | BlogFooter.tsx | app/components/blog/common/BlogFooter.tsx | ブログフッター（コピーライト表記） |
 | BlogFooter.test.tsx | app/components/blog/common/BlogFooter.test.tsx | ユニットテスト |
 

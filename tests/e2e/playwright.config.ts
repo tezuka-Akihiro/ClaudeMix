@@ -47,6 +47,9 @@ export default defineConfig({
 
     /* ナビゲーションのタイムアウト */
     navigationTimeout: 5000,
+
+    /* カラースキームをダークモードに設定（テーマ切り替え機能のテスト用） */
+    colorScheme: 'dark',
   },
 
   /* テスト全体のタイムアウト（デフォルト30秒） */

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import BlogLayout from '~/components/blog/common/BlogLayout';
@@ -14,7 +14,50 @@ const mockConfig = {
   siteName: "Test Blog",
 };
 
+// localStorageとmatchMediaのモック
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+})();
+
 describe('BlogLayout', () => {
+  beforeEach(() => {
+    // localStorageをモック
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      writable: true,
+    });
+
+    // window.matchMediaをモック
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation(query => ({
+        matches: query === '(prefers-color-scheme: dark)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
+
+    // localStorageをクリア
+    localStorageMock.clear();
+
+    // data-theme属性をリセット
+    document.documentElement.removeAttribute('data-theme');
+  });
+
   describe('Rendering', () => {
     it('should render BlogHeader, children, and BlogFooter', () => {
       // Act

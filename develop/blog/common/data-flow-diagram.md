@@ -42,12 +42,16 @@ graph TD
 
         Route -- "4. props渡し" --> Layout["BlogLayout<br/>(全体コンテナ)"]
 
-        Layout --> Header["BlogHeader<br/>(タイトル、menuボタン)"]
+        Layout --> Header["BlogHeader<br/>(タイトル、ThemeToggleButton、menuボタン)"]
         Layout --> Content["children<br/>(メインコンテンツ)"]
         Layout --> Footer["BlogFooter<br/>(コピーライト)"]
 
-        Header -- "6. 開閉状態管理" --> NavMenu["NavigationMenu<br/>(メニュー表示)"]
-        NavMenu -- "8. ページ遷移" --> Route
+        Header --> ThemeBtn["ThemeToggleButton<br/>(テーマ切り替え)"]
+        ThemeBtn -- "6. テーマ切り替え" --> HTMLRoot["<html data-theme>"]
+        ThemeBtn -- "localStorage書き込み/読み込み" --> LocalStorage[("localStorage")]
+
+        Header -- "7. 開閉状態管理" --> NavMenu["NavigationMenu<br/>(メニュー表示)"]
+        NavMenu -- "9. ページ遷移" --> Route
 
         Header -- "state: isMenuOpen" --> Header
     end
@@ -75,16 +79,24 @@ graph TD
 4. Routeが`BlogLayout`にpropsを渡す
    - `BlogLayout` → `BlogHeader`, `BlogFooter`をレンダリング
 
-### メニュー開閉（5→6）
+### テーマ切り替え（5→6）
 
-5. ユーザーが`BlogHeader`のmenuボタンをクリック
-6. `BlogHeader`内でstate管理（`isMenuOpen`をトグル）
+5. ユーザーが`ThemeToggleButton`をクリック
+6. `ThemeToggleButton`が以下を実行:
+   - `<html>`タグの`data-theme`属性を`light`/`dark`に切り替え
+   - `localStorage`にテーマ設定を保存（キー: `theme`）
+   - ページ全体の配色が即座に切り替わる
+
+### メニュー開閉（7）
+
+7. ユーザーが`BlogHeader`のmenuボタンをクリック
+   - `BlogHeader`内でstate管理（`isMenuOpen`をトグル）
    - `NavigationMenu`が表示/非表示切り替え
 
-### ページ遷移（7→8）
+### ページ遷移（9）
 
-7. ユーザーが`NavigationMenu`のメニュー項目をクリック
-8. 対応するページへ遷移（例: `/blog/welcome`, `/blog`）
+9. ユーザーが`NavigationMenu`のメニュー項目をクリック
+   - 対応するページへ遷移（例: `/blog/welcome`, `/blog`）
 
 ---
 

@@ -171,6 +171,34 @@ export interface BlogCommonSpec {
       transition_timing: string;
     };
   };
+  theme: {
+    modes: string[];
+    default_mode: string;
+    storage: {
+      key: string;
+    };
+    html_attribute: {
+      name: string;
+      light_value: string;
+      dark_value: string;
+    };
+    icons: {
+      light: string;
+      dark: string;
+    };
+  };
+  accessibility: {
+    aria_labels: {
+      menu_button: string;
+      menu_button_open: string;
+      navigation_menu: string;
+      close_menu: string;
+      home_link: string;
+      theme_toggle_button: string;
+      theme_toggle_button_light: string;
+      theme_toggle_button_dark: string;
+    };
+  };
   ogp: {
     image: {
       width: number;

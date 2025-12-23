@@ -130,6 +130,14 @@
     font-size: var(--font-size-lg);
   }
 
+  /* ライトモードのみ見出しの下線を濃くする */
+  html[data-theme="light"] .post-detail-section__content h1,
+  html[data-theme="light"] .post-detail-section__content h2,
+  html[data-theme="light"] .post-detail-section__content h3,
+  html[data-theme="light"] .post-detail-section__content h4 {
+    border-bottom-color: var(--color-text-muted);
+  }
+
   .post-detail-section__content p {
     color: var(--color-text-primary);
     padding-bottom: var(--spacing-3);
@@ -168,6 +176,11 @@
     padding-bottom: var(--spacing-1);
   }
 
+  /* ライトモードのみリストマーカー（点）を濃くする */
+  html[data-theme="light"] .post-detail-section__content li::marker {
+    color: var(--color-text-primary);
+  }
+
   /* Task list items (checkboxes) */
   .post-detail-section__content li.task-list-item {
     list-style: none;
@@ -189,6 +202,11 @@
   .post-detail-section__content hr {
     border-color: var(--color-interactive-primary-bg);
     margin: var(--spacing-5) 0;
+  }
+
+  /* ライトモードのみ横線を濃くする */
+  html[data-theme="light"] .post-detail-section__content hr {
+    border-color: var(--color-text-muted);
   }
 
   /* --- Table Styling --- */

@@ -12,8 +12,9 @@ import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogCommonSpec } from "~/specs/blog/types";
-import "~/styles/blog/post-detail.css";
 
+// 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
+import "~/styles/blog/common.css";
 // 記事詳細ページ専用のCSS（PostDetailSection, TableOfContents等）
 import "~/styles/blog/post-detail.css";
 

@@ -38,6 +38,13 @@ Common Components (共通コンポーネント)
      - Articlesへのリンク
    - 配置: `app/components/blog/common/NavigationMenu.tsx`
 
+3. **ThemeToggleButton**: テーマ（ライト/ダーク）切り替えボタン
+   - ヘッダーに配置
+   - ボタンは現在のテーマ状態を視覚的に示す（太陽/月アイコン）
+   - クリック時に`<html>`タグの`data-theme`属性を切り替え
+   - 選択したテーマを`localStorage`に保存し、次回アクセス時に復元
+   - 配置: `app/components/blog/common/ThemeToggleButton.tsx`
+
 #### Footer Components
 
 1. **BlogFooter**: ブログ全体のフッター
@@ -98,9 +105,19 @@ interface CommonData {
    Header Components:
    - BlogHeader:
      - 左側: ブログタイトルをクリックで `/blog` へ遷移
-     - 右側: menuボタン（クリックでNavigationMenuを開く）
+     - 右側: ThemeToggleButton と menuボタン（横並び配置）
      - レイアウト: 左右配置（justify-between）
      - デザイントークンを使用したスタイリング
+
+   - ThemeToggleButton:
+     - 現在のテーマ状態を視覚的に示すアイコン表示
+       - ライトモード時: 太陽アイコン
+       - ダークモード時: 月アイコン
+     - クリック時の処理:
+       - `<html>`タグの`data-theme`属性を`light`/`dark`に切り替え
+       - 選択したテーマを`localStorage`に保存
+     - FOUC対策: ページ読み込み時のちらつきを防ぐため、インラインスクリプトを`<head>`に挿入
+     - アクセシビリティ: aria-label="テーマ切り替え"
 
    - NavigationMenu:
      - menuボタンクリック時に表示されるメニュー

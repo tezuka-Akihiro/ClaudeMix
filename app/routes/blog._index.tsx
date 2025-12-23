@@ -11,8 +11,9 @@ import { fetchPosts } from "~/data-io/blog/posts/fetchPosts.server";
 import { fetchAvailableFilters } from "~/data-io/blog/posts/fetchAvailableFilters.server";
 import { calculatePagination } from "~/lib/blog/posts/calculatePagination";
 import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
-import "~/styles/blog/posts.css";
 
+// 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
+import "~/styles/blog/common.css";
 // 記事一覧ページ専用のCSS（PostCard, FilterPanel, Pagination等）
 import "~/styles/blog/posts.css";
 

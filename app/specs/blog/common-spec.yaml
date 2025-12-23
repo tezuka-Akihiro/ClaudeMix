@@ -60,6 +60,8 @@ ui_selectors:
     blog_header: "[data-testid='blog-header']"
     title_area: "[data-testid='title-area']"
     title_link: "[data-testid='title-link']"
+    header_actions: "[data-testid='header-actions']"
+    theme_toggle_button: "[data-testid='theme-toggle-button']"
     menu_button: "[data-testid='menu-button']"
 
   navigation:
@@ -94,9 +96,39 @@ accessibility:
     navigation_menu: "ナビゲーションメニュー"
     close_menu: "メニューを閉じる"
     home_link: "ホームに戻る"
+    theme_toggle_button: "テーマを切り替え"
+    theme_toggle_button_light: "ダークモードに切り替え"
+    theme_toggle_button_dark: "ライトモードに切り替え"
 
   keyboard_shortcuts:
     close_menu: "Escape"
+
+# ==========================================
+# テーマ設定
+# ==========================================
+theme:
+  # テーマの種類
+  modes:
+    - "light"
+    - "dark"
+
+  # デフォルトテーマ
+  default_mode: "dark"
+
+  # localStorage設定
+  storage:
+    key: "theme"
+
+  # HTML属性
+  html_attribute:
+    name: "data-theme"
+    light_value: "light"
+    dark_value: "dark"
+
+  # アイコン表示
+  icons:
+    light: "☀️"  # ライトモード時に表示（太陽アイコン）
+    dark: "🌙"   # ダークモード時に表示（月アイコン）
 
 # ==========================================
 # OGP画像生成設定
