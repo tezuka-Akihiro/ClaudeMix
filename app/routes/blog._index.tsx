@@ -13,9 +13,9 @@ import { calculatePagination } from "~/lib/blog/posts/calculatePagination";
 import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
-import "~/styles/blog/common.css";
+import "~/styles/blog/layer2-common.css";
 // 記事一覧ページ専用のCSS（PostCard, FilterPanel, Pagination等）
-import "~/styles/blog/posts.css";
+import "~/styles/blog/layer2-posts.css";
 
 export const meta: MetaFunction = () => {
   return [

@@ -38,9 +38,9 @@ app/
 └── styles/
     ├── globals.css            # layer 1
     └── {service-name}/
-         ├── Layer2.css
-         ├── Layer3.ts
-         └── Layer4.ts
+         ├── layer2-{section-name}.css  # セクションごとに分離可能
+         ├── layer3.ts
+         └── layer4.ts
 ~~~
 
 ## 📐 3. 各階層の詳細定義
@@ -140,7 +140,7 @@ app/
 
 - **Layer 1（globals.css）**: サービス全体の意味的トークン
   - 例: `--color-background-primary`, `--color-text-primary`, `--layout-section-width`, `--layout-header-height`
-- **Layer 2（{service-name}/layer2.css）**: サービス固有のコンポーネントスタイル
+- **Layer 2（{service-name}/layer2-{section-name}.css）**: サービス固有のコンポーネントスタイル
   - 例: `.page-container { max-width: var(--layout-page-container-width); padding: var(--layout-page-container-padding); }`
   - 例: `.checkpoint { background: var(--color-background-primary); color: var(--color-text-primary); }`
 
@@ -155,12 +155,21 @@ app/
 
 ### Layer 2: Component Styles（コンポーネントスタイル層）
 
-**担当領域**: 見た目と大きさ | **定義場所**: `app/styles/{service-name}/layer2.css`
+**担当領域**: 見た目と大きさ | **定義場所**: `app/styles/{service-name}/layer2-{section-name}.css`
 
 **責務**:
 
 - **コンポーネント単位でCSSセレクタを定義**し、Layer 1のApplication Tokenを組み合わせて「見た目」と「サイズ」を定義する。
 - このレイヤーでコンポーネントのスタイルを**99%完成**させる。Layer 3では複雑なレイアウトロジック（flex, grid, gap）のみを追加する。
+
+**セクションごとの分離**:
+
+- Lighthouse最適化のため、**セクション（機能・画面）ごとにCSSファイルを分離できます**。
+- 命名規則: `layer2-{section-name}.css`
+  - 例: `layer2-common.css` - サービス全体の共通コンポーネント
+  - 例: `layer2-posts.css` - 記事一覧ページ専用
+  - 例: `layer2-post-detail.css` - 記事詳細ページ専用
+- 各ページは必要なCSSのみインポートすることで、不要なCSSの読み込みを削減できます。
 
 **命名規則（CSSセレクタ）**:
 
