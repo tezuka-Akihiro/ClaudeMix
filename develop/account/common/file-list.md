@@ -12,7 +12,7 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 
 | ファイル名 | パス | 説明 |
 | :--- | :--- | :--- |
-| common.spec.ts | tests/e2e/section/account/common.spec.ts | commonセクション単独のE2Eテスト（認証保護、セッション管理、ナビゲーションを含む） |
+| common.spec.ts | tests/e2e/account/common.spec.ts | commonセクション単独のE2Eテスト（認証保護、セッション管理、ナビゲーションを含む） |
 
 ---
 

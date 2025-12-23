@@ -8,7 +8,7 @@
 
 | ファイル名 | パス |
 | :--- | :--- |
-| authentication.spec.ts | tests/e2e/section/account/authentication.spec.ts |
+| authentication.spec.ts | tests/e2e/account/authentication.spec.ts |
 
 **テストケース**:
 - 会員登録の成功シナリオ
