@@ -7,7 +7,7 @@
 - **目的**: CSSとコンポーネント実装における規約違反を自動検出し、コードの品質と一貫性を維持します。
 - **対象ファイル**:
   - Layer 1: `app/styles/globals.css`
-  - Layer 2: `app/styles/{service}/layer2.css`
+  - Layer 2: `app/styles/{service}/layer2-*.css`
   - Layer 3: `app/styles/{service}/layer3.ts`
   - Layer 4: `app/styles/{service}/layer4.ts`
   - Layer 5: `app/components/{service}/**/*.tsx`
@@ -42,7 +42,7 @@
   - CSS変数が他の変数を参照していないか（将来的に実装予定）。
   - `:root`スコープ外にスタイルが定義されていないか（将来的に実装予定）。
 
-### Layer 2: Component Skin (`layer2.css`)
+### Layer 2: Component Skin (`layer2-*.css`)
 
 - **責務**: コンポーネントの「見た目」（スキン）を定義します。Layer 1の変数を参照して、具体的なコンポーネントのCSSクラスに色や背景を適用します。
 - **検証内容**:

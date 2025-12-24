@@ -65,7 +65,7 @@ Examples:
 function generatePaths(serviceName) {
   return {
     layer1: 'app/styles/globals.css',
-    layer2: `app/styles/${serviceName}/layer2.css`,
+    layer2: `app/styles/${serviceName}/layer2-*.css`,
     layer3: `app/styles/${serviceName}/layer3.ts`,
     layer4: `app/styles/${serviceName}/layer4.ts`,
     layer5: `app/components/${serviceName}/**/*.{tsx,jsx}`

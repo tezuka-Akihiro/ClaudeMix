@@ -44,7 +44,7 @@ node scripts/lint-template/engine.js <ファイルパスまたはディレクト
 - **主な検証項目**:
   - **Layer 1 (`globals.css`)**:
     - `skin-layer1-atomic-values`: CSS変数が他の変数を参照せず、原子値のみを定義していることを保証します。
-  - **Layer 2 (`layer2.css`)**:
+  - **Layer 2 (`layer2-*.css`)**:
     - `skin-layer2-alias-only`: CSS変数がLayer 1の`--foundation-*`トークンのみを参照していることを保証します。
   - **Layer 3/4 (`layer3.ts`, `layer4.ts`)**:
     - `structure-no-skin-properties`: `color`や`backgroundColor`などのスキン関連プロパティの使用を禁止し、構造定義に専念させます。

@@ -140,8 +140,26 @@ class RuleEngine {
   async checkPaths(paths) {
     const allResults = [];
 
-    // Layer 1-4の検査
-    for (const layer of ['layer1', 'layer2', 'layer3', 'layer4']) {
+    // Layer 1の検査 - 単一ファイル
+    if (paths.layer1) {
+      const results = await this.checkFile(paths.layer1, 'layer1');
+      allResults.push(...results);
+    }
+
+    // Layer 2の検査 - globパターンを使用
+    if (paths.layer2) {
+      const layer2Files = await glob(paths.layer2, {
+        nodir: true,
+        ignore: this.config.ignore?.files || []
+      });
+      for (const file of layer2Files) {
+        const results = await this.checkFile(file, 'layer2');
+        allResults.push(...results);
+      }
+    }
+
+    // Layer 3-4の検査 - 単一ファイル
+    for (const layer of ['layer3', 'layer4']) {
       if (paths[layer]) {
         const results = await this.checkFile(paths[layer], layer);
         allResults.push(...results);

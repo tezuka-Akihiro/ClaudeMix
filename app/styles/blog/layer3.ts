@@ -42,6 +42,28 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
     },
 
     /**
+     * BlogHeader Actions Structure
+     * - Horizontal layout for theme button and menu button
+     * - Items aligned center with gap
+     */
+    ".blog-header__actions": {
+      display: "flex",
+      alignItems: "center",
+      gap: "var(--spacing-2)",
+    },
+
+    /**
+     * BlogHeader Theme Button Structure
+     * - Centered layout for theme icon
+     * - Icon centered both vertically and horizontally
+     */
+    ".blog-header__theme-button": {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    /**
      * NavigationMenu Structure
      * - Vertical stack of menu items
      * - Items arranged in column
