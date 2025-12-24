@@ -38,10 +38,10 @@
 | :--- | :--- | :--- |
 | PlanSelector.tsx | app/components/account/subscription/PlanSelector.tsx | プラン選択コンポーネント |
 | PlanSelector.test.tsx | app/components/account/subscription/PlanSelector.test.tsx | PlanSelectorの単体テスト |
-| SubscriptionStatus.tsx | app/components/account/subscription/SubscriptionStatus.tsx | サブスクリプション状態表示コンポーネント |
+| SubscriptionStatus.tsx | app/components/account/subscription/SubscriptionStatus.tsx | サブスクリプション状態表示コンポーネント（共通Modal/Badgeを使用） |
 | SubscriptionStatus.test.tsx | app/components/account/subscription/SubscriptionStatus.test.tsx | SubscriptionStatusの単体テスト |
-| CancelSubscriptionModal.tsx | app/components/account/subscription/CancelSubscriptionModal.tsx | サブスクリプションキャンセル確認モーダル |
-| CancelSubscriptionModal.test.tsx | app/components/account/subscription/CancelSubscriptionModal.test.tsx | CancelSubscriptionModalの単体テスト |
+
+**注**: サブスクリプションキャンセル確認は、SubscriptionStatusコンポーネント内で共通Modal（app/components/account/common/Modal.tsx）を直接使用します。ステータスバッジも共通Badge（app/components/account/common/Badge.tsx）を使用します。
 
 ---
 
@@ -141,8 +141,7 @@ subscriptionセクションは、以下のcommonセクションのファイル�
    - calculateNextBillingDate.ts
 4. **Phase 3.1**: Components実装
    - PlanSelector.tsx
-   - SubscriptionStatus.tsx
-   - CancelSubscriptionModal.tsx
+   - SubscriptionStatus.tsx（共通Modal/Badgeを使用してキャンセル確認UIとステータスバッジを実装）
 5. **Phase 3.2**: Routes実装
    - account.subscription.tsx
    - api.webhooks.stripe.tsx

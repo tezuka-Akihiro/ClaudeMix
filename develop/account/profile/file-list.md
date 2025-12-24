@@ -36,12 +36,12 @@
 | :--- | :--- | :--- |
 | ProfileDisplay.tsx | app/components/account/profile/ProfileDisplay.tsx | プロフィール情報表示コンポーネント |
 | ProfileDisplay.test.tsx | app/components/account/profile/ProfileDisplay.test.tsx | ProfileDisplayの単体テスト |
-| EmailChangeForm.tsx | app/components/account/profile/EmailChangeForm.tsx | メールアドレス変更フォーム（モーダル） |
+| EmailChangeForm.tsx | app/components/account/profile/EmailChangeForm.tsx | メールアドレス変更フォーム（共通Modalと組み合わせて使用） |
 | EmailChangeForm.test.tsx | app/components/account/profile/EmailChangeForm.test.tsx | EmailChangeFormの単体テスト |
-| PasswordChangeForm.tsx | app/components/account/profile/PasswordChangeForm.tsx | パスワード変更フォーム（モーダル） |
+| PasswordChangeForm.tsx | app/components/account/profile/PasswordChangeForm.tsx | パスワード変更フォーム（共通Modalと組み合わせて使用） |
 | PasswordChangeForm.test.tsx | app/components/account/profile/PasswordChangeForm.test.tsx | PasswordChangeFormの単体テスト |
-| DeleteAccountModal.tsx | app/components/account/profile/DeleteAccountModal.tsx | アカウント削除確認モーダル |
-| DeleteAccountModal.test.tsx | app/components/account/profile/DeleteAccountModal.test.tsx | DeleteAccountModalの単体テスト |
+
+**注**: アカウント削除確認は、ProfileDisplayコンポーネント内で共通Modal（app/components/account/common/Modal.tsx）を直接使用します。
 
 ---
 
@@ -154,8 +154,8 @@ profileセクションは、以下のauthenticationセクションのファイ�
    - deleteUser.server.ts
 3. **Phase 2-3**: lib層の実装
    - validateAccountDeletion.ts
-4. **Phase 2-4**: Components実装
-   - DeleteAccountModal.tsx
+4. **Phase 2-4**: ProfileDisplay更新（アカウント削除UI追加）
+   - ProfileDisplay.tsxに、共通Modal（app/components/account/common/Modal.tsx）を使用したアカウント削除確認UIを追加
 5. **Phase 2-5**: Routes更新
    - account.settings.tsx（アカウント削除actionを追加）
 

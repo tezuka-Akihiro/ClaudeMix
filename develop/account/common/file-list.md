@@ -45,6 +45,10 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 | ErrorMessage.test.tsx | app/components/account/common/ErrorMessage.test.tsx | ユニットテスト |
 | FlashMessage.tsx | app/components/account/common/FlashMessage.tsx | リダイレクト時のメッセージ表示（URLパラメータまたはCookie、一度きり表示） |
 | FlashMessage.test.tsx | app/components/account/common/FlashMessage.test.tsx | ユニットテスト |
+| Modal.tsx | app/components/account/common/Modal.tsx | 共通モーダルコンポーネント（オーバーレイ、フォーカストラップ、Escape対応） |
+| Modal.test.tsx | app/components/account/common/Modal.test.tsx | ユニットテスト |
+| Badge.tsx | app/components/account/common/Badge.tsx | ステータスバッジコンポーネント（success/warning/danger/info等のvariant） |
+| Badge.test.tsx | app/components/account/common/Badge.test.tsx | ユニットテスト |
 
 ---
 
@@ -77,3 +81,11 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 | getUserById.server.test.ts | app/data-io/account/common/getUserById.server.test.ts | ユニットテスト（DBモック使用） |
 | deleteAllUserSessions.server.ts | app/data-io/account/common/deleteAllUserSessions.server.ts | ユーザーのすべてのセッションを削除（パスワード変更、パスワードリセット、アカウント削除時に使用） |
 | deleteAllUserSessions.server.test.ts | app/data-io/account/common/deleteAllUserSessions.server.test.ts | ユニットテスト（KVモック使用） |
+
+---
+
+## 5. 型定義（Specs）
+
+| ファイル名 | パス | 説明 |
+| :--- | :--- | :--- |
+| types.ts | app/specs/account/types.ts | アカウントサービス全体の共有型定義（User, SessionData, FormFieldProps, ButtonProps等） |
