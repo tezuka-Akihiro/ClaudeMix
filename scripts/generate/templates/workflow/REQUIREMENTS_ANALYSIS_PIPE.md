@@ -118,5 +118,15 @@
 
 ## TDD_WORK_FLOW.md（開発手順書）
 
-1. `docs/boilerplate_architecture/DESIGN_BLUEPRINT_FLOW.md` に従って中間データを用意する。
+**目的**: 実装フローを確定させる
+**指示**:
+
+1. **@GeneratorOperator** に依頼してテンプレートを生成します。
+
+   ```bash
+   @GeneratorOperator "TDD_WORK_FLOW.mdを生成してください。service: {{service}}, section: <section>"
+   ```
+
 2. **出力先**: `develop/{{service}}/<section>/TDD_WORK_FLOW.md`
+3. テンプレートの内容に従って開発フローを具体化させる。
+4. 生成された図は、オペレーターがAIの設計意図を承認するためのレビュー資料となる。
