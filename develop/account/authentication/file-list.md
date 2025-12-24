@@ -11,6 +11,7 @@
 | authentication.spec.ts | tests/e2e/account/authentication.spec.ts |
 
 **テストケース**:
+
 - 会員登録の成功シナリオ
 - メールアドレス重複時のエラー表示
 - ログインの成功シナリオ
@@ -88,21 +89,25 @@
 authenticationセクションは、以下のcommonセクションのファイルに依存します：
 
 **Pure Logic (lib/common)**:
+
 - `createSessionData.ts`: セッションデータの生成
 - `validateSession.ts`: セッション検証
 
 **Side Effects (data-io/common)**:
+
 - `getSession.server.ts`: セッション取得
 - `saveSession.server.ts`: セッション保存
 - `destroySession.server.ts`: セッション削除
 - `getUserById.server.ts`: ユーザー情報取得
 
 **UI Components (components/common)**:
+
 - `FormField.tsx`: フォーム入力フィールド
 - `Button.tsx`: ボタンコンポーネント
 - `ErrorMessage.tsx`: エラーメッセージ表示
 
 **Specs**:
+
 - `app/specs/account/common-spec.yaml`: セッション設定、バリデーションルール、セキュリティ設定
 - `app/specs/account/types.ts`: User, SessionData, FormFieldProps, ButtonProps, ErrorMessageProps
 

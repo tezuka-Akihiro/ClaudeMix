@@ -11,6 +11,7 @@
 | subscription.spec.ts | tests/e2e/account/subscription.spec.ts |
 
 **テストケース**:
+
 - プラン選択画面の表示確認
 - Stripe Checkout Session作成の成功シナリオ
 - サブスクリプション状態の表示確認（active/canceled/past_due）
@@ -94,14 +95,17 @@
 subscriptionセクションは、以下のcommonセクションのファイルに依存します：
 
 **Pure Logic (lib/common)**:
+
 - `createSessionData.ts`: セッションデータの生成（認証保護用）
 - `validateSession.ts`: セッション検証
 
 **Side Effects (data-io/common)**:
+
 - `getSessionBySessionId.server.ts`: セッション取得
 - `getUserById.server.ts`: ユーザー情報取得
 
 **UI Components (components/common)**:
+
 - `Button.tsx`: ボタンコンポーネント
 - `ErrorMessage.tsx`: エラーメッセージ表示
 - `Modal.tsx`: モーダルコンポーネント
@@ -109,12 +113,14 @@ subscriptionセクションは、以下のcommonセクションのファイル�
 - `AccountLayout.tsx`: アカウントレイアウトコンテナ
 
 **Specs**:
+
 - `app/specs/account/common-spec.yaml`: セッション設定、バリデーションルール
 - `app/specs/account/types.ts`: User, SessionData, ValidationError型
 
 ### Authentication セクションへの依存
 
 **Side Effects (data-io/authentication)**:
+
 - `findUserByEmail.server.ts`: ユーザー検索（メールアドレスでユーザー取得）
 
 ---
@@ -162,6 +168,7 @@ subscriptionセクションは、以下のcommonセクションのファイル�
 | updated_at | TEXT | NOT NULL | 更新日時（ISO 8601） |
 
 **インデックス**:
+
 - `idx_subscriptions_user_id` ON `user_id` (ユーザーごとのサブスクリプション検索)
 - `idx_subscriptions_stripe_subscription_id` ON `stripe_subscription_id` (Webhook処理での検索)
 - `idx_subscriptions_status` ON `status` (状態別の検索)

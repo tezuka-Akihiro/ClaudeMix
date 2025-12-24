@@ -33,17 +33,20 @@ Subscription Management (サブスクリプション管理)
 **URL**: `/account/subscription`
 
 **機能**:
+
 - 利用可能なプランの表示（1ヶ月/3ヶ月/6ヶ月）
 - プラン詳細の表示（価格、期間、特典）
 - Stripe Checkoutへのリダイレクト
 - 決済完了後のリダイレクト処理
 
 **表示データ**:
+
 - プラン名、価格、期間
 - 現在のサブスクリプション状態
 - 次回請求日（契約中の場合）
 
 **処理フロー**:
+
 1. 利用可能なプラン一覧取得
 2. ユーザーのサブスクリプション状態取得
 3. プラン選択
@@ -57,12 +60,14 @@ Subscription Management (サブスクリプション管理)
 **URL**: `/account/subscription`
 
 **機能**:
+
 - 現在のサブスクリプション情報表示
 - サブスクリプションキャンセル
 - プラン変更（将来実装）
 - 請求履歴表示（将来実装）
 
 **表示データ**:
+
 - 契約プラン名
 - 契約状態（active/canceled/past_due/trialing）
 - 契約開始日
@@ -70,6 +75,7 @@ Subscription Management (サブスクリプション管理)
 - 月額料金
 
 **処理フロー（キャンセル）**:
+
 1. キャンセル確認ダイアログ表示
 2. Stripe APIでサブスクリプションキャンセル
 3. DBのサブスクリプション状態更新
@@ -80,11 +86,13 @@ Subscription Management (サブスクリプション管理)
 **URL**: `/api/webhooks/stripe`
 
 **機能**:
+
 - Stripeからのイベント受信
 - イベント検証（署名チェック）
 - サブスクリプション状態の同期
 
 **処理対象イベント**:
+
 - `checkout.session.completed`: 決済完了、サブスクリプション有効化
 - `customer.subscription.updated`: サブスクリプション更新
 - `customer.subscription.deleted`: サブスクリプションキャンセル
@@ -92,6 +100,7 @@ Subscription Management (サブスクリプション管理)
 - `invoice.payment_failed`: 請求失敗
 
 **処理フロー**:
+
 1. Webhookイベント受信
 2. 署名検証
 3. イベントタイプ判定
@@ -107,10 +116,12 @@ Subscription Management (サブスクリプション管理)
 **配置**: `app/components/account/subscription/PlanSelector.tsx`
 
 **責務**:
+
 - 利用可能なプラン一覧の表示
 - プラン選択UI
 
 **主要なUI要素**:
+
 - プランカード × 3（1ヶ月/3ヶ月/6ヶ月）
 - プラン名、価格、期間、特典リスト
 - 「購読する」ボタン（Button使用）
@@ -121,10 +132,12 @@ Subscription Management (サブスクリプション管理)
 **配置**: `app/components/account/subscription/SubscriptionStatus.tsx`
 
 **責務**:
+
 - 現在のサブスクリプション情報の表示
 - 管理アクション（キャンセル等）へのリンク
 
 **主要なUI要素**:
+
 - 契約プラン名表示
 - 契約状態バッジ（active/canceled/past_due）
 - 次回請求日表示
@@ -135,10 +148,12 @@ Subscription Management (サブスクリプション管理)
 **配置**: `app/components/account/subscription/CancelSubscriptionModal.tsx`
 
 **責務**:
+
 - サブスクリプションキャンセル確認モーダル
 - キャンセル理由の選択（オプション）
 
 **主要なUI要素**:
+
 - キャンセル警告メッセージ
 - キャンセル理由選択（将来実装）
 - 「キャンセル実行」ボタン（Button variant="danger"）
@@ -151,17 +166,20 @@ Subscription Management (サブスクリプション管理)
 **配置**: `app/routes/account.subscription.tsx`
 
 **責務**:
+
 - サブスクリプション管理ページのRoute定義
 - loader: サブスクリプション情報取得
 - action: Stripe Checkout作成、サブスクリプションキャンセル
 
 **loader処理**:
+
 - セッション検証（AuthGuardで実行）
 - ユーザーのサブスクリプション情報取得
 - 利用可能なプラン一覧取得
 - データ返却
 
 **action処理**:
+
 1. intent判定（create-checkout, cancel-subscription）
 2. create-checkout: Stripe Checkout Session作成、URLを返却
 3. cancel-subscription: Stripeでキャンセル実行、DB更新
@@ -171,11 +189,13 @@ Subscription Management (サブスクリプション管理)
 **配置**: `app/routes/api.webhooks.stripe.tsx`
 
 **責務**:
+
 - Stripe Webhookの受信と処理
 - イベント署名の検証
 - サブスクリプション状態の同期
 
 **処理**:
+
 1. リクエストボディ取得
 2. Stripe署名検証
 3. イベントタイプ判定
@@ -233,6 +253,7 @@ Subscription Management (サブスクリプション管理)
 **責務**: Stripe Checkout Session作成
 
 **入力**:
+
 - ユーザーID
 - プランID
 - 成功時リダイレクトURL
@@ -273,6 +294,7 @@ Subscription Management (サブスクリプション管理)
 **責務**: サブスクリプション状態をDB更新
 
 **入力**:
+
 - ユーザーID
 - 新しい状態
 - Stripe Subscription ID
@@ -289,6 +311,7 @@ Subscription Management (サブスクリプション管理)
 **責務**: Stripe Webhookの署名検証
 
 **入力**:
+
 - リクエストボディ
 - Stripe署名ヘッダー
 
@@ -374,6 +397,7 @@ api.webhooks.stripe (イベント受信)
 **配置**: `tests/e2e/account/subscription.spec.ts`
 
 **テストケース**:
+
 - プラン選択画面の表示
 - Stripe Checkout Sessionの作成
 - サブスクリプション状態の表示
@@ -383,6 +407,7 @@ api.webhooks.stripe (イベント受信)
 ### 単体テスト
 
 各関数ごとにテストファイルを作成：
+
 - `calculatePlanPrice.test.ts`
 - `formatSubscriptionStatus.test.ts`
 - `calculateNextBillingDate.test.ts`
@@ -393,12 +418,14 @@ api.webhooks.stripe (イベント受信)
 ## 🚀 実装の優先順位
 
 **Phase 1 (MVP)**: 基本購読機能
+
 1. プラン選択とStripe Checkout
 2. サブスクリプション状態表示
 3. Webhook処理（checkout.session.completed, customer.subscription.deleted）
 4. キャンセル機能
 
 **Phase 2 (将来実装)**: 高度な機能
+
 - プラン変更機能
 - 請求履歴表示
 - クーポン適用
@@ -437,6 +464,7 @@ api.webhooks.stripe (イベント受信)
 ### Stripeプラン設定
 
 Stripe Dashboardで以下のプランを作成：
+
 - **1ヶ月プラン**: `price_xxx` (例: 980円/月)
 - **3ヶ月プラン**: `price_yyy` (例: 2,800円/3ヶ月)
 - **6ヶ月プラン**: `price_zzz` (例: 5,400円/6ヶ月)

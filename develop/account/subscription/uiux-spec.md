@@ -48,6 +48,7 @@ AccountLayout
 **責務**: 利用可能なプラン一覧を表示し、ユーザーがプランを選択できるUI
 
 **Props定義**（抽象要件）:
+
 - プラン一覧データ（プラン名、価格、期間、特典リスト、StripeプランID）
 - 現在契約中のプラン情報（契約中プランの識別子）
 - プラン選択時のアクション関数
@@ -109,10 +110,12 @@ AccountLayout
 ```
 
 **状態管理**:
+
 - ローディング状態（Stripe Checkout Session作成中）
 - エラー状態（Checkout作成失敗時）
 
 **インタラクション**:
+
 1. ユーザーが「購読する」ボタンをクリック
 2. Formを送信（action: create-checkout, planId: 選択したプランID）
 3. ローディング状態表示
@@ -120,11 +123,13 @@ AccountLayout
 5. Stripe Checkoutへリダイレクト
 
 **レスポンシブ対応**:
+
 - **Desktop**: 3カラムグリッド（横並び）
 - **Tablet**: 3カラムグリッド（横並び、カード幅調整）
 - **Mobile**: 1カラム（縦積み）
 
 **アクセシビリティ**:
+
 - プランカードに適切な見出しレベル（h3）
 - 価格情報は読み上げ可能な形式
 - ボタンにaria-labelで「〇〇プランを購読する」を設定
@@ -139,6 +144,7 @@ AccountLayout
 **責務**: 現在のサブスクリプション情報を表示し、管理アクションへのアクセスを提供
 
 **Props定義**（抽象要件）:
+
 - サブスクリプション情報（プラン名、契約状態、契約開始日、次回請求日、月額料金）
 - キャンセルアクション関数
 
@@ -190,15 +196,18 @@ AccountLayout
 | trialing | info（青） | トライアル終了日を表示 |
 
 **インタラクション**:
+
 1. ユーザーが「サブスクリプションをキャンセル」ボタンをクリック
 2. CancelSubscriptionModalを表示
 
 **レスポンシブ対応**:
+
 - **Desktop**: カード幅600px固定
 - **Tablet**: カード幅100%（padding適用）
 - **Mobile**: カード幅100%（padding適用）、フォントサイズ調整
 
 **アクセシビリティ**:
+
 - 契約状態バッジにaria-labelで状態を明示（「契約状態: アクティブ」）
 - 契約情報は定義リスト（dl/dt/dd）で構造化
 - キャンセルボタンにaria-describedbyで警告メッセージを関連付け
@@ -212,6 +221,7 @@ AccountLayout
 **責務**: サブスクリプションキャンセル確認モーダル
 
 **Props定義**（抽象要件）:
+
 - モーダル開閉状態
 - キャンセル実行アクション関数
 - モーダルを閉じるアクション関数
@@ -267,10 +277,12 @@ AccountLayout
 ```
 
 **状態管理**:
+
 - モーダル開閉状態（isOpen）
 - フォーム送信中状態（isSubmitting）
 
 **インタラクション**:
+
 1. モーダルが開く
 2. フォーカスが「戻る」ボタンに移動
 3. ユーザーが「キャンセルを実行」をクリック
@@ -280,15 +292,18 @@ AccountLayout
 7. エラー時: エラーメッセージ表示
 
 **モーダル動作**:
+
 - オーバーレイクリックで閉じない（誤操作防止）
 - Escapeキーで閉じる
 - フォーカストラップ有効
 
 **レスポンシブ対応**:
+
 - **Desktop**: モーダル幅480px固定、中央配置
 - **Mobile**: モーダル幅100%（padding適用）
 
 **アクセシビリティ**:
+
 - role="dialog"、aria-modal="true"
 - モーダルタイトルとaria-labelledby関連付け
 - 警告メッセージとaria-describedby関連付け
@@ -364,6 +379,7 @@ stateDiagram-v2
 **発生条件**: Stripe API呼び出し失敗、ネットワークエラー
 
 **表示内容**:
+
 ```
 <ErrorMessage data-testid="checkout-error">
   Stripe決済画面の作成に失敗しました。もう一度お試しください。
@@ -371,6 +387,7 @@ stateDiagram-v2
 ```
 
 **対処**:
+
 - ユーザーに再試行を促す
 - エラー詳細をログに記録
 
@@ -379,6 +396,7 @@ stateDiagram-v2
 **発生条件**: Stripe API呼び出し失敗、DB更新失敗
 
 **表示内容**:
+
 ```
 <ErrorMessage data-testid="cancel-error">
   サブスクリプションのキャンセルに失敗しました。もう一度お試しください。
@@ -386,6 +404,7 @@ stateDiagram-v2
 ```
 
 **対処**:
+
 - ユーザーに再試行を促す
 - Webhook処理で最終的に同期される
 
@@ -396,6 +415,7 @@ stateDiagram-v2
 **表示内容**: ユーザーには表示しない（サーバーログに記録のみ）
 
 **対処**:
+
 - 400 Bad Requestを返却
 - Stripeが自動的にリトライ
 
@@ -406,6 +426,7 @@ stateDiagram-v2
 ### プラン購読成功
 
 **表示内容**:
+
 ```
 <SuccessMessage data-testid="subscription-success">
   サブスクリプションの購読が完了しました。ご利用ありがとうございます。
@@ -417,6 +438,7 @@ stateDiagram-v2
 ### キャンセル成功
 
 **表示内容**:
+
 ```
 <SuccessMessage data-testid="cancel-success">
   サブスクリプションをキャンセルしました。次回請求日まで引き続きご利用いただけます。
@@ -440,6 +462,7 @@ stateDiagram-v2
 ### PlanSelector レスポンシブ
 
 **Desktop**:
+
 ```css
 .plan-grid {
   display: grid;
@@ -449,6 +472,7 @@ stateDiagram-v2
 ```
 
 **Mobile**:
+
 ```css
 .plan-grid {
   display: grid;
@@ -460,6 +484,7 @@ stateDiagram-v2
 ### Modal レスポンシブ
 
 **Desktop**:
+
 ```css
 .modal-container {
   max-width: 480px;
@@ -468,6 +493,7 @@ stateDiagram-v2
 ```
 
 **Mobile**:
+
 ```css
 .modal-container {
   width: 100%;
@@ -532,6 +558,7 @@ stateDiagram-v2
 ### E2Eテスト（`tests/e2e/account/subscription.spec.ts`）
 
 **テストケース**:
+
 1. プラン選択画面の表示確認
 2. Stripe Checkout Session作成の成功シナリオ
 3. サブスクリプション状態の表示確認（active/canceled/past_due）
@@ -542,6 +569,7 @@ stateDiagram-v2
 ### 単体テスト
 
 各コンポーネントに対応する`.test.tsx`ファイル:
+
 - `PlanSelector.test.tsx`: プラン表示、ボタンクリック
 - `SubscriptionStatus.test.tsx`: 状態別表示、キャンセルボタン
 - `CancelSubscriptionModal.test.tsx`: モーダル開閉、フォーム送信

@@ -124,6 +124,7 @@ graph TD
 **配置**: `app/components/account/profile/ProfileDisplay.tsx`
 
 **親子構造**:
+
 - **親**: account.settings.tsx Route
 - **子**: 情報表示エリア、アクションボタン群
 
@@ -142,6 +143,7 @@ stateDiagram-v2
 ```
 
 **並列配置ルール**:
+
 - **情報表示セクション**: 縦並び（vertical stack）
 - **アクションボタンセクション**: 縦並び（vertical stack）、等間隔
 
@@ -150,6 +152,7 @@ stateDiagram-v2
 **配置**: `app/components/account/profile/EmailChangeForm.tsx`
 
 **親子構造**:
+
 - **親**: ProfileDisplay（モーダルとして表示）
 - **子**: FormField × 2, Button × 2, ErrorMessage
 
@@ -169,6 +172,7 @@ stateDiagram-v2
 ```
 
 **並列配置ルール**:
+
 - **フォームフィールドグループ**: 縦並び（vertical stack）
 - **ボタングループ**: 横並び（horizontal）、保存/キャンセル
 
@@ -177,6 +181,7 @@ stateDiagram-v2
 **配置**: `app/components/account/profile/PasswordChangeForm.tsx`
 
 **親子構造**:
+
 - **親**: ProfileDisplay（モーダルとして表示）
 - **子**: FormField × 3, Button × 2, ErrorMessage
 
@@ -196,6 +201,7 @@ stateDiagram-v2
 ```
 
 **並列配置ルール**:
+
 - **フォームフィールドグループ**: 縦並び（vertical stack）
 - **ボタングループ**: 横並び（horizontal）、保存/キャンセル
 
@@ -204,6 +210,7 @@ stateDiagram-v2
 **配置**: `app/components/account/profile/DeleteAccountModal.tsx`
 
 **親子構造**:
+
 - **親**: ProfileDisplay（モーダルとして表示）
 - **子**: 警告メッセージ, FormField, Checkbox, Button × 2
 
@@ -223,6 +230,7 @@ stateDiagram-v2
 ```
 
 **並列配置ルール**:
+
 - **警告メッセージ**: 上部に強調表示
 - **フォームフィールド**: 縦並び（vertical stack）
 - **ボタングループ**: 横並び（horizontal）、削除/キャンセル
@@ -238,6 +246,7 @@ stateDiagram-v2
 **適用対象**: ProfileDisplay 内の情報表示エリア
 
 **構造ルール**:
+
 - **配置方式**: Flexbox
 - **方向**: 縦方向（`flex-direction: column`）
 - **間隔**: 等間隔（`gap`トークン使用）
@@ -248,6 +257,7 @@ stateDiagram-v2
 **適用対象**: ProfileDisplay 内のボタンエリア
 
 **構造ルール**:
+
 - **配置方式**: Flexbox
 - **方向**: 縦方向（`flex-direction: column`）
 - **間隔**: 等間隔（`gap`トークン使用）
@@ -258,6 +268,7 @@ stateDiagram-v2
 **適用対象**: EmailChangeForm, PasswordChangeForm, DeleteAccountModal
 
 **構造ルール**:
+
 - **配置方式**: Fixed positioning（画面中央）
 - **背景**: オーバーレイ（半透明背景）
 - **モーダルボックス**: 中央寄せ、固定幅
@@ -268,6 +279,7 @@ stateDiagram-v2
 **適用対象**: EmailChangeForm, PasswordChangeForm 内のフィールドグループ
 
 **構造ルール**:
+
 - **配置方式**: Flexbox
 - **方向**: 縦方向（`flex-direction: column`）
 - **間隔**: 等間隔（`gap`トークン使用）
@@ -277,6 +289,7 @@ stateDiagram-v2
 **適用対象**: モーダル内のボタンエリア
 
 **構造ルール**:
+
 - **配置方式**: Flexbox
 - **方向**: 横方向（`flex-direction: row`）
 - **間隔**: 等間隔（`gap`トークン使用）
@@ -322,6 +335,7 @@ stateDiagram-v2
 ### ブレークポイント
 
 `app/specs/account/common-spec.yaml`の`responsive.breakpoints`を参照：
+
 - **Mobile**: 768px未満
 - **Tablet**: 768px以上、1024px未満
 - **Desktop**: 1024px以上
