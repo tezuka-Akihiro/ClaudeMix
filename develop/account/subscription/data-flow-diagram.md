@@ -67,7 +67,7 @@ graph TD
 ```mermaid
 graph TD
     User((ユーザー)) --> SubStatus["SubscriptionStatus"]
-    SubStatus -- "キャンセルボタンクリック" --> Modal["CancelSubscriptionModal<br/>(モーダル表示)"]
+    SubStatus -- "キャンセルボタンクリック" --> Modal["Modal (common)<br/>(キャンセル確認)"]
     Modal -- "キャンセル確認" --> Action["account.subscription action<br/>(cancel-subscription)"]
 
     Action --> ValidateSession["セッション検証"]
@@ -128,8 +128,7 @@ graph TD
 | **account.subscription.tsx** | サブスクリプション管理ページのRoute定義、loader/action処理 | PlanSelector, SubscriptionStatus, getSubscriptionByUserId.server, createStripeCheckoutSession.server |
 | **api.webhooks.stripe.tsx** | Stripe Webhookの受信と処理、イベント署名検証 | verifyStripeWebhook.server, updateSubscriptionStatus.server, createSubscription.server |
 | **PlanSelector** | プラン選択UI、購読ボタン配置 | Button (common), ErrorMessage (common) |
-| **SubscriptionStatus** | サブスクリプション状態表示、キャンセルボタン配置 | Badge (common), Button (common), CancelSubscriptionModal |
-| **CancelSubscriptionModal** | サブスクリプションキャンセル確認モーダル | Modal (common), Button (common), ErrorMessage (common) |
+| **SubscriptionStatus** | サブスクリプション状態表示（Badge使用）、キャンセルUI（Modal使用） | Badge (common), Modal (common), Button (common), ErrorMessage (common) |
 
 ---
 

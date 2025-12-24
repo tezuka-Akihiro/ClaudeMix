@@ -56,7 +56,7 @@ graph TD
 ```mermaid
 graph TD
     User((ユーザー)) --> ProfileDisplay["ProfileDisplay"]
-    ProfileDisplay -- "削除ボタンクリック" --> DeleteModal["DeleteAccountModal"]
+    ProfileDisplay -- "削除ボタンクリック" --> DeleteModal["Modal (common)<br/>(アカウント削除確認)"]
     DeleteModal -- "モーダル表示" --> CheckSub["サブスクリプション状態確認<br/>(getSubscriptionByUserId.server)"]
 
     CheckSub -- "アクティブなサブスクリプションあり" --> ShowWarning["強力な警告表示<br/>（残り期間、返金なし）"]
@@ -89,10 +89,9 @@ graph TD
 | コンポーネント | 責務 | 依存先 |
 | :--- | :--- | :--- |
 | **account.settings.tsx** | プロフィール設定ページのRoute定義、action処理 | ProfileDisplay, validateEmailChange, updateUserEmail.server |
-| **ProfileDisplay** | プロフィール情報表示、変更ボタン配置 | EmailChangeForm, PasswordChangeForm, DeleteAccountModal |
+| **ProfileDisplay** | プロフィール情報表示、変更ボタン配置、アカウント削除UI（共通Modalを使用） | EmailChangeForm, PasswordChangeForm, Modal (common), Button (common), ErrorMessage (common) |
 | **EmailChangeForm** | メールアドレス変更フォームUI（モーダル） | FormField, Button, ErrorMessage (common) |
 | **PasswordChangeForm** | パスワード変更フォームUI（モーダル） | FormField, Button, ErrorMessage (common) |
-| **DeleteAccountModal** | アカウント削除確認モーダル | FormField, Button, ErrorMessage (common) |
 
 ---
 
