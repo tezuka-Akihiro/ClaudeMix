@@ -201,6 +201,8 @@ graph TD
 | **Button** | ボタン（variant、ローディング状態） | - |
 | **ErrorMessage** | エラーメッセージ表示（自動閉じ、手動閉じ） | - |
 | **FlashMessage** | リダイレクト時のメッセージ表示（URLパラメータまたはCookie、一度きり表示） | - |
+| **Modal** | 共通モーダル（オーバーレイ、フォーカストラップ、Escape対応） | - |
+| **Badge** | ステータスバッジ（success/warning/danger/info等のvariant） | - |
 
 ---
 
