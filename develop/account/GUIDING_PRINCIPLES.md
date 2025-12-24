@@ -22,8 +22,8 @@
 
 **開発スコープ**:
 
-- **範囲内 (In Scope)**: 会員登録、認証（メール/パスワード、OAuth）、プロフィール管理、サブスクリプション管理（Stripe）、セッション管理（Cloudflare Workers KV）
-- **範囲外 (Out of Scope)**: 2段階認証、パスワードリセット（初期MVP）、プロフィール画像アップロード、ユーザー間メッセージ機能、管理者画面
+- **範囲内 (In Scope)**: 会員登録、認証（メール/パスワード、OAuth）、パスワードリセット、プロフィール管理、サブスクリプション管理（Stripe）、セッション管理（Cloudflare Workers KV）
+- **範囲外 (Out of Scope)**: 2段階認証、プロフィール画像アップロード、ユーザー間メッセージ機能、管理者画面
 
 ---
 
@@ -47,6 +47,8 @@
 | 登録ページ | `register.tsx` | `/register` | 会員登録フォーム |
 | ログインページ | `login.tsx` | `/login` | ログインフォーム |
 | ログアウト | `logout.tsx` | `/logout` | ログアウト処理（action） |
+| パスワードリセット要求 | `forgot-password.tsx` | `/forgot-password` | メールアドレス入力フォーム |
+| パスワードリセット実行 | `reset-password.$token.tsx` | `/reset-password/:token` | 新パスワード入力フォーム |
 | アカウントトップ | `account._index.tsx` | `/account` | マイページトップ |
 | 設定ページ | `account.settings.tsx` | `/account/settings` | プロフィール編集、パスワード変更 |
 | サブスクリプション | `account.subscription.tsx` | `/account/subscription` | プラン選択、決済管理 |
@@ -56,6 +58,8 @@
 - **会員登録**: `/register` → `app/routes/register.tsx`
 - **ログイン**: `/login` → `app/routes/login.tsx`
 - **ログアウト**: `/logout` → `app/routes/logout.tsx`
+- **パスワードリセット要求**: `/forgot-password` → `app/routes/forgot-password.tsx`
+- **パスワードリセット実行**: `/reset-password/:token` → `app/routes/reset-password.$token.tsx`
 - **マイページ**: `/account` → `app/routes/account._index.tsx`
 - **設定**: `/account/settings` → `app/routes/account.settings.tsx`
 - **サブスクリプション**: `/account/subscription` → `app/routes/account.subscription.tsx`
@@ -83,6 +87,15 @@
 - **セッション管理ユーティリティ**: `app/lib/account/common/` に配置します（純粋ロジック層）
 - **プロジェクト共通コンポーネント**: プロジェクト全体で利用されるコンポーネントは、オペレーターに相談の上、適切な場所に配置する
 - **file-list.md管理方針**: 複数セクションで共有されるコンポーネントは、commonセクションのfile-list.mdに記載します
+
+**他サービス（blogなど）からの利用許可**:
+
+- **公開インターフェース**: `app/lib/account/common/` 配下のセッション検証関数は、他サービス（`services.blog`）からもインポートして利用することを許可します
+- **推奨される公開関数**:
+  - `validateSession()`: セッション検証（セッションIDからユーザー情報を取得）
+  - `requireAuth()`: 認証必須ガード（未認証時にエラーをthrow）
+  - `requireSubscription()`: サブスクリプション必須ガード（未契約時にエラーをthrow）
+- **利用例**: blogサービスの有料記事詳細ページ（`routes/blog.$postId.tsx`）から`requireSubscription()`を呼び出し、サブスクリプション状態に応じてアクセス制御を実施
 
 **実装順序**:
 
@@ -113,10 +126,12 @@ graph TD
 
 **主要なデータフロー**:
 
-1. **会員登録**: Route → data-io（ユーザー作成） → lib（パスワードハッシュ化） → lib（セッション生成）
+1. **会員登録**: Route → data-io（ユーザー作成） → lib（パスワードハッシュ化） → lib（セッション生成） → Cookie保存
 2. **ログイン**: Route → data-io（認証） → lib（セッション生成） → Cookie保存
-3. **マイページ**: Route → lib（セッション検証） → data-io（ユーザー情報取得） → UI（表示）
-4. **サブスクリプション**: Route → data-io（Stripe API） → lib（状態更新） → UI（結果表示）
+3. **パスワードリセット**: Route → data-io（トークン生成・KV保存） → data-io（メール送信） → Route（トークン検証） → data-io（パスワード更新） → lib（全セッション破棄）
+4. **マイページ**: Route → lib（セッション検証） → data-io（ユーザー情報取得） → UI（表示）
+5. **サブスクリプション**: Route → data-io（Stripe API） → lib（状態更新） → UI（結果表示）
+6. **退会処理**: Route → data-io（アクティブなサブスクリプション確認） → data-io（Stripeサブスクリプション即時解約） → data-io（D1: subscriptionsテーブル削除） → data-io（D1: usersテーブル削除） → lib（全セッション破棄） → /loginへリダイレクト
 
 ---
 
@@ -130,11 +145,12 @@ graph TD
 | Session | セッション | ログイン状態を維持するための一時的な認証情報 |
 | Session ID | セッションID | セッションを識別する一意の文字列。Cookieに保存 |
 | OAuth | OAuth認証 | Google/Appleなどの外部プロバイダーによる認証方式 |
+| Password Reset Token | パスワードリセットトークン | パスワードリセット用の一時的な認証トークン。KVに保存（TTL: 1時間） |
 | Subscription | サブスクリプション | 定期購読契約 |
 | Plan | プラン | 1ヶ月/3ヶ月/6ヶ月の課金プラン |
 | Stripe | Stripe | オンライン決済サービス。サブスクリプション管理に使用 |
 | Webhook | Webhook | Stripeからの非同期通知。決済完了やキャンセルを通知 |
-| Cloudflare Workers KV | KV | Cloudflareのグローバル分散型キーバリューストア。セッション保存に使用 |
+| Cloudflare Workers KV | KV | Cloudflareのグローバル分散型キーバリューストア。セッション・トークン保存に使用 |
 | Hash | ハッシュ化 | パスワードを不可逆的に暗号化する処理 |
 | Redirect | リダイレクト | 未認証ユーザーを`/login`へ自動遷移させる処理 |
 | Auth Guard | 認証保護 | 認証が必要なページへのアクセスを制御する機能 |

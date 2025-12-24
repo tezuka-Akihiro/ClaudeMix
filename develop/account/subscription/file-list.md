@@ -82,6 +82,8 @@
 | updateSubscriptionStatus.server.test.ts | app/data-io/account/subscription/updateSubscriptionStatus.server.test.ts | updateSubscriptionStatusの単体テスト（DBモック使用） |
 | createSubscription.server.ts | app/data-io/account/subscription/createSubscription.server.ts | サブスクリプションレコードをDB作成 |
 | createSubscription.server.test.ts | app/data-io/account/subscription/createSubscription.server.test.ts | createSubscriptionの単体テスト（DBモック使用） |
+| deleteSubscription.server.ts | app/data-io/account/subscription/deleteSubscription.server.ts | サブスクリプションレコードをDB削除（アカウント削除時に使用） |
+| deleteSubscription.server.test.ts | app/data-io/account/subscription/deleteSubscription.server.test.ts | deleteSubscriptionの単体テスト（DBモック使用） |
 
 ---
 

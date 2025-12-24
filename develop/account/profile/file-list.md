@@ -78,6 +78,17 @@
 
 ## 依存関係サマリー
 
+### Subscription セクションへの依存（アカウント削除時）
+
+profileセクションの**アカウント削除機能**は、以下のsubscriptionセクションのファイルに依存します：
+
+**Side Effects (data-io/subscription)**:
+- `getSubscriptionByUserId.server.ts`: ユーザーのアクティブなサブスクリプション取得
+- `cancelStripeSubscription.server.ts`: **Stripeでサブスクリプション即時解約**（アカウント削除前に必須）
+- `deleteSubscription.server.ts`: サブスクリプションレコードをDB削除
+
+**重要**: アカウント削除時、Stripeサブスクリプションを解約せずにユーザーデータだけ削除すると、課金が継続する重大な問題が発生します。必ず`cancelStripeSubscription.server`を呼び出してください。
+
 ### Authentication セクションへの依存
 
 profileセクションは、以下のauthenticationセクションのファイルに依存します：
@@ -104,6 +115,7 @@ profileセクションは、以下のauthenticationセクションのファイ�
 - `Button.tsx`: ボタンコンポーネント
 - `ErrorMessage.tsx`: エラーメッセージ表示
 - `AccountLayout.tsx`: アカウントレイアウトコンテナ
+- `Modal.tsx`: モーダルコンポーネント
 
 **Specs**:
 - `app/specs/account/common-spec.yaml`: セッション設定、バリデーションルール
