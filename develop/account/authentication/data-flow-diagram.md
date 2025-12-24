@@ -246,14 +246,14 @@ graph TD
 
     E[findUserByEmail.server] --> F[D1 Database]
     F --> G[SELECT FROM users WHERE email]
-    G --> H[User型 | null返却]
+    G --> H[User型またはnull返却]
 
     I[checkEmailExists.server] --> J[D1 Database]
     J --> K[SELECT COUNT FROM users WHERE email]
     K --> L[boolean返却]
 
     M[getSession.server] --> N[Cloudflare Workers KV]
-    N --> O[SessionData | null返却]
+    N --> O[SessionDataまたはnull返却]
 
     P[saveSession.server] --> Q[Cloudflare Workers KV]
     Q --> R[SET with TTL]
@@ -306,11 +306,11 @@ graph LR
     A[ユーザー認証成功] --> B[createSessionData]
     B --> C[crypto.randomUUID]
     C --> D[sessionId生成]
-    D --> E[expiresAt計算<br/>(現在時刻 + 7日)]
+    D --> E["expiresAt計算 (現在時刻 + 7日)"]
     E --> F[SessionData作成]
     F --> G[saveSession.server]
-    G --> H[Workers KV保存<br/>(TTL: 7日)]
-    H --> I[Cookie設定<br/>(HttpOnly, Secure, SameSite=Lax)]
+    G --> H["Workers KV保存 (TTL: 7日)"]
+    H --> I["Cookie設定 (HttpOnly, Secure, SameSite=Lax)"]
 ```
 
 ---
@@ -322,14 +322,14 @@ graph LR
 ```mermaid
 graph TD
     A[register action] --> B{バリデーション}
-    B -- エラー --> C[ValidationError[] 返却]
+    B -- エラー --> C[ValidationError配列 返却]
     B -- OK --> D{メールアドレス重複?}
     D -- 重複 --> E[email_exists エラー返却]
     D -- OK --> F{ユーザー作成成功?}
     F -- 失敗 --> G[creation_failed エラー返却]
     F -- 成功 --> H{セッション生成成功?}
     H -- 失敗 --> I[session_creation_failed エラー返却]
-    H -- 成功 --> J[リダイレクト: /account]
+    H -- 成功 --> J["リダイレクト: /account"]
 
     style C fill:#ffcccc
     style E fill:#ffcccc
@@ -343,7 +343,7 @@ graph TD
 ```mermaid
 graph TD
     A[login action] --> B{バリデーション}
-    B -- エラー --> C[ValidationError[] 返却]
+    B -- エラー --> C[ValidationError配列 返却]
     B -- OK --> D{ユーザー存在?}
     D -- 存在しない --> E[invalid_credentials エラー]
     D -- 存在する --> F{パスワード一致?}
@@ -368,22 +368,22 @@ graph TD
 graph TD
     A[login action成功] --> B{redirect-urlパラメータ存在?}
     B -- Yes --> C[パラメータのURLへリダイレクト]
-    B -- No --> D[デフォルト: /account へリダイレクト]
+    B -- No --> D["デフォルト: /account へリダイレクト"]
 
-    E[例: /login?redirect-url=/account/settings] --> F[ログイン成功後]
-    F --> G[リダイレクト: /account/settings]
+    E["例: loginにredirect-urlあり"] --> F[ログイン成功後]
+    F --> G["リダイレクト: /account/settings"]
 
-    H[例: /login (パラメータなし)] --> I[ログイン成功後]
-    I --> J[リダイレクト: /account]
+    H["例: loginにパラメータなし"] --> I[ログイン成功後]
+    I --> J["リダイレクト: /account"]
 ```
 
 ### 既にログイン済みの場合
 
 ```mermaid
 graph TD
-    A[/register または /login アクセス] --> B[loader実行]
+    A["register または login アクセス"] --> B[loader実行]
     B --> C{セッション有効?}
-    C -- Yes --> D[リダイレクト: /account]
+    C -- Yes --> D["リダイレクト: /account"]
     C -- No --> E[フォーム表示]
 ```
 

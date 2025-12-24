@@ -11,6 +11,7 @@
 | profile.spec.ts | tests/e2e/account/profile.spec.ts |
 
 **テストケース**:
+
 - プロフィール表示の成功シナリオ
 - メールアドレス変更の成功シナリオ
 - メールアドレス重複時のエラー表示
@@ -83,29 +84,35 @@
 profileセクションは、以下のauthenticationセクションのファイルに依存します：
 
 **Pure Logic (lib/authentication)**:
+
 - `verifyPassword.ts`: パスワード検証
 - `hashPassword.ts`: パスワードハッシュ化
 
 **Side Effects (data-io/authentication)**:
+
 - `findUserByEmail.server.ts`: ユーザー検索
 - `checkEmailExists.server.ts`: メールアドレス重複チェック
 
 ### Common セクションへの依存
 
 **Pure Logic (lib/common)**:
+
 - `createSessionData.ts`: セッションデータの生成
 
 **Side Effects (data-io/common)**:
+
 - `saveSession.server.ts`: セッション保存
 - `destroySession.server.ts`: セッション削除
 
 **UI Components (components/common)**:
+
 - `FormField.tsx`: フォーム入力フィールド
 - `Button.tsx`: ボタンコンポーネント
 - `ErrorMessage.tsx`: エラーメッセージ表示
 - `AccountLayout.tsx`: アカウントレイアウトコンテナ
 
 **Specs**:
+
 - `app/specs/account/common-spec.yaml`: セッション設定、バリデーションルール
 - `app/specs/account/types.ts`: User, ValidationError型
 

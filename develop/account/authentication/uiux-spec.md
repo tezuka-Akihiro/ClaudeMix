@@ -57,7 +57,7 @@ Authentication (認証)
 
 ### 1. Register Route (app/routes/register.tsx)
 
-#### Loader
+Loader
 
 - **責務**: 既にログイン済みの場合は`/account`へリダイレクト
 - **認証チェック**: セッション検証を実行し、認証済みなら`/account`へ自動遷移
@@ -66,7 +66,7 @@ Authentication (認証)
   - `app/lib/account/common/validateSession.ts`: セッション検証
 - **出力**: 未認証の場合はnull（フォーム表示）、認証済みの場合はリダイレクト
 
-#### Action
+Action
 
 - **責務**: 会員登録処理の実行
 - **処理フロー**:
@@ -82,14 +82,14 @@ Authentication (認証)
 
 ### 2. Login Route (app/routes/login.tsx)
 
-#### Loader
+Loader
 
 - **責務**: 既にログイン済みの場合は`/account`へリダイレクト
 - **認証チェック**: セッション検証を実行し、認証済みなら`/account`へ自動遷移
 - **データソース**: Register Routeと同様
 - **出力**: 未認証の場合はnull（フォーム表示）、認証済みの場合はリダイレクト
 
-#### Action
+Action
 
 - **責務**: ログイン処理の実行
 - **処理フロー**:
@@ -104,11 +104,11 @@ Authentication (認証)
 
 ### 3. Logout Route (app/routes/logout.tsx)
 
-#### Loader
+Loader
 
 - **責務**: なし（Actionのみ）
 
-#### Action
+Action
 
 - **責務**: ログアウト処理の実行
 - **処理フロー**:
@@ -195,6 +195,7 @@ graph TD
 **配置**: `app/components/account/authentication/RegisterForm.tsx`
 
 **親子構造**:
+
 - **親**: register.tsx Route
 - **子**: FormField × 3, Button, ErrorMessage, Link
 
@@ -212,6 +213,7 @@ stateDiagram-v2
 ```
 
 **並列配置ルール**:
+
 - **フォームフィールドグループ**: 縦並び（vertical stack）、等間隔
 - **アクショングループ**: 縦並び（Button + Link）
 
@@ -220,6 +222,7 @@ stateDiagram-v2
 **配置**: `app/components/account/authentication/LoginForm.tsx`
 
 **親子構造**:
+
 - **親**: login.tsx Route
 - **子**: FormField × 2, Button, ErrorMessage, Link
 
@@ -237,6 +240,7 @@ stateDiagram-v2
 ```
 
 **並列配置ルール**:
+
 - **フォームフィールドグループ**: 縦並び（vertical stack）、等間隔
 - **アクショングループ**: 縦並び（Button + Link）
 
@@ -251,6 +255,7 @@ stateDiagram-v2
 **適用対象**: register.tsx, login.tsx の最上位コンテナ
 
 **構造ルール**:
+
 - **配置方式**: Flexbox（`display: flex`）
 - **方向**: 縦方向（`flex-direction: column`）
 - **主軸配置**: 中央寄せ（`justify-content: center`）
@@ -262,6 +267,7 @@ stateDiagram-v2
 **適用対象**: RegisterForm, LoginForm 内のフィールドグループ
 
 **構造ルール**:
+
 - **配置方式**: Flexbox
 - **方向**: 縦方向（`flex-direction: column`）
 - **間隔**: 等間隔（`gap`トークン使用）
@@ -271,6 +277,7 @@ stateDiagram-v2
 **適用対象**: RegisterForm, LoginForm 内のボタン・リンクエリア
 
 **構造ルール**:
+
 - **配置方式**: Flexbox
 - **方向**: 縦方向（`flex-direction: column`）
 - **間隔**: 等間隔（`gap`トークン使用）
@@ -316,6 +323,7 @@ stateDiagram-v2
 ### ブレークポイント
 
 `app/specs/account/common-spec.yaml`の`responsive.breakpoints`を参照：
+
 - **Mobile**: 768px未満
 - **Tablet**: 768px以上、1024px未満
 - **Desktop**: 1024px以上
