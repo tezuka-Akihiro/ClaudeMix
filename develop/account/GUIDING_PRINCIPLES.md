@@ -101,7 +101,15 @@
 **実装順序**:
 
 - **重要**: `common`セクションは、他のセクションよりも**必ず先に実装**してください。他のセクションがセッション管理ユーティリティや共通コンポーネントに依存するためです
-- **推奨順序**: common → authentication → profile → subscription
+- **推奨順序**: common → authentication → profile (Phase 1) → subscription → profile (Phase 2)
+
+**Phase分離による依存関係の解決**:
+
+- 一部のセクションは、機能を**Phase 1（基本機能）**と**Phase 2（高度な機能）**に分割します
+- **profile セクション**:
+  - **Phase 1** (authenticationセクション完了後に実装可能): プロフィール表示、メールアドレス変更、パスワード変更
+  - **Phase 2** (subscriptionセクション完了後に実装): アカウント削除機能（Stripeサブスクリプション解約処理を含む）
+- この分割により、循環依存を回避し、段階的な実装が可能になります
 
 **データフロー**:
 
