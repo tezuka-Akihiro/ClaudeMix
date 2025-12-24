@@ -338,11 +338,6 @@ security:
 # レスポンシブ設定
 # ==========================================
 responsive:
-  # ブレークポイント（commonから継承）
-  breakpoints:
-    mobile: 768
-    tablet: 1024
-
   # プランカード幅
   plan_card:
     mobile: "100%"
@@ -414,20 +409,6 @@ performance:
 # テスト設定
 # ==========================================
 test:
-  # テストユーザーデータ
-  fixtures:
-    test_user:
-      email: "subscriber@example.com"
-      user_id: "test-user-id-123"
-      stripe_customer_id: "cus_test123"
-
-    test_subscription:
-      stripe_subscription_id: "sub_test123"
-      plan_id: "3months"
-      status: "active"
-      current_period_start: "2025-12-01T00:00:00Z"
-      current_period_end: "2026-03-01T00:00:00Z"
-
   # Stripe テストカード
   stripe_test_cards:
     success:

@@ -176,11 +176,6 @@ success_messages:
 # セキュリティ設定
 # ==========================================
 security:
-  # パスワードハッシュ化設定（commonから継承）
-  password_hash:
-    algorithm: "bcrypt"
-    salt_rounds: 10
-
   # アカウントロック設定（将来実装）
   account_lock:
     enabled: false
@@ -236,11 +231,6 @@ database:
 # レスポンシブ設定
 # ==========================================
 responsive:
-  # ブレークポイント（commonから継承）
-  breakpoints:
-    mobile: 768
-    tablet: 1024
-
   # フォームコンテナ幅
   form_container:
     mobile: "100%"  # padding適用
@@ -269,16 +259,6 @@ accessibility:
 # テスト設定
 # ==========================================
 test:
-  # テストユーザーデータ
-  fixtures:
-    valid_user:
-      email: "test@example.com"
-      password: "Password123"
-
-    invalid_credentials:
-      email: "invalid@example.com"
-      password: "WrongPassword123"
-
   # E2Eテスト用セレクタ
   selectors:
     register_form: "[data-testid='register-form']"

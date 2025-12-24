@@ -250,11 +250,6 @@ modal:
 # レスポンシブ設定
 # ==========================================
 responsive:
-  # ブレークポイント（commonから継承）
-  breakpoints:
-    mobile: 768
-    tablet: 1024
-
   # コンテナ幅
   container:
     mobile: "100%"  # padding適用
@@ -314,17 +309,6 @@ security:
 # テスト設定
 # ==========================================
 test:
-  # テストユーザーデータ
-  fixtures:
-    existing_user:
-      email: "existing@example.com"
-      password: "Password123"
-      new_email: "newemail@example.com"
-      new_password: "NewPassword456"
-
-    duplicate_email:
-      email: "duplicate@example.com"
-
   # E2Eテスト用セレクタ
   selectors:
     profile_display: "[data-testid='profile-display']"
