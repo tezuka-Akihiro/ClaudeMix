@@ -323,7 +323,6 @@ Subscription Management (サブスクリプション管理)
 
 ### プラン購読フロー
 
-```
 ユーザー
     ↓
 PlanSelector (プラン選択)
@@ -446,7 +445,7 @@ api.webhooks.stripe (イベント受信)
 **subscriptionsテーブル**:
 
 | カラム名 | 型 | 制約 | 説明 |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | id | TEXT | PRIMARY KEY | サブスクリプションID（UUID） |
 | user_id | TEXT | FOREIGN KEY, NOT NULL | ユーザーID |
 | stripe_subscription_id | TEXT | UNIQUE | StripeのSubscription ID |

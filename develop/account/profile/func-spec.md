@@ -412,7 +412,6 @@ Profile Management (プロフィール管理)
 
 ### メールアドレス変更フロー
 
-```
 ユーザー入力
     ↓
 EmailChangeForm (UI)
@@ -430,11 +429,9 @@ checkEmailExists.server (data-io/auth) - 重複チェック
 updateUserEmail.server (data-io) - DB更新
     ↓
 成功メッセージ表示
-```
 
 ### パスワード変更フロー
 
-```
 ユーザー入力
     ↓
 PasswordChangeForm (UI)
@@ -458,11 +455,9 @@ createSessionData (lib/common) - 新しいセッション生成
 saveSession.server (data-io/common) - セッション保存
     ↓
 成功メッセージ表示
-```
 
 ### アカウント削除フロー
 
-```
 ユーザー入力
     ↓
 DeleteAccountModal (UI)
@@ -480,7 +475,6 @@ deleteAllUserSessions.server (data-io) - すべてのセッション削除
 deleteUser.server (data-io) - ユーザー削除
     ↓
 Cookie無効化 + /login へリダイレクト
-```
 
 ## 🔒 セキュリティ要件
 
