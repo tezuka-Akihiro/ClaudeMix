@@ -29,9 +29,7 @@
 
   /* Header layout structure (title left, actions right) */
   .blog-header-structure {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    /* Layout defined in Layer 3 (Tailwind classes) */
   }
 
   /* Title area in header */
@@ -52,18 +50,14 @@
 
   /* Header actions container (theme button + menu button) */
   .blog-header__actions {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
+    /* Layout defined in Layer 3 (Tailwind classes) */
   }
 
   /* Theme toggle button in header */
   .blog-header__theme-button {
     width: var(--spacing-6);
     height: var(--spacing-6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /* Layout defined in Layer 3 (Tailwind classes) */
     border-radius: var(--border-radius-md);
     background-color: transparent;
     border: none;

@@ -246,7 +246,7 @@ app/
 **命名規則**:
 
 - **Layer 2と同じセレクタ名を使用**: `.{component}-{variant?}`
-- **例**: `.checkpoint`, `.button-primary`（layer2.cssと同じ）
+- **例**: `.checkpoint`, `.button-primary`（layer2-*.cssと同じ）
 
 **定義内容（フレックス・グリッドレイアウトのみ）**:
 

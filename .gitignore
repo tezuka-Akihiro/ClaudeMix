@@ -30,3 +30,4 @@ tests/scripts/generation.log
 .wrangler/tmp/
 test-results/.last-run.json
 delete-deploy.js
+.claude/settings.local.json

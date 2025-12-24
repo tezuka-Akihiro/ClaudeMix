@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { globSync } from 'glob';
 
 /**
  * 行がコメント行かどうかを判定する
@@ -130,30 +131,32 @@ export function getLayer3Rules() {
       check: (content, filePath) => {
         const violations = [];
 
-        // Layer 2のファイルパスを推測
+        // Layer 2のファイルパスを推測（複数ファイルに対応）
         const layer3Dir = path.dirname(filePath);
-        const layer2Path = path.join(layer3Dir, 'layer2.css');
+        const layer2Pattern = path.join(layer3Dir, 'layer2-*.css');
+        const layer2Files = globSync(layer2Pattern);
 
         // Layer 2のファイルが存在しない場合はチェックをスキップ
-        if (!fs.existsSync(layer2Path)) {
+        if (layer2Files.length === 0) {
           return violations;
         }
-
-        // Layer 2のコンテンツを読み込み
-        const layer2Content = fs.readFileSync(layer2Path, 'utf8');
 
         // 定義されたクラスを収集
         const definedClasses = new Set();
 
-        // Layer 2で定義されたクラスを収集
-        const layer2ClassPattern = /^\s*\.([\w-]+)(?:\s*[,:{\s])/gm;
-        let match;
-        while ((match = layer2ClassPattern.exec(layer2Content)) !== null) {
-          definedClasses.add(match[1]);
-        }
+        // 全てのLayer 2ファイルで定義されたクラスを収集
+        layer2Files.forEach(layer2Path => {
+          const layer2Content = fs.readFileSync(layer2Path, 'utf8');
+          const layer2ClassPattern = /^\s*\.([\w-]+)(?:\s*[,:{\s])/gm;
+          let match;
+          while ((match = layer2ClassPattern.exec(layer2Content)) !== null) {
+            definedClasses.add(match[1]);
+          }
+        });
 
         // Layer 3で定義されたクラスを収集
         const layer3ClassPattern = /'\.([\w-]+)':\s*{/g;
+        let match;
         while ((match = layer3ClassPattern.exec(content)) !== null) {
           definedClasses.add(match[1]);
         }
