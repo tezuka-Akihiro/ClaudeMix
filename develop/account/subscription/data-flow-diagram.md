@@ -46,6 +46,17 @@ graph TD
     style TimeoutMsg fill:#ffccbc
 ```
 
+**ポーリングタイムアウト時のUX設計**:
+
+- **タイムアウトメッセージ内容**（二重決済防止のため明確に記載）:
+  ```
+  決済処理に時間がかかっています。決済は完了している可能性があります。
+  ページを再読み込みして確認してください。
+  反映されない場合は数分後に再度ご確認いただくか、サポートにお問い合わせください。
+  ```
+- **重要**: 「失敗しました」のような誤解を招く表現は避ける（ユーザーが再度決済してしまうリスク）。
+- **推奨**: タイムアウト後も自動リロード等は行わず、ユーザーの明示的なアクションを待つ。
+
 ### サブスクリプション状態表示フロー
 
 ```mermaid
@@ -72,19 +83,31 @@ graph TD
 
     Action --> ValidateSession["セッション検証"]
     ValidateSession --> GetSub["getSubscriptionByUserId.server<br/>(data-io)"]
-    GetSub --> CancelStripe["cancelStripeSubscription.server<br/>(data-io)"]
-    CancelStripe --> UpdateStatus["updateSubscriptionStatus.server<br/>(data-io)"]
-    UpdateStatus --> Success["成功メッセージ表示"]
+    GetSub --> CancelStripe["cancelStripeSubscription.server<br/>(Stripe API: cancel_at_period_end=true)"]
+    CancelStripe --> RecordCancel["canceled_at記録<br/>(DB: canceled_at, status維持)"]
+    RecordCancel --> Success["成功メッセージ表示<br/>「期間終了まで利用可能」"]
 
-    CancelStripe -- "Stripeが非同期送信" --> Webhook["api.webhooks.stripe<br/>(customer.subscription.deleted)"]
-    Webhook --> VerifySignature["verifyStripeWebhook.server<br/>(data-io)"]
-    VerifySignature --> UpdateDB["サブスクリプション状態を'canceled'に更新"]
+    CancelStripe -- "Stripeが非同期送信" --> WebhookUpdated["api.webhooks.stripe<br/>(customer.subscription.updated)"]
+    WebhookUpdated --> VerifySignature1["verifyStripeWebhook.server"]
+    VerifySignature1 --> UpdateCancelFlag["cancel_at_period_end検知<br/>canceled_at更新"]
+
+    Success -- "期間終了時" --> WebhookDeleted["api.webhooks.stripe<br/>(customer.subscription.deleted)"]
+    WebhookDeleted --> VerifySignature2["verifyStripeWebhook.server"]
+    VerifySignature2 --> FinalizeCancel["完全失効処理<br/>(status='canceled', アクセス不可)"]
 
     style Modal fill:#ffcccc
     style Action fill:#f0f0f0
     style Success fill:#e8f5e9
-    style Webhook fill:#f0f0f0
+    style WebhookUpdated fill:#fff4e1
+    style WebhookDeleted fill:#f0f0f0
 ```
+
+**重要な注意事項**:
+
+- **即座のキャンセル**: Stripe API呼び出しで `cancel_at_period_end: true` を設定。Stripeのステータスは `active` のまま。
+- **アクセス制御**: `current_period_end` までは会員としてサービス利用可能（ビジネス要件）。
+- **期間終了**: `current_period_end` に達した時点で `customer.subscription.deleted` Webhookが送信され、完全失効。
+- **再登録**: アカウント削除後の再登録では、残存期間は復元されない（ビジネス要件）。
 
 ### Webhook処理フロー
 
@@ -98,8 +121,8 @@ graph TD
 
     TypeCheck -- "checkout.session.completed" --> HandleCheckout["決済完了処理"]
     TypeCheck -- "customer.subscription.created" --> HandleCreated["サブスクリプション作成処理"]
-    TypeCheck -- "customer.subscription.updated" --> HandleUpdated["サブスクリプション更新処理"]
-    TypeCheck -- "customer.subscription.deleted" --> HandleDeleted["サブスクリプションキャンセル処理"]
+    TypeCheck -- "customer.subscription.updated" --> HandleUpdated["サブスクリプション更新処理<br/>(cancel_at_period_end変更検知)"]
+    TypeCheck -- "customer.subscription.deleted" --> HandleDeleted["期間終了・完全失効処理"]
     TypeCheck -- "invoice.paid" --> HandlePaid["請求成功処理"]
     TypeCheck -- "invoice.payment_failed" --> HandleFailed["請求失敗処理"]
 

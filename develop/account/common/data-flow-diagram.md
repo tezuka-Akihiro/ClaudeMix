@@ -26,6 +26,15 @@ graph TD
     style ShowFlash fill:#fff9c4
 ```
 
+**FlashMessage伝達手段の使い分け**:
+
+- **URLパラメータ方式**: セッション消失時（session expired/invalid）に使用
+  - 理由: セッションストレージが破棄されているため、Cookie Flashが使用不可
+  - 例: `/login?message=session-expired`
+- **Cookie Flash方式**: 通常の成功メッセージ等に使用（`flashMessage.server.ts`）
+  - 理由: セッションが有効な状態でのメッセージ伝達
+  - 例: フォーム送信成功、設定変更完了など
+
 ### アカウント全体フロー
 
 ```mermaid

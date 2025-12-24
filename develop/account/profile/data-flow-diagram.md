@@ -69,8 +69,9 @@ graph TD
     Validate --> FindUser["findUserByEmail.server<br/>(data-io/auth)"]
     FindUser --> VerifyPwd["verifyPassword<br/>(lib/auth)"]
     VerifyPwd --> CheckSubAgain["サブスクリプション存在確認"]
-    CheckSubAgain -- "あり" --> CancelStripe["cancelStripeSubscription.server<br/>(data-io/subscription)"]
-    CancelStripe --> DeleteSubRecord["サブスクリプションレコード削除<br/>(D1 Database)"]
+    CheckSubAgain -- "あり" --> CancelStripe["cancelStripeSubscription.server<br/>(即座キャンセル: cancel_immediately=true)"]
+    CancelStripe -- "成功" --> DeleteSubRecord["サブスクリプションレコード削除<br/>(D1 Database)"]
+    CancelStripe -- "失敗/タイムアウト" --> ErrorStripe["エラー表示<br/>「Stripe解約に失敗しました。<br/>サポートにお問い合わせください」"]
     CheckSubAgain -- "なし" --> DeleteSessions["deleteAllUserSessions.server<br/>(data-io/common)"]
     DeleteSubRecord --> DeleteSessions
     DeleteSessions --> DeleteUser["deleteUser.server<br/>(data-io)"]
@@ -80,7 +81,15 @@ graph TD
     style ShowWarning fill:#ff9999
     style Action fill:#f0f0f0
     style Redirect fill:#ffcccc
+    style ErrorStripe fill:#ff6666
 ```
+
+**重要な注意事項**:
+
+- **Stripe解約の挙動**: アカウント削除時は `cancel_immediately=true` で即座解約（サブスクリプションキャンセルとは異なる）。
+- **ゾンビ課金防止**: CancelStripe失敗時は削除処理を中断し、サポート対応を促すエラーを表示。ユーザー削除とStripe課金の不整合を防止。
+- **残存期間の放棄**: アカウント削除時、有効期間が残っていても即座にアクセス喪失。再登録しても残期間は復元されない（ビジネス要件）。
+- **警告表示**: サブスクリプション契約中のユーザーには、削除前に強力な警告を表示（残り期間、返金なし）。
 
 ---
 
