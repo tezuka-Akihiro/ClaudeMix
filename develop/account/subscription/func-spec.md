@@ -143,21 +143,23 @@ Subscription Management (サブスクリプション管理)
 - 次回請求日表示
 - 「キャンセル」ボタン（Button variant="danger"）
 
-#### 3. CancelSubscriptionModal
+#### 3. キャンセル確認UI（SubscriptionStatus内でModalを使用）
 
-**配置**: `app/components/account/subscription/CancelSubscriptionModal.tsx`
+**実装方式**: SubscriptionStatusコンポーネント内で共通Modal（`app/components/account/common/Modal.tsx`）を使用
 
 **責務**:
 
-- サブスクリプションキャンセル確認モーダル
-- キャンセル理由の選択（オプション）
+- サブスクリプションキャンセル確認UIの表示（共通Modalを使用）
+- キャンセル理由の選択（オプション、将来実装）
 
 **主要なUI要素**:
 
 - キャンセル警告メッセージ
 - キャンセル理由選択（将来実装）
-- 「キャンセル実行」ボタン（Button variant="danger"）
-- 「戻る」ボタン（Button variant="secondary"）
+- 「キャンセル実行」ボタン（Button (common) variant="danger"）
+- 「戻る」ボタン（Button (common) variant="secondary"）
+
+**注**: 共通化徹底型の設計により、セクション固有のモーダルコンポーネントは作成せず、SubscriptionStatus内で共通Modalを直接使用します。
 
 ### Routes
 
@@ -353,7 +355,7 @@ updateSubscriptionStatus.server (DB更新)
     ↓
 SubscriptionStatus (キャンセルボタンクリック)
     ↓
-CancelSubscriptionModal (確認ダイアログ)
+Modal (common) (キャンセル確認UI)
     ↓
 account.subscription action (cancel-subscription)
     ↓

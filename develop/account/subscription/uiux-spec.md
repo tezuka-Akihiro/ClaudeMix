@@ -201,7 +201,7 @@ AccountLayout
 **インタラクション**:
 
 1. ユーザーが「サブスクリプションをキャンセル」ボタンをクリック
-2. CancelSubscriptionModalを表示
+2. 共通Modal（`app/components/account/common/Modal.tsx`）を使用してキャンセル確認UIを表示
 
 **レスポンシブ対応**:
 
@@ -217,17 +217,15 @@ AccountLayout
 
 ---
 
-### 3. CancelSubscriptionModal
+### 3. キャンセル確認UI（SubscriptionStatus内でModalを使用）
 
-**ファイルパス**: `app/components/account/subscription/CancelSubscriptionModal.tsx`
+**実装方式**: SubscriptionStatusコンポーネント内で共通Modal（`app/components/account/common/Modal.tsx`）を使用
 
-**責務**: サブスクリプションキャンセル確認モーダル
+**責務**: サブスクリプションキャンセル確認UIの表示（共通Modalを使用）
 
-**Props定義**（抽象要件）:
+**状態管理**（SubscriptionStatus内）:
 
 - モーダル開閉状態
-- キャンセル実行アクション関数
-- モーダルを閉じるアクション関数
 - サブスクリプション情報（次回請求日、プラン名）
 
 **UI構造**:
@@ -279,7 +277,7 @@ AccountLayout
 </Modal>
 ```
 
-**状態管理**:
+**状態管理**（SubscriptionStatus内で管理）:
 
 - モーダル開閉状態（isOpen）
 - フォーム送信中状態（isSubmitting）
@@ -313,6 +311,8 @@ AccountLayout
 - フォーカストラップ有効
 - Escapeキーでモーダルを閉じる
 
+**注**: 共通化徹底型の設計により、セクション固有のモーダルコンポーネントは作成せず、SubscriptionStatus内で共通Modal（`app/components/account/common/Modal.tsx`）を直接使用します。また、ステータスバッジには共通Badge（`app/components/account/common/Badge.tsx`）を使用します。
+
 ---
 
 ## ページ遷移フロー
@@ -334,7 +334,7 @@ Stripe Checkout（外部サイト）
 ```
 /account/subscription（契約中）
     ↓ 「キャンセル」クリック
-CancelSubscriptionModal表示
+Modal (common) 表示（キャンセル確認UI）
     ↓ 「キャンセルを実行」クリック
 action: cancel-subscription
     ↓ Stripeでキャンセル、DB更新
@@ -597,8 +597,7 @@ stateDiagram-v2
 各コンポーネントに対応する`.test.tsx`ファイル:
 
 - `PlanSelector.test.tsx`: プラン表示、ボタンクリック
-- `SubscriptionStatus.test.tsx`: 状態別表示、キャンセルボタン
-- `CancelSubscriptionModal.test.tsx`: モーダル開閉、フォーム送信
+- `SubscriptionStatus.test.tsx`: 状態別表示、キャンセルボタン、キャンセル確認UI（Modal使用）、フォーム送信
 
 ---
 

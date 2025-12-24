@@ -248,28 +248,30 @@ Profile Management (プロフィール管理)
 - フォーム送信中フラグ
 - バリデーションエラー表示
 
-#### 4. DeleteAccountModal
+#### 4. アカウント削除UI（ProfileDisplay内でModalを使用）
 
-**配置**: `app/components/account/profile/DeleteAccountModal.tsx`
+**実装方式**: ProfileDisplayコンポーネント内で共通Modal（`app/components/account/common/Modal.tsx`）を使用
 
 **責務**:
 
-- アカウント削除確認モーダルの表示
+- アカウント削除確認UIの表示（共通Modalを使用）
 - パスワード確認
 
 **主要なUI要素**:
 
 - 削除警告メッセージ
-- パスワード入力（FormField使用）
+- パスワード入力（FormField (common) 使用）
 - 削除確認チェックボックス
-- 削除ボタン（Button variant="danger"）
-- キャンセルボタン（Button variant="secondary"）
+- 削除ボタン（Button (common) variant="danger"）
+- キャンセルボタン（Button (common) variant="secondary"）
 
 **状態管理**:
 
-- モーダル開閉状態
+- モーダル開閉状態（ProfileDisplay内で管理）
 - チェックボックス状態
 - フォーム送信中フラグ
+
+**注**: 共通化徹底型の設計により、セクション固有のモーダルコンポーネントは作成せず、ProfileDisplay内で共通Modalを直接使用します。
 
 ### Routes
 
@@ -455,7 +457,7 @@ saveSession.server (data-io/common) - セッション保存
 
 ユーザー入力
     ↓
-DeleteAccountModal (UI)
+ProfileDisplay + Modal (common) (UI)
     ↓
 account.settings.tsx action
     ↓
@@ -536,7 +538,7 @@ Cookie無効化 + /login へリダイレクト
 
 **Phase 2**: アカウント削除（**subscriptionセクション完了後に実装**）
 
-- アカウント削除機能（DeleteAccountModal）
+- アカウント削除機能（ProfileDisplay内で共通Modalを使用）
 - **依存関係**: subscriptionセクションの`cancelStripeSubscription.server`、`deleteSubscription.server`に依存
 - **理由**: アカウント削除時にStripeサブスクリプションを解約する必要があるため、subscriptionセクションの実装が先行必須
 

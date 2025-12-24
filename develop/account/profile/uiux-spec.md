@@ -105,7 +105,7 @@ graph TD
 
     EmailBtn -- "クリック" --> EmailModal["EmailChangeForm (モーダル)"]
     PasswordBtn -- "クリック" --> PasswordModal["PasswordChangeForm (モーダル)"]
-    DeleteBtn -- "クリック" --> DeleteModal["DeleteAccountModal"]
+    DeleteBtn -- "クリック" --> DeleteModal["Modal (common)<br/>(アカウント削除確認)"]
 
     style ProfileDisplay fill:#e8f5e9
     style InfoSection fill:#f0f0f0
@@ -208,14 +208,14 @@ stateDiagram-v2
 - **フォームフィールドグループ**: 縦並び（vertical stack）
 - **ボタングループ**: 横並び（horizontal）、保存/キャンセル
 
-### 4. DeleteAccountModal
+### 4. アカウント削除UI（ProfileDisplay内でModalを使用）
 
-**配置**: `app/components/account/profile/DeleteAccountModal.tsx`
+**実装方式**: ProfileDisplayコンポーネント内で共通Modal（`app/components/account/common/Modal.tsx`）を使用
 
-**親子構造**:
+**コンポーネント構成**:
 
-- **親**: ProfileDisplay（モーダルとして表示）
-- **子**: 警告メッセージ（通常 + サブスクリプション期間中の特別警告）, FormField, Checkbox, Button × 2
+- **モーダルラッパー**: Modal (common)
+- **モーダルコンテンツ**: 警告メッセージ（通常 + サブスクリプション期間中の特別警告）, FormField (common), Checkbox, Button (common) × 2
   - 警告メッセージ1: 「この操作は取り消しできません」
   - 警告メッセージ2（条件付き）: **有効なサブスクリプションがある場合**、「有効期間が残っています（残り○日）が、退会すると即座に利用できなくなります。返金もされません」という強力な警告を赤背景で表示
   - FormField: 現在のパスワード（本人確認用）
@@ -245,6 +245,8 @@ stateDiagram-v2
 - **警告メッセージ**: 上部に強調表示
 - **フォームフィールド**: 縦並び（vertical stack）
 - **ボタングループ**: 横並び（horizontal）、削除/キャンセル
+
+**注**: 共通化徹底型の設計により、セクション固有のモーダルコンポーネントは作成せず、共通Modal（`app/components/account/common/Modal.tsx`）を直接使用します。
 
 ---
 
@@ -276,7 +278,7 @@ stateDiagram-v2
 
 ### 3. モーダルコンテナ (Modal Container)
 
-**適用対象**: EmailChangeForm, PasswordChangeForm, DeleteAccountModal
+**適用対象**: EmailChangeForm, PasswordChangeForm, ProfileDisplay内のアカウント削除UI
 
 **構造ルール**:
 
@@ -329,7 +331,7 @@ stateDiagram-v2
 | **Error** | エラーメッセージ表示 | フィールド再入力 | Filling |
 | **Success** | （モーダルクローズ） | 自動的にクローズ | Closed |
 
-### 3. DeleteAccountModal の特殊な状態遷移
+### 3. アカウント削除UIの特殊な状態遷移
 
 | 状態 | 表示内容 | ユーザーアクション | 次の状態 |
 | :--- | :--- | :--- | :--- |
