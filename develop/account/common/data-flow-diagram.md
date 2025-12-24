@@ -8,6 +8,26 @@
 
 ## データフロー図
 
+### セッション期限切れ時のFlashMessageフロー
+
+```mermaid
+graph TD
+    User((ユーザー)) --> ProtectedRoute["保護されたRoute<br/>(/account/*)"]
+    ProtectedRoute --> AuthGuard["AuthGuard<br/>(セッション検証)"]
+    AuthGuard -- "セッション期限切れ検出" --> RedirectWithMsg["リダイレクト<br/>/login?message=session-expired"]
+    RedirectWithMsg --> LoginPage["ログインページ"]
+    LoginPage --> CheckParam{"URLパラメータ<br/>message=?"}
+    CheckParam -- "session-expired" --> ShowFlash["FlashMessage表示<br/>（type: warning）"]
+    ShowFlash --> AutoDismiss["5秒後に自動閉じ"]
+    CheckParam -- "なし" --> NoFlash["FlashMessage非表示"]
+
+    style AuthGuard fill:#ffe8e8
+    style RedirectWithMsg fill:#ffcccc
+    style ShowFlash fill:#fff9c4
+```
+
+### アカウント全体フロー
+
 ```mermaid
 graph TD
     subgraph Browser["ブラウザ"]
@@ -180,6 +200,7 @@ graph TD
 | **FormField** | フォーム入力フィールド（ラベル、エラー表示） | - |
 | **Button** | ボタン（variant、ローディング状態） | - |
 | **ErrorMessage** | エラーメッセージ表示（自動閉じ、手動閉じ） | - |
+| **FlashMessage** | リダイレクト時のメッセージ表示（URLパラメータまたはCookie、一度きり表示） | - |
 
 ---
 

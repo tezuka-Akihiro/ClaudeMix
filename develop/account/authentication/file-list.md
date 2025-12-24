@@ -33,6 +33,10 @@
 | login.test.tsx | app/routes/login.test.tsx | loginルートの単体テスト |
 | logout.tsx | app/routes/logout.tsx | ログアウト処理専用Route（actionのみ） |
 | logout.test.tsx | app/routes/logout.test.tsx | logoutルートの単体テスト |
+| forgot-password.tsx | app/routes/forgot-password.tsx | パスワードリセットメール送信ページのRoute定義（loader, action） |
+| forgot-password.test.tsx | app/routes/forgot-password.test.tsx | forgot-passwordルートの単体テスト |
+| reset-password.$token.tsx | app/routes/reset-password.$token.tsx | パスワードリセット実行ページのRoute定義（loader, action） |
+| reset-password.$token.test.tsx | app/routes/reset-password.$token.test.tsx | reset-passwordルートの単体テスト |
 
 ### 2.2 Components
 
@@ -42,6 +46,10 @@
 | RegisterForm.test.tsx | app/components/account/authentication/RegisterForm.test.tsx | RegisterFormの単体テスト |
 | LoginForm.tsx | app/components/account/authentication/LoginForm.tsx | ログインフォームコンポーネント |
 | LoginForm.test.tsx | app/components/account/authentication/LoginForm.test.tsx | LoginFormの単体テスト |
+| ForgotPasswordForm.tsx | app/components/account/authentication/ForgotPasswordForm.tsx | パスワードリセットメール送信フォームコンポーネント |
+| ForgotPasswordForm.test.tsx | app/components/account/authentication/ForgotPasswordForm.test.tsx | ForgotPasswordFormの単体テスト |
+| ResetPasswordForm.tsx | app/components/account/authentication/ResetPasswordForm.tsx | パスワードリセット実行フォームコンポーネント |
+| ResetPasswordForm.test.tsx | app/components/account/authentication/ResetPasswordForm.test.tsx | ResetPasswordFormの単体テスト |
 
 ---
 

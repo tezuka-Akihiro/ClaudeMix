@@ -43,6 +43,8 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 | Button.test.tsx | app/components/account/common/Button.test.tsx | ユニットテスト |
 | ErrorMessage.tsx | app/components/account/common/ErrorMessage.tsx | エラーメッセージ表示コンポーネント（error/warning/info） |
 | ErrorMessage.test.tsx | app/components/account/common/ErrorMessage.test.tsx | ユニットテスト |
+| FlashMessage.tsx | app/components/account/common/FlashMessage.tsx | リダイレクト時のメッセージ表示（URLパラメータまたはCookie、一度きり表示） |
+| FlashMessage.test.tsx | app/components/account/common/FlashMessage.test.tsx | ユニットテスト |
 
 ---
 

@@ -57,16 +57,27 @@ graph TD
 graph TD
     User((ユーザー)) --> ProfileDisplay["ProfileDisplay"]
     ProfileDisplay -- "削除ボタンクリック" --> DeleteModal["DeleteAccountModal"]
+    DeleteModal -- "モーダル表示" --> CheckSub["サブスクリプション状態確認<br/>(getSubscriptionByUserId.server)"]
+
+    CheckSub -- "アクティブなサブスクリプションあり" --> ShowWarning["強力な警告表示<br/>（残り期間、返金なし）"]
+    CheckSub -- "サブスクリプションなし" --> DeleteModal
+    ShowWarning -- "期間放棄を確認" --> DeleteModal
+
     DeleteModal -- "削除確認" --> Action["account.settings action"]
 
     Action --> Validate["validateAccountDeletion<br/>(lib)"]
     Validate --> FindUser["findUserByEmail.server<br/>(data-io/auth)"]
     FindUser --> VerifyPwd["verifyPassword<br/>(lib/auth)"]
-    VerifyPwd --> DeleteSessions["deleteAllUserSessions.server<br/>(data-io)"]
+    VerifyPwd --> CheckSubAgain["サブスクリプション存在確認"]
+    CheckSubAgain -- "あり" --> CancelStripe["cancelStripeSubscription.server<br/>(data-io/subscription)"]
+    CancelStripe --> DeleteSubRecord["サブスクリプションレコード削除<br/>(D1 Database)"]
+    CheckSubAgain -- "なし" --> DeleteSessions["deleteAllUserSessions.server<br/>(data-io/common)"]
+    DeleteSubRecord --> DeleteSessions
     DeleteSessions --> DeleteUser["deleteUser.server<br/>(data-io)"]
     DeleteUser --> Redirect["/login へリダイレクト"]
 
     style DeleteModal fill:#ffcccc
+    style ShowWarning fill:#ff9999
     style Action fill:#f0f0f0
     style Redirect fill:#ffcccc
 ```

@@ -20,18 +20,30 @@ graph TD
     GetUser --> CreateCheckout["createStripeCheckoutSession.server<br/>(data-io)"]
     CreateCheckout --> StripeCheckout["Stripe Checkout<br/>(外部サイト)"]
 
-    StripeCheckout -- "決済完了" --> Webhook["api.webhooks.stripe<br/>(Webhook受信)"]
+    StripeCheckout -- "決済完了" --> Redirect["/account/subscription?success=true<br/>へリダイレクト"]
+    Redirect --> PendingState["pending状態表示<br/>（決済完了を確認中...）"]
+    PendingState --> Polling["3秒ごとにloaderを再実行<br/>（ポーリング）"]
+    Polling -- "ステータス未反映" --> Timeout{"60秒経過?"}
+    Timeout -- "No" --> Polling
+    Timeout -- "Yes" --> TimeoutMsg["タイムアウトメッセージ表示<br/>（ページ再読み込み促す）"]
+
+    StripeCheckout -- "決済完了（非同期）" --> Webhook["api.webhooks.stripe<br/>(Webhook受信)"]
     Webhook --> VerifySignature["verifyStripeWebhook.server<br/>(data-io)"]
     VerifySignature --> HandleEvent["checkout.session.completed<br/>イベント処理"]
     HandleEvent --> CreateSub["createSubscription.server<br/>(data-io)"]
     CreateSub --> UpdateUser["ユーザーのsubscriptionStatus更新<br/>(D1 Database)"]
-    UpdateUser --> Redirect["/account/subscription?success=true<br/>へリダイレクト"]
+    UpdateUser --> PollingDetect["次回ポーリング時に検出"]
+
+    Polling -- "ステータスactive" --> ActiveState["通常のactive表示へ切り替え"]
 
     style PlanSelector fill:#fff4e1
     style Action fill:#f0f0f0
     style StripeCheckout fill:#e3f2fd
     style Webhook fill:#f0f0f0
     style Redirect fill:#e8f5e9
+    style PendingState fill:#b3e5fc
+    style Polling fill:#fff9c4
+    style TimeoutMsg fill:#ffccbc
 ```
 
 ### サブスクリプション状態表示フロー

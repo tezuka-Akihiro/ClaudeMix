@@ -195,6 +195,118 @@ graph TD
 
 ---
 
+### パスワードリセットメール送信フロー
+
+```mermaid
+graph TD
+    subgraph Browser["ブラウザ"]
+        User((ユーザー)) -- "1. /forgot-password アクセス" --> ForgotRoute["Route (forgot-password.tsx)"]
+        User -- "3. メール入力・送信" --> ForgotForm["ForgotPasswordForm"]
+    end
+
+    subgraph Server["サーバー"]
+        direction TB
+
+        subgraph Action["action (forgot-password.tsx)"]
+            Action_Start("Start") --> GetEmail["メールアドレス取得"]
+            GetEmail --> ValidateEmail["メール形式検証"]
+            ValidateEmail -- "エラー" --> ReturnError["エラーレスポンス"]
+            ValidateEmail -- "OK" --> FindUser["findUserByEmail.server<br/>(data-io)"]
+            FindUser -- "存在しない" --> SilentSuccess["成功レスポンス<br/>（セキュリティのため）"]
+            FindUser -- "存在する" --> GenerateToken["トークン生成<br/>(crypto.randomUUID)"]
+            GenerateToken --> SaveToken["savePasswordResetToken.server<br/>(Workers KV, TTL: 1時間)"]
+            SaveToken --> SendEmail["sendPasswordResetEmail.server<br/>(メール送信)"]
+            SendEmail --> ActionEnd["成功メッセージ"]
+        end
+
+        ForgotRoute -- "2. loader実行" --> ForgotRoute
+        ForgotForm -- "4. POST送信" --> Action_Start
+    end
+
+    subgraph Client["クライアント (React)"]
+        direction TB
+
+        ForgotRoute -- "props渡し" --> ForgotForm
+
+        ForgotForm --> EmailField["FormField: email"]
+        ForgotForm --> SubmitBtn["Button: 送信する"]
+        ForgotForm --> HelpText["HelpText:<br/>・迷惑メールフォルダ確認<br/>・登録メールアドレス確認<br/>・数分後に再試行"]
+
+        ActionEnd -- "メッセージ表示" --> SuccessMsg["「リセットメールを送信しました」"]
+        ReturnError -- "エラー表示" --> ErrorMsg["ErrorMessage"]
+    end
+
+    style ForgotRoute fill:#fff4e1
+    style Action fill:#f0f0f0
+    style ForgotForm fill:#e8f5e9
+    style HelpText fill:#e1f5ff
+    style ReturnError fill:#ffcccc
+```
+
+### パスワードリセット実行フロー
+
+```mermaid
+graph TD
+    subgraph Browser["ブラウザ"]
+        User((ユーザー)) -- "1. /reset-password/:token アクセス" --> ResetRoute["Route (reset-password.$token.tsx)"]
+        User -- "5. パスワード入力・送信" --> ResetForm["ResetPasswordForm"]
+    end
+
+    subgraph Server["サーバー"]
+        direction TB
+
+        subgraph Loader["loader (reset-password.$token.tsx)"]
+            Loader_Start("Start") --> GetToken["URLからトークン取得"]
+            GetToken --> VerifyToken["getPasswordResetToken.server<br/>(Workers KV)"]
+            VerifyToken -- "存在しない/期限切れ" --> TokenInvalid["トークン無効エラー"]
+            VerifyToken -- "有効" --> LoaderEnd("End: { tokenValid: true }")
+        end
+
+        subgraph Action["action (reset-password.$token.tsx)"]
+            Action_Start("Start") --> GetFormData["パスワード取得"]
+            GetFormData --> ValidatePwd["パスワード強度検証"]
+            ValidatePwd -- "エラー" --> ReturnError["エラーレスポンス"]
+            ValidatePwd -- "OK" --> VerifyTokenAgain["トークン再検証<br/>(Workers KV)"]
+            VerifyTokenAgain -- "無効" --> ReturnTokenError["トークン無効エラー"]
+            VerifyTokenAgain -- "有効" --> GetUserId["トークンからuserIdを取得"]
+            GetUserId --> HashPwd["hashPassword<br/>(lib/auth)"]
+            HashPwd --> UpdatePwd["updateUserPassword.server<br/>(data-io)"]
+            UpdatePwd --> DeleteToken["deletePasswordResetToken.server<br/>(Workers KV)"]
+            DeleteToken --> DeleteSessions["deleteAllUserSessions.server<br/>(data-io/common)"]
+            DeleteSessions --> ActionEnd["リダイレクト: /login"]
+        end
+
+        ResetRoute -- "2. loader実行" --> Loader_Start
+        LoaderEnd -- "3. フォーム表示" --> ResetRoute
+        TokenInvalid -- "4. エラーページ表示" --> ResetRoute
+        ResetForm -- "6. POST送信" --> Action_Start
+    end
+
+    subgraph Client["クライアント (React)"]
+        direction TB
+
+        ResetRoute -- "props渡し" --> ResetForm
+
+        ResetForm --> NewPwdField["FormField: 新しいパスワード"]
+        ResetForm --> ConfirmPwdField["FormField: パスワード確認"]
+        ResetForm --> SubmitBtn["Button: リセットする"]
+
+        ActionEnd -- "リダイレクト" --> LoginPage["/login へ遷移"]
+        ReturnError -- "エラー表示" --> ErrorMsg["ErrorMessage"]
+        ReturnTokenError -- "エラー表示" --> ErrorMsg
+    end
+
+    style ResetRoute fill:#fff4e1
+    style Loader fill:#f0f0f0
+    style Action fill:#f0f0f0
+    style ResetForm fill:#e8f5e9
+    style TokenInvalid fill:#ffcccc
+    style ReturnError fill:#ffcccc
+    style ReturnTokenError fill:#ffcccc
+```
+
+---
+
 ## コンポーネント責務
 
 | コンポーネント | 責務 | 依存先 |
@@ -202,8 +314,12 @@ graph TD
 | **register.tsx** | 会員登録ページのRoute定義、loader/action処理 | RegisterForm, validateRegistration, createUser.server, hashPassword |
 | **login.tsx** | ログインページのRoute定義、loader/action処理 | LoginForm, validateLogin, findUserByEmail.server, verifyPassword |
 | **logout.tsx** | ログアウト処理専用Route（actionのみ） | destroySession.server |
+| **forgot-password.tsx** | パスワードリセットメール送信ページのRoute定義、loader/action処理 | ForgotPasswordForm, findUserByEmail.server, sendPasswordResetEmail.server |
+| **reset-password.$token.tsx** | パスワードリセット実行ページのRoute定義、loader/action処理 | ResetPasswordForm, getPasswordResetToken.server, updateUserPassword.server, hashPassword |
 | **RegisterForm** | 会員登録フォームUI、バリデーションエラー表示 | FormField, Button, ErrorMessage (common) |
 | **LoginForm** | ログインフォームUI、バリデーションエラー表示 | FormField, Button, ErrorMessage (common) |
+| **ForgotPasswordForm** | パスワードリセットメール送信フォームUI、ヘルプテキスト表示 | FormField, Button, ErrorMessage (common) |
+| **ResetPasswordForm** | パスワードリセット実行フォームUI、トークン検証 | FormField, Button, ErrorMessage (common) |
 
 ---
 
