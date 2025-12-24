@@ -191,9 +191,12 @@ AccountLayout
 | 契約状態 | バッジカラー | 表示内容 |
 |:---|:---|:---|
 | active | success（緑） | 次回請求日を表示、キャンセルボタンあり |
+| pending（反映待ち） | info（青） | **「決済完了を確認中...」メッセージ、ローディングスピナー表示** |
 | canceled | secondary（灰） | キャンセル日を表示、「期間終了まで利用可能」メッセージ |
 | past_due | warning（黄） | 「支払いに問題があります」メッセージ、請求更新リンク |
 | trialing | info（青） | トライアル終了日を表示 |
+
+**注**: `pending`状態は、`?success=true`パラメータがある場合に表示され、Webhookによるステータス反映待ちを示します。
 
 **インタラクション**:
 
@@ -364,11 +367,15 @@ stateDiagram-v2
 stateDiagram-v2
     [*] --> PlanSelector: 未契約
     PlanSelector --> StripeCheckout: プラン選択
-    StripeCheckout --> SubscriptionStatus: 決済成功
+    StripeCheckout --> PaymentPending: 決済成功（?success=true）
+    PaymentPending --> SubscriptionStatus: Webhook反映完了
+    PaymentPending --> PaymentPending: ポーリング（3秒ごと）
     SubscriptionStatus --> CancelModal: キャンセルボタンクリック
     CancelModal --> SubscriptionStatus: キャンセル実行
     SubscriptionStatus --> [*]: 契約期間終了
 ```
+
+**注**: `PaymentPending`状態は、Stripe決済完了後からWebhookによるステータス反映までの過渡的な状態です。
 
 ---
 
@@ -423,15 +430,34 @@ stateDiagram-v2
 
 ## 成功フィードバック
 
-### プラン購読成功
+### プラン購読成功（決済完了直後の反映待ち状態）
+
+**問題**: Stripe決済完了後、WebhookがサーバーへすべてのイベントPOSTし、DBが更新されるまで数秒〜数十秒のラグがあります。この間、ステータスが「未契約」のまま表示されると、ユーザーは「決済に失敗した」と誤解し、二重決済や問い合わせに繋がります。
+
+**解決策**: `?success=true`パラメータがある場合、DBの状態に関わらず**楽観的UI（Optimistic UI）**を表示します。
 
 **表示内容**:
 
 ```
+<div data-testid="payment-pending-indicator" class="pending-status">
+  <div class="spinner" aria-label="読み込み中"></div>
+  <h3>決済完了を確認中...</h3>
+  <p>Stripeでの決済が完了しました。サブスクリプション情報を反映しています。</p>
+  <p class="info-text">通常、数秒から1分以内に完了します。このページは自動的に更新されます。</p>
+</div>
+
 <SuccessMessage data-testid="subscription-success">
   サブスクリプションの購読が完了しました。ご利用ありがとうございます。
 </SuccessMessage>
 ```
+
+**実装詳細**:
+
+- **条件**: URLパラメータに`?success=true`が含まれる場合
+- **表示方式**:
+  - Option 1 (推奨): **ポーリング** - 3秒ごとにloaderを再実行し、ステータスが`active`になったら通常表示に切り替え
+  - Option 2: **楽観的UI** - `pending`状態として「決済完了を確認中...」を表示し、ページリロードを促す
+- **タイムアウト**: 60秒経過してもステータスが反映されない場合、「反映に時間がかかっています。ページを再読み込みしてください」というメッセージを表示
 
 **表示タイミング**: `/account/subscription?success=true`にリダイレクトされた時
 

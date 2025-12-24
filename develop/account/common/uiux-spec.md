@@ -109,6 +109,7 @@ graph TD
 | **FormField** | フォーム入力フィールド。ラベル、入力欄、エラーメッセージを含む |
 | **Button** | アクションボタン。primary/secondary/danger のバリエーション、ローディング状態を持つ |
 | **ErrorMessage** | エラーメッセージ表示コンポーネント。error/warning/info の3種類 |
+| **FlashMessage** | リダイレクト時のメッセージ伝達コンポーネント。URLパラメータまたはCookieベースで一度だけメッセージを表示 |
 
 ---
 
@@ -271,6 +272,47 @@ graph TD
 
 ---
 
+### 7. FlashMessage
+
+**責務**: リダイレクト時にメッセージを伝達し、ページ表示時に一度だけメッセージを表示する
+
+**実装方式**:
+
+- **Option 1 (推奨)**: URLパラメータベース - `?message=session-expired`のような形式でメッセージタイプを伝達
+- **Option 2**: Cookieベース - リダイレクト時にCookieにメッセージを保存し、表示後に削除
+
+#### FlashMessageの状態 (State)
+
+- **非表示 (hidden)**: メッセージがない、または既に表示済み
+- **表示中 (visible)**: メッセージを表示中
+- **フェードアウト (fading)**: 自動消去のアニメーション中
+
+#### FlashMessageのインタラクション (Interaction)
+
+- **トリガー1**: ページロード時にURLパラメータまたはCookieを確認
+  - **応答**: メッセージが存在する場合、画面上部に表示
+  - **自動消去**: 5秒後に自動的にフェードアウト
+  - **手動閉じる**: ×ボタンクリックで即座に非表示
+  - **一度きり**: 表示後はパラメータ削除またはCookie削除で、リロード時に再表示されない
+- **メッセージタイプ**:
+  - `session-expired`: 「セッションが期限切れです。再度ログインしてください。」（type: warning）
+  - `login-required`: 「ログインが必要です。」（type: info）
+  - `unauthorized`: 「アクセス権限がありません。」（type: error）
+
+**UI構造**:
+
+```
+<div data-testid="flash-message" class="flash-message flash-message-warning">
+  <div class="flash-message-icon">⚠️</div>
+  <p class="flash-message-text">セッションが期限切れです。再度ログインしてください。</p>
+  <button class="flash-message-close" aria-label="メッセージを閉じる">×</button>
+</div>
+```
+
+**配置**: 画面上部（固定位置、z-index高め）
+
+---
+
 ## 🛠️ 例外構造と規律
 
 このセクションでは、上記の規範で対応できない例外的な構造は現時点で存在しません。
@@ -310,8 +352,9 @@ graph TD
 ### セッション期限切れ時の表示
 
 - **エラーメッセージ**: 「セッションが期限切れです。再度ログインしてください。」
-- **リダイレクト**: `/login?redirect-url=${currentPath}`（ログイン後に元のページに戻る）
-- **視覚表現**: ErrorMessageコンポーネントを使用（type: error）
+- **リダイレクト**: `/login?redirect-url=${currentPath}&message=session-expired`（ログイン後に元のページに戻る）
+- **視覚表現**: FlashMessageコンポーネントを使用（type: warning、画面上部に固定表示）
+- **実装詳細**: AuthGuardでセッション期限切れを検出した場合、`message=session-expired`パラメータを付与してリダイレクト
 
 ### 認証エラー時の表示
 

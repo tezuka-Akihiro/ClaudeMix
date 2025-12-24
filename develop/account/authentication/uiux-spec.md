@@ -244,6 +244,71 @@ stateDiagram-v2
 - **フォームフィールドグループ**: 縦並び（vertical stack）、等間隔
 - **アクショングループ**: 縦並び（Button + Link）
 
+### 3. ForgotPasswordForm
+
+**配置**: `app/components/account/authentication/ForgotPasswordForm.tsx`
+
+**親子構造**:
+
+- **親**: forgot-password.tsx Route
+- **子**: FormField × 1, Button, Link, HelpText（ヘルプテキスト）
+
+**状態遷移ルール**:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Default: 初回表示
+    Default --> Filling: メールアドレス入力
+    Filling --> Submitting: 送信ボタンクリック
+    Submitting --> Success: メール送信成功
+    Submitting --> Error: 送信失敗
+    Error --> Filling: 再入力
+    Success --> [*]: 成功メッセージ表示
+```
+
+**並列配置ルール**:
+
+- **フォームフィールドグループ**: 縦並び（vertical stack）
+- **ヘルプテキスト**: フォーム下部に配置、小さめのフォントサイズ、灰色テキスト
+- **アクショングループ**: 縦並び（Button + Link）
+
+**ヘルプテキスト内容**:
+
+- **メールが届かない場合**:
+  - 「迷惑メールフォルダをご確認ください」
+  - 「登録時のメールアドレスをご確認ください」
+  - 「数分経っても届かない場合は、再度お試しください」
+
+### 4. ResetPasswordForm
+
+**配置**: `app/components/account/authentication/ResetPasswordForm.tsx`
+
+**親子構造**:
+
+- **親**: reset-password.$token.tsx Route
+- **子**: FormField × 2, Button, ErrorMessage
+
+**状態遷移ルール**:
+
+```mermaid
+stateDiagram-v2
+    [*] --> TokenValidation: トークン検証中
+    TokenValidation --> Invalid: トークン無効/期限切れ
+    TokenValidation --> Default: トークン有効
+    Default --> Filling: パスワード入力
+    Filling --> Submitting: リセットボタンクリック
+    Submitting --> Error: バリデーションエラー
+    Submitting --> Success: リセット成功
+    Error --> Filling: 再入力
+    Success --> [*]: /login へリダイレクト
+    Invalid --> [*]: エラーメッセージ表示
+```
+
+**並列配置ルール**:
+
+- **フォームフィールドグループ**: 縦並び（vertical stack）、等間隔
+- **アクショングループ**: 縦並び（Button）
+
 ---
 
 ## 📐 認可されたレイアウトパターン (Authorized Layout Patterns)

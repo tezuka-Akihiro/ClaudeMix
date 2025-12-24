@@ -154,7 +154,10 @@ stateDiagram-v2
 **親子構造**:
 
 - **親**: ProfileDisplay（モーダルとして表示）
-- **子**: FormField × 2, Button × 2, ErrorMessage
+- **子**: FormField × 3, Button × 2, ErrorMessage
+  - フィールド1: 新しいメールアドレス
+  - フィールド2: 新しいメールアドレス（確認）
+  - フィールド3: 現在のパスワード（本人確認用）
 
 **状態遷移ルール**:
 
@@ -212,7 +215,11 @@ stateDiagram-v2
 **親子構造**:
 
 - **親**: ProfileDisplay（モーダルとして表示）
-- **子**: 警告メッセージ, FormField, Checkbox, Button × 2
+- **子**: 警告メッセージ（通常 + サブスクリプション期間中の特別警告）, FormField, Checkbox, Button × 2
+  - 警告メッセージ1: 「この操作は取り消しできません」
+  - 警告メッセージ2（条件付き）: **有効なサブスクリプションがある場合**、「有効期間が残っています（残り○日）が、退会すると即座に利用できなくなります。返金もされません」という強力な警告を赤背景で表示
+  - FormField: 現在のパスワード（本人確認用）
+  - Checkbox: 削除を確認（+ サブスクリプション期間中は「残存期間を放棄することを理解しました」）
 
 **状態遷移ルール**:
 
@@ -220,13 +227,17 @@ stateDiagram-v2
 stateDiagram-v2
     [*] --> Closed: 初期状態
     Closed --> Open: 削除ボタンクリック
-    Open --> Confirming: パスワード入力・確認チェック
+    Open --> CheckingSubscription: サブスクリプション状態確認
+    CheckingSubscription --> ShowingWarning: アクティブなサブスクリプションあり
+    CheckingSubscription --> Confirming: サブスクリプションなし
+    ShowingWarning --> Confirming: 警告を確認（特別チェックボックス）
     Confirming --> Submitting: 削除ボタンクリック
     Submitting --> Error: 認証失敗
     Submitting --> Success: 削除成功
     Error --> Confirming: 再入力
     Success --> [*]: /login へリダイレクト
     Open --> Closed: キャンセル
+    ShowingWarning --> Closed: キャンセル
 ```
 
 **並列配置ルール**:
@@ -322,7 +333,9 @@ stateDiagram-v2
 
 | 状態 | 表示内容 | ユーザーアクション | 次の状態 |
 | :--- | :--- | :--- | :--- |
-| **Open** | 警告メッセージ + 空フォーム | パスワード入力・確認チェック | Confirming |
+| **Open** | 通常の警告メッセージ + 空フォーム | サブスクリプション状態確認 | CheckingSubscription |
+| **CheckingSubscription** | ローディング表示 | loaderデータから自動判定 | ShowingWarning または Confirming |
+| **ShowingWarning** | **赤背景の強力な警告**（残存期間○日、返金なし）+ 特別チェックボックス | 警告を確認してチェック | Confirming |
 | **Confirming** | 入力完了状態 | 削除ボタンクリック | Submitting |
 | **Submitting** | ローディング状態 | サーバー応答待機 | Error または Success |
 | **Error** | エラーメッセージ表示 | 再入力 | Confirming |
@@ -401,6 +414,11 @@ stateDiagram-v2
 ### 2. 削除確認の表示原則
 
 - **警告メッセージ**: 「この操作は取り消しできません」を強調表示
+- **サブスクリプション期間中の特別警告**:
+  - **条件**: アクティブなサブスクリプションがある場合
+  - **表示内容**: 「有効期間が残っています（残り○日）。退会すると即座に利用できなくなり、返金もされません」
+  - **視覚的強調**: 赤背景（`bg-red-100`）、赤文字（`text-red-700`）、アイコン付き
+  - **追加チェックボックス**: 「残存期間を放棄することを理解しました」という明確な確認
 - **確認チェックボックス**: 「削除を確認しました」など、明確な文言
 - **削除ボタン**: `variant="danger"`で危険性を視覚的に表現
 
@@ -447,10 +465,17 @@ sequenceDiagram
     participant Server
 
     User->>ProfileDisplay: 削除ボタンクリック
-    ProfileDisplay->>DeleteModal: 警告モーダル表示
+    ProfileDisplay->>DeleteModal: モーダル表示
+    DeleteModal->>DeleteModal: サブスクリプション状態確認
+    alt アクティブなサブスクリプションあり
+        DeleteModal->>User: 赤背景の強力な警告表示（残り○日、返金なし）
+        User->>DeleteModal: 「残存期間を放棄することを理解」チェック
+    end
     User->>DeleteModal: パスワード入力 + 確認チェック
     User->>DeleteModal: 削除ボタンクリック
     DeleteModal->>Server: DELETE リクエスト
+    Server->>Server: Stripeサブスクリプション解約（該当する場合）
+    Server->>Server: ユーザーデータ削除
     Server-->>DeleteModal: 削除成功
     DeleteModal->>User: /login へリダイレクト
 ```
