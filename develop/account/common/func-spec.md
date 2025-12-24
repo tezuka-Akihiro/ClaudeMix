@@ -202,6 +202,15 @@ loaderがUIに渡すべきデータ：
      - 入力: userId (string)
      - 処理: データベース（D1またはKV）からユーザー情報を取得
      - 出力: User | null
+
+   セッション一括削除:
+   - deleteAllUserSessions.server.ts: ユーザーのすべてのセッションを削除
+     - 入力: userId (string)
+     - 処理:
+       - Cloudflare Workers KVから該当ユーザーのセッションをすべて削除
+       - セッションキーのパターン: `session:${sessionId}` → 値に`userId`を含む
+     - 出力: void
+     - 用途: パスワード変更、パスワードリセット、アカウント削除時のセキュリティ対策
 ```
 
 ### 🔐 セッション管理のデータフロー

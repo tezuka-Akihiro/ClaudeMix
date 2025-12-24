@@ -396,18 +396,6 @@ Profile Management (プロフィール管理)
 
 **出力**: void
 
-#### 4. deleteAllUserSessions.server.ts
-
-**配置**: `app/data-io/account/profile/deleteAllUserSessions.server.ts`
-
-**責務**: ユーザーのすべてのセッションを削除
-
-**入力**: ユーザーID
-
-**処理**: Workers KVから該当ユーザーのセッションをすべて削除
-
-**出力**: void
-
 ## 📊 データフロー
 
 ### メールアドレス変更フロー
@@ -451,7 +439,7 @@ hashPassword (lib/auth) - 新しいパスワードハッシュ化
     ↓
 updateUserPassword.server (data-io) - DB更新
     ↓
-deleteAllUserSessions.server (data-io) - 既存セッション削除
+deleteAllUserSessions.server (data-io/common) - 既存セッション削除
     ↓
 createSessionData (lib/common) - 新しいセッション生成
     ↓
@@ -475,7 +463,7 @@ findUserByEmail.server (data-io/auth) - ユーザー取得
     ↓
 verifyPassword (lib/auth) - パスワード検証
     ↓
-deleteAllUserSessions.server (data-io) - すべてのセッション削除
+deleteAllUserSessions.server (data-io/common) - すべてのセッション削除
     ↓
 deleteUser.server (data-io) - ユーザー削除
     ↓
@@ -539,15 +527,17 @@ Cookie無効化 + /login へリダイレクト
 
 ## 🚀 実装の優先順位
 
-**Phase 1**: プロフィール表示・編集
+**Phase 1**: プロフィール表示・編集（authenticationセクション完了後に実装可能）
 
 1. プロフィール表示（ProfileDisplay）
 2. メールアドレス変更（EmailChangeForm）
 3. パスワード変更（PasswordChangeForm）
 
-**Phase 2**: アカウント削除（将来実装）
+**Phase 2**: アカウント削除（**subscriptionセクション完了後に実装**）
 
 - アカウント削除機能（DeleteAccountModal）
+- **依存関係**: subscriptionセクションの`cancelStripeSubscription.server`、`deleteSubscription.server`に依存
+- **理由**: アカウント削除時にStripeサブスクリプションを解約する必要があるため、subscriptionセクションの実装が先行必須
 
 ## 📝 備考
 

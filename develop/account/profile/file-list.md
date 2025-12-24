@@ -72,8 +72,6 @@
 | updateUserPassword.server.test.ts | app/data-io/account/profile/updateUserPassword.server.test.ts | updateUserPasswordの単体テスト（DBモック使用） |
 | deleteUser.server.ts | app/data-io/account/profile/deleteUser.server.ts | ユーザーをDBから削除 |
 | deleteUser.server.test.ts | app/data-io/account/profile/deleteUser.server.test.ts | deleteUserの単体テスト（DBモック使用） |
-| deleteAllUserSessions.server.ts | app/data-io/account/profile/deleteAllUserSessions.server.ts | ユーザーのすべてのセッションを削除 |
-| deleteAllUserSessions.server.test.ts | app/data-io/account/profile/deleteAllUserSessions.server.test.ts | deleteAllUserSessionsの単体テスト（KVモック使用） |
 
 ---
 
@@ -114,6 +112,7 @@ profileセクションは、以下のauthenticationセクションのファイ�
 
 - `saveSession.server.ts`: セッション保存
 - `destroySession.server.ts`: セッション削除
+- `deleteAllUserSessions.server.ts`: ユーザーのすべてのセッションを削除（パスワード変更、アカウント削除時に使用）
 
 **UI Components (components/common)**:
 
@@ -132,23 +131,35 @@ profileセクションは、以下のauthenticationセクションのファイ�
 
 ## ファイル実装順序（TDD Workflow）
 
-1. **Phase 1**: E2Eテスト作成（`tests/e2e/account/profile.spec.ts`）
-2. **Phase 2.1**: data-io層（副作用層）の実装
+### Phase 1: プロフィール表示・編集（authenticationセクション完了後に実装可能）
+
+1. **Phase 1-1**: E2Eテスト作成（`tests/e2e/account/profile.spec.ts`）- プロフィール表示、メールアドレス変更、パスワード変更のみ
+2. **Phase 1-2**: data-io層（副作用層）の実装
    - updateUserEmail.server.ts
    - updateUserPassword.server.ts
-   - deleteUser.server.ts
-   - deleteAllUserSessions.server.ts
-3. **Phase 2.2**: lib層（純粋ロジック層）の実装
+3. **Phase 1-3**: lib層（純粋ロジック層）の実装
    - validateEmailChange.ts
    - validatePasswordChange.ts
-   - validateAccountDeletion.ts
-4. **Phase 3.1**: Components実装
+4. **Phase 1-4**: Components実装
    - ProfileDisplay.tsx
    - EmailChangeForm.tsx
    - PasswordChangeForm.tsx
+5. **Phase 1-5**: Routes実装
+   - account.settings.tsx（アカウント削除機能を除く）
+
+### Phase 2: アカウント削除（**subscriptionセクション完了後に実装**）
+
+1. **Phase 2-1**: E2Eテスト更新（アカウント削除シナリオを追加）
+2. **Phase 2-2**: data-io層の実装
+   - deleteUser.server.ts
+3. **Phase 2-3**: lib層の実装
+   - validateAccountDeletion.ts
+4. **Phase 2-4**: Components実装
    - DeleteAccountModal.tsx
-5. **Phase 3.2**: Routes実装
-   - account.settings.tsx
+5. **Phase 2-5**: Routes更新
+   - account.settings.tsx（アカウント削除actionを追加）
+
+**重要**: Phase 2はsubscriptionセクションの`cancelStripeSubscription.server`と`deleteSubscription.server`に依存するため、subscriptionセクション実装後に着手してください。
 
 ---
 

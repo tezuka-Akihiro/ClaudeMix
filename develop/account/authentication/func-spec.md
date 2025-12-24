@@ -663,7 +663,7 @@ Cookie無効化 + /login へリダイレクト
 ### 依存関係
 
 - **commonセクションへの依存**:
-  - セッション管理ユーティリティ（createSessionData, saveSession.server, destroySession.server）
+  - セッション管理ユーティリティ（createSessionData, saveSession.server, destroySession.server, deleteAllUserSessions.server）
   - 共通UIコンポーネント（FormField, Button, ErrorMessage）
   - spec.yamlの設定値（セキュリティ設定、バリデーションルール）
 

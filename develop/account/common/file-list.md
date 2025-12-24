@@ -73,3 +73,5 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 | destroySession.server.test.ts | app/data-io/account/common/destroySession.server.test.ts | ユニットテスト（KVモック使用） |
 | getUserById.server.ts | app/data-io/account/common/getUserById.server.ts | ユーザー情報取得（D1またはKVから取得） |
 | getUserById.server.test.ts | app/data-io/account/common/getUserById.server.test.ts | ユニットテスト（DBモック使用） |
+| deleteAllUserSessions.server.ts | app/data-io/account/common/deleteAllUserSessions.server.ts | ユーザーのすべてのセッションを削除（パスワード変更、パスワードリセット、アカウント削除時に使用） |
+| deleteAllUserSessions.server.test.ts | app/data-io/account/common/deleteAllUserSessions.server.test.ts | ユニットテスト（KVモック使用） |
