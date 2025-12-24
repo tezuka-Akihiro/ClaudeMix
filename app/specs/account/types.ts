@@ -998,3 +998,557 @@ export interface AccountProfileSpec {
     };
   };
 }
+
+/**
+ * サブスクリプション状態
+ */
+export type SubscriptionStatus =
+  | 'active'
+  | 'canceled'
+  | 'past_due'
+  | 'trialing'
+  | 'incomplete'
+  | 'incomplete_expired'
+  | 'unpaid';
+
+/**
+ * サブスクリプション情報
+ */
+export interface Subscription {
+  id: string;
+  userId: string;
+  stripeSubscriptionId: string;
+  stripeCustomerId: string;
+  planId: string;
+  status: SubscriptionStatus;
+  currentPeriodStart: string; // ISO 8601 format
+  currentPeriodEnd: string; // ISO 8601 format
+  canceledAt?: string; // ISO 8601 format
+  createdAt: string; // ISO 8601 format
+  updatedAt: string; // ISO 8601 format
+}
+
+/**
+ * プラン情報
+ */
+export interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  interval: 'month' | 'year';
+  intervalCount: number;
+  stripePriceId: string;
+  features: string[];
+  discountRate: number;
+  badge?: string;
+}
+
+/**
+ * サブスクリプション状態表示用データ
+ */
+export interface SubscriptionStatusData {
+  label: string;
+  badgeVariant: 'success' | 'secondary' | 'warning' | 'info' | 'danger';
+  color: string;
+  description: string;
+}
+
+/**
+ * PlanSelectorのProps
+ */
+export interface PlanSelectorProps {
+  plans: Plan[];
+  currentPlanId?: string;
+  onSelectPlan: (planId: string) => void;
+  isLoading?: boolean;
+}
+
+/**
+ * SubscriptionStatusのProps
+ */
+export interface SubscriptionStatusProps {
+  subscription: Subscription;
+  plan: Plan;
+  onCancel: () => void;
+}
+
+/**
+ * CancelSubscriptionModalのProps
+ */
+export interface CancelSubscriptionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  subscription: Subscription;
+  onConfirm: () => void;
+  isLoading?: boolean;
+}
+
+/**
+ * Stripe Checkout Session作成データ
+ */
+export interface CreateCheckoutSessionData {
+  userId: string;
+  planId: string;
+  successUrl: string;
+  cancelUrl: string;
+}
+
+/**
+ * Stripe Webhook イベント
+ */
+export interface StripeWebhookEvent {
+  id: string;
+  type: string;
+  data: {
+    object: any;
+  };
+}
+
+/**
+ * Account subscriptionセクションのspec.yamlの型定義
+ */
+export interface AccountSubscriptionSpec {
+  metadata: {
+    feature_name: string;
+    slug: string;
+    created_date: string;
+    last_updated: string;
+    version: string;
+  };
+  server_io: {
+    loader: {
+      timeout: number;
+    };
+    action: {
+      timeout: number;
+      intents: {
+        create_checkout: string;
+        cancel_subscription: string;
+      };
+    };
+  };
+  routes: {
+    subscription: {
+      path: string;
+      title: string;
+    };
+    webhook: {
+      path: string;
+      title: string;
+    };
+    success_redirect: {
+      path: string;
+      title: string;
+    };
+    cancel_redirect: {
+      path: string;
+      title: string;
+    };
+  };
+  plans: {
+    one_month: {
+      id: string;
+      name: string;
+      price: number;
+      currency: string;
+      interval: string;
+      interval_count: number;
+      stripe_price_id: string;
+      features: string[];
+      discount_rate: number;
+    };
+    three_months: {
+      id: string;
+      name: string;
+      price: number;
+      currency: string;
+      interval: string;
+      interval_count: number;
+      stripe_price_id: string;
+      features: string[];
+      discount_rate: number;
+      badge: string;
+    };
+    six_months: {
+      id: string;
+      name: string;
+      price: number;
+      currency: string;
+      interval: string;
+      interval_count: number;
+      stripe_price_id: string;
+      features: string[];
+      discount_rate: number;
+    };
+  };
+  subscription_status: {
+    active: {
+      label: string;
+      badge_variant: string;
+      color: string;
+      description: string;
+    };
+    canceled: {
+      label: string;
+      badge_variant: string;
+      color: string;
+      description: string;
+    };
+    past_due: {
+      label: string;
+      badge_variant: string;
+      color: string;
+      description: string;
+    };
+    trialing: {
+      label: string;
+      badge_variant: string;
+      color: string;
+      description: string;
+    };
+    incomplete: {
+      label: string;
+      badge_variant: string;
+      color: string;
+      description: string;
+    };
+    incomplete_expired: {
+      label: string;
+      badge_variant: string;
+      color: string;
+      description: string;
+    };
+    unpaid: {
+      label: string;
+      badge_variant: string;
+      color: string;
+      description: string;
+    };
+  };
+  webhook_events: {
+    checkout_session_completed: {
+      event_type: string;
+      description: string;
+      action: string;
+    };
+    customer_subscription_created: {
+      event_type: string;
+      description: string;
+      action: string;
+    };
+    customer_subscription_updated: {
+      event_type: string;
+      description: string;
+      action: string;
+    };
+    customer_subscription_deleted: {
+      event_type: string;
+      description: string;
+      action: string;
+    };
+    invoice_paid: {
+      event_type: string;
+      description: string;
+      action: string;
+    };
+    invoice_payment_failed: {
+      event_type: string;
+      description: string;
+      action: string;
+    };
+    invoice_payment_action_required: {
+      event_type: string;
+      description: string;
+      action: string;
+    };
+  };
+  ui: {
+    plan_selector: {
+      title: string;
+      grid_columns: {
+        desktop: number;
+        tablet: number;
+        mobile: number;
+      };
+      card_padding: string;
+      card_border_radius: string;
+      card_gap: {
+        desktop: string;
+        mobile: string;
+      };
+    };
+    subscription_status: {
+      title: string;
+      card_width: {
+        desktop: string;
+        tablet: string;
+        mobile: string;
+      };
+    };
+    cancel_modal: {
+      title: string;
+      width: {
+        desktop: string;
+        mobile: string;
+      };
+      padding: string;
+      border_radius: string;
+      warning_message: string;
+      info_message: string;
+    };
+  };
+  forms: {
+    create_checkout: {
+      fields: {
+        plan_id: {
+          name: string;
+          type: string;
+          required: boolean;
+        };
+      };
+      submit_button: {
+        label: string;
+        loading_label: string;
+      };
+    };
+    cancel_subscription: {
+      title: string;
+      submit_button: {
+        label: string;
+        loading_label: string;
+        variant: string;
+      };
+      cancel_button: {
+        label: string;
+        variant: string;
+      };
+    };
+  };
+  error_messages: {
+    checkout: {
+      session_creation_failed: string;
+      invalid_plan: string;
+      user_not_found: string;
+    };
+    cancel: {
+      subscription_not_found: string;
+      cancel_failed: string;
+      already_canceled: string;
+    };
+    webhook: {
+      signature_verification_failed: string;
+      invalid_event_type: string;
+      processing_failed: string;
+    };
+    server: {
+      timeout: string;
+      internal_error: string;
+      stripe_api_error: string;
+    };
+  };
+  success_messages: {
+    checkout: {
+      completed: string;
+    };
+    cancel: {
+      completed: string;
+    };
+    webhook: {
+      processed: string;
+    };
+  };
+  stripe: {
+    api_version: string;
+    checkout_session: {
+      mode: string;
+      payment_method_types: string[];
+      billing_address_collection: string;
+      success_url_param: string;
+      cancel_url_param: string;
+    };
+    webhook: {
+      signature_header: string;
+      tolerance: number;
+    };
+    retry: {
+      max_attempts: number;
+      initial_delay: number;
+      max_delay: number;
+    };
+  };
+  database: {
+    subscriptions_table: {
+      name: string;
+      columns: {
+        id: string;
+        user_id: string;
+        stripe_subscription_id: string;
+        stripe_customer_id: string;
+        plan_id: string;
+        status: string;
+        current_period_start: string;
+        current_period_end: string;
+        canceled_at: string;
+        created_at: string;
+        updated_at: string;
+      };
+    };
+  };
+  security: {
+    webhook: {
+      verify_signature: boolean;
+      reject_invalid_signature: boolean;
+    };
+    checkout_session: {
+      include_user_id_in_metadata: boolean;
+      customer_email_auto_fill: boolean;
+    };
+    subscription: {
+      require_authentication: boolean;
+      validate_user_ownership: boolean;
+    };
+  };
+  responsive: {
+    breakpoints: {
+      mobile: number;
+      tablet: number;
+    };
+    plan_card: {
+      mobile: string;
+      tablet: string;
+      desktop: string;
+    };
+    modal: {
+      mobile: string;
+      tablet: string;
+      desktop: string;
+    };
+    font_size: {
+      plan_name: {
+        mobile: string;
+        desktop: string;
+      };
+      plan_price: {
+        mobile: string;
+        desktop: string;
+      };
+    };
+  };
+  accessibility: {
+    aria_labels: {
+      plan_selector: string;
+      plan_card: string;
+      subscription_status: string;
+      cancel_modal: string;
+      subscribe_button: string;
+      cancel_button: string;
+      back_button: string;
+    };
+    modal: {
+      role: string;
+      aria_modal: boolean;
+      focus_trap: boolean;
+      close_on_escape: boolean;
+      focus_on_open: string;
+    };
+    error_announcement: {
+      aria_live: string;
+      aria_atomic: boolean;
+    };
+    success_announcement: {
+      aria_live: string;
+      aria_atomic: boolean;
+    };
+  };
+  performance: {
+    page_load: {
+      fcp_target: number;
+      lcp_target: number;
+    };
+    checkout_session_creation: {
+      timeout: number;
+    };
+    webhook_processing: {
+      timeout: number;
+    };
+  };
+  test: {
+    fixtures: {
+      test_user: {
+        email: string;
+        user_id: string;
+        stripe_customer_id: string;
+      };
+      test_subscription: {
+        stripe_subscription_id: string;
+        plan_id: string;
+        status: string;
+        current_period_start: string;
+        current_period_end: string;
+      };
+    };
+    stripe_test_cards: {
+      success: {
+        number: string;
+        exp_month: number;
+        exp_year: number;
+        cvc: string;
+      };
+      declined: {
+        number: string;
+        exp_month: number;
+        exp_year: number;
+        cvc: string;
+      };
+      requires_authentication: {
+        number: string;
+        exp_month: number;
+        exp_year: number;
+        cvc: string;
+      };
+    };
+    selectors: {
+      plan_selector: string;
+      plan_card_1month: string;
+      plan_card_3months: string;
+      plan_card_6months: string;
+      subscribe_1month: string;
+      subscribe_3months: string;
+      subscribe_6months: string;
+      subscription_status: string;
+      status_badge: string;
+      cancel_subscription_button: string;
+      cancel_subscription_modal: string;
+      cancel_modal_back_button: string;
+      cancel_modal_confirm_button: string;
+      checkout_error: string;
+      cancel_error: string;
+      subscription_success: string;
+      cancel_success: string;
+    };
+  };
+  future_features: {
+    plan_change: {
+      enabled: boolean;
+      description: string;
+    };
+    billing_history: {
+      enabled: boolean;
+      description: string;
+    };
+    coupon: {
+      enabled: boolean;
+      description: string;
+    };
+    trial: {
+      enabled: boolean;
+      description: string;
+      default_trial_days: number;
+    };
+    multiple_payment_methods: {
+      enabled: boolean;
+      description: string;
+    };
+  };
+}

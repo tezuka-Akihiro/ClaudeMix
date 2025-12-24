@@ -1,0 +1,494 @@
+# subscription-spec.yaml - 外部変数仕様書
+# 実装・テスト・仕様書で共通参照するリテラル値定義
+
+# ==========================================
+# メタデータ
+# ==========================================
+metadata:
+  feature_name: "account-subscription"
+  slug: "subscription"
+  created_date: "2025-12-23"
+  last_updated: "2025-12-23"
+  version: "1.0.0"
+
+# ==========================================
+# サーバー処理設定 (Loader/Action)
+# ==========================================
+server_io:
+  loader:
+    # loader処理のタイムアウト設定 (ms)
+    timeout: 5000
+
+  action:
+    # 処理タイムアウト設定 (ms)
+    timeout: 10000
+
+    # actionの種類
+    intents:
+      create_checkout: "create-checkout"
+      cancel_subscription: "cancel-subscription"
+
+# ==========================================
+# ルーティング設定
+# ==========================================
+routes:
+  subscription:
+    path: "/account/subscription"
+    title: "サブスクリプション管理"
+
+  webhook:
+    path: "/api/webhooks/stripe"
+    title: "Stripe Webhook"
+
+  success_redirect:
+    path: "/account/subscription?success=true"
+    title: "購読完了"
+
+  cancel_redirect:
+    path: "/account/subscription"
+    title: "購読キャンセル"
+
+# ==========================================
+# プラン設定
+# ==========================================
+plans:
+  # Stripe Dashboardで作成したプランのPrice IDを設定
+  one_month:
+    id: "1month"
+    name: "1ヶ月プラン"
+    price: 980
+    currency: "JPY"
+    interval: "month"
+    interval_count: 1
+    stripe_price_id: "price_1month_placeholder"  # 実際のStripe Price IDに置き換え
+    features:
+      - "全記事閲覧"
+      - "広告非表示"
+    discount_rate: 0
+
+  three_months:
+    id: "3months"
+    name: "3ヶ月プラン"
+    price: 2800
+    currency: "JPY"
+    interval: "month"
+    interval_count: 3
+    stripe_price_id: "price_3months_placeholder"  # 実際のStripe Price IDに置き換え
+    features:
+      - "全記事閲覧"
+      - "広告非表示"
+      - "5%割引"
+    discount_rate: 5
+    badge: "おすすめ"
+
+  six_months:
+    id: "6months"
+    name: "6ヶ月プラン"
+    price: 5400
+    currency: "JPY"
+    interval: "month"
+    interval_count: 6
+    stripe_price_id: "price_6months_placeholder"  # 実際のStripe Price IDに置き換え
+    features:
+      - "全記事閲覧"
+      - "広告非表示"
+      - "8%割引"
+    discount_rate: 8
+
+# ==========================================
+# サブスクリプション状態設定
+# ==========================================
+subscription_status:
+  active:
+    label: "アクティブ"
+    badge_variant: "success"
+    color: "#10b981"  # green-500
+    description: "サブスクリプションは有効です"
+
+  canceled:
+    label: "キャンセル済み"
+    badge_variant: "secondary"
+    color: "#6b7280"  # gray-500
+    description: "サブスクリプションはキャンセルされました。期間終了まで利用可能です。"
+
+  past_due:
+    label: "支払い遅延"
+    badge_variant: "warning"
+    color: "#f59e0b"  # amber-500
+    description: "支払いに問題があります。請求情報を更新してください。"
+
+  trialing:
+    label: "トライアル期間"
+    badge_variant: "info"
+    color: "#3b82f6"  # blue-500
+    description: "トライアル期間中です"
+
+  incomplete:
+    label: "未完了"
+    badge_variant: "warning"
+    color: "#f59e0b"  # amber-500
+    description: "決済が完了していません"
+
+  incomplete_expired:
+    label: "期限切れ"
+    badge_variant: "secondary"
+    color: "#6b7280"  # gray-500
+    description: "決済期限が切れました"
+
+  unpaid:
+    label: "未払い"
+    badge_variant: "danger"
+    color: "#ef4444"  # red-500
+    description: "請求が未払いです"
+
+# ==========================================
+# Stripe Webhook イベント設定
+# ==========================================
+webhook_events:
+  checkout_session_completed:
+    event_type: "checkout.session.completed"
+    description: "決済完了、サブスクリプション有効化"
+    action: "activate_subscription"
+
+  customer_subscription_created:
+    event_type: "customer.subscription.created"
+    description: "サブスクリプション作成"
+    action: "create_subscription_record"
+
+  customer_subscription_updated:
+    event_type: "customer.subscription.updated"
+    description: "サブスクリプション更新"
+    action: "update_subscription_status"
+
+  customer_subscription_deleted:
+    event_type: "customer.subscription.deleted"
+    description: "サブスクリプションキャンセル"
+    action: "mark_subscription_canceled"
+
+  invoice_paid:
+    event_type: "invoice.paid"
+    description: "請求成功"
+    action: "update_billing_date"
+
+  invoice_payment_failed:
+    event_type: "invoice.payment_failed"
+    description: "請求失敗"
+    action: "mark_payment_failed"
+
+  invoice_payment_action_required:
+    event_type: "invoice.payment_action_required"
+    description: "追加の認証が必要"
+    action: "notify_user"
+
+# ==========================================
+# UI コンポーネント設定
+# ==========================================
+ui:
+  plan_selector:
+    title: "プランを選択"
+    grid_columns:
+      desktop: 3
+      tablet: 3
+      mobile: 1
+    card_padding: "24px"
+    card_border_radius: "8px"
+    card_gap:
+      desktop: "24px"
+      mobile: "16px"
+
+  subscription_status:
+    title: "契約状況"
+    card_width:
+      desktop: "600px"
+      tablet: "100%"
+      mobile: "100%"
+
+  cancel_modal:
+    title: "サブスクリプションをキャンセル"
+    width:
+      desktop: "480px"
+      mobile: "100%"
+    padding: "24px"
+    border_radius: "8px"
+    warning_message: "本当にサブスクリプションをキャンセルしますか？"
+    info_message: "キャンセル後も、次回請求日まで引き続きご利用いただけます。"
+
+# ==========================================
+# フォーム設定
+# ==========================================
+forms:
+  create_checkout:
+    fields:
+      plan_id:
+        name: "planId"
+        type: "hidden"
+        required: true
+
+    submit_button:
+      label: "購読する"
+      loading_label: "処理中..."
+
+  cancel_subscription:
+    title: "サブスクリプションをキャンセル"
+    submit_button:
+      label: "キャンセルを実行"
+      loading_label: "キャンセル中..."
+      variant: "danger"
+
+    cancel_button:
+      label: "戻る"
+      variant: "secondary"
+
+# ==========================================
+# エラーメッセージ設定
+# ==========================================
+error_messages:
+  checkout:
+    session_creation_failed: "Stripe決済画面の作成に失敗しました。もう一度お試しください。"
+    invalid_plan: "無効なプランが選択されています。"
+    user_not_found: "ユーザー情報が見つかりません。再度ログインしてください。"
+
+  cancel:
+    subscription_not_found: "サブスクリプション情報が見つかりません。"
+    cancel_failed: "サブスクリプションのキャンセルに失敗しました。もう一度お試しください。"
+    already_canceled: "サブスクリプションは既にキャンセルされています。"
+
+  webhook:
+    signature_verification_failed: "Webhook署名の検証に失敗しました。"
+    invalid_event_type: "無効なイベントタイプです。"
+    processing_failed: "Webhookイベントの処理に失敗しました。"
+
+  server:
+    timeout: "処理がタイムアウトしました。もう一度お試しください。"
+    internal_error: "エラーが発生しました。しばらく時間をおいてから再度お試しください。"
+    stripe_api_error: "Stripe APIエラーが発生しました。しばらく時間をおいてから再度お試しください。"
+
+# ==========================================
+# 成功メッセージ設定
+# ==========================================
+success_messages:
+  checkout:
+    completed: "サブスクリプションの購読が完了しました。ご利用ありがとうございます。"
+
+  cancel:
+    completed: "サブスクリプションをキャンセルしました。次回請求日まで引き続きご利用いただけます。"
+
+  webhook:
+    processed: "Webhookイベントを正常に処理しました。"
+
+# ==========================================
+# Stripe 設定
+# ==========================================
+stripe:
+  api_version: "2023-10-16"
+
+  checkout_session:
+    mode: "subscription"
+    payment_method_types:
+      - "card"
+    billing_address_collection: "auto"
+    success_url_param: "?success=true"
+    cancel_url_param: "?canceled=true"
+
+  webhook:
+    signature_header: "stripe-signature"
+    tolerance: 300  # 署名検証の許容時間（秒）
+
+  retry:
+    max_attempts: 3
+    initial_delay: 1000  # ms
+    max_delay: 10000  # ms
+
+# ==========================================
+# データベース設定
+# ==========================================
+database:
+  subscriptions_table:
+    name: "subscriptions"
+    columns:
+      id: "id"
+      user_id: "user_id"
+      stripe_subscription_id: "stripe_subscription_id"
+      stripe_customer_id: "stripe_customer_id"
+      plan_id: "plan_id"
+      status: "status"
+      current_period_start: "current_period_start"
+      current_period_end: "current_period_end"
+      canceled_at: "canceled_at"
+      created_at: "created_at"
+      updated_at: "updated_at"
+
+# ==========================================
+# セキュリティ設定
+# ==========================================
+security:
+  webhook:
+    verify_signature: true
+    reject_invalid_signature: true
+
+  checkout_session:
+    include_user_id_in_metadata: true
+    customer_email_auto_fill: true
+
+  subscription:
+    require_authentication: true
+    validate_user_ownership: true
+
+# ==========================================
+# レスポンシブ設定
+# ==========================================
+responsive:
+  # ブレークポイント（commonから継承）
+  breakpoints:
+    mobile: 768
+    tablet: 1024
+
+  # プランカード幅
+  plan_card:
+    mobile: "100%"
+    tablet: "calc(33.33% - 16px)"
+    desktop: "calc(33.33% - 16px)"
+
+  # モーダル幅
+  modal:
+    mobile: "100%"
+    tablet: "480px"
+    desktop: "480px"
+
+  # フォントサイズ
+  font_size:
+    plan_name:
+      mobile: "18px"
+      desktop: "20px"
+    plan_price:
+      mobile: "24px"
+      desktop: "28px"
+
+# ==========================================
+# アクセシビリティ設定
+# ==========================================
+accessibility:
+  # ARIAラベル
+  aria_labels:
+    plan_selector: "プラン選択"
+    plan_card: "プランカード"
+    subscription_status: "契約状況"
+    cancel_modal: "サブスクリプションキャンセル確認モーダル"
+    subscribe_button: "このプランを購読する"
+    cancel_button: "サブスクリプションをキャンセルする（取り消し不可）"
+    back_button: "戻る"
+
+  # モーダルアクセシビリティ
+  modal:
+    role: "dialog"
+    aria_modal: true
+    focus_trap: true
+    close_on_escape: true
+    focus_on_open: "cancel_button"  # 誤操作防止のため「戻る」ボタンにフォーカス
+
+  # エラーメッセージのaria-live設定
+  error_announcement:
+    aria_live: "assertive"
+    aria_atomic: true
+
+  # 成功メッセージのaria-live設定
+  success_announcement:
+    aria_live: "polite"
+    aria_atomic: true
+
+# ==========================================
+# パフォーマンス設定
+# ==========================================
+performance:
+  page_load:
+    fcp_target: 1500  # ms
+    lcp_target: 2500  # ms
+
+  checkout_session_creation:
+    timeout: 3000  # ms
+
+  webhook_processing:
+    timeout: 5000  # ms
+
+# ==========================================
+# テスト設定
+# ==========================================
+test:
+  # テストユーザーデータ
+  fixtures:
+    test_user:
+      email: "subscriber@example.com"
+      user_id: "test-user-id-123"
+      stripe_customer_id: "cus_test123"
+
+    test_subscription:
+      stripe_subscription_id: "sub_test123"
+      plan_id: "3months"
+      status: "active"
+      current_period_start: "2025-12-01T00:00:00Z"
+      current_period_end: "2026-03-01T00:00:00Z"
+
+  # Stripe テストカード
+  stripe_test_cards:
+    success:
+      number: "4242424242424242"
+      exp_month: 12
+      exp_year: 2034
+      cvc: "123"
+
+    declined:
+      number: "4000000000000002"
+      exp_month: 12
+      exp_year: 2034
+      cvc: "123"
+
+    requires_authentication:
+      number: "4000002500003155"
+      exp_month: 12
+      exp_year: 2034
+      cvc: "123"
+
+  # E2Eテスト用セレクタ
+  selectors:
+    plan_selector: "[data-testid='plan-selector']"
+    plan_card_1month: "[data-testid='plan-card-1month']"
+    plan_card_3months: "[data-testid='plan-card-3months']"
+    plan_card_6months: "[data-testid='plan-card-6months']"
+    subscribe_1month: "[data-testid='subscribe-1month']"
+    subscribe_3months: "[data-testid='subscribe-3months']"
+    subscribe_6months: "[data-testid='subscribe-6months']"
+    subscription_status: "[data-testid='subscription-status']"
+    status_badge: "[data-testid='status-badge']"
+    cancel_subscription_button: "[data-testid='cancel-subscription-button']"
+    cancel_subscription_modal: "[data-testid='cancel-subscription-modal']"
+    cancel_modal_back_button: "[data-testid='cancel-modal-back-button']"
+    cancel_modal_confirm_button: "[data-testid='cancel-modal-confirm-button']"
+    checkout_error: "[data-testid='checkout-error']"
+    cancel_error: "[data-testid='cancel-error']"
+    subscription_success: "[data-testid='subscription-success']"
+    cancel_success: "[data-testid='cancel-success']"
+
+# ==========================================
+# 将来実装 (Phase 2)
+# ==========================================
+future_features:
+  plan_change:
+    enabled: false
+    description: "プラン変更機能（アップグレード/ダウングレード）"
+
+  billing_history:
+    enabled: false
+    description: "請求履歴表示（過去の請求書一覧）"
+
+  coupon:
+    enabled: false
+    description: "クーポン適用機能"
+
+  trial:
+    enabled: false
+    description: "トライアル期間対応"
+    default_trial_days: 7
+
+  multiple_payment_methods:
+    enabled: false
+    description: "複数支払い方法の管理"
