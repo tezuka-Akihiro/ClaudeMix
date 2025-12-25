@@ -32,14 +32,14 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(passwordInput).toBeVisible();
       await expect(passwordInput).toHaveAttribute('type', 'password');
 
-      const passwordConfirmInput = page.locator('input[name="passwordConfirm"]');
-      await expect(passwordConfirmInput).toBeVisible();
-      await expect(passwordConfirmInput).toHaveAttribute('type', 'password');
+      const confirmPasswordInput = page.locator('input[name="confirmPassword"]');
+      await expect(confirmPasswordInput).toBeVisible();
+      await expect(confirmPasswordInput).toHaveAttribute('type', 'password');
 
       // Verify submit button
       const submitButton = page.locator('button[type="submit"]');
       await expect(submitButton).toBeVisible();
-      await expect(submitButton).toContainText('登録する');
+      await expect(submitButton).toContainText('登録');
     });
 
     test('should register new user successfully', async ({ page }) => {
@@ -49,7 +49,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Fill in registration form
       await page.fill('input[name="email"]', 'newuser@example.com');
       await page.fill('input[name="password"]', 'Password123');
-      await page.fill('input[name="passwordConfirm"]', 'Password123');
+      await page.fill('input[name="confirmPassword"]', 'Password123');
 
       // Submit form
       await page.click('button[type="submit"]');
@@ -69,7 +69,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Fill in registration form with mismatched passwords
       await page.fill('input[name="email"]', 'test@example.com');
       await page.fill('input[name="password"]', 'Password123');
-      await page.fill('input[name="passwordConfirm"]', 'DifferentPassword123');
+      await page.fill('input[name="confirmPassword"]', 'DifferentPassword123');
 
       // Submit form
       await page.click('button[type="submit"]');
