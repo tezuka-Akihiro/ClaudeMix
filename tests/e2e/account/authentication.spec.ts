@@ -42,7 +42,7 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(submitButton).toContainText('登録する');
     });
 
-    test.skip('should register new user successfully', async ({ page }) => {
+    test('should register new user successfully', async ({ page }) => {
       // Navigate to registration page
       await page.goto('/register');
 
@@ -62,7 +62,7 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(accountLayout).toBeVisible();
     });
 
-    test.skip('should show error when passwords do not match', async ({ page }) => {
+    test('should show error when passwords do not match', async ({ page }) => {
       // Navigate to registration page
       await page.goto('/register');
 
@@ -108,7 +108,7 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(submitButton).toContainText('ログイン');
     });
 
-    test.skip('should login existing user successfully', async ({ page }) => {
+    test('should login existing user successfully', async ({ page }) => {
       // Navigate to login page
       await page.goto('/login');
 
@@ -127,7 +127,7 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(accountLayout).toBeVisible();
     });
 
-    test.skip('should show error when credentials are invalid', async ({ page }) => {
+    test('should show error when credentials are invalid', async ({ page }) => {
       // Navigate to login page
       await page.goto('/login');
 
@@ -144,7 +144,7 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(errorMessage).toContainText('メールアドレスまたはパスワードが正しくありません');
     });
 
-    test.skip('should redirect to original page after login', async ({ page }) => {
+    test('should redirect to original page after login', async ({ page }) => {
       // Try to access protected page without authentication
       await page.goto('/account/settings');
 
@@ -162,7 +162,7 @@ test.describe('Account Authentication - Happy Path', () => {
   });
 
   test.describe('User Logout', () => {
-    test.skip('should logout user successfully', async ({ page }) => {
+    test('should logout user successfully', async ({ page }) => {
       // Login first
       await page.goto('/login');
       await page.fill('input[name="email"]', 'user@example.com');
@@ -185,7 +185,7 @@ test.describe('Account Authentication - Happy Path', () => {
   });
 
   test.describe('Authentication State Persistence', () => {
-    test.skip('should persist session across page reloads', async ({ page }) => {
+    test('should persist session across page reloads', async ({ page }) => {
       // Login
       await page.goto('/login');
       await page.fill('input[name="email"]', 'user@example.com');

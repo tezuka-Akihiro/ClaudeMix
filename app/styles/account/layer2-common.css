@@ -330,6 +330,18 @@
   color: var(--color-interactive-primary);
 }
 
+/* === Auth Card === */
+/* Authentication card container */
+.auth-card {
+  background-color: var(--color-background-secondary);
+  border: var(--border-width-sm) solid var(--color-interactive-primary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
+  padding: var(--spacing-6);
+  width: 100%;
+  max-width: var(--layout-form-max-width);
+}
+
 /* === Badge === */
 /* Badge success */
 .badge-success {

@@ -64,8 +64,6 @@ export const accountLayer3Plugin = plugin(function ({ addComponents }) {
       display: "flex",
       flexDirection: "column",
       gap: "var(--spacing-4)",
-      width: "100%",
-      maxWidth: "400px",
     },
 
     /**
@@ -185,9 +183,6 @@ export const accountLayer3Plugin = plugin(function ({ addComponents }) {
       display: "flex",
       flexDirection: "column",
       gap: "var(--spacing-4)",
-      maxWidth: "800px",
-      margin: "0 auto",
-      width: "100%",
     },
 
     /**
@@ -228,8 +223,6 @@ export const accountLayer3Plugin = plugin(function ({ addComponents }) {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      position: "fixed",
-      inset: "0",
     },
 
     /**
