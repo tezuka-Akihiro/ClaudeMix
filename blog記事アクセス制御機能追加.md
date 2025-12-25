@@ -68,13 +68,12 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 
 ### 🗾GUIDING_PRINCIPLES.md
 
-**実施済み**（変更なし: post-detailセクションはGUIDING_PRINCIPLESに影響しない）
+（変更なし: post-detailセクションはGUIDING_PRINCIPLESに影響しない）
 
 ### 📚️func-spec.md
 
-**実施済み**
-
 追加内容:
+
 - 基本機能6: サブスクリプション状態に応じたアクセス制御
 - Route責務: サブスクリプション状態取得の処理フロー追加
 - Component責務: ペイウォール・購読促進バナー表示追加
@@ -83,9 +82,8 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 
 ### 🖼️uiux-spec.md
 
-**実施済み**
-
 追加内容:
+
 - データフロー設計: Loaderにサブスクリプション状態取得処理追加
 - レイアウト構造: Paywall Container、Subscription Promotion Banner追加
 - インタラクションと状態遷移: Paywall、SubscriptionPromotionBannerの状態とインタラクション定義
@@ -98,9 +96,8 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 
 ### 🗂️file-list.md
 
-**実施済み**
-
 追加ファイル:
+
 - UI層: `Paywall.tsx`, `Paywall.test.tsx`, `SubscriptionPromotionBanner.tsx`, `SubscriptionPromotionBanner.test.tsx`
 - 純粋ロジック層: `determineContentVisibility.ts`, `determineContentVisibility.test.ts`
 - 副作用層: `getSubscriptionStatus.server.ts`, `getSubscriptionStatus.server.test.ts`
@@ -108,9 +105,8 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 
 ### 🧬data-flow-diagram.md
 
-**実施済み**
-
 追加内容:
+
 - Mermaid図: 「サブスクリプション状態取得フロー」「アクセス制御判定フロー」追加
 - Route層責務: サブスクリプション状態取得、アクセス制御判定追加
 - Component層責務: Paywall、SubscriptionPromotionBanner追加
@@ -137,10 +133,12 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 ### 🎨CSS実装 (layer2.css, layer3.ts, layer4.ts)
 
 **パス**:
+
 - `app/styles/blog/layer2-post-detail.css`
 - `app/styles/blog/layer3.ts`
 
 **編集内容**:
+
 - Layer 2: `.paywall`, `.subscription-promotion-banner`コンポーネントクラス追加
 - Layer 3: ペイウォールと購読促進バナーのレイアウト構造追加（必要に応じて）
 
@@ -149,6 +147,7 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 **パス**: `app/routes/blog.$slug.tsx`
 
 **編集内容**:
+
 - loaderにサブスクリプション状態取得処理追加（`getSubscriptionStatus.server.ts`呼び出し）
 - `determineContentVisibility.ts`を呼び出してアクセス制御判定
 - loaderの返り値に`showFullContent`、`visiblePercentage`、`hasActiveSubscription`追加
@@ -158,27 +157,33 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 ### 🚧components.test
 
 **新規ファイル**:
+
 - `app/components/blog/post-detail/Paywall.test.tsx`: ペイウォールコンポーネントのテスト
 - `app/components/blog/post-detail/SubscriptionPromotionBanner.test.tsx`: 購読促進バナーのテスト
 
 **既存ファイル更新**:
+
 - `app/components/blog/post-detail/PostDetailSection.test.tsx`: サブスクリプション状態に応じたコンテンツ制御のテスト追加
 
 ### 🪨components
 
 **新規ファイル**:
+
 - `app/components/blog/post-detail/Paywall.tsx`: ペイウォールコンポーネント（SubscriptionPromotionBannerを内包）
 - `app/components/blog/post-detail/SubscriptionPromotionBanner.tsx`: 購読促進バナー（プラン情報表示、CTAボタン）
 
 **既存ファイル更新**:
+
 - `app/components/blog/post-detail/PostDetailSection.tsx`: `showFullContent`に基づいてPaywall表示制御追加
 
 ### 🚧logic.test
 
 **新規ファイル**:
+
 - `app/lib/blog/post-detail/determineContentVisibility.test.ts`: アクセス制御判定ロジックのテスト（純粋関数）
 
 **テストケース**:
+
 - サブスクリプションアクティブ → 全文表示
 - サブスクリプション非アクティブ → 部分表示
 - 境界値（0%/100%）
@@ -186,6 +191,7 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 ### 🪨logic
 
 **新規ファイル**:
+
 - `app/lib/blog/post-detail/determineContentVisibility.ts`: サブスクリプション状態とfreeContentPercentageから可視範囲を判定する純粋関数
 
 **シグネチャ**: `(hasActiveSubscription: boolean, freeContentPercentage: number) => { showFullContent: boolean, visiblePercentage: number }`
@@ -193,9 +199,11 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 ### 🚧data-io.test
 
 **新規ファイル**:
+
 - `app/data-io/blog/post-detail/getSubscriptionStatus.server.test.ts`: サブスクリプション状態取得のテスト（accountサービスdata-io層のモック使用）
 
 **テストケース**:
+
 - アクティブなサブスクリプション → `hasActiveSubscription: true`
 - 非アクティブ/存在しない → `hasActiveSubscription: false`
 - accountサービスdata-io層エラー → 安全側に倒す（`false`）
@@ -203,13 +211,16 @@ Consは存在するものの、プロジェクトの目標である「Remix MVP�
 ### 🪨data-io
 
 **新規ファイル**:
+
 - `app/data-io/blog/post-detail/getSubscriptionStatus.server.ts`: accountサービスのdata-io層を呼び出してサブスクリプション状態を取得
 
 **重要な依存関係**:
+
 - `app/data-io/account/subscription/getSubscriptionByUserId.server.ts`（accountサービス）
 - この関数が実装されていることが前提
 
 **既存ファイル更新**:
+
 - `app/data-io/blog/post-detail/fetchPostBySlug.server.ts`: frontmatterから`freeContentPercentage`フィールドを読み込む処理追加
 
 ### その他
