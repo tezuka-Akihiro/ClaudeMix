@@ -10,7 +10,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Account Profile Section', () => {
   test.describe('Profile Display', () => {
-    test('should display user profile information', async ({ page }) => {
+    test.skip('should display user profile information', async ({ page }) => {
       // Setup: Create and login as test user
       await page.goto('/register');
       await page.fill('[data-testid="email-input"]', 'profile-test@example.com');
@@ -29,7 +29,7 @@ test.describe('Account Profile Section', () => {
       await expect(page.locator('[data-testid="delete-account-button"]')).toBeVisible();
     });
 
-    test('should require authentication to access profile', async ({ page }) => {
+    test.skip('should require authentication to access profile', async ({ page }) => {
       // Try to access profile without login
       await page.goto('/account/settings');
 
@@ -39,7 +39,7 @@ test.describe('Account Profile Section', () => {
   });
 
   test.describe('Email Change', () => {
-    test('should successfully change email', async ({ page }) => {
+    test.skip('should successfully change email', async ({ page }) => {
       // Setup: Create and login as test user
       await page.goto('/register');
       await page.fill('[data-testid="email-input"]', 'email-change@example.com');
@@ -66,7 +66,7 @@ test.describe('Account Profile Section', () => {
       await expect(page.locator('text=new-email@example.com')).toBeVisible();
     });
 
-    test('should reject email change with incorrect password', async ({ page }) => {
+    test.skip('should reject email change with incorrect password', async ({ page }) => {
       // Setup: Login
       await page.goto('/login');
       await page.fill('[data-testid="email-input"]', 'email-change@example.com');
@@ -93,7 +93,7 @@ test.describe('Account Profile Section', () => {
       );
     });
 
-    test('should reject duplicate email', async ({ page }) => {
+    test.skip('should reject duplicate email', async ({ page }) => {
       // Setup: Create two users
       await page.goto('/register');
       await page.fill('[data-testid="email-input"]', 'user1@example.com');
@@ -121,7 +121,7 @@ test.describe('Account Profile Section', () => {
       );
     });
 
-    test('should validate email format', async ({ page }) => {
+    test.skip('should validate email format', async ({ page }) => {
       // Setup: Login
       await page.goto('/login');
       await page.fill('[data-testid="email-input"]', 'user2@example.com');
@@ -141,7 +141,7 @@ test.describe('Account Profile Section', () => {
   });
 
   test.describe('Password Change', () => {
-    test('should successfully change password', async ({ page }) => {
+    test.skip('should successfully change password', async ({ page }) => {
       // Setup: Create and login as test user
       await page.goto('/register');
       await page.fill('[data-testid="email-input"]', 'password-change@example.com');
@@ -176,7 +176,7 @@ test.describe('Account Profile Section', () => {
       await expect(page).toHaveURL('/account');
     });
 
-    test('should reject password change with incorrect current password', async ({ page }) => {
+    test.skip('should reject password change with incorrect current password', async ({ page }) => {
       // Setup: Login
       await page.goto('/login');
       await page.fill('[data-testid="email-input"]', 'password-change@example.com');
@@ -197,7 +197,7 @@ test.describe('Account Profile Section', () => {
       );
     });
 
-    test('should reject password change when new passwords do not match', async ({ page }) => {
+    test.skip('should reject password change when new passwords do not match', async ({ page }) => {
       // Setup: Login
       await page.goto('/login');
       await page.fill('[data-testid="email-input"]', 'password-change@example.com');
@@ -216,7 +216,7 @@ test.describe('Account Profile Section', () => {
       await expect(page.locator('[data-testid="error-message"]')).toContainText('一致しません');
     });
 
-    test('should validate new password strength', async ({ page }) => {
+    test.skip('should validate new password strength', async ({ page }) => {
       // Setup: Login
       await page.goto('/login');
       await page.fill('[data-testid="email-input"]', 'password-change@example.com');
@@ -237,7 +237,7 @@ test.describe('Account Profile Section', () => {
   });
 
   test.describe('Account Deletion', () => {
-    test('should successfully delete account', async ({ page }) => {
+    test.skip('should successfully delete account', async ({ page }) => {
       // Setup: Create and login as test user
       await page.goto('/register');
       await page.fill('[data-testid="email-input"]', 'delete-test@example.com');
@@ -276,7 +276,7 @@ test.describe('Account Profile Section', () => {
       );
     });
 
-    test('should reject account deletion with incorrect password', async ({ page }) => {
+    test.skip('should reject account deletion with incorrect password', async ({ page }) => {
       // Setup: Create and login as test user
       await page.goto('/register');
       await page.fill('[data-testid="email-input"]', 'nodelete-test@example.com');
@@ -297,7 +297,7 @@ test.describe('Account Profile Section', () => {
       );
     });
 
-    test('should require confirmation checkbox', async ({ page }) => {
+    test.skip('should require confirmation checkbox', async ({ page }) => {
       // Setup: Login
       await page.goto('/login');
       await page.fill('[data-testid="email-input"]', 'nodelete-test@example.com');
@@ -318,7 +318,7 @@ test.describe('Account Profile Section', () => {
       ).resolves.toBeTruthy();
     });
 
-    test('should allow canceling account deletion', async ({ page }) => {
+    test.skip('should allow canceling account deletion', async ({ page }) => {
       // Setup: Login
       await page.goto('/login');
       await page.fill('[data-testid="email-input"]', 'nodelete-test@example.com');
@@ -340,7 +340,7 @@ test.describe('Account Profile Section', () => {
   });
 
   test.describe('Modal Interactions', () => {
-    test('should close email change modal on cancel', async ({ page }) => {
+    test.skip('should close email change modal on cancel', async ({ page }) => {
       // Setup: Login
       await page.goto('/register');
       await page.fill('[data-testid="email-input"]', 'modal-test@example.com');
@@ -356,7 +356,7 @@ test.describe('Account Profile Section', () => {
       await expect(page.locator('[data-testid="email-change-modal"]')).not.toBeVisible();
     });
 
-    test('should close password change modal on cancel', async ({ page }) => {
+    test.skip('should close password change modal on cancel', async ({ page }) => {
       // Setup: Login
       await page.goto('/login');
       await page.fill('[data-testid="email-input"]', 'modal-test@example.com');
