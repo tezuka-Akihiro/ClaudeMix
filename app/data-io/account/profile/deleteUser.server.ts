@@ -35,7 +35,7 @@ export async function deleteUser(
       return false;
     }
 
-    const db = context.cloudflare.env.DB;
+    const db = context.env.DB;
 
     // Delete user with parameterized query
     const stmt = db.prepare('DELETE FROM users WHERE id = ?').bind(userId);

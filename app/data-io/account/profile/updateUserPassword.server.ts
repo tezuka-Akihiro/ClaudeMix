@@ -34,7 +34,7 @@ export async function updateUserPassword(
       return false;
     }
 
-    const db = context.cloudflare.env.DB;
+    const db = context.env.DB;
     const now = new Date().toISOString();
 
     // Update password hash with parameterized query

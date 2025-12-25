@@ -38,7 +38,7 @@ export async function getUserByEmail(
       return null;
     }
 
-    const db = context.cloudflare.env.DB;
+    const db = context.env.DB;
     const stmt = db.prepare('SELECT * FROM users WHERE email = ?').bind(email);
     const user = await stmt.first<User>();
 

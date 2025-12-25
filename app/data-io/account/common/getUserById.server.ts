@@ -39,7 +39,7 @@ export async function getUserById(
     }
 
     // Query user from D1 database using parameterized query (SQL injection protection)
-    const db = context.cloudflare.env.DB;
+    const db = context.env.DB;
     const stmt = db.prepare('SELECT * FROM users WHERE id = ?').bind(userId);
     const user = await stmt.first<User>();
 

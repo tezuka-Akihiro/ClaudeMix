@@ -40,7 +40,7 @@ export async function createUser(
       return false;
     }
 
-    const db = context.cloudflare.env.DB;
+    const db = context.env.DB;
 
     // Generate user ID and timestamps
     const userId = crypto.randomUUID();
