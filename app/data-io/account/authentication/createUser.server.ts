@@ -27,7 +27,6 @@ interface CloudflareLoadContext {
  * Security:
  * - Uses parameterized queries to prevent SQL injection
  * - Generates secure random user ID
- * - Sets default subscription status to 'trial'
  */
 export async function createUser(
   email: string,
@@ -45,14 +44,13 @@ export async function createUser(
     // Generate user ID and timestamps
     const userId = crypto.randomUUID();
     const now = new Date().toISOString();
-    const subscriptionStatus = 'trial'; // Default for new users
 
     // Insert user with parameterized query
     const stmt = db
       .prepare(
-        'INSERT INTO users (id, email, passwordHash, subscriptionStatus, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)'
+        'INSERT INTO users (id, email, passwordHash, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)'
       )
-      .bind(userId, email, passwordHash, subscriptionStatus, now, now);
+      .bind(userId, email, passwordHash, now, now);
 
     await stmt.run();
 
