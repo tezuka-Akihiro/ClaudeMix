@@ -82,10 +82,8 @@
 
 /* Modal Overlay */
 .profile-modal-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  inset: 0;
-  z-index: 50;
+  background-color: var(--color-overlay-strong);
+  z-index: var(--z-index-modal-overlay);
 }
 
 .profile-modal {
@@ -93,9 +91,9 @@
   border: var(--border-width-sm) solid var(--color-interactive-primary);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-6);
-  box-shadow: 0 0 var(--shadow-blur-lg) rgba(0, 0, 0, 0.3);
-  max-width: 500px;
-  width: 90%;
+  box-shadow: 0 0 var(--shadow-blur-lg) var(--color-overlay-medium);
+  max-width: var(--layout-page-container-width);
+  width: 100%;
 }
 
 .profile-modal__title {
@@ -117,15 +115,11 @@
 
 /* Form Fields */
 .profile-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
+  /* Layout handled by Layer 3 structure class */
 }
 
 .profile-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-1);
+  /* Layout handled by Layer 3 structure class */
 }
 
 .profile-form__label {
@@ -146,7 +140,7 @@
 .profile-form__input:focus {
   outline: none;
   border-color: var(--color-interactive-primary);
-  box-shadow: 0 0 0 3px var(--color-interactive-primary-bg);
+  box-shadow: 0 0 0 var(--spacing-1) var(--color-interactive-primary-bg);
 }
 
 .profile-form__input--error {
@@ -161,14 +155,12 @@
 
 /* Checkbox */
 .profile-form__checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
+  /* Layout handled by Layer 3 structure class */
 }
 
 .profile-form__checkbox {
-  width: 18px;
-  height: 18px;
+  width: var(--spacing-3);
+  height: var(--spacing-3);
   cursor: pointer;
 }
 
@@ -180,19 +172,19 @@
 
 /* Modal Buttons */
 .profile-modal__buttons {
-  display: flex;
-  gap: var(--spacing-3);
+  /* Layout handled by Layer 3 structure class */
   margin-top: var(--spacing-4);
 }
 
 .profile-modal__button {
-  flex: 1;
+  /* flex: 1 handled by Layer 3 structure class */
   padding: var(--spacing-2) var(--spacing-4);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: background-color var(--transition-duration-fast) var(--transition-timing-function-default),
+              border-color var(--transition-duration-fast) var(--transition-timing-function-default);
 }
 
 .profile-modal__button--primary {
@@ -201,9 +193,9 @@
   border: var(--border-width-sm) solid var(--color-interactive-primary);
 }
 
-.profile-modal__button--primary:hover {
+.profile-modal__button--primary:hover:not(:disabled) {
   background-color: var(--color-interactive-primary);
-  opacity: 0.9;
+  box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary);
 }
 
 .profile-modal__button--secondary {
@@ -222,12 +214,13 @@
   border: var(--border-width-sm) solid var(--color-error-text);
 }
 
-.profile-modal__button--danger:hover {
-  opacity: 0.9;
+.profile-modal__button--danger:hover:not(:disabled) {
+  background-color: var(--color-status-error-strong);
+  box-shadow: 0 0 var(--shadow-blur-sm) var(--color-status-error-strong);
 }
 
 .profile-modal__button:disabled {
-  opacity: 0.5;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
