@@ -175,6 +175,96 @@ export const accountLayer3Plugin = plugin(function ({ addComponents }) {
       display: "flex",
       flexDirection: "column",
     },
+
+    /**
+     * Profile Container Structure
+     * - Vertical stack of profile sections
+     * - Max width for readability
+     */
+    ".profile-container-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-4)",
+      maxWidth: "800px",
+      margin: "0 auto",
+      width: "100%",
+    },
+
+    /**
+     * Profile Section Structure
+     * - Vertical stack of section title and content
+     */
+    ".profile-section-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-3)",
+    },
+
+    /**
+     * Profile Info Items Structure
+     * - Vertical stack of info items
+     */
+    ".profile-info-structure": {
+      display: "flex",
+      flexDirection: "column",
+    },
+
+    /**
+     * Profile Actions Structure
+     * - Vertical stack of action buttons
+     */
+    ".profile-actions-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-2)",
+    },
+
+    /**
+     * Profile Modal Overlay Structure
+     * - Full viewport overlay for modal backdrop
+     * - Centers modal content
+     */
+    ".profile-modal-overlay-structure": {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "fixed",
+      inset: "0",
+    },
+
+    /**
+     * Profile Modal Structure
+     * - Vertical stack of modal header, body, and footer
+     */
+    ".profile-modal-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-4)",
+    },
+
+    /**
+     * Profile Form Field Structure
+     * - Vertical stack of label, input, and error
+     */
+    ".profile-form-field-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-1)",
+    },
+
+    /**
+     * Profile Modal Buttons Structure
+     * - Horizontal layout for modal action buttons
+     * - Responsive: stack on mobile
+     */
+    ".profile-modal-buttons-structure": {
+      display: "flex",
+      flexDirection: "row",
+      gap: "var(--spacing-3)",
+      "@media (max-width: 767px)": {
+        flexDirection: "column",
+      },
+    },
   });
 });
 
