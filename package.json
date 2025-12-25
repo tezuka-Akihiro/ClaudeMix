@@ -27,7 +27,8 @@
     "typecheck:e2e": "tsc -p tests/e2e/tsconfig.json",
     "lint:template": "node scripts/lint-template/engine.js",
     "lint:css-arch": "node scripts/lint-css-arch/engine.js",
-    "lint:all": "bash scripts/_local/lint-all.sh"
+    "lint:all": "bash scripts/_local/lint-all.sh",
+    "setup:db": "bash scripts/setup-db.sh"
   },
   "author": "",
   "license": "ISC",
