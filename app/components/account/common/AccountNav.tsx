@@ -24,7 +24,7 @@ interface AccountNavProps {
 const AccountNav: React.FC<AccountNavProps> = ({ navItems, activeNavItem }) => {
   return (
     <nav
-      className="flex gap-spacing-md overflow-x-auto"
+      className="account-nav account-nav-structure"
       aria-label="アカウントナビゲーション"
       data-testid="account-nav"
     >
@@ -35,18 +35,7 @@ const AccountNav: React.FC<AccountNavProps> = ({ navItems, activeNavItem }) => {
           <Link
             key={item.path}
             to={item.path}
-            className={`
-              px-spacing-md py-spacing-sm
-              text-body-md font-body
-              border-b-border-width-md
-              transition-colors duration-transition-base
-              whitespace-nowrap
-              ${
-                isActive
-                  ? 'border-b-accent text-accent font-semibold'
-                  : 'border-b-transparent text-text-secondary hover:text-text-primary'
-              }
-            `}
+            className="account-nav__item"
             aria-current={isActive ? 'page' : undefined}
             data-testid="nav-item"
           >

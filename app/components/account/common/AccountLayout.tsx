@@ -33,42 +33,19 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
 }) => {
   return (
     <div
-      className="min-h-screen bg-layer-bg flex flex-col"
+      className="account-layout account-layout-structure"
       data-testid="account-layout"
     >
-      {/* Header with user info */}
-      <header className="bg-layer-surface border-b border-border-default p-spacing-md">
-        <div className="container-max-width mx-auto">
-          <h1 className="text-heading-lg font-heading text-text-primary">
-            アカウント設定
-          </h1>
-          <p className="text-body-md text-text-secondary mt-spacing-xs">
-            {user.email}
-          </p>
-        </div>
-      </header>
-
       {/* Navigation */}
-      <div className="bg-layer-surface border-b border-border-default">
-        <div className="container-max-width mx-auto">
-          <AccountNav navItems={navItems} activeNavItem={activeNavItem} />
-        </div>
-      </div>
+      <AccountNav navItems={navItems} activeNavItem={activeNavItem} />
 
       {/* Main Content */}
       <main
-        className="flex-1 container-max-width mx-auto p-spacing-lg"
+        className="account-main-content-structure"
         data-testid="main-content"
       >
         {children}
       </main>
-
-      {/* Footer */}
-      <footer className="bg-layer-surface border-t border-border-default p-spacing-md">
-        <div className="container-max-width mx-auto text-center text-body-sm text-text-tertiary">
-          © 2025 Account Management System
-        </div>
-      </footer>
     </div>
   );
 };
