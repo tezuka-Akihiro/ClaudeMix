@@ -6,8 +6,6 @@
  * @responsibility データベースのユーザーパスワード更新
  */
 
-import type { CloudflareLoadContext } from '~/types/cloudflare';
-
 /**
  * Update user's password hash in database
  *
@@ -28,7 +26,7 @@ import type { CloudflareLoadContext } from '~/types/cloudflare';
 export async function updateUserPassword(
   userId: string,
   newPasswordHash: string,
-  context: CloudflareLoadContext
+  context: any
 ): Promise<boolean> {
   try {
     // Validation

@@ -6,8 +6,6 @@
  * @responsibility データベースからのユーザー削除
  */
 
-import type { CloudflareLoadContext } from '~/types/cloudflare';
-
 /**
  * Delete user from database
  *
@@ -29,7 +27,7 @@ import type { CloudflareLoadContext } from '~/types/cloudflare';
  */
 export async function deleteUser(
   userId: string,
-  context: CloudflareLoadContext
+  context: any
 ): Promise<boolean> {
   try {
     // Validation

@@ -6,11 +6,10 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { CloudflareLoadContext } from '~/types/cloudflare';
 import { deleteUser } from './deleteUser.server';
 
 describe('deleteUser', () => {
-  let mockContext: CloudflareLoadContext;
+  let mockContext: any;
   let mockDB: any;
 
   beforeEach(() => {

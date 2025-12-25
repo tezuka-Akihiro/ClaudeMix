@@ -6,8 +6,6 @@
  * @responsibility データベースのユーザーメールアドレス更新
  */
 
-import type { CloudflareLoadContext } from '~/types/cloudflare';
-
 /**
  * Update user's email address in database
  *
@@ -27,7 +25,7 @@ import type { CloudflareLoadContext } from '~/types/cloudflare';
 export async function updateUserEmail(
   userId: string,
   newEmail: string,
-  context: CloudflareLoadContext
+  context: any
 ): Promise<boolean> {
   try {
     // Validation
