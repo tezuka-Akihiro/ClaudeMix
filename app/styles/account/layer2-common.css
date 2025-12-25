@@ -180,11 +180,11 @@
 }
 
 .error-message-warning {
-  background-color: var(--color-interactive-primary-bg);
-  border: var(--border-width-sm) solid var(--color-interactive-primary);
+  background-color: var(--color-status-warning-bg);
+  border: var(--border-width-sm) solid var(--color-status-warning);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-3);
-  color: var(--color-interactive-primary);
+  color: var(--color-status-warning);
   font-family: var(--font-stack-system-ui);
   font-size: var(--font-size-base);
 }
@@ -220,11 +220,11 @@
 }
 
 .flash-message-warning {
-  background-color: var(--color-interactive-primary-bg);
-  border: var(--border-width-sm) solid var(--color-interactive-primary);
+  background-color: var(--color-status-warning-bg);
+  border: var(--border-width-sm) solid var(--color-status-warning);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-3) var(--spacing-4);
-  color: var(--color-interactive-primary);
+  color: var(--color-status-warning);
   font-family: var(--font-stack-system-ui);
   font-size: var(--font-size-base);
   position: fixed;
@@ -232,7 +232,7 @@
   left: var(--position-center);
   transform: translateX(-50%);
   z-index: var(--z-index-modal-overlay);
-  box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+  box-shadow: 0 0 var(--shadow-blur-sm) var(--color-status-warning-glow);
   min-width: var(--layout-section-padding-compact);
   max-width: var(--layout-page-container-width);
 }
@@ -345,14 +345,14 @@
 
 /* Badge warning */
 .badge-warning {
-  background-color: var(--color-interactive-primary-bg);
-  color: var(--color-interactive-primary);
+  background-color: var(--color-status-warning-bg);
+  color: var(--color-status-warning);
   font-family: var(--font-heading-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--border-radius-sm);
-  border: var(--border-width-sm) solid var(--color-interactive-primary);
+  border: var(--border-width-sm) solid var(--color-status-warning);
 }
 
 /* Badge danger */
