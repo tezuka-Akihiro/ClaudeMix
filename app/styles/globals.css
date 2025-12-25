@@ -51,9 +51,6 @@ html {
   --color-status-success-bg: rgb(74 222 128 / 0.15);
   --color-status-success-glow: rgb(74 222 128 / 0.5);
 
-  --color-status-warning: #facc15;
-  --color-status-warning-bg: rgb(250 204 21 / 0.15);
-  --color-status-warning-glow: rgb(250 204 21 / 0.5);
 
   --color-status-error: #f87171;
   --color-status-error-bg: rgb(248 113 113 / 0.15);
@@ -109,9 +106,6 @@ html {
   /* ボタン */
   --layout-button-width-default: 100px;
 
-  /* モーダル/トースト */
-  --layout-modal-max-height-vh: 80vh;
-  --transform-center-offset: -50%;
 
   /* --- Typography (タイポグラフィ) --- */
   --font-size-xs: 12px;
@@ -123,7 +117,6 @@ html {
   --font-size-3xl: 32px;
   --font-stack-system-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   --font-heading-primary: 'Oswald';
-  --font-body-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
@@ -132,7 +125,6 @@ html {
 
   /* --- Border (ボーダー) --- */
   --border-width-sm: 1px;
-  --border-width-md: 2px;
   --border-radius-sm: 0.25rem;
   --border-radius-md: 0.375rem;
   --border-radius-lg: 0.5rem;
@@ -140,7 +132,6 @@ html {
   /* --- Shadow (シャドウ) --- */
   --shadow-blur-xs: 5px;
   --shadow-blur-sm: 10px;
-  --shadow-blur-md: 15px;
   --shadow-blur-lg: 20px;
   --shadow-offset-xs: 2px;
   --shadow-offset-sm: 4px;
@@ -159,7 +150,6 @@ html {
   /* --- Z-Index (重ね順) --- */
   --z-index-fixed: 10;
   --z-index-menu: 1000;
-  --z-index-toast: 1200;
   --z-index-modal-overlay: 1500;
   --z-index-modal: 1510;
 
