@@ -10,6 +10,13 @@ import { test, expect } from '@playwright/test';
  * - Authentication state management
  */
 
+// Helper function to generate unique email addresses for each test run
+function generateUniqueEmail(prefix: string = 'test'): string {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000);
+  return `${prefix}-${timestamp}-${random}@example.com`;
+}
+
 test.describe('Account Authentication - Happy Path', () => {
   test.describe('User Registration', () => {
     test('should display registration form', async ({ page }) => {
@@ -42,12 +49,13 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(submitButton).toContainText('登録');
     });
 
-    test.skip('should register new user successfully', async ({ page }) => {
+    test('should register new user successfully', async ({ page }) => {
       // Navigate to registration page
       await page.goto('/register');
 
-      // Fill in registration form
-      await page.fill('input[name="email"]', 'newuser@example.com');
+      // Fill in registration form with unique email
+      const email = generateUniqueEmail('newuser');
+      await page.fill('input[name="email"]', email);
       await page.fill('input[name="password"]', 'Password123');
       await page.fill('input[name="confirmPassword"]', 'Password123');
 
@@ -62,12 +70,13 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(accountLayout).toBeVisible();
     });
 
-    test.skip('should show error when passwords do not match', async ({ page }) => {
+    test('should show error when passwords do not match', async ({ page }) => {
       // Navigate to registration page
       await page.goto('/register');
 
       // Fill in registration form with mismatched passwords
-      await page.fill('input[name="email"]', 'test@example.com');
+      const email = generateUniqueEmail('mismatch');
+      await page.fill('input[name="email"]', email);
       await page.fill('input[name="password"]', 'Password123');
       await page.fill('input[name="confirmPassword"]', 'DifferentPassword123');
 
@@ -108,13 +117,26 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(submitButton).toContainText('ログイン');
     });
 
-    test.skip('should login existing user successfully', async ({ page }) => {
-      // Navigate to login page
-      await page.goto('/login');
+    test('should login existing user successfully', async ({ page }) => {
+      // First, register a new user
+      const email = generateUniqueEmail('logintest');
+      const password = 'Password123';
 
-      // Fill in login form
-      await page.fill('input[name="email"]', 'existing@example.com');
-      await page.fill('input[name="password"]', 'Password123');
+      await page.goto('/register');
+      await page.fill('input[name="email"]', email);
+      await page.fill('input[name="password"]', password);
+      await page.fill('input[name="confirmPassword"]', password);
+      await page.click('button[type="submit"]');
+      await expect(page).toHaveURL('/account');
+
+      // Logout
+      await page.goto('/logout');
+      await expect(page).toHaveURL('/login');
+
+      // Now test login
+      await page.goto('/login');
+      await page.fill('input[name="email"]', email);
+      await page.fill('input[name="password"]', password);
 
       // Submit form
       await page.click('button[type="submit"]');
@@ -127,12 +149,13 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(accountLayout).toBeVisible();
     });
 
-    test.skip('should show error when credentials are invalid', async ({ page }) => {
+    test('should show error when credentials are invalid', async ({ page }) => {
       // Navigate to login page
       await page.goto('/login');
 
-      // Fill in login form with invalid credentials
-      await page.fill('input[name="email"]', 'invalid@example.com');
+      // Fill in login form with invalid credentials (non-existent user)
+      const email = generateUniqueEmail('nonexistent');
+      await page.fill('input[name="email"]', email);
       await page.fill('input[name="password"]', 'WrongPassword');
 
       // Submit form
@@ -144,15 +167,29 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(errorMessage).toContainText('メールアドレスまたはパスワードが正しくありません');
     });
 
-    test.skip('should redirect to original page after login', async ({ page }) => {
+    test('should redirect to original page after login', async ({ page }) => {
+      // First, register a user
+      const email = generateUniqueEmail('redirect');
+      const password = 'Password123';
+
+      await page.goto('/register');
+      await page.fill('input[name="email"]', email);
+      await page.fill('input[name="password"]', password);
+      await page.fill('input[name="confirmPassword"]', password);
+      await page.click('button[type="submit"]');
+      await expect(page).toHaveURL('/account');
+
+      // Logout
+      await page.goto('/logout');
+
       // Try to access protected page without authentication
       await page.goto('/account/settings');
 
       // Verify redirect to login with redirect-url parameter
-      await expect(page).toHaveURL('/login?redirect-url=/account/settings');
+      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fsettings$/);
 
       // Login
-      await page.fill('input[name="email"]', 'user@example.com');
+      await page.fill('input[name="email"]', email);
       await page.fill('input[name="password"]', 'Password123');
       await page.click('button[type="submit"]');
 
@@ -162,11 +199,15 @@ test.describe('Account Authentication - Happy Path', () => {
   });
 
   test.describe('User Logout', () => {
-    test.skip('should logout user successfully', async ({ page }) => {
-      // Login first
-      await page.goto('/login');
-      await page.fill('input[name="email"]', 'user@example.com');
-      await page.fill('input[name="password"]', 'Password123');
+    test('should logout user successfully', async ({ page }) => {
+      // Register and login first
+      const email = generateUniqueEmail('logout');
+      const password = 'Password123';
+
+      await page.goto('/register');
+      await page.fill('input[name="email"]', email);
+      await page.fill('input[name="password"]', password);
+      await page.fill('input[name="confirmPassword"]', password);
       await page.click('button[type="submit"]');
       await expect(page).toHaveURL('/account');
 
@@ -179,17 +220,21 @@ test.describe('Account Authentication - Happy Path', () => {
       // Try to access protected page
       await page.goto('/account');
 
-      // Verify redirect to login (session destroyed)
-      await expect(page).toHaveURL('/login?redirect-url=/account');
+      // Verify redirect to login (session destroyed, URL-encoded)
+      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount$/);
     });
   });
 
   test.describe('Authentication State Persistence', () => {
-    test.skip('should persist session across page reloads', async ({ page }) => {
-      // Login
-      await page.goto('/login');
-      await page.fill('input[name="email"]', 'user@example.com');
-      await page.fill('input[name="password"]', 'Password123');
+    test('should persist session across page reloads', async ({ page }) => {
+      // Register and login
+      const email = generateUniqueEmail('persistence');
+      const password = 'Password123';
+
+      await page.goto('/register');
+      await page.fill('input[name="email"]', email);
+      await page.fill('input[name="password"]', password);
+      await page.fill('input[name="confirmPassword"]', password);
       await page.click('button[type="submit"]');
       await expect(page).toHaveURL('/account');
 
