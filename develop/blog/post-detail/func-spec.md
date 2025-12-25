@@ -36,6 +36,12 @@
    - **sourceが指定されていない場合**: 従来通り記事ファイル本文を使用
    - **sourceが指定されている場合**: 指定されたファイルの内容を記事本文として使用（記事ファイル本文は無視）
    - **制約**: 参照元ファイル内の画像（相対パス）は正しく表示されない可能性がある（画像非対応）
+6. **サブスクリプション状態に応じたアクセス制御**:
+   - **目的**: note型の「導入部分は公開、本編は会員限定」という表示制御を実現し、コンテンツの収益化を支援する
+   - **記事の可視範囲制御**: 各記事のfrontmatterで`freeContentPercentage`（公開割合、0-100%）を指定し、未契約ユーザーには指定割合までのコンテンツのみ表示
+   - **ペイウォール表示**: 未契約ユーザーが制限を超えるコンテンツにアクセスした場合、続きを読むための障壁（ペイウォール）を表示
+   - **購読促進UI**: ペイウォール内に会員登録・サブスクリプション購入を促すバナーやCTAボタンを配置
+   - **契約ユーザーの扱い**: 有効なサブスクリプションを持つユーザーには、記事全文を制限なく表示
 
 **開発戦略: 段階的強化 (Progressive Enhancement)**:
 
@@ -57,7 +63,11 @@
 
 - URLパラメータ（slug）を取得し、loaderでデータ取得を実行
 - data-io層を介して、**ビルド時に生成された記事データ**（HTML変換済みコンテンツ、見出し情報を含む）を取得する
-- 取得したデータをコンポーネントに渡す
+- **サブスクリプション状態の取得**:
+  - リクエストからセッションCookieを読み取り、ユーザーの認証状態を確認
+  - 認証済みユーザーの場合、accountサービスのdata-io層を介してサブスクリプション状態を取得
+  - 未認証ユーザーの場合、サブスクリプション状態は`null`として扱う
+- 取得したデータ（記事データ + サブスクリプション状態）をコンポーネントに渡す
 - **meta関数の実装** (`export const meta: MetaFunction<typeof loader>`):
   - loaderから返された`PostDetailData`を使用してメタデータを生成
   - 返すメタデータ:
@@ -80,6 +90,12 @@
 - 記事詳細情報（タイトル、投稿日、著者、本文）を表示
 - **記事メタ情報セクション**: タイトル、著者、投稿日を表示
 - マークダウンから変換されたHTMLコンテンツを安全にレンダリング
+- **サブスクリプション状態に基づくコンテンツ制御**:
+  - サブスクリプション状態とfreeContentPercentageを元に、表示するコンテンツ範囲を判定
+  - 契約ユーザー（`hasActiveSubscription: true`）: 記事全文を表示
+  - 未契約ユーザー: `freeContentPercentage`で指定された割合までのコンテンツを表示し、それ以降にペイウォールを表示
+- **ペイウォール表示**: 未契約ユーザーに対して、制限を超えるコンテンツの前にPaywallコンポーネントを表示
+- **購読促進バナー表示**: Paywall内に会員登録・サブスクリプション購入を促すSubscriptionPromotionBannerコンポーネントを配置
 - **Mermaidクライアント側レンダリング**: useEffectでMermaid.jsライブラリを初期化し、クラス付与されたMermaidコードブロックをSVG図表に変換
 - 共通レイアウト（ヘッダー・フッター）を含む全体構成
 
@@ -120,6 +136,16 @@
 - 出力: URLセーフなスラグ文字列
 - 責務: 日本語テキストをそのままIDとして使用可能な形式に変換
 
+*コンテンツ可視範囲判定処理* (`app/lib/blog/post-detail/determineContentVisibility.ts`):
+
+- 入力: サブスクリプション状態（`hasActiveSubscription: boolean`）、記事の公開割合（`freeContentPercentage: number`）
+- 出力: コンテンツ可視範囲の判定結果 `{ showFullContent: boolean, visiblePercentage: number }`
+- 責務: サブスクリプション状態に基づいて、記事のどの範囲を表示すべきかを判定する純粋関数
+- ロジック:
+  - `hasActiveSubscription === true`: `showFullContent: true, visiblePercentage: 100`
+  - `hasActiveSubscription === false`: `showFullContent: false, visiblePercentage: freeContentPercentage`
+- 副作用なし（テスト容易性を確保）
+
 ### 🔌 副作用要件（app/data-io）
 
 *記事データ取得処理* (`app/data-io/blog/post-detail/fetchPostBySlug.server.ts`):
@@ -129,6 +155,17 @@
 - 責務: **ビルド時に生成されたデータバンドル**（例: `~/generated/blog-posts.ts`）から、指定されたslugに一致する記事データを取得する
 - **備考**: 外部ファイル参照（`source`プロパティ）やファイルシステムからの直接読み込みは、ビルドスクリプトの責務。この層では、すでに処理済みのデータを安全に取得することに専念する
 - エラーハンドリング: ビルド済みデータ内に記事が存在しない場合は`null`を返す
+
+*サブスクリプション状態取得処理* (`app/data-io/blog/post-detail/getSubscriptionStatus.server.ts`):
+
+- 入力: ユーザーID（セッションから取得）
+- 出力: サブスクリプション状態 `{ hasActiveSubscription: boolean }`
+- 責務: accountサービスのdata-io層（`app/data-io/account/subscription/getSubscriptionByUserId.server.ts`）を介して、ユーザーのサブスクリプション状態を取得し、有効なサブスクリプションが存在するかを判定する
+- **サービス間連携**: blogサービスからaccountサービスのdata-io層を直接呼び出す
+- ロジック:
+  - サブスクリプションが存在し、`status === 'active'` かつ `current_period_end` が未来日: `hasActiveSubscription: true`
+  - 上記以外: `hasActiveSubscription: false`
+- エラーハンドリング: accountサービスのdata-io層でエラーが発生した場合は、`hasActiveSubscription: false`として安全側に倒す（記事を制限する方向）
 
 ---
 
