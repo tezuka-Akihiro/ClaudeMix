@@ -44,6 +44,41 @@ export const accountLayer3Plugin = plugin(function ({ addComponents }) {
     },
 
     /**
+     * Authentication Container Structure
+     * - Full viewport height centering container
+     * - Centers child content both vertically and horizontally
+     */
+    ".auth-container-structure": {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    /**
+     * Authentication Card Structure
+     * - Vertical stack for form elements
+     * - Fixed max width for readability
+     */
+    ".auth-card-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-4)",
+      width: "100%",
+      maxWidth: "400px",
+    },
+
+    /**
+     * Authentication Form Structure
+     * - Vertical stack of form fields
+     */
+    ".auth-form-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-3)",
+    },
+
+    /**
      * FormField Structure
      * - Vertical stack of label, input, and error message
      * - Items arranged in column
