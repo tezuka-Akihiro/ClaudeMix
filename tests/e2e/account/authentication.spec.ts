@@ -17,7 +17,7 @@ test.describe('Account Authentication - Happy Path', () => {
       await page.goto('/register');
 
       // Verify page title
-      await expect(page).toHaveTitle(/会員登録/);
+      await expect(page).toHaveTitle(/アカウント登録/);
 
       // Verify form is displayed
       const form = page.locator('form');
