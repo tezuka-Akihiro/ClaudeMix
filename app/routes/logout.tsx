@@ -11,6 +11,10 @@ import { redirect } from '@remix-run/cloudflare';
 import { Form, useNavigation } from '@remix-run/react';
 import { useEffect, useRef } from 'react';
 
+// CSS imports
+import '~/styles/account/layer2-common.css';
+import '~/styles/account/layer2-authentication.css';
+
 // Data-IO layer
 import { destroySession } from '~/data-io/account/common/destroySession.server';
 import { getSession } from '~/data-io/account/common/getSession.server';

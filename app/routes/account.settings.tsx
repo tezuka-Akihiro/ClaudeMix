@@ -11,6 +11,10 @@ import { json, redirect } from '@remix-run/cloudflare';
 import { useActionData, useLoaderData } from '@remix-run/react';
 import { useState } from 'react';
 
+// CSS imports
+import '~/styles/account/layer2-common.css';
+import '~/styles/account/layer2-profile.css';
+
 // Data-IO layer
 import { deleteUser } from '~/data-io/account/profile/deleteUser.server';
 import { updateUserEmail } from '~/data-io/account/profile/updateUserEmail.server';

@@ -10,6 +10,10 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remi
 import { json, redirect } from '@remix-run/cloudflare';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
 
+// CSS imports
+import '~/styles/account/layer2-common.css';
+import '~/styles/account/layer2-authentication.css';
+
 // Data-IO layer
 import { createUser } from '~/data-io/account/authentication/createUser.server';
 import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.server';
