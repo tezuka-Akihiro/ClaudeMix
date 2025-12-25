@@ -13,6 +13,7 @@ import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';
 import { isSessionExpired } from '~/lib/account/common/isSessionExpired';
 import { getActiveNavItem } from '~/lib/account/common/getActiveNavItem';
+import AccountLayout from '~/components/account/common/AccountLayout';
 import type { NavItem } from '~/specs/account/types';
 
 // Import CSS (Layer 2: Common components)
@@ -78,26 +79,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 export default function Account() {
   const { user, navItems, activeNavItem } = useLoaderData<typeof loader>();
 
-  // For now, just render Outlet until AccountLayout is implemented
   return (
-    <div data-testid="account-layout">
-      <h1>Account Section</h1>
-      <p>User: {user.email}</p>
-      <nav data-testid="account-nav">
-        {navItems.map((item) => (
-          <a
-            key={item.path}
-            href={item.path}
-            data-testid="nav-item"
-            aria-current={activeNavItem?.path === item.path ? 'page' : undefined}
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
-      <main data-testid="main-content">
-        <Outlet />
-      </main>
-    </div>
+    <AccountLayout user={user} navItems={navItems} activeNavItem={activeNavItem}>
+      <Outlet />
+    </AccountLayout>
   );
 }
