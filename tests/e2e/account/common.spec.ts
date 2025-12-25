@@ -65,8 +65,8 @@ test.describe('Account Common Section - Happy Path', () => {
       // Navigate to /account without authentication
       await page.goto('/account');
 
-      // Verify redirected to /login with redirect-url parameter
-      await expect(page).toHaveURL('/login?redirect-url=/account');
+      // Verify redirected to /login with redirect-url parameter (URL-encoded)
+      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount$/);
 
       // Verify login page is displayed
       const loginForm = page.locator('form');
@@ -77,16 +77,16 @@ test.describe('Account Common Section - Happy Path', () => {
       // Navigate to /account/settings without authentication
       await page.goto('/account/settings');
 
-      // Verify redirected to /login with redirect-url parameter
-      await expect(page).toHaveURL('/login?redirect-url=/account/settings');
+      // Verify redirected to /login with redirect-url parameter (URL-encoded)
+      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fsettings$/);
     });
 
     test('should redirect to login when accessing /account/subscription', async ({ page }) => {
       // Navigate to /account/subscription without authentication
       await page.goto('/account/subscription');
 
-      // Verify redirected to /login with redirect-url parameter
-      await expect(page).toHaveURL('/login?redirect-url=/account/subscription');
+      // Verify redirected to /login with redirect-url parameter (URL-encoded)
+      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fsubscription$/);
     });
   });
 });
