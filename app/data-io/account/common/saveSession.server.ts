@@ -1,9 +1,9 @@
 /**
  * saveSession.server.ts
- * Purpose: Save session data to Cloudflare Workers KV and generate Set-Cookie header
+ * Purpose: Save session data to D1 database and generate Set-Cookie header
  *
  * @layer 副作用層 (Data-IO)
- * @responsibility Cloudflare Workers KV書き込み、Cookie生成
+ * @responsibility D1データベース書き込み、Cookie生成
  */
 
 import type { SessionData } from '~/specs/account/types';
@@ -12,39 +12,46 @@ import type { SessionData } from '~/specs/account/types';
  * AppLoadContext type for Cloudflare Workers environment
  */
 interface CloudflareEnv {
-  SESSION_KV: KVNamespace;
+  DB: D1Database;
 }
 
 interface CloudflareLoadContext {
-  cloudflare: {
-    env: CloudflareEnv;
-  };
+  env: CloudflareEnv;
 }
 
 /**
- * Save session data to Cloudflare Workers KV and generate Set-Cookie header
+ * Save session data to D1 database and generate Set-Cookie header
  *
  * @param sessionData - Session data to save
- * @param context - Cloudflare Workers load context with KV binding
+ * @param context - Cloudflare Workers load context with D1 binding
  * @returns Set-Cookie header string
- * @throws Error if KV save fails
+ * @throws Error if database save fails
  */
 export async function saveSession(
   sessionData: SessionData,
   context: CloudflareLoadContext
 ): Promise<string> {
   try {
+    const db = context.env.DB;
+
+    // Insert session into D1 database
+    const stmt = db
+      .prepare(
+        'INSERT INTO sessions (id, userId, expiresAt, createdAt) VALUES (?, ?, ?, ?)'
+      )
+      .bind(
+        sessionData.sessionId,
+        sessionData.userId,
+        sessionData.expiresAt,
+        new Date().toISOString()
+      );
+
+    await stmt.run();
+
     // Calculate TTL from expiresAt
     const expiresAt = new Date(sessionData.expiresAt);
     const now = new Date();
     const ttlSeconds = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
-
-    // Save session to KV with TTL
-    const kv = context.cloudflare.env.SESSION_KV;
-    const kvKey = `session:${sessionData.sessionId}`;
-    await kv.put(kvKey, JSON.stringify(sessionData), {
-      expirationTtl: ttlSeconds,
-    });
 
     // Generate Set-Cookie header
     const setCookieHeader = generateSetCookieHeader(

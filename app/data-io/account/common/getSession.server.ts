@@ -1,9 +1,9 @@
 /**
  * getSession.server.ts
- * Purpose: Retrieve session data from Cloudflare Workers KV using session ID from Cookie
+ * Purpose: Retrieve session data from D1 database using session ID from Cookie
  *
  * @layer副作用層 (Data-IO)
- * @responsibility Cloudflare Workers KV読み取り、Cookie解析
+ * @responsibility D1データベース読み取り、Cookie解析
  */
 
 import type { SessionData } from '~/specs/account/types';
@@ -12,20 +12,18 @@ import type { SessionData } from '~/specs/account/types';
  * AppLoadContext type for Cloudflare Workers environment
  */
 interface CloudflareEnv {
-  SESSION_KV: KVNamespace;
+  DB: D1Database;
 }
 
 interface CloudflareLoadContext {
-  cloudflare: {
-    env: CloudflareEnv;
-  };
+  env: CloudflareEnv;
 }
 
 /**
- * Retrieve session data from Cloudflare Workers KV
+ * Retrieve session data from D1 database
  *
  * @param request - HTTP Request containing Cookie header
- * @param context - Cloudflare Workers load context with KV binding
+ * @param context - Cloudflare Workers load context with D1 binding
  * @returns SessionData if valid session exists, null otherwise
  */
 export async function getSession(
@@ -45,17 +43,24 @@ export async function getSession(
       return null;
     }
 
-    // Retrieve session data from KV
-    const kv = context.cloudflare.env.SESSION_KV;
-    const kvKey = `session:${sessionId}`;
-    const sessionDataJson = await kv.get(kvKey);
+    // Retrieve session data from D1 database
+    const db = context.env.DB;
+    const result = await db
+      .prepare('SELECT * FROM sessions WHERE id = ?')
+      .bind(sessionId)
+      .first();
 
-    if (!sessionDataJson) {
+    if (!result) {
       return null;
     }
 
-    // Parse and return session data
-    const sessionData = JSON.parse(sessionDataJson) as SessionData;
+    // Return session data
+    const sessionData: SessionData = {
+      sessionId: result.id as string,
+      userId: result.userId as string,
+      expiresAt: result.expiresAt as string,
+      createdAt: result.createdAt as string,
+    };
     return sessionData;
   } catch (error) {
     // Log error and return null (fail safely)
