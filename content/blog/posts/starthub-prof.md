@@ -2,7 +2,7 @@
 slug: "starthub-profile"
 title: "スタハブ用プロフィール"
 description: "スタートアップハブ多摩での活動と開発進捗を記録したプロフィール"
-author: "ClaudeMix Team"
+author: "優作 / The Sound Edge"
 publishedAt: "2025-12-15"
 category: "起業"
 tags: ["スタハブ多摩"]
@@ -36,7 +36,9 @@ tags: ["スタハブ多摩"]
 
 - [x] 開業届の提出 (2025/11/1)
 - [x] 名刺づくり
+- [x] 屋号
 - [ ] 法人口座開設
+- [ ] 決済導入と特商法対策
 
 ### 事業内容
 
