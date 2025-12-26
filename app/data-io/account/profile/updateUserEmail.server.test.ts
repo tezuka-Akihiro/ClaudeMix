@@ -20,10 +20,8 @@ describe('updateUserEmail', () => {
     };
 
     mockContext = {
-      cloudflare: {
-        env: {
-          DB: mockDB,
-        },
+      env: {
+        DB: mockDB,
       },
     } as any;
   });

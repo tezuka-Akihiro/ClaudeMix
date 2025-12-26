@@ -18,10 +18,8 @@ describe('getUserByEmail.server', () => {
     };
 
     mockContext = {
-      cloudflare: {
-        env: {
-          DB: mockDB,
-        },
+      env: {
+        DB: mockDB,
       },
     };
   });

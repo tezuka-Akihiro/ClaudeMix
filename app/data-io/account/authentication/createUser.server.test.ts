@@ -16,10 +16,8 @@ describe('createUser.server', () => {
     };
 
     mockContext = {
-      cloudflare: {
-        env: {
-          DB: mockDB,
-        },
+      env: {
+        DB: mockDB,
       },
     };
   });

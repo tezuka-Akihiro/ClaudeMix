@@ -21,10 +21,8 @@ describe('getUserById.server', () => {
 
   // Mock context with D1 binding
   const mockContext = {
-    cloudflare: {
-      env: {
-        DB: mockD1,
-      },
+    env: {
+      DB: mockD1,
     },
   };
 
