@@ -15,6 +15,9 @@ import { validateSubscriptionChange } from '~/lib/account/subscription/validateS
 import { updateUserSubscriptionStatus } from '~/data-io/account/subscription/updateUserSubscriptionStatus.server';
 import { getSession } from '~/data-io/account/common/getSession.server';
 
+// CSS imports
+import '~/styles/account/layer2-subscription.css';
+
 export const meta: MetaFunction = () => {
   return [
     { title: 'サブスクリプション - ClaudeMix' },
@@ -109,12 +112,10 @@ export default function AccountSubscription() {
       <h1>サブスクリプション</h1>
 
       {fetcher.data?.error && (
-        <div className="error-message" style={{ marginTop: '1rem', color: 'red' }}>
-          {fetcher.data.error}
-        </div>
+        <div className="error-message">{fetcher.data.error}</div>
       )}
 
-      <div style={{ marginTop: '2rem' }}>
+      <div>
         <SubscriptionStatusCard
           status={user.subscriptionStatus}
           onUpgrade={handleUpgrade}
@@ -122,9 +123,9 @@ export default function AccountSubscription() {
         />
       </div>
 
-      <div style={{ marginTop: '2rem', fontSize: '0.875rem', color: '#666' }}>
-        <p>注意: これはMVP実装です。実際の決済処理は未実装です。</p>
-      </div>
+      <p style={{ marginTop: '2rem', fontSize: '0.875rem', color: '#666' }}>
+        注意: これはMVP実装です。実際の決済処理は未実装です。
+      </p>
     </div>
   );
 }
