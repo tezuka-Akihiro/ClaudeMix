@@ -50,19 +50,17 @@ export function SubscriptionStatusCard({
   return (
     <div className="subscription-status-card" data-testid="subscription-status-card">
       <h2>現在のプラン</h2>
-      <div style={{ marginTop: '1rem' }}>
+      <div>
         <span
           className={`badge-${statusInfo.variant}`}
           data-testid={statusInfo.testId}
         >
           {statusInfo.label}
         </span>
-        <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#666' }}>
-          {statusInfo.description}
-        </p>
+        <p>{statusInfo.description}</p>
       </div>
 
-      <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
+      <div className="subscription-button-group">
         {status !== 'active' && onUpgrade && (
           <button
             type="button"
