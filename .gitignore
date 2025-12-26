@@ -30,8 +30,7 @@ scripts/_local/
 .claude/key
 .claude/settings.local.json
 
-.wrangler/tmp/
-.wrangler/state/v3/d1/
+.wrangler
 
 delete-deploy.js
 test-results/.last-run.json
