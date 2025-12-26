@@ -154,7 +154,14 @@
       "Bash(then echo \"Merge in progress\")",
       "Bash(else echo \"No merge in progress\")",
       "Bash(npm run lint:blog-metadata:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npm run setup:db:*)",
+      "Bash(npm run dev:wrangler:*)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(npx playwright test:*)",
+      "Bash(npm run test:e2e:account:*)",
+      "Bash(ping:*)",
+      "Bash(netstat:*)"
     ],
     "deny": [],
     "ask": []
