@@ -112,25 +112,43 @@ test.describe('Common Components', () => {
       await expect(flashMessage).toContainText('セッションの有効期限が切れました');
 
       // Verify flash message auto-closes after delay
-      await page.waitForTimeout(5000);
-      await expect(flashMessage).not.toBeVisible();
+      // Use Playwright's built-in waiting instead of fixed timeout
+      await expect(flashMessage).not.toBeVisible({ timeout: 10000 });
     });
   });
 
   test.describe('Modal', () => {
+    test.beforeEach(async ({ page }) => {
+      // Register and login to create authenticated session
+      const email = `test-modal-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+      const password = 'Password123';
+
+      await page.goto('/register');
+      await page.fill('input[name="email"]', email);
+      await page.fill('input[name="password"]', password);
+      await page.fill('input[name="confirmPassword"]', password);
+      await page.click('button[type="submit"]');
+
+      // Wait for redirect to /account
+      await page.waitForURL('/account');
+    });
+
     test('should open and close modal with focus trap', async ({ page }) => {
-      // TODO: Setup page with modal trigger
-      // This will be implemented when modal is integrated into a page
+      // Navigate to settings page with modal triggers
       await page.goto('/account/settings');
 
-      // Open modal
-      const modalTrigger = page.locator('[data-testid="modal-trigger"]');
+      // Open modal (using email-change-button as test subject)
+      const modalTrigger = page.locator('[data-testid="email-change-button"]');
       await modalTrigger.click();
 
       // Verify modal is visible
       const modal = page.locator('[role="dialog"]');
       await expect(modal).toBeVisible();
       await expect(modal).toHaveAttribute('aria-modal', 'true');
+
+      // Wait for initial focus to be set to first visible input
+      const firstInput = modal.locator('input:not([type="hidden"])').first();
+      await expect(firstInput).toBeFocused();
 
       // Verify focus is trapped inside modal
       // Press Tab and verify focus stays within modal
@@ -146,8 +164,23 @@ test.describe('Common Components', () => {
   });
 
   test.describe('Badge', () => {
+    test.beforeEach(async ({ page }) => {
+      // Register and login to create authenticated session
+      const email = `test-badge-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+      const password = 'Password123';
+
+      await page.goto('/register');
+      await page.fill('input[name="email"]', email);
+      await page.fill('input[name="password"]', password);
+      await page.fill('input[name="confirmPassword"]', password);
+      await page.click('button[type="submit"]');
+
+      // Wait for redirect to /account
+      await page.waitForURL('/account');
+    });
+
     test('should display badge with correct variant', async ({ page }) => {
-      // TODO: Setup page with badges
+      // Navigate to subscription page
       await page.goto('/account/subscription');
 
       // Verify success badge

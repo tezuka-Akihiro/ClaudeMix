@@ -8,11 +8,14 @@
 
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
-import { Form, Link, useActionData, useNavigation, useSearchParams } from '@remix-run/react';
+import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParams } from '@remix-run/react';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-authentication.css';
+
+// UI Components
+import { FlashMessage } from '~/components/account/common/FlashMessage';
 
 // Data-IO layer
 import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.server';
@@ -51,9 +54,21 @@ interface ActionData {
   };
 }
 
+interface LoaderData {
+  flashMessage?: string;
+}
+
+// Flash message mapping
+const FLASH_MESSAGES: Record<string, string> = {
+  'session-expired': 'セッションの有効期限が切れました',
+  'unauthorized': 'ログインが必要です',
+  'logout-success': 'ログアウトしました',
+};
+
 /**
  * Loader: Check if user is already logged in
  * If logged in, redirect to /account or redirect-url
+ * Also extract flash message from URL parameter
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const session = await getSession(request, context as any);
@@ -62,7 +77,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const redirectUrl = url.searchParams.get('redirect-url') || '/account';
     return redirect(redirectUrl);
   }
-  return json({});
+
+  // Extract flash message from URL parameter
+  const url = new URL(request.url);
+  const messageKey = url.searchParams.get('message');
+  const flashMessage = messageKey ? FLASH_MESSAGES[messageKey] : undefined;
+
+  return json<LoaderData>({ flashMessage });
 }
 
 /**
@@ -137,6 +158,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function Login() {
+  const loaderData = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
@@ -148,6 +170,15 @@ export default function Login() {
       <div className="auth-card auth-card-structure">
         <h1 className="auth-header__title">ログイン</h1>
         <p className="auth-header__subtitle">ClaudeMixにログイン</p>
+
+        {loaderData.flashMessage && (
+          <FlashMessage
+            message={loaderData.flashMessage}
+            type="info"
+            autoDismiss={true}
+            autoDismissDelay={5000}
+          />
+        )}
 
         {actionData?.error && (
           <div className="error-message-structure" role="alert" data-testid="error-message">

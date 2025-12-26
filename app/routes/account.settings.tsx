@@ -6,10 +6,11 @@
  * @responsibility ユーザープロフィール設定の表示と更新
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
-import { useActionData, useLoaderData } from '@remix-run/react';
+import { useActionData, useRouteLoaderData } from '@remix-run/react';
 import { useState } from 'react';
+import type { loader as accountLoader } from './account';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
@@ -67,23 +68,11 @@ interface ActionData {
 }
 
 /**
- * Loader: Fetch user profile data
+ * Minimal loader to enable client-side navigation
+ * (actual auth data comes from parent route)
  */
-export async function loader({ request, context }: LoaderFunctionArgs) {
-  const url = new URL(request.url);
-  const redirectUrl = url.pathname + url.search;
-
-  const session = await getSession(request, context as any);
-  if (!session) {
-    return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
-  }
-
-  const user = await getUserById(session.userId, context as any);
-  if (!user) {
-    return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
-  }
-
-  return json({ user });
+export async function loader() {
+  return json({});
 }
 
 /**
@@ -270,7 +259,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function AccountSettings() {
-  const { user } = useLoaderData<typeof loader>();
+  // Use parent route's authentication data instead of duplicating auth logic
+  const parentData = useRouteLoaderData<typeof accountLoader>('routes/account');
+
+  if (!parentData) {
+    throw new Error('Parent route data not found');
+  }
+
+  const { user } = parentData;
   const actionData = useActionData<typeof action>();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -281,7 +277,7 @@ export default function AccountSettings() {
       <h1>アカウント設定</h1>
 
       {actionData?.success && (
-        <div className="profile-success" role="alert">
+        <div className="profile-success" role="alert" data-testid="success-message">
           {actionData.success}
         </div>
       )}
