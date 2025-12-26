@@ -6,10 +6,14 @@
  * @responsibility サブスクリプション管理画面の表示
  */
 
-import type { MetaFunction } from '@remix-run/cloudflare';
-import { json } from '@remix-run/cloudflare';
-import { useRouteLoaderData } from '@remix-run/react';
+import type { ActionFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import { json, redirect } from '@remix-run/cloudflare';
+import { useRouteLoaderData, useFetcher } from '@remix-run/react';
 import type { loader as accountLoader } from './account';
+import { SubscriptionStatusCard } from '~/components/account/subscription/SubscriptionStatusCard';
+import { validateSubscriptionChange } from '~/lib/account/subscription/validateSubscriptionChange';
+import { updateUserSubscriptionStatus } from '~/data-io/account/subscription/updateUserSubscriptionStatus.server';
+import { getSession } from '~/data-io/account/common/getSession.server';
 
 export const meta: MetaFunction = () => {
   return [
@@ -26,9 +30,59 @@ export async function loader() {
   return json({});
 }
 
+/**
+ * Handle subscription status changes
+ */
+export async function action({ request, context }: ActionFunctionArgs) {
+  // Get session
+  const cookieHeader = request.headers.get('Cookie');
+  const sessionId = cookieHeader
+    ?.split(';')
+    .find((c) => c.trim().startsWith('session_id='))
+    ?.split('=')[1];
+
+  if (!sessionId) {
+    return redirect('/login');
+  }
+
+  const sessionData = await getSession(sessionId, context as any);
+  if (!sessionData) {
+    return redirect('/login');
+  }
+
+  // Parse form data
+  const formData = await request.formData();
+  const intent = formData.get('intent');
+  const newStatus = formData.get('newStatus') as 'active' | 'inactive' | 'trial';
+
+  // Get current user status from parent route
+  const parentData = await context.parentData?.();
+  const currentStatus = parentData?.user?.subscriptionStatus || 'inactive';
+
+  // Validate subscription change
+  const validation = validateSubscriptionChange({
+    currentStatus,
+    newStatus,
+  });
+
+  if (!validation.valid) {
+    return json({ error: validation.error }, { status: 400 });
+  }
+
+  // Update subscription status
+  try {
+    await updateUserSubscriptionStatus(sessionData.userId, newStatus, context as any);
+    return json({ success: true });
+  } catch (error) {
+    console.error('Error updating subscription:', error);
+    return json({ error: 'サブスクリプションの更新に失敗しました' }, { status: 500 });
+  }
+}
+
 export default function AccountSubscription() {
   // Use parent route's authentication data instead of duplicating auth logic
   const parentData = useRouteLoaderData<typeof accountLoader>('routes/account');
+  const fetcher = useFetcher();
 
   if (!parentData) {
     throw new Error('Parent route data not found');
@@ -36,51 +90,41 @@ export default function AccountSubscription() {
 
   const { user } = parentData;
 
-  // Determine badge variant based on subscription status
-  const getBadgeInfo = (status: string) => {
-    switch (status) {
-      case 'active':
-        return { variant: 'success', text: 'アクティブ', testId: 'badge-success' };
-      case 'trial':
-        return { variant: 'warning', text: 'トライアル', testId: 'badge-warning' };
-      case 'inactive':
-        return { variant: 'danger', text: '非アクティブ', testId: 'badge-danger' };
-      default:
-        return { variant: 'info', text: status, testId: 'badge-info' };
-    }
+  const handleUpgrade = () => {
+    fetcher.submit(
+      { intent: 'upgrade', newStatus: 'trial' },
+      { method: 'post' }
+    );
   };
 
-  const badgeInfo = getBadgeInfo(user.subscriptionStatus);
+  const handleCancel = () => {
+    fetcher.submit(
+      { intent: 'cancel', newStatus: 'inactive' },
+      { method: 'post' }
+    );
+  };
 
   return (
     <div className="subscription-container" data-testid="subscription-page">
       <h1>サブスクリプション</h1>
-      <div style={{ marginTop: '1rem' }}>
-        <p>
-          現在のプラン:{' '}
-          <span
-            className={`badge-${badgeInfo.variant}`}
-            data-testid={badgeInfo.testId}
-          >
-            {badgeInfo.text}
-          </span>
-        </p>
-      </div>
 
-      {/* Display multiple badges for testing purposes */}
-      <div style={{ marginTop: '2rem' }}>
-        <h2>ステータス例</h2>
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <span className="badge-success" data-testid="badge-success">
-            アクティブ
-          </span>
-          <span className="badge-warning" data-testid="badge-warning">
-            トライアル
-          </span>
+      {fetcher.data?.error && (
+        <div className="error-message" style={{ marginTop: '1rem', color: 'red' }}>
+          {fetcher.data.error}
         </div>
+      )}
+
+      <div style={{ marginTop: '2rem' }}>
+        <SubscriptionStatusCard
+          status={user.subscriptionStatus}
+          onUpgrade={handleUpgrade}
+          onCancel={handleCancel}
+        />
       </div>
 
-      <p style={{ marginTop: '2rem' }}>このページは実装中です。</p>
+      <div style={{ marginTop: '2rem', fontSize: '0.875rem', color: '#666' }}>
+        <p>注意: これはMVP実装です。実際の決済処理は未実装です。</p>
+      </div>
     </div>
   );
 }
