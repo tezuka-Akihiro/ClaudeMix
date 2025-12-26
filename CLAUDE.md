@@ -12,8 +12,9 @@
 **対象**: Remix + Claude でMVP開発を行う開発者
 
 **参考リンク**:
-- Remix公式: https://remix.run
-- Cloudflare Pages: https://pages.cloudflare.com
+
+- Remix公式: <https://remix.run>
+- Cloudflare Pages: <https://pages.cloudflare.com>
 
 ---
 
@@ -22,11 +23,11 @@
 開発時に頻繁に使用するコマンド一覧：
 
 | コマンド | 目的 | 備考 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `npm run dev:wrangler` | 開発サーバー起動 | Wranglerでランタイム制約を反映した開発環境を起動（必須） |
 | `npm test` | ユニットテスト実行 | Vitestを使用（E2Eはオペレーターが実行） |
 | `npm run typecheck` | 型チェック | すべてのTypeScriptファイルを検証 |
-| `npm run lint:all` | 全リント実行 | テンプレート、CSS、ブログメタデータを検証 |
+| `npm run lint:all` | 全リント実行 | テンプレート、CSS、Markdown、ブログメタデータを検証 |
 | `npm run lint:template` | テンプレートリント | 行数制限、ハードコード検出 |
 | `npm run lint:css-arch` | CSSアーキテクチャ検証 | スタイリング規律の遵守を確認 |
 | `npm run lint:md` | Markdownリント | ブログ記事のMarkdownを検証・修正 |
@@ -39,7 +40,6 @@
 
 ### ディレクトリ構造
 
-```
 app/
 ├── routes/              # Remixルート定義（UI層）
 │   └── blog.*/         # ブログ機能のルート
@@ -68,7 +68,6 @@ content/
 └── blog/
     ├── posts/               # ブログ記事（Markdown）
     └── blog-spec.yaml       # ブログ機能の単一真実の源（SSoT）
-```
 
 ### 重要なファイル
 
@@ -93,7 +92,7 @@ content/
 すべてのコードは以下の3層に分離され、層の責務を超えた操作は**禁止**されます：
 
 | 層 | 配置場所 | 責務 | 許可される操作 | 禁止される操作 |
-|:---|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- | :--- |
 | **UI層** | `routes/`, `components/` | ユーザーとのインタラクションとビューの描画 | `loader`, `action`の定義、UIロジック、Componentのレンダリング | データベース直接アクセス、外部APIの直接呼び出し |
 | **純粋ロジック層** | `lib/` | 複雑なビジネスロジックの処理 | 入出力型を用いた純粋関数の実行 | 副作用（API呼び出し、ファイルI/O）の実行 |
 | **副作用層** | `data-io/` | 外部システムとの通信 | DBアクセス、`fetch` APIコール、ファイルI/O | UIコンポーネントのインポート、DOM操作 |
@@ -126,7 +125,7 @@ content/
 
 ### テスト戦略
 
-**Outside-In TDD (E2E → Unit)**
+Outside-In TDD (E2E → Unit)
 
 1. **E2Eテストから開始**: `tests/e2e/`配下にPlaywrightテストを作成
 2. **層ごとに単体テスト作成**: `lib/`, `data-io/`の各ファイルに`.test.ts`を併記
@@ -149,9 +148,11 @@ npm run lint:all
 ```
 
 これには以下が含まれます：
+
 - テンプレートリント（行数制限、ハードコード検出）
 - CSSアーキテクチャ検証
 - ブログメタデータ検証
+- Markdownリント（`markdownlint --fix`による自動修正とエラー解消）
 
 ### gitエチケット
 
@@ -232,6 +233,7 @@ npm run dev:wrangler
 
 - **`npm run lint:css-arch`でエラー**: `tests/lint/css-arch-layer-report.md`の内容に従って修正
 - **`npm run lint:template`でエラー**: 行数制限超過またはハードコード検出。ファイルを分割するか、`{section}-spec.yaml`に定義を移行
+- **Markdownエラー**: `markdownlint <path> --fix`を実行して自動修正し、残ったエラーを手動で解消すること
 
 ---
 
@@ -240,27 +242,17 @@ npm run dev:wrangler
 開発プロセスで得られた暗黙知を形式知化し、将来の意思決定を支援します：
 
 | ディレクトリ | 目的 | 記録内容 |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `docs/thinking/` | 設計判断や思考過程を外部化 | 迷った点、却下した案、判断理由などを短文で記録 |
 | `_docs/features/` | 新機能の追加・改修の目的と背景を記録 | 実装目的、画面構成、データ構造、リスク、完了条件などを簡潔にまとめる |
 | `docs/deleted/` | 削除・廃止した機能やファイルの履歴を残す | 削除理由、影響範囲、代替手段、再発防止策を記録 |
 
 **記録タイミング**:
+
 - 重要な設計判断を行ったとき
 - 新機能を追加するとき
 - コードを削除するとき
 - 予期しない問題に遭遇したとき
-
----
-
-## 🚀 開発フロー実行時の指示
-
-**新規機能開発や改修の特定フロー実行**が必要な場合は、`.claude/commands/`配下のスラッシュコマンドを使用してください：
-
-- `/tdd-flow`: TDD開発フローの実行
-- その他のカスタムコマンドは`.claude/commands/`ディレクトリを参照
-
-詳細な開発フロー定義は`docs/boilerplate_architecture/`配下を参照してください。
 
 ---
 
