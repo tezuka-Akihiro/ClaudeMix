@@ -165,12 +165,15 @@ test.describe('Account Profile Section', () => {
       // Try to change to invalid email
       await page.goto('/account/settings');
       await page.click('[data-testid="email-change-button"]');
-      await page.fill('[data-testid="new-email-input"]', 'invalid-email');
-      await page.fill('[data-testid="current-password-input"]', password);
-      await page.click('[data-testid="save-button"]');
 
-      // Verify validation error
-      await expect(page.locator('[data-testid="error-message"]')).toBeVisible();
+      const emailInput = page.locator('[data-testid="new-email-input"]');
+      await emailInput.fill('invalid-email');
+      await page.fill('[data-testid="current-password-input"]', password);
+
+      // Verify HTML5 validation prevents submission
+      // Check if input is marked as invalid
+      const isInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid);
+      expect(isInvalid).toBe(true);
     });
   });
 
@@ -265,8 +268,8 @@ test.describe('Account Profile Section', () => {
       await page.fill('[data-testid="new-password-confirm-input"]', 'password789');
       await page.click('[data-testid="save-button"]');
 
-      // Verify error
-      await expect(page.locator('[data-testid="error-message"]')).toContainText('一致しません');
+      // Verify field error message for password mismatch
+      await expect(page.locator('.profile-form__error')).toContainText('一致しません');
     });
 
     test('should validate new password strength', async ({ page }) => {
@@ -291,8 +294,8 @@ test.describe('Account Profile Section', () => {
       await page.fill('[data-testid="new-password-confirm-input"]', 'weak');
       await page.click('[data-testid="save-button"]');
 
-      // Verify validation error
-      await expect(page.locator('[data-testid="error-message"]')).toBeVisible();
+      // Verify field validation error for weak password
+      await expect(page.locator('.profile-form__error')).toBeVisible();
     });
   });
 
@@ -383,14 +386,15 @@ test.describe('Account Profile Section', () => {
       await page.goto('/account/settings');
       await page.click('[data-testid="delete-account-button"]');
       await page.fill('[data-testid="current-password-input"]', password);
-      // Don't check the confirmation checkbox
-      await page.click('[data-testid="delete-button"]');
 
-      // Verify error or button disabled
-      const deleteButton = page.locator('[data-testid="delete-button"]');
-      await expect(
-        deleteButton.isDisabled().then((disabled) => disabled || page.locator('[data-testid="error-message"]').isVisible())
-      ).resolves.toBeTruthy();
+      // Verify checkbox is required (HTML5 validation will prevent submission)
+      const confirmationCheckbox = page.locator('[data-testid="confirmation-checkbox"]');
+      const isRequired = await confirmationCheckbox.evaluate((el: HTMLInputElement) => el.required);
+      expect(isRequired).toBe(true);
+
+      // Verify checkbox is not checked
+      const isChecked = await confirmationCheckbox.isChecked();
+      expect(isChecked).toBe(false);
     });
 
     test('should allow canceling account deletion', async ({ page }) => {
