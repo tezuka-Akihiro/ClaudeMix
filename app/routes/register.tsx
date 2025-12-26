@@ -126,9 +126,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
   // Create session
   const sessionId = crypto.randomUUID();
   const sessionData = createSessionData(newUser.id, sessionId);
-  const setCookieHeader = await saveSession(sessionData, context as any);
+  const sessionCreated = await saveSession(sessionId, sessionData, context as any);
 
-  if (!setCookieHeader) {
+  if (!sessionCreated) {
     return json<ActionData>(
       { error: 'セッションの作成に失敗しました。ログインしてください' },
       { status: 500 }
@@ -138,7 +138,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   // Set session cookie and redirect to /account
   return redirect('/account', {
     headers: {
-      'Set-Cookie': setCookieHeader,
+      'Set-Cookie': `sessionId=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`,
     },
   });
 }

@@ -1,38 +1,41 @@
 /**
  * destroySession.server.ts
- * Purpose: Delete session from D1 database and invalidate Cookie
+ * Purpose: Delete session from Cloudflare Workers KV and invalidate Cookie
  *
  * @layer 副作用層 (Data-IO)
- * @responsibility D1データベース削除、Cookie無効化
+ * @responsibility Cloudflare Workers KV削除、Cookie無効化
  */
 
 /**
  * AppLoadContext type for Cloudflare Workers environment
  */
 interface CloudflareEnv {
-  DB: D1Database;
+  SESSION_KV: KVNamespace;
 }
 
 interface CloudflareLoadContext {
-  env: CloudflareEnv;
+  cloudflare: {
+    env: CloudflareEnv;
+  };
 }
 
 /**
- * Delete session from D1 database and generate Cookie deletion header
+ * Delete session from Cloudflare Workers KV and generate Cookie deletion header
  *
  * @param sessionId - Session ID to delete
- * @param context - Cloudflare Workers load context with D1 binding
+ * @param context - Cloudflare Workers load context with KV binding
  * @returns Set-Cookie header string for cookie deletion (Max-Age=0)
- * @throws Error if database deletion fails
+ * @throws Error if KV deletion fails
  */
 export async function destroySession(
   sessionId: string,
   context: CloudflareLoadContext
 ): Promise<string> {
   try {
-    // Delete session from D1 database
-    const db = context.env.DB;
-    await db.prepare('DELETE FROM sessions WHERE id = ?').bind(sessionId).run();
+    // Delete session from KV
+    const kv = context.cloudflare.env.SESSION_KV;
+    const kvKey = `session:${sessionId}`;
+    await kv.delete(kvKey);
 
     // Generate cookie deletion header
     const setCookieHeader = generateCookieDeletionHeader();

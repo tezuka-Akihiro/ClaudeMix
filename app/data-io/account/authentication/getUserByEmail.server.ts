@@ -13,7 +13,9 @@ interface CloudflareEnv {
 }
 
 interface CloudflareLoadContext {
-  env: CloudflareEnv;
+  cloudflare: {
+    env: CloudflareEnv;
+  };
 }
 
 /**

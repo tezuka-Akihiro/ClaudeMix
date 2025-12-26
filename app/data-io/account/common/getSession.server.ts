@@ -1,9 +1,9 @@
 /**
  * getSession.server.ts
- * Purpose: Retrieve session data from D1 database using session ID from Cookie
+ * Purpose: Retrieve session data from Cloudflare Workers KV using session ID from Cookie
  *
  * @layer副作用層 (Data-IO)
- * @responsibility D1データベース読み取り、Cookie解析
+ * @responsibility Cloudflare Workers KV読み取り、Cookie解析
  */
 
 import type { SessionData } from '~/specs/account/types';
@@ -12,18 +12,20 @@ import type { SessionData } from '~/specs/account/types';
  * AppLoadContext type for Cloudflare Workers environment
  */
 interface CloudflareEnv {
-  DB: D1Database;
+  SESSION_KV: KVNamespace;
 }
 
 interface CloudflareLoadContext {
-  env: CloudflareEnv;
+  cloudflare: {
+    env: CloudflareEnv;
+  };
 }
 
 /**
- * Retrieve session data from D1 database
+ * Retrieve session data from Cloudflare Workers KV
  *
  * @param request - HTTP Request containing Cookie header
- * @param context - Cloudflare Workers load context with D1 binding
+ * @param context - Cloudflare Workers load context with KV binding
  * @returns SessionData if valid session exists, null otherwise
  */
 export async function getSession(
@@ -43,36 +45,17 @@ export async function getSession(
       return null;
     }
 
-    // Check if DB binding is available
-    if (!context?.env?.DB) {
-      console.error('D1 database binding not available');
-      return null;
-    }
-
-    // Retrieve session data from D1 database with timeout
-    const db = context.env.DB;
-    const queryPromise = db
-      .prepare('SELECT * FROM sessions WHERE id = ?')
-      .bind(sessionId)
-      .first();
-
-    const timeoutPromise = new Promise<null>((_, reject) =>
-      setTimeout(() => reject(new Error('Database query timeout')), 3000)
-    );
-
-    const result = await Promise.race([queryPromise, timeoutPromise]);
+    // Retrieve session data from KV
+    const kv = context.cloudflare.env.SESSION_KV;
+    const kvKey = `session:${sessionId}`;
+    const sessionDataJson = await kv.get(kvKey);
 
     if (!result) {
       return null;
     }
 
-    // Return session data
-    const sessionData: SessionData = {
-      sessionId: result.id as string,
-      userId: result.userId as string,
-      expiresAt: result.expiresAt as string,
-      createdAt: result.createdAt as string,
-    };
+    // Parse and return session data
+    const sessionData = JSON.parse(sessionDataJson) as SessionData;
     return sessionData;
   } catch (error) {
     // Log error and return null (fail safely)
