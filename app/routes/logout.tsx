@@ -20,12 +20,24 @@ import { destroySession } from '~/data-io/account/common/destroySession.server';
 import { getSession } from '~/data-io/account/common/getSession.server';
 
 /**
- * Loader: This page is accessible to everyone
- * No authentication check needed
+ * Loader: Handle logout on GET request
+ * This allows direct navigation to /logout via browser or test
  */
-export async function loader({ request }: LoaderFunctionArgs) {
-  // Allow access to logout page regardless of authentication state
-  return null;
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  // Get current session
+  const session = await getSession(request, context as any);
+
+  // Destroy session from database if it exists
+  if (session) {
+    await destroySession(session.sessionId, context as any);
+  }
+
+  // Clear session cookie and redirect to login
+  return redirect('/login', {
+    headers: {
+      'Set-Cookie': 'sessionId=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
+    },
+  });
 }
 
 /**

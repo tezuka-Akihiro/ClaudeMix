@@ -43,12 +43,24 @@ export async function getSession(
       return null;
     }
 
-    // Retrieve session data from D1 database
+    // Check if DB binding is available
+    if (!context?.env?.DB) {
+      console.error('D1 database binding not available');
+      return null;
+    }
+
+    // Retrieve session data from D1 database with timeout
     const db = context.env.DB;
-    const result = await db
+    const queryPromise = db
       .prepare('SELECT * FROM sessions WHERE id = ?')
       .bind(sessionId)
       .first();
+
+    const timeoutPromise = new Promise<null>((_, reject) =>
+      setTimeout(() => reject(new Error('Database query timeout')), 3000)
+    );
+
+    const result = await Promise.race([queryPromise, timeoutPromise]);
 
     if (!result) {
       return null;

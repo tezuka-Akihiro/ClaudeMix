@@ -12,9 +12,18 @@ import { test, expect } from '@playwright/test';
 test.describe('Account Common Section - Happy Path', () => {
   test.describe('Authenticated User', () => {
     test.beforeEach(async ({ page }) => {
-      // TODO: Setup authenticated session
-      // This will be implemented when authentication section is ready
-      // For now, we'll skip this test
+      // Register and login to create authenticated session
+      const email = `test-common-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+      const password = 'Password123';
+
+      await page.goto('/register');
+      await page.fill('input[name="email"]', email);
+      await page.fill('input[name="password"]', password);
+      await page.fill('input[name="confirmPassword"]', password);
+      await page.click('button[type="submit"]');
+
+      // Wait for redirect to /account
+      await page.waitForURL('/account');
     });
 
     test('should render AccountLayout with AccountNav', async ({ page }) => {

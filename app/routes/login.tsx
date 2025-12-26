@@ -171,7 +171,7 @@ export default function Login() {
               data-testid="email-input"
             />
             {actionData?.fieldErrors?.email && (
-              <span id="email-error" className="error-message-structure" role="alert">
+              <span id="email-error" className="error-message-structure" role="alert" data-testid="error-message">
                 {actionData.fieldErrors.email}
               </span>
             )}
@@ -190,7 +190,7 @@ export default function Login() {
               data-testid="password-input"
             />
             {actionData?.fieldErrors?.password && (
-              <span id="password-error" className="error-message-structure" role="alert">
+              <span id="password-error" className="error-message-structure" role="alert" data-testid="error-message">
                 {actionData.fieldErrors.password}
               </span>
             )}

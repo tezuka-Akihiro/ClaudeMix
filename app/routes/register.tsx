@@ -174,7 +174,7 @@ export default function Register() {
               data-testid="email-input"
             />
             {actionData?.fieldErrors?.email && (
-              <span id="email-error" className="error-message-structure" role="alert">
+              <span id="email-error" className="error-message-structure" role="alert" data-testid="error-message">
                 {actionData.fieldErrors.email}
               </span>
             )}
@@ -193,7 +193,7 @@ export default function Register() {
               data-testid="password-input"
             />
             {actionData?.fieldErrors?.password && (
-              <span id="password-error" className="error-message-structure" role="alert">
+              <span id="password-error" className="error-message-structure" role="alert" data-testid="error-message">
                 {actionData.fieldErrors.password}
               </span>
             )}
@@ -214,7 +214,7 @@ export default function Register() {
               data-testid="confirm-password-input"
             />
             {actionData?.fieldErrors?.confirmPassword && (
-              <span id="confirmPassword-error" className="error-message-structure" role="alert">
+              <span id="confirmPassword-error" className="error-message-structure" role="alert" data-testid="error-message">
                 {actionData.fieldErrors.confirmPassword}
               </span>
             )}
