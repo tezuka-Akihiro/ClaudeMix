@@ -6,23 +6,25 @@
  * @responsibility プロフィール設定機能の統合テスト
  */
 
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function createAuthenticatedUser(page: Page, prefix = 'profile-test') {
+  const email = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+  const password = 'password123';
+
+  await page.goto('/register');
+  await page.fill('[data-testid="email-input"]', email);
+  await page.fill('[data-testid="password-input"]', password);
+  await page.fill('[data-testid="confirm-password-input"]', password);
+  await page.click('[data-testid="submit-button"]');
+  await expect(page).toHaveURL('/account');
+  return { email, password };
+}
 
 test.describe('Account Profile Section', () => {
   test.describe('Profile Display', () => {
     test('should display user profile information', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `profile-test-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete and redirect to /account
-      await expect(page).toHaveURL('/account');
+      const { email } = await createAuthenticatedUser(page);
 
       // Navigate to profile settings
       await page.goto('/account/settings');
@@ -46,19 +48,8 @@ test.describe('Account Profile Section', () => {
 
   test.describe('Email Change', () => {
     test('should successfully change email', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `email-change-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+      const { email, password } = await createAuthenticatedUser(page, 'email-change');
       const newEmail = `new-email-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
 
       // Navigate to profile settings
       await page.goto('/account/settings');
@@ -81,18 +72,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should reject email change with incorrect password', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `email-reject-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
+      await createAuthenticatedUser(page, 'email-reject');
 
       // Navigate to profile settings
       await page.goto('/account/settings');
@@ -116,24 +96,10 @@ test.describe('Account Profile Section', () => {
 
     test('should reject duplicate email', async ({ page }) => {
       // Setup: Create two users
-      const user1Email = `user1-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const user2Email = `user2-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', user1Email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-      await expect(page).toHaveURL('/account');
+      const { email: user1Email, password } = await createAuthenticatedUser(page, 'user1');
       await page.goto('/logout');
 
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', user2Email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-      await expect(page).toHaveURL('/account');
+      await createAuthenticatedUser(page, 'user2');
 
       // Try to change email to existing email
       await page.goto('/account/settings');
@@ -149,18 +115,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should validate email format', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `email-format-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
+      const { password } = await createAuthenticatedUser(page, 'email-format');
 
       // Try to change to invalid email
       await page.goto('/account/settings');
@@ -179,17 +134,8 @@ test.describe('Account Profile Section', () => {
 
   test.describe('Password Change', () => {
     test('should successfully change password', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `password-change-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const oldPassword = 'oldpassword';
+      const { email, password: oldPassword } = await createAuthenticatedUser(page, 'password-change');
       const newPassword = 'newpassword123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', oldPassword);
-      await page.fill('[data-testid="confirm-password-input"]', oldPassword);
-      await page.click('[data-testid="submit-button"]');
-      await expect(page).toHaveURL('/account');
 
       // Navigate to profile settings
       await page.goto('/account/settings');
@@ -219,18 +165,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should reject password change with incorrect current password', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `password-reject-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
+      await createAuthenticatedUser(page, 'password-reject');
 
       // Try to change password with wrong current password
       await page.goto('/account/settings');
@@ -247,18 +182,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should reject password change when new passwords do not match', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `password-mismatch-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
+      const { password } = await createAuthenticatedUser(page, 'password-mismatch');
 
       // Try to change password with mismatched new passwords
       await page.goto('/account/settings');
@@ -273,18 +197,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should validate new password strength', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `password-weak-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
+      const { password } = await createAuthenticatedUser(page, 'password-weak');
 
       // Try to change to weak password
       await page.goto('/account/settings');
@@ -301,16 +214,7 @@ test.describe('Account Profile Section', () => {
 
   test.describe('Account Deletion', () => {
     test('should successfully delete account', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `delete-test-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-      await expect(page).toHaveURL('/account');
+      const { email, password } = await createAuthenticatedUser(page, 'delete-test');
 
       // Navigate to profile settings
       await page.goto('/account/settings');
@@ -344,16 +248,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should reject account deletion with incorrect password', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `nodelete-test-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-      await expect(page).toHaveURL('/account');
+      await createAuthenticatedUser(page, 'nodelete-test');
 
       // Try to delete with wrong password
       await page.goto('/account/settings');
@@ -369,18 +264,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should require confirmation checkbox', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `delete-checkbox-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
+      const { password } = await createAuthenticatedUser(page, 'delete-checkbox');
 
       // Try to delete without checking confirmation
       await page.goto('/account/settings');
@@ -398,18 +282,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should allow canceling account deletion', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `delete-cancel-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
+      await createAuthenticatedUser(page, 'delete-cancel');
 
       // Open delete modal
       await page.goto('/account/settings');
@@ -427,16 +300,7 @@ test.describe('Account Profile Section', () => {
 
   test.describe('Modal Interactions', () => {
     test('should close email change modal on cancel', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `modal-test-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-      await expect(page).toHaveURL('/account');
+      await createAuthenticatedUser(page, 'modal-test');
 
       await page.goto('/account/settings');
       await page.click('[data-testid="email-change-button"]');
@@ -447,18 +311,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should close password change modal on cancel', async ({ page }) => {
-      // Setup: Create and login as test user
-      const email = `modal-password-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'password123';
-
-      await page.goto('/register');
-      await page.fill('[data-testid="email-input"]', email);
-      await page.fill('[data-testid="password-input"]', password);
-      await page.fill('[data-testid="confirm-password-input"]', password);
-      await page.click('[data-testid="submit-button"]');
-
-      // Wait for registration to complete
-      await expect(page).toHaveURL('/account');
+      await createAuthenticatedUser(page, 'modal-password');
 
       await page.goto('/account/settings');
       await page.click('[data-testid="password-change-button"]');

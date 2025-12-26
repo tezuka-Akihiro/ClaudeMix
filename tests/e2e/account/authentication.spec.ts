@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 /**
  * E2E Test: Account Authentication Section
@@ -15,6 +15,15 @@ function generateUniqueEmail(prefix: string = 'test'): string {
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 1000);
   return `${prefix}-${timestamp}-${random}@example.com`;
+}
+
+async function registerUser(page: Page, email: string, password = 'Password123') {
+  await page.goto('/register');
+  await page.fill('input[name="email"]', email);
+  await page.fill('input[name="password"]', password);
+  await page.fill('input[name="confirmPassword"]', password);
+  await page.click('button[type="submit"]');
+  await expect(page).toHaveURL('/account');
 }
 
 test.describe('Account Authentication - Happy Path', () => {
@@ -121,13 +130,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // First, register a new user
       const email = generateUniqueEmail('logintest');
       const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
-      await expect(page).toHaveURL('/account');
+      await registerUser(page, email, password);
 
       // Logout
       await page.goto('/logout');
@@ -171,13 +174,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // First, register a user
       const email = generateUniqueEmail('redirect');
       const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
-      await expect(page).toHaveURL('/account');
+      await registerUser(page, email, password);
 
       // Logout
       await page.goto('/logout');
@@ -203,13 +200,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Register and login first
       const email = generateUniqueEmail('logout');
       const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
-      await expect(page).toHaveURL('/account');
+      await registerUser(page, email, password);
 
       // Navigate to logout
       await page.goto('/logout');
@@ -230,13 +221,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Register and login
       const email = generateUniqueEmail('persistence');
       const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
-      await expect(page).toHaveURL('/account');
+      await registerUser(page, email, password);
 
       // Reload page
       await page.reload();

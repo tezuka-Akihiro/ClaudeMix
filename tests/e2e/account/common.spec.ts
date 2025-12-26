@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 /**
  * E2E Test: Account Common Section (Happy Path)
@@ -9,21 +9,23 @@ import { test, expect } from '@playwright/test';
  * - Verify authentication guard redirects unauthenticated users
  */
 
+async function createAuthenticatedSession(page: Page, prefix: string) {
+  const email = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+  const password = 'Password123';
+
+  await page.goto('/register');
+  await page.fill('input[name="email"]', email);
+  await page.fill('input[name="password"]', password);
+  await page.fill('input[name="confirmPassword"]', password);
+  await page.click('button[type="submit"]');
+  await page.waitForURL('/account');
+  return { email, password };
+}
+
 test.describe('Account Common Section - Happy Path', () => {
   test.describe('Authenticated User', () => {
     test.beforeEach(async ({ page }) => {
-      // Register and login to create authenticated session
-      const email = `test-common-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
-
-      // Wait for redirect to /account
-      await page.waitForURL('/account');
+      await createAuthenticatedSession(page, 'test-common');
     });
 
     test('should render AccountLayout with AccountNav', async ({ page }) => {
@@ -119,18 +121,7 @@ test.describe('Common Components', () => {
 
   test.describe('Modal', () => {
     test.beforeEach(async ({ page }) => {
-      // Register and login to create authenticated session
-      const email = `test-modal-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
-
-      // Wait for redirect to /account
-      await page.waitForURL('/account');
+      await createAuthenticatedSession(page, 'test-modal');
     });
 
     test('should open and close modal with focus trap', async ({ page }) => {
@@ -165,18 +156,7 @@ test.describe('Common Components', () => {
 
   test.describe('Badge', () => {
     test.beforeEach(async ({ page }) => {
-      // Register and login to create authenticated session
-      const email = `test-badge-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
-
-      // Wait for redirect to /account
-      await page.waitForURL('/account');
+      await createAuthenticatedSession(page, 'test-badge');
     });
 
     test('should display badge with correct variant', async ({ page }) => {
