@@ -15,18 +15,5 @@ CREATE TABLE IF NOT EXISTS users (
 -- Create index on email for faster lookups
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
--- Sessions Table
--- Stores active user sessions
-CREATE TABLE IF NOT EXISTS sessions (
-  id TEXT PRIMARY KEY,
-  userId TEXT NOT NULL,
-  expiresAt TEXT NOT NULL,
-  createdAt TEXT NOT NULL,
-  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Create index on userId for faster session lookups
-CREATE INDEX IF NOT EXISTS idx_sessions_userId ON sessions(userId);
-
--- Create index on expiresAt for cleanup queries
-CREATE INDEX IF NOT EXISTS idx_sessions_expiresAt ON sessions(expiresAt);
+-- Note: Sessions are stored in Cloudflare Workers KV, not in D1
+-- See GUIDING_PRINCIPLES.md Section 2.1 for hybrid storage strategy

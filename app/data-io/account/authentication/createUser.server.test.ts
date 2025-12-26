@@ -44,25 +44,6 @@ describe('createUser.server', () => {
       expect(mockStmt.bind).toHaveBeenCalled();
       expect(result).toBe(true);
     });
-
-    it('should create user with trial subscription by default', async () => {
-      // Arrange
-      const email = 'trial@example.com';
-      const passwordHash = 'hashed-password';
-
-      const mockStmt = {
-        bind: vi.fn().mockReturnThis(),
-        run: vi.fn().mockResolvedValue({ success: true }),
-      };
-      mockDB.prepare.mockReturnValue(mockStmt);
-
-      // Act
-      await createUser(email, passwordHash, mockContext);
-
-      // Assert
-      const bindCall = mockStmt.bind.mock.calls[0];
-      expect(bindCall).toContain('trial'); // Default subscription status
-    });
   });
 
   describe('Error Case: Database errors', () => {
@@ -149,7 +130,6 @@ describe('createUser.server', () => {
         expect.any(String), // id
         maliciousEmail, // email (safely bound)
         passwordHash,
-        expect.any(String), // subscription status
         expect.any(String), // createdAt
         expect.any(String) // updatedAt
       );

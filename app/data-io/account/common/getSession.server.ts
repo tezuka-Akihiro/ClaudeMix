@@ -50,7 +50,7 @@ export async function getSession(
     const kvKey = `session:${sessionId}`;
     const sessionDataJson = await kv.get(kvKey);
 
-    if (!result) {
+    if (!sessionDataJson) {
       return null;
     }
 

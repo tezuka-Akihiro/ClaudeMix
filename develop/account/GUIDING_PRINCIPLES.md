@@ -35,6 +35,50 @@
 - **Outside-In TDD**: `TDD_WORK_FLOW.md` に記載された開発フローに従います。
 - **スタイリング憲章**: `docs/CSS_structure/STYLING_CHARTER.md` に基づくCSS階層アーキテクチャを遵守します。
 
+### 2.1 データストレージ戦略（Cloudflare Workers ハイブリッドアーキテクチャ）
+
+**基本方針**: Cloudflareのベストプラクティスに従い、**Workers KV**と**D1 Database**をデータ特性に応じて使い分けます。
+
+**ストレージ選択基準**:
+
+| データ種別 | ストレージ | 理由 |
+| :--- | :--- | :--- |
+| **Sessions** (セッション) | **Workers KV** | エッジキャッシング、超低レイテンシ (500µs-10ms)、Read-heavy最適化 |
+| **Password Reset Tokens** | **Workers KV** | 一時データ、TTL自動削除、高速アクセス |
+| **Users** (ユーザー) | **D1 Database** | リレーショナルデータ、SQLクエリ、永続ストレージ |
+| **Subscriptions** (サブスクリプション) | **D1 Database** | トランザクション整合性、Stripeデータとの同期 |
+
+**KV使用時の設計原則**:
+
+- **Key命名規則**: `session:{sessionId}`, `reset-token:{email}`
+- **TTL設定**: セッション(24時間)、リセットトークン(1時間)
+- **削除方針**: 明示的削除より**TTL自動期限切れ**を優先（KV削除の伝播遅延60秒を回避）
+- **キャッシュ戦略**: 頻繁に読み取られるセッションは内部キャッシュで自動最適化
+
+**D1使用時の設計原則**:
+
+- **外部キー制約**: `sessions.userId → users.id` (ON DELETE CASCADE)
+- **トランザクション**: Stripe決済とサブスクリプション状態の同期にはトランザクション保証が必要
+- **SQLクエリ**: 複雑な検索（例: アクティブなサブスクリプション一覧）に対応
+
+**ハイブリッド連携パターン**:
+
+```text
+認証フロー:
+1. ログイン成功 → D1でユーザー検証 → KVにセッション保存 → Cookie発行
+2. ページアクセス → CookieからセッションID取得 → KVでセッション検証 → D1からユーザー情報取得
+
+退会フロー:
+1. アカウント削除要求 → D1でサブスクリプション確認・削除 → D1でユーザー削除 (CASCADE)
+2. KVからセッション削除 → Cookieクリア
+```
+
+**技術的根拠**:
+
+- Cloudflare公式推奨: [Storage Options](https://developers.cloudflare.com/workers/platform/storage-options/)
+- OpenAuth等の認証フレームワークもKVをセッションストレージとして採用
+- エッジロケーションでのセッション検証により、グローバルで一貫した低レイテンシを実現
+
 ---
 
 ## 3. ルーティング規約

@@ -12,8 +12,9 @@ binding = "DB"
 database_name = "claudemix-dev"
 database_id = "local-dev-db"
 
-# KV Namespace for sessions (if using KV instead of in-memory)
-# [[kv_namespaces]]
-# binding = "SESSIONS_KV"
-# id = "local-dev-kv"
+# KV Namespace for sessions
+[[kv_namespaces]]
+binding = "SESSION_KV"
+id = "local-dev-kv"
+preview_id = "local-dev-kv"
 
