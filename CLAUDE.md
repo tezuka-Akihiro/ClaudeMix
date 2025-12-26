@@ -139,6 +139,74 @@ Outside-In TDD (E2E → Unit)
   - `tests/e2e/screen/`: 画面単位のテスト
   - `tests/e2e/section/`: セクション単位のテスト
 
+### E2Eテスト実行規範（厳守）
+
+#### テストデータの動的生成（必須）
+
+**禁止事項**:
+
+- ハードコードされたメールアドレス、ユーザーID、その他のテストデータ
+- 固定値の使用（データベース競合・テスト失敗の原因）
+
+**必須パターン**:
+
+```typescript
+// メールアドレスの動的生成
+const email = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+
+// 例
+const email = `profile-test-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+const newEmail = `new-email-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+```
+
+**理由**:
+
+- テストの再実行可能性を保証
+- データベース上の重複エラーを防止
+- 並列実行時の競合を回避
+
+#### E2Eテスト実行手順（必須）
+
+1. **開発サーバー起動**:
+
+   ```bash
+   npm run dev:wrangler
+   ```
+
+   - Wranglerでランタイム制約を反映した環境を使用（必須）
+
+2. **Playwright設定の明示的指定**:
+
+   ```bash
+   npx playwright test tests/e2e/account --config=tests/e2e/playwright.config.ts --reporter=list
+   ```
+
+   - `--config=tests/e2e/playwright.config.ts` の指定は**必須**
+   - `--reporter=list` でHTMLレポート生成を抑制（推奨）
+
+3. **テスト終了後のクリーンアップ（必須）**:
+
+   - 開発サーバーを**必ず停止**すること
+   - 停止せずに放置するとポートが占有され次回起動に失敗する
+
+#### Windows/Wrangler固有の注意事項
+
+**症状**: 以下のいずれかが発生した場合
+
+- テストが `ERR_CONNECTION_REFUSED` で全て失敗
+- モーダルやコンポーネントが表示されない
+- ナビゲーションテストが予期せず失敗
+- 開発サーバーが正常に起動しているのにテストが接続できない
+
+**原因**: Windows環境でのWranglerキャッシュ・プロセス問題
+
+**解決策**: **PC再起動**
+
+- サーバー再起動やビルドクリアでは解決しない
+- PC再起動により、キャッシュ・メモリ・プロセスが完全にクリアされる
+
+**実績**: Navigation、FlashMessage、Modal表示問題は全てPC再起動で解決
+
 ### コミット前の必須チェック
 
 **以下のリントをすべて通過させること**:
