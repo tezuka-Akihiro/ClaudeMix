@@ -112,6 +112,7 @@ describe('PostDetailSection', () => {
         tags: [],
         category: 'Test Category',
         source: null,
+        hasMermaid: false,
         headings: [],
       };
 
@@ -136,6 +137,7 @@ describe('PostDetailSection', () => {
         tags: [],
         category: 'Test Category',
         source: null,
+        hasMermaid: false,
         headings: [],
       };
 
@@ -176,6 +178,7 @@ describe('PostDetailSection', () => {
         tags: [],
         category: 'Test Category',
         source: null,
+        hasMermaid: false,
         headings: [],
       };
 
@@ -205,6 +208,7 @@ describe('PostDetailSection', () => {
         tags: [],
         category: 'Test Category',
         source: null,
+        hasMermaid: false,
         headings: [],
       };
 
@@ -240,6 +244,7 @@ describe('PostDetailSection', () => {
         tags: [],
         category: 'Test Category',
         source: null,
+        hasMermaid: false,
         headings: [],
       };
 
@@ -267,6 +272,7 @@ describe('PostDetailSection', () => {
         tags: [],
         category: 'Test Category',
         source: null,
+        hasMermaid: false,
         headings: [],
       };
 
@@ -291,6 +297,7 @@ describe('PostDetailSection', () => {
         tags: [],
         category: 'Test Category',
         source: null,
+        hasMermaid: false,
         headings: [],
       };
 

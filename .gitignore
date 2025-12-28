@@ -20,9 +20,11 @@ tests/unit/test-results.json
 tests/unit/coverage/
 tests/unit/node_modules
 tests/lint/
+tests/scripts/generation.log
+tests/test-results/.last-run.json
+
 .cache/
 coverage-output.txt
-
 chat.*
 scripts/_local/
 .claude/key

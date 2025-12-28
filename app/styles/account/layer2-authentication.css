@@ -1,0 +1,52 @@
+/* ========================================
+ * Authentication Pages (Login, Register, Logout)
+ * Layer 2: Skin (appearance) - uses Layer 1 tokens only
+ * ======================================== */
+
+/* === Authentication Container === */
+/* Container for centered authentication forms */
+.auth-container {
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+/* === Authentication Card === */
+/* Card containing the login/register form */
+.auth-card {
+  background-color: var(--color-background-secondary);
+  border: var(--border-width-sm) solid var(--color-interactive-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+}
+
+/* === Authentication Header === */
+.auth-header__title {
+  color: var(--color-text-primary);
+  font-family: var(--font-heading-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+}
+
+.auth-header__subtitle {
+  color: var(--color-text-secondary);
+  font-family: var(--font-stack-system-ui);
+  font-size: var(--font-size-base);
+  text-align: center;
+}
+
+/* === Authentication Link === */
+.auth-link {
+  color: var(--color-interactive-primary);
+  font-family: var(--font-stack-system-ui);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  text-align: center;
+  transition: color var(--transition-duration-fast) var(--transition-timing-function-default);
+}
+
+.auth-link:hover {
+  color: var(--color-text-primary);
+}

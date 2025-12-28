@@ -1,0 +1,330 @@
+# spec.yaml - 外部変数仕様書
+# 実装・テスト・仕様書で共通参照するリテラル値定義
+
+# ==========================================
+# メタデータ
+# ==========================================
+metadata:
+  feature_name: "account-profile"
+  slug: "profile"
+  created_date: "2025-12-23"
+  last_updated: "2025-12-23"
+  version: "1.0.0"
+
+# ==========================================
+# サーバー処理設定 (Loader/Action)
+# ==========================================
+server_io:
+  loader:
+    # loader処理のタイムアウト設定 (ms)
+    timeout: 5000
+
+  action:
+    # 処理タイムアウト設定 (ms)
+    timeout: 10000
+
+    # actionの種類
+    intents:
+      email_change: "email-change"
+      password_change: "password-change"
+      delete_account: "delete-account"
+
+# ==========================================
+# ルーティング設定
+# ==========================================
+routes:
+  settings:
+    path: "/account/settings"
+    title: "アカウント設定"
+
+# ==========================================
+# フォーム設定
+# ==========================================
+forms:
+  email_change:
+    title: "メールアドレス変更"
+    fields:
+      new_email:
+        name: "newEmail"
+        label: "新しいメールアドレス"
+        type: "email"
+        placeholder: "new-email@example.com"
+        autocomplete: "email"
+        required: true
+      current_password:
+        name: "currentPassword"
+        label: "現在のパスワード"
+        type: "password"
+        placeholder: "本人確認のため入力してください"
+        autocomplete: "current-password"
+        required: true
+
+    submit_button:
+      label: "保存"
+      loading_label: "保存中..."
+
+    cancel_button:
+      label: "キャンセル"
+
+  password_change:
+    title: "パスワード変更"
+    fields:
+      current_password:
+        name: "currentPassword"
+        label: "現在のパスワード"
+        type: "password"
+        placeholder: "現在のパスワードを入力してください"
+        autocomplete: "current-password"
+        required: true
+      new_password:
+        name: "newPassword"
+        label: "新しいパスワード"
+        type: "password"
+        placeholder: "8文字以上、大文字・小文字・数字を含む"
+        autocomplete: "new-password"
+        required: true
+      new_password_confirm:
+        name: "newPasswordConfirm"
+        label: "新しいパスワード確認"
+        type: "password"
+        placeholder: "パスワードを再入力してください"
+        autocomplete: "new-password"
+        required: true
+
+    submit_button:
+      label: "保存"
+      loading_label: "保存中..."
+
+    cancel_button:
+      label: "キャンセル"
+
+  delete_account:
+    title: "アカウント削除"
+    warning_message: "この操作は取り消しできません。すべてのデータが削除されます。"
+    fields:
+      current_password:
+        name: "currentPassword"
+        label: "パスワード"
+        type: "password"
+        placeholder: "本人確認のため入力してください"
+        autocomplete: "current-password"
+        required: true
+      confirmation:
+        name: "confirmation"
+        label: "削除を確認しました"
+        type: "checkbox"
+        required: true
+
+    submit_button:
+      label: "アカウントを削除する"
+      loading_label: "削除中..."
+
+    cancel_button:
+      label: "キャンセル"
+
+# ==========================================
+# プロフィール表示設定
+# ==========================================
+profile_display:
+  sections:
+    info:
+      title: "アカウント情報"
+      fields:
+        email:
+          label: "メールアドレス"
+        subscription_status:
+          label: "サブスクリプション状態"
+          values:
+            active: "アクティブ"
+            inactive: "未契約"
+            trial: "トライアル期間"
+        created_at:
+          label: "登録日"
+        updated_at:
+          label: "最終更新日"
+
+    actions:
+      title: "アカウント管理"
+      buttons:
+        - label: "メールアドレスを変更"
+          action: "email-change"
+          variant: "secondary"
+        - label: "パスワードを変更"
+          action: "password-change"
+          variant: "secondary"
+        - label: "アカウントを削除"
+          action: "delete-account"
+          variant: "danger"
+
+# ==========================================
+# バリデーション設定
+# ==========================================
+validation:
+  new_email:
+    # 正規表現パターン（commonから継承）
+    pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    max_length: 254
+    error_messages:
+      required: "メールアドレスを入力してください"
+      invalid_format: "有効なメールアドレスを入力してください"
+      already_exists: "このメールアドレスは既に使用されています"
+      same_as_current: "現在のメールアドレスと同じです"
+
+  new_password:
+    # パスワード強度要件
+    min_length: 8
+    max_length: 128
+    pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
+    error_messages:
+      required: "パスワードを入力してください"
+      too_short: "パスワードは8文字以上で入力してください"
+      too_long: "パスワードは128文字以下で入力してください"
+      weak: "パスワードは大文字、小文字、数字を含む必要があります"
+      same_as_current: "現在のパスワードと同じです"
+
+  new_password_confirm:
+    error_messages:
+      required: "パスワード確認を入力してください"
+      mismatch: "パスワードが一致しません"
+
+  current_password:
+    error_messages:
+      required: "現在のパスワードを入力してください"
+      incorrect: "パスワードが正しくありません"
+
+  confirmation:
+    error_messages:
+      required: "削除を確認してください"
+
+# ==========================================
+# エラーメッセージ設定
+# ==========================================
+error_messages:
+  email_change:
+    email_exists: "このメールアドレスは既に使用されています"
+    same_as_current: "現在のメールアドレスと同じです"
+    update_failed: "メールアドレスの変更に失敗しました。もう一度お試しください"
+
+  password_change:
+    incorrect_current: "現在のパスワードが正しくありません"
+    same_as_current: "新しいパスワードは現在のパスワードと異なる必要があります"
+    update_failed: "パスワードの変更に失敗しました。もう一度お試しください"
+
+  delete_account:
+    incorrect_password: "パスワードが正しくありません"
+    not_confirmed: "削除を確認してください"
+    delete_failed: "アカウントの削除に失敗しました。もう一度お試しください"
+
+  server:
+    timeout: "処理がタイムアウトしました。もう一度お試しください"
+    internal_error: "エラーが発生しました。しばらく時間をおいてから再度お試しください"
+
+# ==========================================
+# 成功メッセージ設定
+# ==========================================
+success_messages:
+  email_change:
+    completed: "メールアドレスを変更しました"
+  password_change:
+    completed: "パスワードを変更しました"
+  delete_account:
+    completed: "アカウントを削除しました"
+
+# ==========================================
+# モーダル設定
+# ==========================================
+modal:
+  overlay:
+    background: "半透明の黒背景"
+    z_index: 1000
+
+  container:
+    max_width: "480px"
+    padding: "24px"
+    border_radius: "8px"
+
+  close_on_overlay_click: false
+  close_on_escape: true
+
+# ==========================================
+# レスポンシブ設定
+# ==========================================
+responsive:
+  # コンテナ幅
+  container:
+    mobile: "100%"  # padding適用
+    tablet: "600px"
+    desktop: "600px"
+
+  # モーダル幅
+  modal:
+    mobile: "100%"  # padding適用
+    tablet: "480px"
+    desktop: "480px"
+
+# ==========================================
+# アクセシビリティ設定
+# ==========================================
+accessibility:
+  # ARIAラベル
+  aria_labels:
+    profile_display: "プロフィール情報表示"
+    email_change_modal: "メールアドレス変更モーダル"
+    password_change_modal: "パスワード変更モーダル"
+    delete_account_modal: "アカウント削除確認モーダル"
+    email_field: "メールアドレス入力"
+    password_field: "パスワード入力"
+    save_button: "変更を保存"
+    cancel_button: "キャンセル"
+    delete_button: "アカウントを削除する（取り消し不可）"
+
+  # モーダルアクセシビリティ
+  modal:
+    role: "dialog"
+    aria_modal: true
+    focus_trap: true
+    close_on_escape: true
+
+  # エラーメッセージのaria-live設定
+  error_announcement:
+    aria_live: "assertive"
+    aria_atomic: true
+
+# ==========================================
+# セキュリティ設定
+# ==========================================
+security:
+  # パスワード変更時のセッション管理
+  password_change:
+    delete_all_sessions: true
+    regenerate_current_session: true
+
+  # アカウント削除時の処理
+  delete_account:
+    delete_all_sessions: true
+    delete_user_data: true
+    redirect_after_delete: "/login"
+
+# ==========================================
+# テスト設定
+# ==========================================
+test:
+  # E2Eテスト用セレクタ
+  selectors:
+    profile_display: "[data-testid='profile-display']"
+    email_change_button: "[data-testid='email-change-button']"
+    password_change_button: "[data-testid='password-change-button']"
+    delete_account_button: "[data-testid='delete-account-button']"
+    email_change_modal: "[data-testid='email-change-modal']"
+    password_change_modal: "[data-testid='password-change-modal']"
+    delete_account_modal: "[data-testid='delete-account-modal']"
+    new_email_input: "[data-testid='new-email-input']"
+    current_password_input: "[data-testid='current-password-input']"
+    new_password_input: "[data-testid='new-password-input']"
+    new_password_confirm_input: "[data-testid='new-password-confirm-input']"
+    confirmation_checkbox: "[data-testid='confirmation-checkbox']"
+    save_button: "[data-testid='save-button']"
+    cancel_button: "[data-testid='cancel-button']"
+    delete_button: "[data-testid='delete-button']"
+    error_message: "[data-testid='error-message']"
+    success_message: "[data-testid='success-message']"

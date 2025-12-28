@@ -14,7 +14,7 @@
     "coverage": "vitest run --coverage -c tests/unit/vitest.config.ts",
     "test:ui": "vitest --ui -c tests/unit/vitest.config.ts",
     "test:run": "vitest run -c tests/unit/vitest.config.ts",
-    "test:e2e": "playwright test tests/e2e/blog -c tests/e2e/playwright.config.ts",
+    "test:e2e": "playwright test tests/e2e/blog -c tests/e2e/playwright.config.ts --reporter=list",
     "test:e2e:ui": "playwright test --ui -c tests/e2e/playwright.config.ts",
     "test:e2e:headed": "playwright test --headed -c tests/e2e/playwright.config.ts",
     "test:e2e:debug": "playwright test --debug -c tests/e2e/playwright.config.ts",
@@ -27,7 +27,8 @@
     "typecheck:e2e": "tsc -p tests/e2e/tsconfig.json",
     "lint:template": "node scripts/lint-template/engine.js",
     "lint:css-arch": "node scripts/lint-css-arch/engine.js",
-    "lint:all": "bash scripts/_local/lint-all.sh"
+    "lint:all": "bash scripts/_local/lint-all.sh",
+    "setup:db": "bash scripts/setup-db.sh"
   },
   "author": "",
   "license": "ISC",
@@ -50,6 +51,7 @@
     "workers-og": "^0.0.27"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251228.0",
     "@playwright/test": "^1.55.1",
     "@remix-run/dev": "^2.17.1",
     "@tailwindcss/typography": "^0.5.19",

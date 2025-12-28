@@ -312,8 +312,8 @@ export function getLayer2Rules() {
           const isShorthand = tokens.length > 1;
 
           tokens.forEach(token => {
-            // var()、calc()などの関数は許可
-            if (token.startsWith('var(') || token.startsWith('calc(')) {
+            // var()、calc()、transform関数などの関数は許可
+            if (token.includes('(') && token.includes(')')) {
               return;
             }
 
@@ -324,6 +324,11 @@ export function getLayer2Rules() {
 
             // 普遍的な全幅/全高を示す100%は許可
             if (token === '100%') {
+              return;
+            }
+
+            // 中央配置に使用される50%と-50%は許可
+            if (token === '50%' || token === '-50%') {
               return;
             }
 
