@@ -25,6 +25,8 @@
 | コマンド | 目的 | 備考 |
 | :--- | :--- | :--- |
 | `npm run dev:wrangler` | 開発サーバー起動 | Wranglerでランタイム制約を反映した開発環境を起動（必須） |
+| `npm run dev:wrangler:clean` | クリーン起動 | キャッシュクリア後に開発サーバーを起動（キャッシュ問題発生時） |
+| `npm run clean:wrangler` | Wranglerキャッシュクリア | `.wrangler`フォルダ削除とD1マイグレーション再適用 |
 | `npm test` | ユニットテスト実行 | Vitestを使用（E2Eはオペレーターが実行） |
 | `npm run typecheck` | 型チェック | すべてのTypeScriptファイルを検証 |
 | `npm run lint:all` | 全リント実行 | テンプレート、CSS、Markdown、ブログメタデータを検証 |
@@ -197,15 +199,46 @@ const newEmail = `new-email-${Date.now()}-${Math.floor(Math.random() * 1000)}@ex
 - モーダルやコンポーネントが表示されない
 - ナビゲーションテストが予期せず失敗
 - 開発サーバーが正常に起動しているのにテストが接続できない
+- コード変更が反映されない（stale cache）
 
 **原因**: Windows環境でのWranglerキャッシュ・プロセス問題
 
-**解決策**: **PC再起動**
+Windowsのファイルロック機構により、`.wrangler/state/v3`フォルダ内のSQLiteデータベースやキャッシュファイルがNode.jsプロセスによってロックされ、削除できない状態になる。
 
-- サーバー再起動やビルドクリアでは解決しない
-- PC再起動により、キャッシュ・メモリ・プロセスが完全にクリアされる
+**解決策**: **段階的エスカレーション**
 
-**実績**: Navigation、FlashMessage、Modal表示問題は全てPC再起動で解決
+1. **第1段階: キャッシュクリーンアップスクリプト実行（推奨）**
+
+   ```bash
+   npm run dev:wrangler:clean
+   ```
+
+   または
+
+   ```bash
+   npm run clean:wrangler
+   npm run dev:wrangler
+   ```
+
+   このスクリプトは以下を自動実行します：
+   - `.wrangler/state/v3`フォルダの削除を試行
+   - 削除失敗時、自動的にNode.jsプロセスを停止
+   - D1マイグレーションの再適用
+
+2. **第2段階: PC再起動（最終手段）**
+
+   上記スクリプトで解決しない場合のみ、PC再起動を実行
+
+**技術的背景**:
+
+- **Windowsのファイルロック**: プロセスがファイルを開いている間は削除不可（Unixとは異なる設計）
+- **SQLite接続の永続化**: D1データベース（SQLite）の接続が適切にクローズされない場合がある
+- **Wranglerプロセスの残存**: 開発サーバー停止後もバックグラウンドプロセスが残る場合がある
+
+**実績**:
+
+- Navigation、FlashMessage、Modal表示問題は全てキャッシュクリーンアップで解決
+- サブスクリプションE2Eテストのキャンセル機能不具合もキャッシュクリーンアップで解決
 
 ### コミット前の必須チェック
 
