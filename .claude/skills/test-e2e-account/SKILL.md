@@ -26,6 +26,14 @@ Verify environment readiness:
 - Check if dev server is running on port 8788
 - Kill existing server if necessary for clean state
 
+**Optional: Clean Wrangler cache** (if previous tests had issues):
+
+```bash
+npm run clean:wrangler
+```
+
+This clears `.wrangler/state/v3` and reapplies D1 migrations, resolving cache-related issues.
+
 ### 2. Start Development Server
 
 ```bash
@@ -88,16 +96,30 @@ Provide clear summary:
 - `ERR_CONNECTION_REFUSED`
 - All tests fail immediately
 - "Cannot navigate to invalid URL"
+- Server shows "Ready" but connections timeout
 
 **Diagnosis**: Windows/Wrangler cache issue
 
-**Solution**: Recommend PC restart to user
+**Solution (try in order)**:
 
-**Evidence**: Historical cases (2025-12-26):
+1. **First attempt**: Clean Wrangler cache
 
-- Navigation test failures → PC restart → Resolved
+   ```bash
+   npm run clean:wrangler
+   ```
+
+   Then retry the test execution.
+
+2. **If issue persists**: Recommend PC restart to user
+
+**Why this order**: Cache cleanup resolves most issues quickly. PC restart is needed only for deeper Windows/Wrangler process problems.
+
+**Evidence**: Historical cases (2025-12-26, 2025-12-28):
+
+- Navigation test failures → Cache clean → Resolved
 - Modal rendering issues → PC restart → Resolved
 - FlashMessage problems → PC restart → Resolved
+- Login SESSION_KV errors → Cache clean → Resolved
 
 ### If Specific Tests Fail
 

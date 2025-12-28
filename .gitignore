@@ -27,7 +27,7 @@ chat.*
 scripts/_local/
 .claude/key
 tests/scripts/generation.log
-.wrangler/tmp/
+.wrangler
 test-results/.last-run.json
 delete-deploy.js
 .claude/settings.local.json
