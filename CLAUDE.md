@@ -25,6 +25,8 @@
 | コマンド | 目的 | 備考 |
 | :--- | :--- | :--- |
 | `npm run dev:wrangler` | 開発サーバー起動 | Wranglerでランタイム制約を反映した開発環境を起動（必須） |
+| `npm run dev:wrangler:clean` | クリーン起動 | キャッシュクリア後に開発サーバーを起動（キャッシュ問題発生時） |
+| `npm run clean:wrangler` | Wranglerキャッシュクリア | `.wrangler`フォルダ削除とD1マイグレーション再適用 |
 | `npm test` | ユニットテスト実行 | Vitestを使用（E2Eはオペレーターが実行） |
 | `npm run typecheck` | 型チェック | すべてのTypeScriptファイルを検証 |
 | `npm run lint:all` | 全リント実行 | テンプレート、CSS、Markdown、ブログメタデータを検証 |

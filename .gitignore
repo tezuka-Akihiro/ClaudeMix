@@ -34,4 +34,5 @@ scripts/_local/
 
 delete-deploy.js
 test-results/.last-run.json
-nul
+delete-deploy.js
+.claude/settings.local.json
