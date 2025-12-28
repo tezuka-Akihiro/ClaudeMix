@@ -10,7 +10,7 @@
  * - Validation rules
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 // Helper function to generate unique email addresses
 function generateUniqueEmail(prefix: string = 'test'): string {
@@ -19,18 +19,24 @@ function generateUniqueEmail(prefix: string = 'test'): string {
   return `${prefix}-${timestamp}-${random}@example.com`;
 }
 
+async function createAuthenticatedUser(page: Page, prefix: string) {
+  const email = generateUniqueEmail(prefix);
+  const password = 'Password123';
+
+  await page.goto('/register');
+  await page.fill('input[name="email"]', email);
+  await page.fill('input[name="password"]', password);
+  await page.fill('input[name="confirmPassword"]', password);
+  await page.click('button[type="submit"]');
+  await expect(page).toHaveURL('/account');
+  return { email, password };
+}
+
 test.describe('Account Subscription Management', () => {
   test.describe('Subscription Page Display', () => {
     test('should display subscription page for authenticated user', async ({ page }) => {
       // Register and login
-      const email = generateUniqueEmail('subscription-user');
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
+      await createAuthenticatedUser(page, 'subscription-user');
 
       // Navigate to subscription page
       await page.goto('/account/subscription');
@@ -57,14 +63,7 @@ test.describe('Account Subscription Management', () => {
   test.describe('Subscription Status - Inactive', () => {
     test('should display inactive status badge for new user', async ({ page }) => {
       // Register new user (default status is inactive)
-      const email = generateUniqueEmail('inactive-user');
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
+      await createAuthenticatedUser(page, 'inactive-user');
 
       // Navigate to subscription page
       await page.goto('/account/subscription');
@@ -89,14 +88,7 @@ test.describe('Account Subscription Management', () => {
 
     test('should allow upgrade from inactive to trial', async ({ page }) => {
       // Register new user
-      const email = generateUniqueEmail('upgrade-user');
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
+      await createAuthenticatedUser(page, 'upgrade-user');
 
       // Navigate to subscription page
       await page.goto('/account/subscription');
@@ -130,14 +122,7 @@ test.describe('Account Subscription Management', () => {
   test.describe('Subscription Status - Trial', () => {
     test('should display trial status badge', async ({ page }) => {
       // Register and upgrade to trial
-      const email = generateUniqueEmail('trial-user');
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
+      await createAuthenticatedUser(page, 'trial-user');
 
       await page.goto('/account/subscription');
       await page.locator('[data-testid="upgrade-button"]').click();
@@ -152,14 +137,7 @@ test.describe('Account Subscription Management', () => {
 
     test('should allow cancel from trial to inactive', async ({ page }) => {
       // Register and upgrade to trial
-      const email = generateUniqueEmail('cancel-trial-user');
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
+      await createAuthenticatedUser(page, 'cancel-trial-user');
 
       await page.goto('/account/subscription');
       await page.locator('[data-testid="upgrade-button"]').click();
@@ -195,17 +173,7 @@ test.describe('Account Subscription Management', () => {
   test.describe('Navigation and Integration', () => {
     test('should navigate to subscription from account settings', async ({ page }) => {
       // Register and login
-      const email = generateUniqueEmail('nav-user');
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
-
-      // Navigate to account page
-      await page.goto('/account');
+      await createAuthenticatedUser(page, 'nav-user');
 
       // Find and click subscription link in navigation
       const subscriptionLink = page.locator('a[href="/account/subscription"]');
@@ -218,14 +186,7 @@ test.describe('Account Subscription Management', () => {
 
     test('should maintain session across subscription page visits', async ({ page }) => {
       // Register and login
-      const email = generateUniqueEmail('session-user');
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
+      await createAuthenticatedUser(page, 'session-user');
 
       // Visit subscription page
       await page.goto('/account/subscription');
@@ -244,14 +205,7 @@ test.describe('Account Subscription Management', () => {
   test.describe('Error Handling', () => {
     test('should handle rapid successive status changes', async ({ page }) => {
       // Register user
-      const email = generateUniqueEmail('rapid-change-user');
-      const password = 'Password123';
-
-      await page.goto('/register');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
-      await page.fill('input[name="confirmPassword"]', password);
-      await page.click('button[type="submit"]');
+      await createAuthenticatedUser(page, 'rapid-change-user');
 
       await page.goto('/account/subscription');
 

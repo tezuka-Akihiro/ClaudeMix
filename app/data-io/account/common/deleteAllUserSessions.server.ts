@@ -16,9 +16,7 @@ interface CloudflareEnv {
 }
 
 interface CloudflareLoadContext {
-  cloudflare: {
-    env: CloudflareEnv;
-  };
+  env: CloudflareEnv;
 }
 
 /**
@@ -34,7 +32,7 @@ export async function deleteAllUserSessions(
   context: CloudflareLoadContext
 ): Promise<number> {
   try {
-    const kv = context.cloudflare.env.SESSION_KV;
+    const kv = context.env.SESSION_KV;
     let deletedCount = 0;
     let cursor: string | undefined;
 

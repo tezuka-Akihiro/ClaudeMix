@@ -42,6 +42,13 @@ export function SubscriptionStatusCard({
           description: 'サブスクリプションをアクティベートしてください',
           testId: 'badge-danger',
         };
+      default:
+        return {
+          label: '不明',
+          variant: 'danger',
+          description: 'ステータスを確認してください',
+          testId: 'badge-danger',
+        };
     }
   };
 

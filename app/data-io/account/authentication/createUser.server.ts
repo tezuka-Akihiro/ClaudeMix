@@ -11,9 +11,7 @@ interface CloudflareEnv {
 }
 
 interface CloudflareLoadContext {
-  cloudflare: {
-    env: CloudflareEnv;
-  };
+  env: CloudflareEnv;
 }
 
 /**
@@ -48,9 +46,9 @@ export async function createUser(
     // Insert user with parameterized query
     const stmt = db
       .prepare(
-        'INSERT INTO users (id, email, passwordHash, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO users (id, email, passwordHash, subscriptionStatus, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)'
       )
-      .bind(userId, email, passwordHash, now, now);
+      .bind(userId, email, passwordHash, 'inactive', now, now);
 
     await stmt.run();
 

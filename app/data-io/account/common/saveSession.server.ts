@@ -16,9 +16,7 @@ interface CloudflareEnv {
 }
 
 interface CloudflareLoadContext {
-  cloudflare: {
-    env: CloudflareEnv;
-  };
+  env: CloudflareEnv;
 }
 
 /**
@@ -40,7 +38,7 @@ export async function saveSession(
     const ttlSeconds = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
 
     // Save session to KV with TTL
-    const kv = context.cloudflare.env.SESSION_KV;
+    const kv = context.env.SESSION_KV;
     const kvKey = `session:${sessionData.sessionId}`;
     await kv.put(kvKey, JSON.stringify(sessionData), {
       expirationTtl: ttlSeconds,

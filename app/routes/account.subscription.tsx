@@ -14,6 +14,7 @@ import { SubscriptionStatusCard } from '~/components/account/subscription/Subscr
 import { validateSubscriptionChange } from '~/lib/account/subscription/validateSubscriptionChange';
 import { updateUserSubscriptionStatus } from '~/data-io/account/subscription/updateUserSubscriptionStatus.server';
 import { getSession } from '~/data-io/account/common/getSession.server';
+import { getUserById } from '~/data-io/account/common/getUserById.server';
 
 // CSS imports
 import '~/styles/account/layer2-subscription.css';
@@ -38,17 +39,7 @@ export async function loader() {
  */
 export async function action({ request, context }: ActionFunctionArgs) {
   // Get session
-  const cookieHeader = request.headers.get('Cookie');
-  const sessionId = cookieHeader
-    ?.split(';')
-    .find((c) => c.trim().startsWith('session_id='))
-    ?.split('=')[1];
-
-  if (!sessionId) {
-    return redirect('/login');
-  }
-
-  const sessionData = await getSession(sessionId, context as any);
+  const sessionData = await getSession(request, context as any);
   if (!sessionData) {
     return redirect('/login');
   }
@@ -58,9 +49,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const intent = formData.get('intent');
   const newStatus = formData.get('newStatus') as 'active' | 'inactive' | 'trial';
 
-  // Get current user status from parent route
-  const parentData = await context.parentData?.();
-  const currentStatus = parentData?.user?.subscriptionStatus || 'inactive';
+  // Get current user status directly from database to avoid stale data
+  const user = await getUserById(sessionData.userId, context as any);
+  if (!user) {
+    return redirect('/login');
+  }
+  const currentStatus = user.subscriptionStatus;
 
   // Validate subscription change
   const validation = validateSubscriptionChange({
@@ -75,7 +69,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   // Update subscription status
   try {
     await updateUserSubscriptionStatus(sessionData.userId, newStatus, context as any);
-    return json({ success: true });
+    return redirect('/account/subscription');
   } catch (error) {
     console.error('Error updating subscription:', error);
     return json({ error: 'サブスクリプションの更新に失敗しました' }, { status: 500 });

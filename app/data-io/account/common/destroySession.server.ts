@@ -14,9 +14,7 @@ interface CloudflareEnv {
 }
 
 interface CloudflareLoadContext {
-  cloudflare: {
-    env: CloudflareEnv;
-  };
+  env: CloudflareEnv;
 }
 
 /**
@@ -33,7 +31,7 @@ export async function destroySession(
 ): Promise<string> {
   try {
     // Delete session from KV
-    const kv = context.cloudflare.env.SESSION_KV;
+    const kv = context.env.SESSION_KV;
     const kvKey = `session:${sessionId}`;
     await kv.delete(kvKey);
 

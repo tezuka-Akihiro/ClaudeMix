@@ -16,9 +16,7 @@ interface CloudflareEnv {
 }
 
 interface CloudflareLoadContext {
-  cloudflare: {
-    env: CloudflareEnv;
-  };
+  env: CloudflareEnv;
 }
 
 /**
@@ -46,7 +44,7 @@ export async function getSession(
     }
 
     // Retrieve session data from KV
-    const kv = context.cloudflare.env.SESSION_KV;
+    const kv = context.env.SESSION_KV;
     const kvKey = `session:${sessionId}`;
     const sessionDataJson = await kv.get(kvKey);
 

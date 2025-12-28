@@ -126,21 +126,22 @@ export async function action({ request, context }: ActionFunctionArgs) {
   // Create session
   const sessionId = crypto.randomUUID();
   const sessionData = createSessionData(newUser.id, sessionId);
-  const sessionCreated = await saveSession(sessionId, sessionData, context as any);
 
-  if (!sessionCreated) {
+  try {
+    const setCookieHeader = await saveSession(sessionData, context as any);
+
+    // Set session cookie and redirect to /account
+    return redirect('/account', {
+      headers: {
+        'Set-Cookie': setCookieHeader,
+      },
+    });
+  } catch (error) {
     return json<ActionData>(
       { error: 'セッションの作成に失敗しました。ログインしてください' },
       { status: 500 }
     );
   }
-
-  // Set session cookie and redirect to /account
-  return redirect('/account', {
-    headers: {
-      'Set-Cookie': `sessionId=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`,
-    },
-  });
 }
 
 export default function Register() {
