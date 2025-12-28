@@ -1,0 +1,156 @@
+/**
+ * layer2-subscription.css
+ * Purpose: Subscription section styling (appearance + size)
+ *
+ * @layer Layer 2 (見た目と大きさ)
+ * @responsibility 色、フォント、サイズ、余白、配置
+ */
+
+/* Subscription Container */
+.subscription-container {
+  max-width: var(--layout-page-container-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-4);
+}
+
+.subscription-container h1 {
+  font-size: var(--font-size-heading-1);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-4);
+}
+
+.subscription-container h2 {
+  font-size: var(--font-size-heading-2);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+/* Subscription Status Card */
+.subscription-status-card {
+  background-color: var(--color-bg-primary);
+  border: var(--border-width-sm) solid var(--color-border-primary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.subscription-status-card h2 {
+  font-size: var(--font-size-heading-3);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+.subscription-status-card p {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-2);
+}
+
+/* Badge Variants */
+.badge-success,
+.badge-warning,
+.badge-danger,
+.badge-info {
+  display: inline-block;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.badge-success {
+  background-color: var(--color-status-success-bg);
+  color: var(--color-status-success);
+  border: var(--border-width-sm) solid var(--color-status-success);
+}
+
+.badge-warning {
+  background-color: var(--color-status-warning-bg);
+  color: var(--color-status-warning);
+  border: var(--border-width-sm) solid var(--color-status-warning);
+}
+
+.badge-danger {
+  background-color: var(--color-status-error-bg);
+  color: var(--color-status-error);
+  border: var(--border-width-sm) solid var(--color-status-error);
+}
+
+.badge-info {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  border: var(--border-width-sm) solid var(--color-border-primary);
+}
+
+/* Button Styles */
+.btn-primary,
+.btn-secondary {
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn-primary:disabled {
+  background-color: var(--color-bg-disabled);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: var(--border-width-sm) solid var(--color-border-primary);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.btn-secondary:disabled {
+  background-color: var(--color-bg-disabled);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Error Message */
+.error-message {
+  background-color: var(--color-status-error-bg);
+  color: var(--color-status-error);
+  padding: var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  border: var(--border-width-sm) solid var(--color-status-error);
+  margin-top: var(--spacing-3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .subscription-container {
+    padding: var(--spacing-3);
+  }
+
+  .subscription-status-card {
+    padding: var(--spacing-3);
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

@@ -3,6 +3,7 @@ import plugin from 'tailwindcss/plugin.js'
 import typography from '@tailwindcss/typography'
 import { blogLayer3Plugin } from './app/styles/blog/layer3'
 import { blogLayer4Plugin } from './app/styles/blog/layer4'
+import { accountLayer3Plugin } from './app/styles/account/layer3'
 
 export default {
   content: ['./app/**/*.{js,jsx,ts,tsx}'],
@@ -13,5 +14,7 @@ export default {
     blogLayer3Plugin,
     // Blog: Structure exceptions
     blogLayer4Plugin,
+    // Account: Layout structures
+    accountLayer3Plugin,
   ],
 } satisfies Config

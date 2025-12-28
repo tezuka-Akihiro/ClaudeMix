@@ -31,10 +31,14 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 
 | ファイル名 | パス | 説明 |
 | :--- | :--- | :--- |
-| PostDetailSection.tsx | app/components/blog/post-detail/PostDetailSection.tsx | 記事詳細セクションのメインコンポーネント。記事のメタデータ（タイトル、投稿日、著者、**タグバッジ**）と本文（マークダウン変換後のHTML）を表示。**useEffectでMermaid.jsを初期化し、クラス付与されたMermaidコードブロックをSVG図表に変換** |
-| PostDetailSection.test.tsx | app/components/blog/post-detail/PostDetailSection.test.tsx | PostDetailSection.tsxのテスト。コンポーネントのレンダリング、propsの表示、タグ表示を検証 |
+| PostDetailSection.tsx | app/components/blog/post-detail/PostDetailSection.tsx | 記事詳細セクションのメインコンポーネント。記事のメタデータ（タイトル、投稿日、著者、**タグバッジ**）と本文（マークダウン変換後のHTML）を表示。**サブスクリプション状態に基づいてコンテンツの可視範囲を制御し、未契約ユーザーにはPaywallを表示**。useEffectでMermaid.jsを初期化し、クラス付与されたMermaidコードブロックをSVG図表に変換 |
+| PostDetailSection.test.tsx | app/components/blog/post-detail/PostDetailSection.test.tsx | PostDetailSection.tsxのテスト。コンポーネントのレンダリング、propsの表示、タグ表示、**サブスクリプション状態に応じたコンテンツ制御**を検証 |
 | TableOfContents.tsx | app/components/blog/post-detail/TableOfContents.tsx | 目次コンポーネント。見出し情報を受け取り、アンカーリンク付きリストとして表示。クリックで該当見出しへスクロール |
 | TableOfContents.test.tsx | app/components/blog/post-detail/TableOfContents.test.tsx | TableOfContents.tsxのテスト。見出しリストの表示、アンカーリンクの生成を検証 |
+| Paywall.tsx | app/components/blog/post-detail/Paywall.tsx | ペイウォールコンポーネント。未契約ユーザーに対して、制限を超えるコンテンツの前に表示される障壁。SubscriptionPromotionBannerを内包し、会員登録を促す |
+| Paywall.test.tsx | app/components/blog/post-detail/Paywall.test.tsx | Paywall.tsxのテスト。コンポーネントのレンダリング、表示条件、内包するSubscriptionPromotionBannerの表示を検証 |
+| SubscriptionPromotionBanner.tsx | app/components/blog/post-detail/SubscriptionPromotionBanner.tsx | 購読促進バナーコンポーネント。プラン情報（1ヶ月/3ヶ月/6ヶ月）と価格を表示し、CTAボタンで`/account/subscription`へ遷移。`app/specs/account/subscription-spec.yaml`からプラン情報を読み込む |
+| SubscriptionPromotionBanner.test.tsx | app/components/blog/post-detail/SubscriptionPromotionBanner.test.tsx | SubscriptionPromotionBanner.tsxのテスト。プラン情報の表示、CTAボタンのリンク先を検証 |
 
 ---
 
@@ -48,6 +52,8 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 | extractHeadings.test.ts | app/lib/blog/post-detail/extractHeadings.test.ts | extractHeadings.tsのテスト。見出し抽出、ネストレベル、日本語見出しの処理を検証 |
 | slugify.ts | app/lib/blog/post-detail/slugify.ts | 見出しテキストをURLセーフなスラグに変換する純粋関数。日本語テキスト対応 |
 | slugify.test.ts | app/lib/blog/post-detail/slugify.test.ts | slugify.tsのテスト。英数字、日本語、特殊文字のスラグ化を検証 |
+| determineContentVisibility.ts | app/lib/blog/post-detail/determineContentVisibility.ts | サブスクリプション状態（`hasActiveSubscription: boolean`）と記事の公開割合（`freeContentPercentage: number`）を受け取り、コンテンツの可視範囲を判定する純粋関数。`{ showFullContent: boolean, visiblePercentage: number }` を返す。副作用なし（テスト容易性を確保） |
+| determineContentVisibility.test.ts | app/lib/blog/post-detail/determineContentVisibility.test.ts | determineContentVisibility.tsのテスト。サブスクリプションがアクティブな場合（全文表示）、非アクティブな場合（部分表示）、境界値（0%/100%）を検証 |
 
 ---
 
@@ -55,7 +61,9 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 
 | ファイル名 | パス | 説明 |
 | :--- | :--- | :--- |
-| fetchPostBySlug.server.ts | app/data-io/blog/post-detail/fetchPostBySlug.server.ts | slugを受け取り、ファイルシステムから記事データ（frontmatter含む: title, description, publishedAt, author, tags, category, source）を取得する関数。sourceプロパティがある場合は外部ファイルを読み込む。記事が存在しない場合はnullを返す。**descriptionとtagsフィールドを含むPostDetailDataを返す** |
-| fetchPostBySlug.server.test.ts | app/data-io/blog/post-detail/fetchPostBySlug.server.test.ts | fetchPostBySlug.server.tsのテスト。正常系（記事取得成功、参照機能、description/tags取得）と異常系（記事が存在しない）を検証 |
+| fetchPostBySlug.server.ts | app/data-io/blog/post-detail/fetchPostBySlug.server.ts | slugを受け取り、ファイルシステムから記事データ（frontmatter含む: title, description, publishedAt, author, tags, category, source, freeContentPercentage）を取得する関数。sourceプロパティがある場合は外部ファイルを読み込む。記事が存在しない場合はnullを返す。**descriptionとtagsフィールド、freeContentPercentageを含むPostDetailDataを返す** |
+| fetchPostBySlug.server.test.ts | app/data-io/blog/post-detail/fetchPostBySlug.server.test.ts | fetchPostBySlug.server.tsのテスト。正常系（記事取得成功、参照機能、description/tags/freeContentPercentage取得）と異常系（記事が存在しない）を検証 |
 | fetchExternalMarkdown.server.ts | app/data-io/blog/post-detail/fetchExternalMarkdown.server.ts | 外部マークダウンファイルのパスを受け取り、ファイルシステムから読み込む関数。パスバリデーション（ディレクトリトラバーサル対策）を実施。ファイルが存在しない場合はエラーをthrow |
 | fetchExternalMarkdown.server.test.ts | app/data-io/blog/post-detail/fetchExternalMarkdown.server.test.ts | fetchExternalMarkdown.server.tsのテスト。正常系（ファイル読み込み成功）、異常系（ファイル不存在、不正パス）を検証 |
+| getSubscriptionStatus.server.ts | app/data-io/blog/post-detail/getSubscriptionStatus.server.ts | ユーザーIDを受け取り、accountサービスのdata-io層（`app/data-io/account/subscription/getSubscriptionByUserId.server.ts`）を介してサブスクリプション状態を取得し、有効なサブスクリプションが存在するかを判定する関数。`{ hasActiveSubscription: boolean }` を返す。サブスクリプションが存在し、`status === 'active'` かつ `current_period_end` が未来日の場合に`true`。エラー発生時は安全側（`false`）に倒す |
+| getSubscriptionStatus.server.test.ts | app/data-io/blog/post-detail/getSubscriptionStatus.server.test.ts | getSubscriptionStatus.server.tsのテスト。正常系（アクティブなサブスクリプション、非アクティブ、サブスクリプションなし）、異常系（accountサービスdata-io層のエラー）を検証 |

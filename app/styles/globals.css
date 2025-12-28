@@ -51,6 +51,10 @@ html {
   --color-status-success-bg: rgb(74 222 128 / 0.15);
   --color-status-success-glow: rgb(74 222 128 / 0.5);
 
+  --color-status-warning: #facc15;
+  --color-status-warning-bg: rgb(250 204 21 / 0.15);
+  --color-status-warning-glow: rgb(250 204 21 / 0.5);
+
   --color-status-error: #f87171;
   --color-status-error-bg: rgb(248 113 113 / 0.15);
   --color-status-error-glow: rgb(248 113 113 / 0.5);
@@ -104,6 +108,7 @@ html {
 
   /* ボタン */
   --layout-button-width-default: 100px;
+
 
   /* --- Typography (タイポグラフィ) --- */
   --font-size-xs: 12px;

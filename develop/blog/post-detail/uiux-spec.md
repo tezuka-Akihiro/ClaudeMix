@@ -55,10 +55,16 @@
 
 ### Loader
 
-- **責務**: URLパラメータ（slug）から記事を特定し、記事データを取得してマークダウンをHTMLに変換する
+- **責務**: URLパラメータ（slug）から記事を特定し、記事データとユーザーのサブスクリプション状態を取得する
 - **データソース**:
   - `app/data-io/blog/post-detail/fetchPostBySlug.server.ts` - 記事データの取得
   - `app/lib/blog/post-detail/markdownConverter.ts` - マークダウンからHTMLへの変換（画像・Mermaid対応）
+  - `app/data-io/blog/post-detail/getSubscriptionStatus.server.ts` - サブスクリプション状態の取得（accountサービスと連携）
+- **処理フロー**:
+  1. URLパラメータ（slug）から記事を特定
+  2. リクエストからセッションCookieを読み取り、ユーザーの認証状態を確認
+  3. 認証済みの場合、サブスクリプション状態を取得（未認証の場合は`null`）
+  4. 記事データとサブスクリプション状態をコンポーネントに渡す
 - **エラーハンドリング**: 記事が存在しない場合（slugが無効）、404エラーをスロー
 
 ### Action
@@ -91,6 +97,9 @@ graph TD
 
     Section --> MetaArea["Article Metadata Container"]
     Section --> ContentArea["Article Content Container"]
+    Section --> PaywallArea["Paywall Container (条件付き表示)"]
+
+    PaywallArea --> PromotionBanner["Subscription Promotion Banner"]
 ```
 
 **説明**:
@@ -98,7 +107,9 @@ graph TD
 - **Header/Footer**: commonセクションで定義された共通コンポーネント
 - **PostDetailSection**: 記事詳細セクションのメインコンテナ
 - **Article Metadata Container**: 記事のタイトル、投稿日、著者を表示するエリア
-- **Article Content Container**: マークダウンから変換されたHTML本文を表示するエリア
+- **Article Content Container**: マークダウンから変換されたHTML本文を表示するエリア（サブスクリプション状態に応じて部分表示）
+- **Paywall Container**: 未契約ユーザーに対して、制限を超えるコンテンツの前に表示される障壁（条件付き表示）
+- **Subscription Promotion Banner**: ペイウォール内に配置される会員登録・サブスクリプション購入促進バナー
 
 ---
 
@@ -155,6 +166,56 @@ graph TD
 - **トリガー**: リンクをクリック
 - **応答**: 外部リンクの場合は新しいタブで開く、内部リンクの場合は同一タブで遷移
 - **アニメーション**: ホバー時のトランジション効果（デザイントークンで定義）
+
+---
+
+### 3. Paywall (ペイウォール)
+
+**責務**: 未契約ユーザーに対して、制限を超えるコンテンツの前に表示される障壁
+
+#### Paywall の状態
+
+- **表示 (visible)**: サブスクリプションが非アクティブ（`hasActiveSubscription: false`）かつ記事に`freeContentPercentage`が設定されている場合に表示
+- **非表示 (hidden)**: サブスクリプションがアクティブ（`hasActiveSubscription: true`）の場合、またはfreeContentPercentageが100%の場合は非表示
+
+#### 表示条件の判定ロジック
+
+- **lib層での判定**: `app/lib/blog/post-detail/determineContentVisibility.ts` で可視範囲を計算
+- **UI層での適用**: PostDetailSectionで判定結果を受け取り、条件に応じてPaywallコンポーネントを表示
+
+#### Paywall の表示内容
+
+- **メッセージ**: 「続きを読むには会員登録が必要です」などのテキスト
+- **SubscriptionPromotionBanner**: 会員登録・サブスクリプション購入を促すバナー
+
+#### Paywall のインタラクション
+
+- **トリガー**: Paywall内のCTAボタン（「プランを見る」など）をクリック
+- **応答**: `/account/subscription`（サブスクリプション管理ページ）へ遷移
+- **アニメーション**: 特になし（静的な表示）
+
+---
+
+### 4. SubscriptionPromotionBanner (購読促進バナー)
+
+**責務**: ペイウォール内に配置され、会員登録・サブスクリプション購入を促す
+
+#### SubscriptionPromotionBanner の状態
+
+- **通常 (default)**: プラン情報（1ヶ月/3ヶ月/6ヶ月）と価格を表示
+- **ホバー (hover)**: CTAボタンがホバー状態になり、視覚的なフィードバックを提供
+
+#### SubscriptionPromotionBanner の表示内容
+
+- **見出し**: 「すべての記事を読むには」などのキャッチコピー
+- **プラン情報**: 各プランの期間と価格（`app/specs/account/subscription-spec.yaml`から取得）
+- **CTAボタン**: 「プランを見る」「今すぐ登録」などのアクション誘導ボタン
+
+#### SubscriptionPromotionBanner のインタラクション
+
+- **トリガー**: CTAボタンをクリック
+- **応答**: `/account/subscription`（サブスクリプション管理ページ）へ遷移
+- **アニメーション**: ボタンホバー時のトランジション効果（デザイントークンで定義）
 
 ---
 
