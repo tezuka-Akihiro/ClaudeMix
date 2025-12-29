@@ -14,10 +14,8 @@ describe('destroySession.server', () => {
 
   // Mock context with KV binding
   const mockContext = {
-    cloudflare: {
-      env: {
-        SESSION_KV: mockKV,
-      },
+    env: {
+      SESSION_KV: mockKV,
     },
   };
 

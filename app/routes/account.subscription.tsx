@@ -79,7 +79,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 export default function AccountSubscription() {
   // Use parent route's authentication data instead of duplicating auth logic
   const parentData = useRouteLoaderData<typeof accountLoader>('routes/account');
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<typeof action>();
 
   if (!parentData) {
     throw new Error('Parent route data not found');

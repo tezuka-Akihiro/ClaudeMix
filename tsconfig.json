@@ -33,6 +33,6 @@
       "~/*": ["./app/*"]
     },
     "noEmit": true,
-    "types": ["@remix-run/dev", "vite/client"]
+    "types": ["@remix-run/dev", "vite/client", "@cloudflare/workers-types"]
   }
 }

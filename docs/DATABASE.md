@@ -22,28 +22,33 @@ ClaudeMixは以下のデータベースを使用します:
 
 以下のコマンドでローカルデータベースをセットアップします:
 
-#### Linux/Mac:
+#### Linux/Mac
+
 ```bash
 ./scripts/setup-db.sh
 ```
 
-#### Windows:
+#### Windows
+
 ```cmd
 scripts\setup-db.cmd
 ```
 
-#### または npm script:
+#### または npm script
+
 ```bash
 npm run setup:db
 ```
 
 このスクリプトは以下を実行します:
+
 1. ローカルD1データベースの作成
 2. マイグレーションの適用 (`migrations/*.sql`)
 
 ### 2. データベース構造
 
 #### users テーブル
+
 ```sql
 CREATE TABLE users (
   id TEXT PRIMARY KEY,
@@ -55,6 +60,7 @@ CREATE TABLE users (
 ```
 
 #### sessions テーブル
+
 ```sql
 CREATE TABLE sessions (
   id TEXT PRIMARY KEY,
@@ -70,11 +76,13 @@ CREATE TABLE sessions (
 ### 新しいマイグレーションの作成
 
 1. `migrations/`ディレクトリに新しいSQLファイルを作成:
+
    ```
    migrations/0002_add_new_feature.sql
    ```
 
 2. マイグレーションを適用:
+
    ```bash
    wrangler d1 execute claudemix-dev --local --file=migrations/0002_add_new_feature.sql
    ```
@@ -105,6 +113,7 @@ npm run setup:db
 
 **原因**: 同じメールアドレスのユーザーが既に存在
 **解決策**:
+
 - 異なるメールアドレスを使用
 - またはデータベースをリセット
 
@@ -115,6 +124,7 @@ npm run setup:db
 1. D1データベースを作成
 2. `wrangler.toml`の`database_id`を更新
 3. マイグレーションを本番DBに適用:
+
    ```bash
    wrangler d1 execute claudemix-prod --file=migrations/0001_initial_schema.sql
    ```
@@ -124,6 +134,7 @@ npm run setup:db
 E2Eテストは開発用データベースを共有します。
 
 テスト前に既存データをクリーンアップする場合:
+
 ```bash
 # 全ユーザーとセッションを削除
 wrangler d1 execute claudemix-dev --local --command "DELETE FROM sessions; DELETE FROM users;"

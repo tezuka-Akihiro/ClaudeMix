@@ -130,6 +130,7 @@ describe('createUser.server', () => {
         expect.any(String), // id
         maliciousEmail, // email (safely bound)
         passwordHash,
+        'inactive', // subscriptionStatus
         expect.any(String), // createdAt
         expect.any(String) // updatedAt
       );

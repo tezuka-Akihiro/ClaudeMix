@@ -163,15 +163,24 @@ test.describe('Common Components', () => {
       // Navigate to subscription page
       await page.goto('/account/subscription');
 
-      // Verify success badge
-      const successBadge = page.locator('[data-testid="badge-success"]');
-      await expect(successBadge).toBeVisible();
-      await expect(successBadge).toHaveClass(/badge-success/);
+      // New users have 'inactive' status by default, so verify danger badge
+      const dangerBadge = page.locator('[data-testid="badge-danger"]');
+      await expect(dangerBadge).toBeVisible();
+      await expect(dangerBadge).toHaveClass(/badge-danger/);
+      await expect(dangerBadge).toHaveText('非アクティブ');
 
-      // Verify warning badge
+      // Upgrade to trial status
+      const upgradeButton = page.locator('[data-testid="upgrade-button"]');
+      await upgradeButton.click();
+
+      // Wait for page to reload after upgrade
+      await page.waitForLoadState('networkidle');
+
+      // Verify warning badge (trial status)
       const warningBadge = page.locator('[data-testid="badge-warning"]');
       await expect(warningBadge).toBeVisible();
       await expect(warningBadge).toHaveClass(/badge-warning/);
+      await expect(warningBadge).toHaveText('トライアル');
     });
   });
 });

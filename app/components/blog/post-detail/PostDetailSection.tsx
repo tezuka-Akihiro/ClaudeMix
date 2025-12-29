@@ -39,11 +39,12 @@ export function PostDetailSection({
     if (!hasMermaid) return;
 
     if (typeof window !== 'undefined' && !window.mermaid) {
+      // @ts-expect-error - CDN からの動的インポートは型定義がないため
       import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
         .then((mermaid) => {
           window.mermaid = mermaid.default;
-          window.mermaid.initialize({ startOnLoad: false, theme: 'dark' });
-          window.mermaid.run({
+          window.mermaid!.initialize({ startOnLoad: false, theme: 'dark' });
+          window.mermaid!.run({
             querySelector: '.mermaid',
           });
         })

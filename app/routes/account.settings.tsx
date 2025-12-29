@@ -235,10 +235,18 @@ export async function action({ request, context }: ActionFunctionArgs) {
       );
     }
 
+    // Check for active subscription (Phase 2)
+    if (currentUser.subscriptionStatus === 'active' || currentUser.subscriptionStatus === 'trial') {
+      console.warn(`User ${session.userId} has active subscription (${currentUser.subscriptionStatus}). Proceeding with deletion.`);
+      // TODO: Future implementation - Cancel Stripe subscription via API
+      // await cancelStripeSubscription(currentUser.stripeCustomerId, currentUser.stripeSubscriptionId);
+      // Note: Database CASCADE will automatically delete subscription records
+    }
+
     // Delete all user sessions
     await deleteAllUserSessions(session.userId, context as any);
 
-    // Delete user
+    // Delete user (CASCADE will delete subscriptions)
     const userDeleted = await deleteUser(session.userId, context as any);
     if (!userDeleted) {
       return json<ActionData>(

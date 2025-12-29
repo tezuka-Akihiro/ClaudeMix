@@ -20,9 +20,8 @@
 ### Phase 1: E2Eファースト (Happy Pathの定義) 🔴未着手
 
 - **1. E2Eテストの準備**:
-  - **`common`セクションの場合**: 画面レベルのE2Eテストファイル `tests/e2e/{{service}}/common.spec.ts` を**新規作成**します。
-    - **依頼例**: `@GeneratorOperator "{{service}} サービスの画面レベルE2Eテストを作成して"`
-  - **`common`セクション以外の場合**: E2Eテストファイル `tests/e2e/{{service}}/{{section}}.spec.ts` に、このセクションのHappy Pathを検証するテストを作成します。
+  - テストファイル `tests/e2e/{{service}}/{{section}}.spec.ts` を**新規作成**します。
+    - **依頼例**: `@GeneratorOperator "{{service}} サービス {{ section }} のE2Eテストを作成して"`
   - **テスト基準**: `E2E_TEST_CRITERIA.md` の以下を参考に、開発のゴールを定義します。
 - **2. テストの失敗を確認**: `npm run test:e2e` を実行し、実装がまだ存在しないため、このテストが失敗すること（RED）を確認します。
   - この失敗したテストが、Phase 2で実装すべき機能の明確なゴールとなります。
@@ -33,23 +32,20 @@
 
 **実装対象**:
 
-1. **Layer 2**: `app/styles/{{service}}/layer2-*.css`
+1. **Layer 2**: `app/styles/{{service}}/layer2-{{section}}.css`
 2. **Layer 3**: `app/styles/{{service}}/layer3.ts`
 3. **Layer 4**: `app/styles/{{service}}/layer4.ts`（必要な場合のみ）
 
 **段階的更新の運用**:
 
-- **初回セクション（commonセクション）**: 新規サービス実装時は、**必ずcommonセクションを最初に実施**します
-  - `uiux-spec.md` で画面共通コンポーネント（ページコンテナ、ヘッダー、フッター等）のCSS設計を行います
-  - このフェーズでCSS実装ファイル（layer2-*.css等）を新規作成し、サービス全体のCSS基盤を確立します
-- **2回目以降のセクション**: 新規セクション開発時は、各セクションの `uiux-spec.md` で該当セクションのコンポーネント設計を行い、このフェーズで既存のCSS実装ファイルに追記します
+- `uiux-spec.md` で該当セクションのコンポーネント設計を行い、このフェーズで既存のCSS実装ファイルに追記します
 - **共通化の検討**: 既存セクションに類似コンポーネントがある場合、必ず共通化を検討してください
 - **整合性の確認**: 追加時は、既存実装との整合性（命名規則、トークン使用等）を確認してください
 
 **手順**:
 
 1. **Layer 2 実装**:
-   - `uiux-spec.md` で定義したコンポーネントを元に `layer2-*.css` を実装
+   - `uiux-spec.md` で定義したコンポーネントを元に `layer2-{{section}}.css` を実装
    - コンポーネントセレクタ (`.{component}-{variant?}`) で定義
    - すべての値は `var(--*)` でLayer 1トークンを参照
 
