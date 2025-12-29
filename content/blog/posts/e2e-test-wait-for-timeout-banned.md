@@ -1,0 +1,266 @@
+---
+title: "AIに禁じるべきE2Eテストの1秒待機"
+description: "AIにE2Eテストの修正を頼むと、高確率でwaitForTimeoutを追加してくる。一度許容すると、あらゆる場所に伝染する。100テストケースで300秒以上の無駄な待機。プロジェクトルールで禁止しなければ、E2Eテストは腐る。"
+author: "ClaudeMix Team"
+publishedAt: "2025-12-28"
+slug: "e2e-test-wait-for-timeout-banned"
+category: "Claude Best Practices"
+tags: ["Playwright", "testing", "troubleshooting", "Prompts"]
+---
+
+## はじめに
+
+### E2Eテストでこんなことありませんか？
+
+E2Eテストが落ちた。AIに修正を頼んだら「waitForTimeout(1000)を追加しました」と言われた。テストは通った。解決だ。
+しかし、別のテストも落ちた。また「waitForTimeout」が追加された。さらに別のテストも。
+気づけばテストスイート全体に「1秒待機」が蔓延していた。テスト実行時間が倍になっていた。
+
+### この記事をお勧めしない人
+
+- テストが通れば、実行時間は気にしないという人。
+- AIが提案するコードは、基本的にそのまま採用するという人。
+- 「waitForTimeout」が何を意味するか、考えたことがない人。
+
+もし一つでも当てはまらないなら、読み進める価値があるかもしれません。
+
+### 「1秒待機」を放置すると危険です
+
+`waitForTimeout`は麻薬です。一度許容すると、あらゆる場所に伝染します。クリック後に1秒、ページ遷移後に1秒、モーダル操作後に1秒。
+やがて、100テストケースで300秒以上の無駄な待機が発生します。テスト実行のたびに5分以上のロスです。
+ついに、開発サイクルが遅くなり、「テストを回すのが面倒」という空気がチームに蔓延します。テストへの信頼が崩壊する始まりです。
+
+### こんな未来が手に入ります
+
+この記事を読めば、`waitForTimeout`をプロジェクトルールで禁止すべき理由と、代替となる「状態ベース待機」のパターンが手に入ります。
+具体的には、CLAUDE.mdに追記すべきルールと、Playwrightが提供する適切な待機メソッドの一覧を習得できます。
+この方法は、机上の空論ではありません。まさにこのブログ自身のE2Eテストで実際に遭遇し、ルール化した実践知です。
+この情報は、AIとの協調開発において「何を禁じるべきか」を定義する、プロジェクト設計の一次情報です。
+
+### このブログもそうでした
+
+このブログの開発中、Modalのフォーカストラップテストが落ちました。AIに修正を頼んだら「waitForTimeout(100)」を追加してきました。通った。しかし、これを許容した瞬間から「待機の癌」が広がり始めることに気づき、プロジェクトルールで禁止しました。
+この記事で、AIに「使ってはいけない」と教えるルールの書き方を持ち帰れるように書きました。
+さらに深掘りして、なぜAIが「待機」に走るのかを知りたい方は、その構造的な理由を確認できます。
+
+## 概要
+
+AIにE2Eテストの修正を頼むと、高確率で`waitForTimeout`を追加してきます。これは「テストを通す」という目的には合理的ですが、テストスイート全体のパフォーマンスを破壊します。
+
+この記事では、`waitForTimeout`がなぜ危険なのか、どう禁止すべきか、代替手段は何かを解説します。
+
+### 発生環境
+
+- **テストフレームワーク**: Playwright
+- **問題のコード**: `page.waitForTimeout()`
+- **影響範囲**: E2Eテストスイート全体
+
+## 問題の発見 ― AIが書いた「とりあえず待機」
+
+Modalのフォーカストラップをテストしていました。Tabキーを押すとフォーカスがモーダル外に逃げる。実装は正しいはずなのに。
+
+AIに修正を頼んだところ、こう返ってきました。
+
+```typescript
+// AIが追加したコード
+await modalTrigger.click();
+const modal = page.locator('[role="dialog"]');
+await expect(modal).toBeVisible();
+
+// Wait for focus trap to be set up
+await page.waitForTimeout(100);  // ← AIの「解決策」
+
+await page.keyboard.press('Tab');
+```
+
+テストは通りました。**しかし、これは解決ではありません。**
+
+## なぜAIは「待機」に走るのか
+
+### AIの思考回路
+
+AIは「テストを通す」ことを目的としています。非同期処理が原因でテストが落ちているなら、待てばいい。論理的に正しい。
+
+```
+問題: 非同期処理が完了する前にアサーションが走る
+解決: 待てばいい → waitForTimeout
+```
+
+**AIにとって、これは最短で目的を達成する合理的な判断です。**
+
+### AIが見ていないもの
+
+しかし、AIは以下を見ていません。
+
+1. **テストスイート全体のパフォーマンス**: 1テストの100msが、100テストで10秒になる
+2. **プロジェクトの長期的な健全性**: 一度許容すると、あらゆる場所に伝染する
+3. **待機時間の根拠**: なぜ100ms？なぜ1秒？根拠はない
+
+**個別最適が全体最悪を生む。** これがAIの構造的な限界です。
+
+## 塵も積もれば ― 待機時間の累積的害悪
+
+### 蔓延のパターン
+
+一度`waitForTimeout`を許容すると、以下のように伝染します。
+
+```typescript
+// テストスイート全体に蔓延する「待機の癌」
+
+// ログインテスト
+await loginButton.click();
+await page.waitForTimeout(1000);  // ログイン後の待機
+
+// ダッシュボードテスト
+await page.goto('/dashboard');
+await page.waitForTimeout(1000);  // ページ遷移後の待機
+
+// 設定テスト
+await settingsLink.click();
+await page.waitForTimeout(500);   // クリック後の待機
+
+// モーダルテスト
+await modal.locator('button').click();
+await page.waitForTimeout(1000);  // モーダル操作後の待機
+```
+
+### 累積的なダメージ
+
+| テスト数 | 平均待機/テスト | 合計待機時間 |
+|:--|:--|:--|
+| 10 | 2秒 | 20秒 |
+| 50 | 2秒 | 100秒（1分40秒） |
+| 100 | 3秒 | 300秒（5分） |
+| 200 | 3秒 | 600秒（10分） |
+
+**10分の無駄な待機。** テストを回すたびに10分のロスです。1日10回テストを回せば、100分。1週間で8時間以上。
+
+これが「塵も積もれば」の正体です。
+
+### フレーキーテストの温床
+
+さらに悪いことに、時間ベースの待機は**フレーキーテスト**（たまに落ちるテスト）の温床です。
+
+- 開発環境では100msで十分だが、CIでは足りない
+- CIでは1秒で通るが、負荷が高い時は落ちる
+- 「なぜか落ちる」テストが増え、テストへの信頼が崩壊する
+
+## 構造的解決 ― 状態ベース待機
+
+### 原則：「時間」ではなく「状態」を待つ
+
+```typescript
+// ❌ 時間ベース（祈り）
+await page.waitForTimeout(1000);
+await expect(modal).toBeVisible();
+
+// ✅ 状態ベース（事実）
+await expect(modal).toBeVisible();  // 表示されるまで自動で待つ
+```
+
+Playwrightの`expect`は、条件が満たされるまで自動でリトライします。デフォルトで5秒間リトライし続けます。**待機時間を指定する必要はありません。**
+
+### 代替パターン一覧
+
+| 待ちたいこと | ❌ 時間ベース | ✅ 状態ベース |
+|:--|:--|:--|
+| 要素の表示 | `waitForTimeout(1000)` | `expect(el).toBeVisible()` |
+| 要素の非表示 | `waitForTimeout(1000)` | `expect(el).not.toBeVisible()` |
+| フォーカス | `waitForTimeout(100)` | `expect(el).toBeFocused()` |
+| テキスト | `waitForTimeout(500)` | `expect(el).toContainText('...')` |
+| URL遷移 | `waitForTimeout(1000)` | `page.waitForURL('/path')` |
+| APIレスポンス | `waitForTimeout(2000)` | `page.waitForResponse(url)` |
+| ネットワーク安定 | `waitForTimeout(1000)` | `page.waitForLoadState('networkidle')` |
+
+### フォーカストラップの修正例
+
+```diff
+// Before: 時間ベース（祈り）
+await modalTrigger.click();
+const modal = page.locator('[role="dialog"]');
+await expect(modal).toBeVisible();
+- await page.waitForTimeout(100);
+await page.keyboard.press('Tab');
+
+// After: 状態ベース（事実）
+await modalTrigger.click();
+const modal = page.locator('[role="dialog"]');
+await expect(modal).toBeVisible();
++ await expect(modal.locator('input').first()).toBeFocused();
+await page.keyboard.press('Tab');
+```
+
+**「フォーカスが設定された」という事実を確認してから、次に進む。** これが状態ベース待機です。
+
+## プロジェクトルールで禁止する
+
+### CLAUDE.mdへの追記
+
+AIに「使ってはいけない」と教えるために、CLAUDE.mdに以下を追記します。
+
+```markdown
+## E2Eテストルール
+
+### 禁止事項
+
+- `page.waitForTimeout()` の使用は**原則禁止**
+- 例外を設ける場合は、コードレビューで理由を説明すること
+
+### 禁止の理由
+
+1. 待機時間の根拠がない（なぜ100ms？なぜ1秒？）
+2. 累積的にテスト実行時間を肥大化させる
+3. 環境によって必要な待機時間が異なり、フレーキーテストの原因になる
+
+### 代替手段（状態ベース待機）
+
+- `expect(element).toBeVisible()` - 要素の表示を待つ
+- `expect(element).toBeFocused()` - フォーカスを待つ
+- `expect(element).toContainText('...')` - テキストを待つ
+- `page.waitForURL('/path')` - ページ遷移を待つ
+- `page.waitForResponse(url)` - APIレスポンスを待つ
+- `page.waitForLoadState('networkidle')` - ネットワーク安定を待つ
+```
+
+### リントルールでの検出（発展）
+
+ESLintやカスタムスクリプトで`waitForTimeout`を検出することも可能です。
+
+```javascript
+// scripts/lint-e2e-no-timeout.js
+const files = glob.sync('tests/e2e/**/*.ts');
+for (const file of files) {
+  const content = fs.readFileSync(file, 'utf-8');
+  if (content.includes('waitForTimeout')) {
+    console.error(`❌ ${file}: waitForTimeout is banned`);
+    process.exit(1);
+  }
+}
+```
+
+## 学んだこと・まとめ
+
+### 技術的な学び
+
+1. **waitForTimeoutは麻薬**: 一度許容すると蔓延する
+2. **時間ベースの待機には根拠がない**: なぜその時間なのか説明できない
+3. **状態ベースの待機を使え**: Playwrightのexpectは自動でリトライする
+
+### AIとの協調における学び
+
+1. **AIは個別最適に走る**: テストスイート全体のパフォーマンスは見ていない
+2. **禁止ルールを明示せよ**: CLAUDE.mdに書かなければ、AIは知らない
+3. **「使ってはいけない」を教えることも設計**: 許可だけでなく禁止も重要
+
+### 今後のベストプラクティス
+
+1. **プロジェクトルールで禁止**: waitForTimeoutを原則禁止する
+2. **代替パターンを提示**: 何を使えばいいか明確にする
+3. **リントで検出**: 可能であれば自動検出する
+
+**「とりあえず1秒待つ」は祈りでしかない。** 祈りでテストを書くな。事実で書け。
+
+## 関連リソース
+
+- [Playwright: Auto-waiting](https://playwright.dev/docs/actionability) - Playwrightの自動待機機構
+- [Playwright: Assertions](https://playwright.dev/docs/test-assertions) - expectの自動リトライ

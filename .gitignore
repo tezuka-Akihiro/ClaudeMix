@@ -28,8 +28,9 @@ coverage-output.txt
 chat.*
 scripts/_local/
 .claude/key
-tests/scripts/generation.log
+.claude/settings.local.json
+
 .wrangler
+
 test-results/.last-run.json
 delete-deploy.js
-.claude/settings.local.json
