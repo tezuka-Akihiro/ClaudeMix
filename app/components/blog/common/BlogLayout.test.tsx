@@ -12,6 +12,12 @@ const mockConfig = {
   copyright: "© 2025 Test Project",
   siteUrl: "https://example.com",
   siteName: "Test Blog",
+  footerLinks: [
+    { label: '利用規約', href: '/blog/terms', isModal: false },
+    { label: 'プライバシーポリシー', href: '/blog/privacy', isModal: false },
+    { label: '特定商取引法に基づく表記', isModal: true },
+  ],
+  legalContent: '<p>特定商取引法の内容</p>',
 };
 
 // localStorageとmatchMediaのモック

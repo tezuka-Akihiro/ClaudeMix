@@ -1,0 +1,9 @@
+// privacy - Route (routes層)
+// /privacy へのアクセスを /blog/privacy へリダイレクト（外部サービス連携用）
+
+import { redirect } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+
+export const loader: LoaderFunction = () => {
+  return redirect("/blog/privacy", 301);
+};

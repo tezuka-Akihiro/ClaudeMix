@@ -95,6 +95,8 @@ export interface BlogConfig {
   copyright: string;
   siteUrl: string;
   siteName: string;
+  footerLinks: FooterLink[];
+  legalContent: string;
 }
 
 /**
@@ -103,6 +105,15 @@ export interface BlogConfig {
 export interface MenuItem {
   label: string;
   path: string;
+}
+
+/**
+ * フッターリンクの項目
+ */
+export interface FooterLink {
+  label: string;
+  href?: string;
+  isModal: boolean;
 }
 
 /**
@@ -172,6 +183,14 @@ export interface BlogCommonSpec {
       transition_timing: string;
     };
   };
+  footer: {
+    legal_links: Array<{
+      label: string;
+      href?: string;
+      is_modal: boolean;
+    }>;
+    legal_content: string;
+  };
   theme: {
     modes: string[];
     default_mode: string;
@@ -198,6 +217,7 @@ export interface BlogCommonSpec {
       theme_toggle_button: string;
       theme_toggle_button_light: string;
       theme_toggle_button_dark: string;
+      legal_modal_close: string;
     };
   };
   ogp: {

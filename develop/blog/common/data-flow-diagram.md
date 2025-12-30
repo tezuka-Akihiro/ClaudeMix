@@ -20,9 +20,9 @@ graph TD
         direction TB
 
         subgraph Loader["loader (blog.tsx)"]
-            Loader_Start("Start") --> DataIO_Load["1. ブログ設定読み込み<br/>(loadBlogConfig.server)"]
+            Loader_Start("Start") --> DataIO_Load["1. ブログ設定読み込み<br/>(loadBlogConfig.server)<br/>※フッターリンク含む"]
             DataIO_Load --> Lib_Format["2. コピーライト整形<br/>(copyrightFormatter)"]
-            Lib_Format --> Loader_End("End: CommonData")
+            Lib_Format --> Loader_End("End: CommonData<br/>(フッターリンク含む)")
         end
 
         Route -- "2. loader実行" --> Loader_Start
@@ -44,7 +44,7 @@ graph TD
 
         Layout --> Header["BlogHeader<br/>(タイトル、ThemeToggleButton、menuボタン)"]
         Layout --> Content["children<br/>(メインコンテンツ)"]
-        Layout --> Footer["BlogFooter<br/>(コピーライト)"]
+        Layout --> Footer["BlogFooter<br/>(法的リンク、コピーライト)"]
 
         Header --> ThemeBtn["ThemeToggleButton<br/>(テーマ切り替え)"]
         ThemeBtn -- "6. テーマ切り替え" --> HTMLRoot["<html data-theme>"]
@@ -53,7 +53,12 @@ graph TD
         Header -- "7. 開閉状態管理" --> NavMenu["NavigationMenu<br/>(メニュー表示)"]
         NavMenu -- "9. ページ遷移" --> Route
 
+        Footer -- "10. 利用規約/プライバシークリック" --> BlogPostRoute["/blog/terms<br/>/blog/privacy"]
+        Footer -- "11. 特商法クリック" --> Modal["LegalModal<br/>(モーダル表示)"]
+        Modal -- "12. モーダル閉じる" --> Footer
+
         Header -- "state: isMenuOpen" --> Header
+        Footer -- "state: isModalOpen" --> Footer
     end
 
     style User fill:#e1f5ff
@@ -98,6 +103,23 @@ graph TD
 9. ユーザーが`NavigationMenu`のメニュー項目をクリック
    - 対応するページへ遷移（例: `/blog/welcome`, `/blog`）
 
+### フッターリンククリック（10）
+
+10. ユーザーが利用規約またはプライバシーポリシーのリンクをクリック
+    - `/blog/terms` または `/blog/privacy` へ遷移
+    - ブログ記事として実装されているため、既存の記事詳細ページで表示される
+
+### 特商法モーダル表示（11→12）
+
+11. ユーザーが特定商取引法のリンクをクリック
+    - `BlogFooter`内でstate管理（`isModalOpen`をtrueに設定）
+    - `LegalModal`が表示される
+    - 背景のスクロールが無効化される
+12. ユーザーがモーダルを閉じる（×ボタン、Escキー、外側クリック）
+    - `isModalOpen`をfalseに設定
+    - `LegalModal`が非表示になる
+    - 背景のスクロールが復元される
+
 ---
 
 ## コンポーネント責務
@@ -107,7 +129,8 @@ graph TD
 | **BlogLayout** | 全体レイアウト管理 | BlogHeader, BlogFooter |
 | **BlogHeader** | タイトル表示、メニュー開閉制御 | NavigationMenu |
 | **NavigationMenu** | メニュー項目表示、ページ遷移 | - |
-| **BlogFooter** | コピーライト表示 | - |
+| **BlogFooter** | 法的リンク表示、コピーライト表示、モーダル開閉制御 | LegalModal |
+| **LegalModal** | 特定商取引法の内容表示（個人情報保護のため検索エンジンから隠蔽） | - |
 
 ---
 
@@ -120,12 +143,21 @@ interface CommonData {
   blogTitle: string        // "ClaudeMix Blog"
   menuItems: MenuItem[]    // メニュー項目リスト
   copyright: string        // "© 2025 ClaudeMix"
+  footerLinks: FooterLink[] // フッターリンク（利用規約、プライバシーポリシー、特商法）
+  legalContent: string      // 特定商取引法の内容（モーダル表示用）
+}
+
+interface FooterLink {
+  label: string            // "利用規約", "プライバシーポリシー", "特定商取引法に基づく表記"
+  href?: string            // "/blog/terms", "/blog/privacy" (モーダルの場合はundefined)
+  isModal: boolean         // trueの場合、モーダル表示
 }
 ```
 
 ### 状態管理（Client Side）
 
 - `BlogHeader`: `isMenuOpen: boolean` - メニューの開閉状態
+- `BlogFooter`: `isModalOpen: boolean` - 特商法モーダルの開閉状態
 
 ---
 
