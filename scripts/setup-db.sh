@@ -19,11 +19,20 @@ wrangler d1 create claudemix-dev || echo "Database already exists (ok)"
 
 # Apply migrations
 echo "🔄 Applying database migrations..."
-if [ -f "migrations/0001_initial_schema.sql" ]; then
-    wrangler d1 execute claudemix-dev --local --file=migrations/0001_initial_schema.sql
-    echo "✅ Migration 0001_initial_schema.sql applied"
-else
+migration_count=0
+for migration_file in migrations/*.sql; do
+    if [ -f "$migration_file" ]; then
+        echo "   📄 Applying $(basename "$migration_file")..."
+        wrangler d1 execute claudemix-dev --local --file="$migration_file"
+        echo "   ✅ $(basename "$migration_file") applied"
+        migration_count=$((migration_count + 1))
+    fi
+done
+
+if [ $migration_count -eq 0 ]; then
     echo "⚠️  No migrations found"
+else
+    echo "✅ Applied $migration_count migration(s)"
 fi
 
 echo "✅ Database setup complete!"

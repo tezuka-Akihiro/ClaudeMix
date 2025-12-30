@@ -12,6 +12,8 @@ import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogCommonSpec } from "~/specs/blog/types";
+import { getSubscriptionStatus } from "~/data-io/blog/post-detail/getSubscriptionStatus.server";
+import { determineContentVisibility } from "~/lib/blog/post-detail/determineContentVisibility";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
 import "~/styles/blog/layer2-common.css";
@@ -30,6 +32,11 @@ export interface PostDetailLoaderData {
   };
   headings: Heading[];
   config: BlogConfig;
+  subscriptionAccess: {
+    showFullContent: boolean;
+    visiblePercentage: number;
+    hasActiveSubscription: boolean;
+  };
 }
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
@@ -68,6 +75,18 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const baseUrl = `${url.protocol}//${url.host}`;
 
+  // サブスクリプション状態を取得（未実装のため一旦nullで固定）
+  // TODO: セッション管理実装後、実際のuserIdを取得
+  const userId: string | null = null;
+  const subscriptionStatus = await getSubscriptionStatus(userId);
+
+  // アクセス制御判定（freeContentPercentageのデフォルトは100%）
+  const freeContentPercentage = post.freeContentPercentage ?? 100;
+  const contentVisibility = determineContentVisibility(
+    subscriptionStatus.hasActiveSubscription,
+    freeContentPercentage
+  );
+
   return json({
     post: {
       slug: post.slug,
@@ -89,6 +108,11 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       height: ogpImageHeight,
     },
     baseUrl, // 動的に取得したベースURLを追加
+    subscriptionAccess: {
+      showFullContent: contentVisibility.showFullContent,
+      visiblePercentage: contentVisibility.visiblePercentage,
+      hasActiveSubscription: subscriptionStatus.hasActiveSubscription,
+    },
   });
 }
 
@@ -127,11 +151,16 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
 };
 
 export default function BlogPostDetail() {
-  const { post, headings, config } = useLoaderData<typeof loader>();
+  const { post, headings, config, subscriptionAccess } = useLoaderData<typeof loader>();
 
   return (
     <BlogLayout config={config}>
-      <PostDetailSection post={post} headings={headings} hasMermaid={post.hasMermaid} />
+      <PostDetailSection
+        post={post}
+        headings={headings}
+        hasMermaid={post.hasMermaid}
+        subscriptionAccess={subscriptionAccess}
+      />
     </BlogLayout>
   );
 }

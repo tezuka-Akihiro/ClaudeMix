@@ -223,7 +223,7 @@ export default function ResetPassword() {
               data-testid="new-password-input"
             />
             {actionData?.fieldErrors?.newPassword && (
-              <span className="auth-form__error">{actionData.fieldErrors.newPassword}</span>
+              <span className="auth-form__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPassword}</span>
             )}
           </div>
 
@@ -243,7 +243,7 @@ export default function ResetPassword() {
               data-testid="new-password-confirm-input"
             />
             {actionData?.fieldErrors?.newPasswordConfirm && (
-              <span className="auth-form__error">{actionData.fieldErrors.newPasswordConfirm}</span>
+              <span className="auth-form__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPasswordConfirm}</span>
             )}
           </div>
 

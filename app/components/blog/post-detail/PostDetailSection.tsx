@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { TableOfContents } from './TableOfContents';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import type { Heading, RenderedPost } from '~/specs/blog/types';
+import { Paywall } from './Paywall';
 
 // Mermaid.jsのグローバル型定義
 declare global {
@@ -20,12 +21,18 @@ interface PostDetailSectionProps {
   post: RenderedPost;
   headings: Heading[];
   hasMermaid?: boolean;
+  subscriptionAccess: {
+    showFullContent: boolean;
+    visiblePercentage: number;
+    hasActiveSubscription: boolean;
+  };
 }
 
 export function PostDetailSection({
   post,
   headings,
-  hasMermaid = false
+  hasMermaid = false,
+  subscriptionAccess
 }: PostDetailSectionProps) {
   // publishedAtをフォーマット
   const formattedDate = new Date(post.publishedAt).toLocaleDateString('ja-JP', {
@@ -87,6 +94,9 @@ export function PostDetailSection({
         data-testid="post-content"
         dangerouslySetInnerHTML={{ __html: post.htmlContent }}
       />
+
+      {/* ペイウォール（未契約ユーザーの場合のみ表示） */}
+      {!subscriptionAccess.showFullContent && <Paywall />}
     </article>
   );
 }
