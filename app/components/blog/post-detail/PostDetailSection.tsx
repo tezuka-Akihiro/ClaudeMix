@@ -18,12 +18,15 @@ declare global {
 }
 
 interface PostDetailSectionProps {
-  post: RenderedPost;
+  post: Omit<RenderedPost, 'htmlContent'> & {
+    visibleContent: string;
+    hiddenContent: string;
+  };
   headings: Heading[];
   hasMermaid?: boolean;
   subscriptionAccess: {
     showFullContent: boolean;
-    visiblePercentage: number;
+    cutoffHeadingId: string | null;
     hasActiveSubscription: boolean;
   };
 }
@@ -88,15 +91,24 @@ export function PostDetailSection({
       {/* 目次 */}
       <TableOfContents headings={headings} />
 
-      {/* 本文エリア（マークダウン変換後のHTML） */}
+      {/* 本文エリア（見出しベース可視範囲） */}
       <div
         className="post-detail-section__content prose"
-        data-testid="post-content"
-        dangerouslySetInnerHTML={{ __html: post.htmlContent }}
+        data-testid="post-content-visible"
+        dangerouslySetInnerHTML={{ __html: post.visibleContent }}
       />
 
       {/* ペイウォール（未契約ユーザーの場合のみ表示） */}
       {!subscriptionAccess.showFullContent && <Paywall />}
+
+      {/* 非表示コンテンツ（全文表示時のみ） */}
+      {subscriptionAccess.showFullContent && post.hiddenContent && (
+        <div
+          className="post-detail-section__content prose"
+          data-testid="post-content-hidden"
+          dangerouslySetInnerHTML={{ __html: post.hiddenContent }}
+        />
+      )}
     </article>
   );
 }

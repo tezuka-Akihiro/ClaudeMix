@@ -10,8 +10,12 @@ const renderWithRouter = (ui: React.ReactElement) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
 };
 
+interface MockPostsSectionProps extends PostsPageData {
+  isAuthenticated: boolean;
+}
+
 describe('PostsSection', () => {
-  let mockProps: PostsPageData;
+  let mockProps: MockPostsSectionProps;
   let spec: BlogPostsSpec;
 
   beforeAll(async () => {
@@ -37,6 +41,7 @@ describe('PostsSection', () => {
           tags: [],
         },
       ],
+      isAuthenticated: true,
       pagination: {
         currentPage: 1,
         totalPages: 5,

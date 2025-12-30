@@ -2,7 +2,7 @@
 // データフローとページ構成を担当
 
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { fetchPostBySlug } from "~/data-io/blog/post-detail/fetchPostBySlug.server";
 import type { Heading } from "~/specs/blog/types";
@@ -14,6 +14,7 @@ import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogCommonSpec } from "~/specs/blog/types";
 import { getSubscriptionStatus } from "~/data-io/blog/post-detail/getSubscriptionStatus.server";
 import { determineContentVisibility } from "~/lib/blog/post-detail/determineContentVisibility";
+import { getSession } from "~/data-io/account/common/getSession.server";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
 import "~/styles/blog/layer2-common.css";
@@ -26,7 +27,8 @@ export interface PostDetailLoaderData {
     title: string;
     author: string;
     publishedAt: string;
-    htmlContent: string; // マークダウン変換後のHTML
+    visibleContent: string; // 表示可能なHTML（見出しベース）
+    hiddenContent: string; // 非表示HTML（見出しベース）
     description?: string;
     tags?: string[];
   };
@@ -34,12 +36,12 @@ export interface PostDetailLoaderData {
   config: BlogConfig;
   subscriptionAccess: {
     showFullContent: boolean;
-    visiblePercentage: number;
+    cutoffHeadingId: string | null;
     hasActiveSubscription: boolean;
   };
 }
 
-export async function loader({ params, request }: LoaderFunctionArgs) {
+export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const { slug } = params;
 
   if (!slug) {
@@ -59,8 +61,24 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     throw new Response("Referenced file not found", { status: 500 });
   }
 
+  // リクエストURLを解析
+  const url = new URL(request.url);
+  const baseUrl = `${url.protocol}//${url.host}`;
+
+  // セッションを取得してuserIdを確認
+  const session = await getSession(request, context as unknown as Parameters<typeof getSession>[1]);
+  const userId = session?.userId ?? null;
+  const isAuthenticated = userId !== null;
+
+  // カテゴリベースのアクセス制御: 起業以外は認証必須
+  if (!isAuthenticated && post.category !== '起業') {
+    // 未認証ユーザーは起業カテゴリ以外の記事にアクセスできない
+    const returnTo = encodeURIComponent(url.pathname);
+    return redirect(`/login?returnTo=${returnTo}`);
+  }
+
   // NOTE: コンテンツはビルド時にHTML変換済み、見出しもビルド時に抽出済み
-  const htmlContent = post.content;
+  // NOTE: visibleContent/hiddenContentもビルド時に分割済み
   const headings = post.headings;
 
   // ブログ設定を取得
@@ -71,20 +89,15 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const ogpImageWidth = spec.ogp.image.width;
   const ogpImageHeight = spec.ogp.image.height;
 
-  // リクエストから動的にベースURLを取得（環境に依存しない）
-  const url = new URL(request.url);
-  const baseUrl = `${url.protocol}//${url.host}`;
-
-  // サブスクリプション状態を取得（未実装のため一旦nullで固定）
-  // TODO: セッション管理実装後、実際のuserIdを取得
-  const userId: string | null = null;
+  // サブスクリプション状態を取得（セッションからuserIdを使用）
   const subscriptionStatus = await getSubscriptionStatus(userId);
 
-  // アクセス制御判定（freeContentPercentageのデフォルトは100%）
-  const freeContentPercentage = post.freeContentPercentage ?? 100;
+  // アクセス制御判定（見出しベース）
+  const freeContentHeading = post.freeContentHeading ?? null;
   const contentVisibility = determineContentVisibility(
     subscriptionStatus.hasActiveSubscription,
-    freeContentPercentage
+    freeContentHeading,
+    headings
   );
 
   return json({
@@ -93,7 +106,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       title: post.title,
       author: post.author,
       publishedAt: post.publishedAt,
-      htmlContent,
+      visibleContent: post.visibleContent,
+      hiddenContent: post.hiddenContent,
       description: post.description,
       tags: post.tags,
       category: post.category,
@@ -110,7 +124,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     baseUrl, // 動的に取得したベースURLを追加
     subscriptionAccess: {
       showFullContent: contentVisibility.showFullContent,
-      visiblePercentage: contentVisibility.visiblePercentage,
+      cutoffHeadingId: contentVisibility.cutoffHeadingId,
       hasActiveSubscription: subscriptionStatus.hasActiveSubscription,
     },
   });

@@ -8,8 +8,13 @@ import { FilterToggleButton } from '~/components/blog/posts/FilterToggleButton';
 import { FilterPanel } from '~/components/blog/posts/FilterPanel';
 import type { PostsPageData } from '~/specs/blog/types';
 
-const PostsSection: React.FC<PostsPageData> = ({
+interface PostsSectionProps extends PostsPageData {
+  isAuthenticated: boolean;
+}
+
+const PostsSection: React.FC<PostsSectionProps> = ({
   posts,
+  isAuthenticated,
   pagination,
   availableFilters,
   selectedFilters,
@@ -46,18 +51,24 @@ const PostsSection: React.FC<PostsPageData> = ({
       ) : (
         <>
           <div className="post-card-grid" data-testid="post-card-grid">
-            {posts.map((post) => (
-              <PostCard
-                key={post.slug}
-                slug={post.slug}
-                title={post.title}
-                publishedAt={post.publishedAt}
-                category={post.category}
-                description={post.description}
-                tags={post.tags}
-                categorySpec={categorySpec}
-              />
-            ))}
+            {posts.map((post) => {
+              // 起業カテゴリ以外は認証必須
+              const isLocked = !isAuthenticated && post.category !== '起業';
+
+              return (
+                <PostCard
+                  key={post.slug}
+                  slug={post.slug}
+                  title={post.title}
+                  publishedAt={post.publishedAt}
+                  category={post.category}
+                  description={post.description}
+                  tags={post.tags}
+                  categorySpec={categorySpec}
+                  isLocked={isLocked}
+                />
+              );
+            })}
           </div>
 
           {/* ページネーション */}

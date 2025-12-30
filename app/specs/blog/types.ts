@@ -57,8 +57,10 @@ export interface Post {
   testOnly: boolean;
   hasMermaid: boolean;
   content: string;
+  visibleContent: string;
+  hiddenContent: string;
   headings: Heading[];
-  freeContentPercentage?: number;
+  freeContentHeading?: string | null;
 }
 
 /**

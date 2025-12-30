@@ -12,9 +12,10 @@ interface PostCardProps extends PostSummary {
     categories: Array<{ name: string; emoji: string }>;
     defaultEmoji: string;
   };
+  isLocked?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category, description, tags, categorySpec }) => {
+const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category, description, tags, categorySpec, isLocked = false }) => {
   // 日付をフォーマット（ISO形式 → 日本語形式）
   const formattedDate = formatPublishedDate(publishedAt);
 
@@ -24,9 +25,10 @@ const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category,
   return (
     <Link
       to={`/blog/${slug}`}
-      className="post-card post-card-structure"
+      className={`post-card post-card-structure${isLocked ? ' post-card--locked' : ''}`}
       data-testid="post-card"
       data-slug={slug}
+      data-locked={isLocked ? 'true' : undefined}
     >
       <div className="post-card__category-emoji" data-testid="category-emoji">
         {categoryEmoji}
@@ -34,10 +36,20 @@ const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category,
       <div className="post-card__content-structure">
         <h2 className="post-card__title" data-testid="post-card-title">
           {title}
+          {isLocked && (
+            <span className="post-card__lock-badge" data-testid="lock-badge">
+              🔒
+            </span>
+          )}
         </h2>
         <p className="post-card__date" data-testid="post-card-date">
           {formattedDate}
         </p>
+        {isLocked && (
+          <p className="post-card__lock-message" data-testid="lock-message">
+            ログインで読む
+          </p>
+        )}
         {description && (
           <p className="post-description">{description}</p>
         )}

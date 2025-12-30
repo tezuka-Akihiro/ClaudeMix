@@ -17,6 +17,7 @@ import yaml from 'js-yaml';
 import { Marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import { createHighlighter } from 'shiki/bundle/full';
+import { JSDOM } from 'jsdom';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,6 +66,96 @@ function extractHeadings(markdown) {
     }
   }
   return headings;
+}
+
+/**
+ * splitContentByHeading - 見出しベースでHTMLコンテンツを分割
+ * @param {string} htmlContent - 分割するHTMLコンテンツ
+ * @param {string|null} cutoffHeadingId - 分割位置となる見出しのID
+ * @returns {{visibleContent: string, hiddenContent: string}} 分割されたコンテンツ
+ */
+function splitContentByHeading(htmlContent, cutoffHeadingId) {
+  if (cutoffHeadingId === null) {
+    return {
+      visibleContent: htmlContent,
+      hiddenContent: '',
+    };
+  }
+
+  if (!htmlContent.trim()) {
+    return {
+      visibleContent: '',
+      hiddenContent: '',
+    };
+  }
+
+  try {
+    const dom = new JSDOM(htmlContent);
+    const document = dom.window.document;
+    const body = document.body;
+
+    const targetHeading = document.getElementById(cutoffHeadingId);
+
+    if (!targetHeading) {
+      return {
+        visibleContent: htmlContent,
+        hiddenContent: '',
+      };
+    }
+
+    const headingTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
+    let nextHeading = null;
+    let currentElement = targetHeading.nextElementSibling;
+
+    while (currentElement) {
+      if (headingTags.includes(currentElement.tagName)) {
+        nextHeading = currentElement;
+        break;
+      }
+      currentElement = currentElement.nextElementSibling;
+    }
+
+    if (!nextHeading) {
+      return {
+        visibleContent: htmlContent,
+        hiddenContent: '',
+      };
+    }
+
+    const visibleElements = [];
+    const hiddenElements = [];
+    let isVisible = true;
+
+    Array.from(body.children).forEach((element) => {
+      if (element === nextHeading) {
+        isVisible = false;
+      }
+
+      if (isVisible) {
+        visibleElements.push(element);
+      } else {
+        hiddenElements.push(element);
+      }
+    });
+
+    const visibleContent = visibleElements
+      .map((el) => el.outerHTML)
+      .join('');
+    const hiddenContent = hiddenElements
+      .map((el) => el.outerHTML)
+      .join('');
+
+    return {
+      visibleContent,
+      hiddenContent,
+    };
+  } catch (error) {
+    console.error('HTML parsing error in splitContentByHeading:', error);
+    return {
+      visibleContent: htmlContent,
+      hiddenContent: '',
+    };
+  }
 }
 
 /**
@@ -243,8 +334,24 @@ async function generateBlogPosts() {
         const headings = extractHeadings(finalContent);
         const { html: htmlContent, hasMermaid } = await convertMarkdownToHtml(finalContent);
 
+        // 見出しベースでコンテンツを分割（ビルド時処理）
+        const freeContentHeading = data.freeContentHeading || null;
+        let visibleContent = htmlContent;
+        let hiddenContent = '';
+
+        if (freeContentHeading) {
+          // freeContentHeadingに一致する見出しを検索
+          const matchedHeading = headings.find(h => h.text === freeContentHeading);
+          if (matchedHeading) {
+            // 見出しIDで分割
+            const splitResult = splitContentByHeading(htmlContent, matchedHeading.id);
+            visibleContent = splitResult.visibleContent;
+            hiddenContent = splitResult.hiddenContent;
+          }
+        }
+
         const duration = Date.now() - startTime;
-        console.log(`   ✅ Completed: ${slug} (${duration}ms)${hasMermaid ? ' [Mermaid]' : ''}`);
+        console.log(`   ✅ Completed: ${slug} (${duration}ms)${hasMermaid ? ' [Mermaid]' : ''}${freeContentHeading ? ' [Paywall]' : ''}`);
 
         return {
           slug,
@@ -259,8 +366,11 @@ async function generateBlogPosts() {
             description: data.description || undefined,
             testOnly: data.testOnly === true,
             hasMermaid, // Mermaid検出フラグを追加
+            freeContentHeading: data.freeContentHeading || null,
           },
           content: htmlContent,
+          visibleContent,
+          hiddenContent,
           headings,
         };
       })
@@ -325,6 +435,7 @@ export interface BlogPostFrontmatter {
   description?: string; // オプション: 記事の説明
   testOnly: boolean; // テスト専用記事フラグ（本番環境では除外）
   hasMermaid: boolean; // Mermaidダイアグラムの有無（条件付き読み込み用）
+  freeContentHeading: string | null; // 見出しベースペイウォールの区切り見出し
 }
 
 export interface Heading {
@@ -336,7 +447,9 @@ export interface Heading {
 export interface BlogPost {
   slug: string;
   frontmatter: BlogPostFrontmatter;
-  content: string; // HTML形式（ビルド時にマークダウンから変換済み）
+  content: string; // HTML形式（ビルド時にマークダウンから変換済み）全文
+  visibleContent: string; // 見出しベース分割後の可視コンテンツ（ビルド時生成）
+  hiddenContent: string; // 見出しベース分割後の非表示コンテンツ（ビルド時生成）
   headings: Heading[]; // 目次用見出し（ビルド時に抽出済み）
 }
 

@@ -6,16 +6,16 @@ import type { RenderedPost } from '~/specs/blog/types';
 import { extractHeadings } from '../../../lib/blog/post-detail/extractHeadings';
 
 /**
- * テスト用のRenderedPostオブジェクトを生成するファクトリ関数
+ * テスト用のPostオブジェクトを生成するファクトリ関数（見出しベース対応）
  * @param overrides - デフォルト値を上書きするプロパティ
- * @returns RenderedPostオブジェクト
  */
-const createMockPost = (overrides: Partial<RenderedPost> = {}): RenderedPost => ({
+const createMockPost = (overrides = {}) => ({
   slug: 'test-post',
   title: 'Test Post Title',
   author: 'Test Author',
   publishedAt: '2024-05-01',
-  htmlContent: '<p>Test content</p>',
+  visibleContent: '<p>Test content</p>',
+  hiddenContent: '',
   tags: [],
   category: 'Test Category',
   source: null,
@@ -25,11 +25,11 @@ const createMockPost = (overrides: Partial<RenderedPost> = {}): RenderedPost => 
 });
 
 /**
- * テスト用のsubscriptionAccessオブジェクトを生成するファクトリ関数
+ * テスト用のsubscriptionAccessオブジェクトを生成するファクトリ関数（見出しベース対応）
  */
 const createMockSubscriptionAccess = (overrides = {}) => ({
   showFullContent: true,
-  visiblePercentage: 100,
+  cutoffHeadingId: null,
   hasActiveSubscription: true,
   ...overrides,
 });
@@ -49,7 +49,7 @@ describe('PostDetailSection', () => {
         title: 'My Awesome Post',
         author: 'John Doe',
         publishedAt: '2024-07-26',
-        htmlContent: '<h2>Hello World</h2>',
+        visibleContent: '<h2>Hello World</h2>',
       });
 
       // Act
@@ -74,7 +74,7 @@ describe('PostDetailSection', () => {
       expect(dateElement).toHaveTextContent('2024年7月26日');
       expect(dateElement).toHaveAttribute('dateTime', '2024-07-26');
 
-      const contentElement = screen.getByTestId('post-content');
+      const contentElement = screen.getByTestId('post-content-visible');
       expect(contentElement).toBeInTheDocument();
       expect(contentElement.innerHTML).toBe('<h2>Hello World</h2>');
       expect(contentElement).toHaveClass('post-detail-section__content prose');
@@ -100,18 +100,18 @@ describe('PostDetailSection', () => {
     });
   });
 
-  describe('HTML Content', () => {
-    it('should render HTML content with dangerouslySetInnerHTML', () => {
+  describe('HTML Content (Heading-based)', () => {
+    it('should render visible content with dangerouslySetInnerHTML', () => {
       // Arrange
-      const htmlContent = '<h2>Section Title</h2><p>Paragraph text</p><ul><li>Item 1</li></ul>';
-      const post = createMockPost({ htmlContent });
+      const visibleContent = '<h2>Section Title</h2><p>Paragraph text</p><ul><li>Item 1</li></ul>';
+      const post = createMockPost({ visibleContent });
 
       // Act
       renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} />);
 
       // Assert
-      const contentElement = screen.getByTestId('post-content');
-      expect(contentElement.innerHTML).toBe(htmlContent);
+      const contentElement = screen.getByTestId('post-content-visible');
+      expect(contentElement.innerHTML).toBe(visibleContent);
 
       // Verify specific elements within HTML content
       expect(contentElement.querySelector('h2')).toBeInTheDocument();
@@ -119,45 +119,73 @@ describe('PostDetailSection', () => {
       expect(contentElement.querySelector('ul')).toBeInTheDocument();
     });
 
-    it('should handle empty HTML content', () => {
+    it('should handle empty visible content', () => {
       // Arrange
-      const post: RenderedPost = {
-        slug: 'test-post',
-        title: 'Test Post',
-        author: 'Test Author',
-        publishedAt: '2024-05-01',
-        htmlContent: '',
-        tags: [],
-        category: 'Test Category',
-        source: null,
-        hasMermaid: false,
-        headings: [],
-      };
+      const post = createMockPost({
+        visibleContent: '',
+        hiddenContent: '',
+      });
 
       // Act
       renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} />);
 
       // Assert
-      const contentElement = screen.getByTestId('post-content');
+      const contentElement = screen.getByTestId('post-content-visible');
       expect(contentElement.innerHTML).toBe('');
+    });
+
+    it('should render hidden content when showFullContent is true', () => {
+      // Arrange
+      const post = createMockPost({
+        visibleContent: '<h2>Visible Section</h2><p>This is visible</p>',
+        hiddenContent: '<h2>Hidden Section</h2><p>This is hidden</p>',
+      });
+      const subscriptionAccess = createMockSubscriptionAccess({
+        showFullContent: true,
+        hasActiveSubscription: true,
+      });
+
+      // Act
+      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={subscriptionAccess} />);
+
+      // Assert
+      const visibleElement = screen.getByTestId('post-content-visible');
+      expect(visibleElement.innerHTML).toBe('<h2>Visible Section</h2><p>This is visible</p>');
+
+      const hiddenElement = screen.getByTestId('post-content-hidden');
+      expect(hiddenElement.innerHTML).toBe('<h2>Hidden Section</h2><p>This is hidden</p>');
+    });
+
+    it('should not render hidden content when showFullContent is false', () => {
+      // Arrange
+      const post = createMockPost({
+        visibleContent: '<h2>Visible Section</h2><p>This is visible</p>',
+        hiddenContent: '<h2>Hidden Section</h2><p>This is hidden</p>',
+      });
+      const subscriptionAccess = createMockSubscriptionAccess({
+        showFullContent: false,
+        hasActiveSubscription: false,
+        cutoffHeadingId: 'visible-section',
+      });
+
+      // Act
+      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={subscriptionAccess} />);
+
+      // Assert
+      const visibleElement = screen.getByTestId('post-content-visible');
+      expect(visibleElement.innerHTML).toBe('<h2>Visible Section</h2><p>This is visible</p>');
+
+      // Hidden content should not be rendered
+      expect(screen.queryByTestId('post-content-hidden')).not.toBeInTheDocument();
     });
   });
 
   describe('Styling', () => {
     it('should apply correct CSS classes', () => {
       // Arrange
-      const post: RenderedPost = {
-        slug: 'test-post',
-        title: 'Test Post',
-        author: 'Test Author',
-        publishedAt: '2024-05-01',
-        htmlContent: '<p>Test content</p>',
-        tags: [],
-        category: 'Test Category',
-        source: null,
-        hasMermaid: false,
-        headings: [],
-      };
+      const post = createMockPost({
+        visibleContent: '<p>Test content</p>',
+      });
 
       // Act
       renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} />);
@@ -167,7 +195,7 @@ describe('PostDetailSection', () => {
       expect(articleElement).toHaveClass('post-detail-section');
       expect(articleElement).toHaveClass('post-detail-section-structure');
 
-      const contentElement = screen.getByTestId('post-content');
+      const contentElement = screen.getByTestId('post-content-visible');
       expect(contentElement).toHaveClass('post-detail-section__content');
       expect(contentElement).toHaveClass('prose');
     });
@@ -187,18 +215,9 @@ describe('PostDetailSection', () => {
 本文`;
 
       const headings = extractHeadings(markdown);
-      const post: RenderedPost = {
-        slug: 'test-post',
-        title: 'Test Post',
-        author: 'Test Author',
-        publishedAt: '2024-05-01',
-        htmlContent: '<p>Test content</p>',
-        tags: [],
-        category: 'Test Category',
-        source: null,
-        hasMermaid: false,
-        headings: [],
-      };
+      const post = createMockPost({
+        visibleContent: '<p>Test content</p>',
+      });
 
       // Act
       renderWithRouter(<PostDetailSection post={post} headings={headings} subscriptionAccess={createMockSubscriptionAccess()} />);
@@ -217,18 +236,9 @@ describe('PostDetailSection', () => {
       const markdown = "# タイトル\r\n\r\n## セクション1\r\n\r\n本文\r\n\r\n## セクション2\r\n\r\n本文";
 
       const headings = extractHeadings(markdown);
-      const post: RenderedPost = {
-        slug: 'test-post',
-        title: 'Test Post',
-        author: 'Test Author',
-        publishedAt: '2024-05-01',
-        htmlContent: '<p>Test content</p>',
-        tags: [],
-        category: 'Test Category',
-        source: null,
-        hasMermaid: false,
-        headings: [],
-      };
+      const post = createMockPost({
+        visibleContent: '<p>Test content</p>',
+      });
 
       // Act
       renderWithRouter(<PostDetailSection post={post} headings={headings} subscriptionAccess={createMockSubscriptionAccess()} />);
@@ -253,18 +263,9 @@ describe('PostDetailSection', () => {
 ## もう一つの本物の見出し`;
 
       const headings = extractHeadings(markdown);
-      const post: RenderedPost = {
-        slug: 'test-post',
-        title: 'Test Post',
-        author: 'Test Author',
-        publishedAt: '2024-05-01',
-        htmlContent: '<p>Test content</p>',
-        tags: [],
-        category: 'Test Category',
-        source: null,
-        hasMermaid: false,
-        headings: [],
-      };
+      const post = createMockPost({
+        visibleContent: '<p>Test content</p>',
+      });
 
       // Act
       renderWithRouter(<PostDetailSection post={post} headings={headings} subscriptionAccess={createMockSubscriptionAccess()} />);
@@ -281,12 +282,13 @@ describe('PostDetailSection', () => {
 
     it('見出しが空配列の場合は目次が表示されない', () => {
       // Arrange
-      const post: RenderedPost = {
+      const post = {
         slug: 'test-post',
         title: 'Test Post',
         author: 'Test Author',
         publishedAt: '2024-05-01',
-        htmlContent: '<p>Test content</p>',
+        visibleContent: '<p>Test content</p>',
+        hiddenContent: '',
         tags: [],
         category: 'Test Category',
         source: null,
@@ -306,18 +308,9 @@ describe('PostDetailSection', () => {
       // Arrange: 見出しのないマークダウン
       const markdown = '本文のみ';
       const headings = extractHeadings(markdown);
-      const post: RenderedPost = {
-        slug: 'test-post',
-        title: 'Test Post',
-        author: 'Test Author',
-        publishedAt: '2024-05-01',
-        htmlContent: '<p>Test content</p>',
-        tags: [],
-        category: 'Test Category',
-        source: null,
-        hasMermaid: false,
-        headings: [],
-      };
+      const post = createMockPost({
+        visibleContent: '<p>Test content</p>',
+      });
 
       // Act
       renderWithRouter(<PostDetailSection post={post} headings={headings} subscriptionAccess={createMockSubscriptionAccess()} />);
@@ -346,11 +339,14 @@ describe('PostDetailSection', () => {
 
     it('未契約ユーザー（showFullContent: false）の場合、ペイウォールが表示される', () => {
       // Arrange
-      const post = createMockPost();
+      const post = createMockPost({
+        visibleContent: '<h2>Intro</h2><p>Free content</p>',
+        hiddenContent: '<h2>Premium</h2><p>Paid content</p>',
+      });
       const subscriptionAccess = createMockSubscriptionAccess({
         showFullContent: false,
         hasActiveSubscription: false,
-        visiblePercentage: 30,
+        cutoffHeadingId: 'intro',
       });
 
       // Act
@@ -359,6 +355,8 @@ describe('PostDetailSection', () => {
       // Assert
       expect(screen.getByText('続きを読むには会員登録が必要です')).toBeInTheDocument();
       expect(screen.getByText('すべての記事を読むには会員登録が必要です')).toBeInTheDocument();
+      // Hidden content should not be rendered
+      expect(screen.queryByTestId('post-content-hidden')).not.toBeInTheDocument();
     });
   });
 });

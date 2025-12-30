@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import RuleEngine from './core.js';
 import { getFrontmatterRules } from './rules/frontmatter.js';
 import { getMetadataRules } from './rules/metadata.js';
+import { getFreeContentHeadingRules } from './rules/validate-free-content-heading.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,10 +36,12 @@ class BlogMetadataLinter {
       // ルール登録
       const frontmatterRules = getFrontmatterRules();
       const metadataRules = getMetadataRules();
+      const freeContentHeadingRules = getFreeContentHeadingRules();
 
       const allRules = {
         ...frontmatterRules,
-        ...metadataRules
+        ...metadataRules,
+        ...freeContentHeadingRules
       };
 
       for (const rule of Object.values(allRules)) {
@@ -47,9 +50,11 @@ class BlogMetadataLinter {
 
       const frontmatterCount = Object.keys(frontmatterRules).length;
       const metadataCount = Object.keys(metadataRules).length;
+      const freeContentHeadingCount = Object.keys(freeContentHeadingRules).length;
 
       console.log(`📦 Frontmatterルール ${frontmatterCount} 個を登録`);
       console.log(`🎯 Metadataルール ${metadataCount} 個を登録`);
+      console.log(`🔍 FreeContentHeadingルール ${freeContentHeadingCount} 個を登録`);
       console.log('✅ 初期化完了\n');
     } catch (error) {
       console.error('❌ 初期化エラー:', error.message);

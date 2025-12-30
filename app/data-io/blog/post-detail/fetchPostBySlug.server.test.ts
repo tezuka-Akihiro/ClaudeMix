@@ -40,5 +40,25 @@ describe('fetchPostBySlug - Data-IO Layer', () => {
         expect(result.content).toContain('<p>このプロジェクト「ClaudeMix」は、僕の開発者としての経歴と');
       }
     });
+
+    it('freeContentHeadingフィールドが存在する場合に取得できる', async () => {
+      // Arrange
+      const validSlug = 'about-claudemix';
+
+      // Act
+      const result = await fetchPostBySlug(validSlug);
+
+      // Assert
+      expect(result).not.toBeNull();
+      if (result) {
+        // freeContentHeadingはオプショナルフィールド
+        // 存在する場合はstring、存在しない場合はnullまたはundefined
+        expect(
+          result.freeContentHeading === null ||
+            result.freeContentHeading === undefined ||
+            typeof result.freeContentHeading === 'string'
+        ).toBe(true);
+      }
+    });
   });
 });

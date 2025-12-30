@@ -52,8 +52,10 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 | extractHeadings.test.ts | app/lib/blog/post-detail/extractHeadings.test.ts | extractHeadings.tsのテスト。見出し抽出、ネストレベル、日本語見出しの処理を検証 |
 | slugify.ts | app/lib/blog/post-detail/slugify.ts | 見出しテキストをURLセーフなスラグに変換する純粋関数。日本語テキスト対応 |
 | slugify.test.ts | app/lib/blog/post-detail/slugify.test.ts | slugify.tsのテスト。英数字、日本語、特殊文字のスラグ化を検証 |
-| determineContentVisibility.ts | app/lib/blog/post-detail/determineContentVisibility.ts | サブスクリプション状態（`hasActiveSubscription: boolean`）と記事の公開割合（`freeContentPercentage: number`）を受け取り、コンテンツの可視範囲を判定する純粋関数。`{ showFullContent: boolean, visiblePercentage: number }` を返す。副作用なし（テスト容易性を確保） |
-| determineContentVisibility.test.ts | app/lib/blog/post-detail/determineContentVisibility.test.ts | determineContentVisibility.tsのテスト。サブスクリプションがアクティブな場合（全文表示）、非アクティブな場合（部分表示）、境界値（0%/100%）を検証 |
+| determineContentVisibility.ts | app/lib/blog/post-detail/determineContentVisibility.ts | サブスクリプション状態（`hasActiveSubscription: boolean`）、記事の公開範囲見出し（`freeContentHeading: string | null`）、見出し情報配列（`headings: Heading[]`）を受け取り、コンテンツの可視範囲を判定する純粋関数。`{ showFullContent: boolean, cutoffHeadingId: string | null }` を返す。副作用なし（テスト容易性を確保） |
+| determineContentVisibility.test.ts | app/lib/blog/post-detail/determineContentVisibility.test.ts | determineContentVisibility.tsのテスト。サブスクリプションがアクティブな場合（全文表示）、非アクティブな場合（見出しベース部分表示）、見出しが見つからない場合のフォールバックを検証 |
+| splitContentByHeading.ts | app/lib/blog/post-detail/splitContentByHeading.ts | HTML文字列とカットオフ見出しID（`cutoffHeadingId: string | null`）を受け取り、指定された見出しの終わり位置でコンテンツを分割する純粋関数。`{ visibleContent: string, hiddenContent: string }` を返す。副作用なし |
+| splitContentByHeading.test.ts | app/lib/blog/post-detail/splitContentByHeading.test.ts | splitContentByHeading.tsのテスト。見出しIDでの分割、見出しが見つからない場合のフォールバック、エッジケースを検証 |
 
 ---
 
@@ -61,9 +63,18 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 
 | ファイル名 | パス | 説明 |
 | :--- | :--- | :--- |
-| fetchPostBySlug.server.ts | app/data-io/blog/post-detail/fetchPostBySlug.server.ts | slugを受け取り、ファイルシステムから記事データ（frontmatter含む: title, description, publishedAt, author, tags, category, source, freeContentPercentage）を取得する関数。sourceプロパティがある場合は外部ファイルを読み込む。記事が存在しない場合はnullを返す。**descriptionとtagsフィールド、freeContentPercentageを含むPostDetailDataを返す** |
-| fetchPostBySlug.server.test.ts | app/data-io/blog/post-detail/fetchPostBySlug.server.test.ts | fetchPostBySlug.server.tsのテスト。正常系（記事取得成功、参照機能、description/tags/freeContentPercentage取得）と異常系（記事が存在しない）を検証 |
+| fetchPostBySlug.server.ts | app/data-io/blog/post-detail/fetchPostBySlug.server.ts | slugを受け取り、ファイルシステムから記事データ（frontmatter含む: title, description, publishedAt, author, tags, category, source, **freeContentHeading**）を取得する関数。sourceプロパティがある場合は外部ファイルを読み込む。記事が存在しない場合はnullを返す。**freeContentHeadingフィールドを含むPostDetailDataを返す** |
+| fetchPostBySlug.server.test.ts | app/data-io/blog/post-detail/fetchPostBySlug.server.test.ts | fetchPostBySlug.server.tsのテスト。正常系（記事取得成功、参照機能、description/tags/freeContentHeading取得）と異常系（記事が存在しない）を検証 |
 | fetchExternalMarkdown.server.ts | app/data-io/blog/post-detail/fetchExternalMarkdown.server.ts | 外部マークダウンファイルのパスを受け取り、ファイルシステムから読み込む関数。パスバリデーション（ディレクトリトラバーサル対策）を実施。ファイルが存在しない場合はエラーをthrow |
 | fetchExternalMarkdown.server.test.ts | app/data-io/blog/post-detail/fetchExternalMarkdown.server.test.ts | fetchExternalMarkdown.server.tsのテスト。正常系（ファイル読み込み成功）、異常系（ファイル不存在、不正パス）を検証 |
 | getSubscriptionStatus.server.ts | app/data-io/blog/post-detail/getSubscriptionStatus.server.ts | ユーザーIDを受け取り、accountサービスのdata-io層（`app/data-io/account/subscription/getSubscriptionByUserId.server.ts`）を介してサブスクリプション状態を取得し、有効なサブスクリプションが存在するかを判定する関数。`{ hasActiveSubscription: boolean }` を返す。サブスクリプションが存在し、`status === 'active'` かつ `current_period_end` が未来日の場合に`true`。エラー発生時は安全側（`false`）に倒す |
 | getSubscriptionStatus.server.test.ts | app/data-io/blog/post-detail/getSubscriptionStatus.server.test.ts | getSubscriptionStatus.server.tsのテスト。正常系（アクティブなサブスクリプション、非アクティブ、サブスクリプションなし）、異常系（accountサービスdata-io層のエラー）を検証 |
+
+---
+
+## 5. リントシステム拡張（scripts層）
+
+| ファイル名 | パス | 説明 |
+| :--- | :--- | :--- |
+| validate-free-content-heading.js | scripts/lint-blog-metadata/rules/validate-free-content-heading.js | frontmatterの`freeContentHeading`で指定された見出しが実際に記事内に存在するかを検証するリントルール。見出しの重複、タイポ、レベル不整合を検出 |
+| validate-free-content-heading.test.js | scripts/lint-blog-metadata/rules/validate-free-content-heading.test.js | validate-free-content-heading.jsのテスト。正常系（見出し存在）、異常系（見出し不存在、重複、タイポ）を検証 |

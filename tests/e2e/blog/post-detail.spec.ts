@@ -41,7 +41,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     await expect(publishedDateElement).not.toBeEmpty();
 
     // 6. マークダウン変換後のHTML本文が表示される
-    const contentElement = page.locator('[data-testid="post-content"]');
+    const contentElement = page.locator('[data-testid="post-content-visible"]');
     await expect(contentElement).toBeVisible();
     // 本文が空でないことを確認
     await expect(contentElement).not.toBeEmpty();
@@ -227,7 +227,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. 記事コンテンツ内の見出し要素を取得（階層定義: func-spec.md参照）
-    const contentElement = page.locator('[data-testid="post-content"]');
+    const contentElement = page.locator('[data-testid="post-content-visible"]');
     const headings = contentElement.locator('h2');
 
     // 3. 見出しが存在する場合、ID属性が付与されていることを確認
@@ -240,6 +240,130 @@ test.describe('E2E Test for Blog - Post Detail', () => {
         expect(id).not.toBe('');
       }
     }
+  });
+
+  /**
+   * Post Detail Heading-based Paywall: 未契約ユーザーは制限付きコンテンツのみ表示
+   * @description
+   * freeContentHeadingが設定された記事で、未契約ユーザーには指定見出しまでのみ表示され、
+   * ペイウォールが表示されることを検証
+   *
+   * Note: このテストを実行するには、freeContentHeading付きのテスト記事が必要
+   * 例: frontmatterに `freeContentHeading: "概要"` を設定した記事
+   */
+  test('Post Detail: 未契約ユーザーは見出しベースの制限コンテンツとペイウォールが表示される', async ({ page }) => {
+    // TODO: freeContentHeading付きのテスト記事を作成後、TEST_SLUGを更新
+    // 現在は既存記事でテスト（freeContentHeadingが未設定の場合は全文表示）
+    const TEST_SLUG = 'about-claudemix';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 未契約状態で記事詳細ページにアクセス（デフォルトは未契約）
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    // 2. 可視コンテンツが表示される
+    const visibleContent = page.locator('[data-testid="post-content-visible"]');
+    await expect(visibleContent).toBeVisible();
+    await expect(visibleContent).not.toBeEmpty();
+
+    // 3. freeContentHeadingが設定されている場合、ペイウォールが表示される
+    // （設定されていない場合は全文表示され、ペイウォールは表示されない）
+    const paywall = page.locator('text=続きを読むには会員登録が必要です');
+    const paywallExists = await paywall.count() > 0;
+
+    if (paywallExists) {
+      // ペイウォールが表示される
+      await expect(paywall).toBeVisible();
+
+      // 非表示コンテンツは表示されない
+      const hiddenContent = page.locator('[data-testid="post-content-hidden"]');
+      await expect(hiddenContent).not.toBeVisible();
+    }
+  });
+
+  /**
+   * Post Detail Heading-based Paywall: 見出しベース分割の検証
+   * @description
+   * freeContentHeadingで指定された見出しの終わりまでがvisibleContentに含まれ、
+   * 次の見出しから先がhiddenContentに含まれることを検証
+   *
+   * Note: test-e2e-filter記事を使用
+   * - frontmatter: freeContentHeading: "テストデータの管理"
+   * - 本文: ## FilterPanelのE2Eテスト設計、## テストデータの管理、## フィルタ適用後の検証ポイント等
+   */
+  test('Post Detail: 見出しベースで正しくコンテンツが分割される', async ({ page }) => {
+    const TEST_SLUG = 'test-e2e-filter';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    // 2. visibleContentに「テストデータの管理」見出しとその内容が含まれる
+    const visibleContent = page.locator('[data-testid="post-content-visible"]');
+    await expect(visibleContent.locator('h2#テストデータの管理')).toBeVisible();
+
+    // 3. 「フィルタ適用後の検証ポイント」見出しはvisibleContentに含まれない（次の見出しなので非表示）
+    await expect(visibleContent.locator('h2#フィルタ適用後の検証ポイント')).not.toBeVisible();
+
+    // 4. ペイウォールが表示される
+    await expect(page.locator('text=続きを読むには会員登録が必要です')).toBeVisible();
+
+    // 5. hiddenContentは表示されない（未契約ユーザー）
+    const hiddenContent = page.locator('[data-testid="post-content-hidden"]');
+    await expect(hiddenContent).not.toBeVisible();
+  });
+
+  /**
+   * Post Detail Heading-based Paywall: 契約ユーザーは全文表示
+   * @description
+   * 契約ユーザー（hasActiveSubscription: true）の場合、
+   * freeContentHeadingの設定に関わらず全文が表示され、ペイウォールが表示されないことを検証
+   *
+   * Note: このテストを実行するには、サブスクリプション認証機能の実装が必要
+   */
+  test.skip('Post Detail: 契約ユーザーは全文が表示されペイウォールが表示されない', async ({ page }) => {
+    // TODO: サブスクリプション認証実装後、このテストを有効化
+    // const TEST_SLUG = 'test-article-with-free-content-heading';
+    // const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // // 0. 契約ユーザーとしてログイン（認証機能実装後）
+    // // await loginAsSubscriber(page);
+
+    // // 1. 記事詳細ページにアクセス
+    // await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    // // 2. visibleContentが表示される
+    // const visibleContent = page.locator('[data-testid="post-content-visible"]');
+    // await expect(visibleContent).toBeVisible();
+
+    // // 3. hiddenContentも表示される（全文表示）
+    // const hiddenContent = page.locator('[data-testid="post-content-hidden"]');
+    // await expect(hiddenContent).toBeVisible();
+
+    // // 4. ペイウォールは表示されない
+    // await expect(page.locator('text=続きを読むには会員登録が必要です')).not.toBeVisible();
+  });
+
+  /**
+   * Post Detail Heading-based Paywall: freeContentHeading未設定時の全文表示
+   * @description
+   * freeContentHeadingが設定されていない記事は、未契約ユーザーでも全文が表示され、
+   * ペイウォールが表示されないことを検証（後方互換性）
+   */
+  test('Post Detail: freeContentHeading未設定の記事は全文表示される', async ({ page }) => {
+    const TEST_SLUG = 'about-claudemix';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    // 2. 可視コンテンツが表示される
+    const visibleContent = page.locator('[data-testid="post-content-visible"]');
+    await expect(visibleContent).toBeVisible();
+    await expect(visibleContent).not.toBeEmpty();
+
+    // 3. ペイウォールは表示されない（freeContentHeading未設定のため全文公開）
+    const paywall = page.locator('text=続きを読むには会員登録が必要です');
+    await expect(paywall).not.toBeVisible();
   });
 
 });

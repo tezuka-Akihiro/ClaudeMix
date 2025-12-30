@@ -91,3 +91,18 @@ markdown:
       - "span"
       - "strong"
       - "em"
+
+# ==========================================
+# アクセス制御設定
+# ==========================================
+access_control:
+  # 見出しベースペイウォール設定
+  free_content_heading:
+    # frontmatterフィールド名
+    field_name: "freeContentHeading"
+    # 型: string | null
+    type: "string"
+    # 説明
+    description: "この見出しの終わりまでを無料公開範囲とする"
+    # デフォルト値（未指定時は全文公開）
+    default: null

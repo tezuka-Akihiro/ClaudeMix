@@ -175,12 +175,13 @@ graph TD
 
 #### Paywall の状態
 
-- **表示 (visible)**: サブスクリプションが非アクティブ（`hasActiveSubscription: false`）かつ記事に`freeContentPercentage`が設定されている場合に表示
-- **非表示 (hidden)**: サブスクリプションがアクティブ（`hasActiveSubscription: true`）の場合、またはfreeContentPercentageが100%の場合は非表示
+- **表示 (visible)**: サブスクリプションが非アクティブ（`hasActiveSubscription: false`）かつ記事に`freeContentHeading`が設定されている場合に表示
+- **非表示 (hidden)**: サブスクリプションがアクティブ（`hasActiveSubscription: true`）の場合、またはfreeContentHeadingが未設定の場合は非表示
 
 #### 表示条件の判定ロジック
 
-- **lib層での判定**: `app/lib/blog/post-detail/determineContentVisibility.ts` で可視範囲を計算
+- **lib層での判定**: `app/lib/blog/post-detail/determineContentVisibility.ts` で可視範囲を計算（見出しベース）
+- **lib層での分割**: `app/lib/blog/post-detail/splitContentByHeading.ts` で指定見出しの終わりまでを抽出
 - **UI層での適用**: PostDetailSectionで判定結果を受け取り、条件に応じてPaywallコンポーネントを表示
 
 #### Paywall の表示内容

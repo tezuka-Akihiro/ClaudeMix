@@ -38,8 +38,8 @@
    - **制約**: 参照元ファイル内の画像（相対パス）は正しく表示されない可能性がある（画像非対応）
 6. **サブスクリプション状態に応じたアクセス制御**:
    - **目的**: note型の「導入部分は公開、本編は会員限定」という表示制御を実現し、コンテンツの収益化を支援する
-   - **記事の可視範囲制御**: 各記事のfrontmatterで`freeContentPercentage`（公開割合、0-100%）を指定し、未契約ユーザーには指定割合までのコンテンツのみ表示
-   - **ペイウォール表示**: 未契約ユーザーが制限を超えるコンテンツにアクセスした場合、続きを読むための障壁（ペイウォール）を表示
+   - **記事の可視範囲制御**: 各記事のfrontmatterで`freeContentHeading`（見出し名）を指定し、未契約ユーザーには指定された見出しの終わりまでのコンテンツを表示
+   - **ペイウォール表示**: 未契約ユーザーが制限を超えるコンテンツにアクセスした場合、指定見出しの終わり位置にペイウォール（障壁）を表示
    - **購読促進UI**: ペイウォール内に会員登録・サブスクリプション購入を促すバナーやCTAボタンを配置
    - **契約ユーザーの扱い**: 有効なサブスクリプションを持つユーザーには、記事全文を制限なく表示
 
@@ -67,7 +67,8 @@
   - リクエストからセッションCookieを読み取り、ユーザーの認証状態を確認
   - 認証済みユーザーの場合、accountサービスのdata-io層を介してサブスクリプション状態を取得
   - 未認証ユーザーの場合、サブスクリプション状態は`null`として扱う
-- 取得したデータ（記事データ + サブスクリプション状態）をコンポーネントに渡す
+- 記事データ + サブスクリプション状態 + 見出し情報を取得し、lib層で可視範囲を判定
+- 取得したデータをコンポーネントに渡す
 - **meta関数の実装** (`export const meta: MetaFunction<typeof loader>`):
   - loaderから返された`PostDetailData`を使用してメタデータを生成
   - 返すメタデータ:
@@ -91,9 +92,9 @@
 - **記事メタ情報セクション**: タイトル、著者、投稿日を表示
 - マークダウンから変換されたHTMLコンテンツを安全にレンダリング
 - **サブスクリプション状態に基づくコンテンツ制御**:
-  - サブスクリプション状態とfreeContentPercentageを元に、表示するコンテンツ範囲を判定
+  - サブスクリプション状態とfreeContentHeadingを元に、表示するコンテンツ範囲を判定
   - 契約ユーザー（`hasActiveSubscription: true`）: 記事全文を表示
-  - 未契約ユーザー: `freeContentPercentage`で指定された割合までのコンテンツを表示し、それ以降にペイウォールを表示
+  - 未契約ユーザー: `freeContentHeading`で指定された見出しの終わりまでのコンテンツを表示し、それ以降にペイウォールを表示
 - **ペイウォール表示**: 未契約ユーザーに対して、制限を超えるコンテンツの前にPaywallコンポーネントを表示
 - **購読促進バナー表示**: Paywall内に会員登録・サブスクリプション購入を促すSubscriptionPromotionBannerコンポーネントを配置
 - **Mermaidクライアント側レンダリング**: useEffectでMermaid.jsライブラリを初期化し、クラス付与されたMermaidコードブロックをSVG図表に変換
@@ -138,13 +139,24 @@
 
 *コンテンツ可視範囲判定処理* (`app/lib/blog/post-detail/determineContentVisibility.ts`):
 
-- 入力: サブスクリプション状態（`hasActiveSubscription: boolean`）、記事の公開割合（`freeContentPercentage: number`）
-- 出力: コンテンツ可視範囲の判定結果 `{ showFullContent: boolean, visiblePercentage: number }`
-- 責務: サブスクリプション状態に基づいて、記事のどの範囲を表示すべきかを判定する純粋関数
+- 入力: サブスクリプション状態（`hasActiveSubscription: boolean`）、記事の公開範囲見出し（`freeContentHeading: string | null`）、見出し情報配列（`headings: Heading[]`）
+- 出力: コンテンツ可視範囲の判定結果 `{ showFullContent: boolean, cutoffHeadingId: string | null }`
+- 責務: サブスクリプション状態と指定見出しに基づいて、記事のどの範囲を表示すべきかを判定する純粋関数
 - ロジック:
-  - `hasActiveSubscription === true`: `showFullContent: true, visiblePercentage: 100`
-  - `hasActiveSubscription === false`: `showFullContent: false, visiblePercentage: freeContentPercentage`
+  - `hasActiveSubscription === true`: `showFullContent: true, cutoffHeadingId: null`
+  - `hasActiveSubscription === false` かつ `freeContentHeading` が指定: 見出し配列から該当見出しを検索し、その見出しIDを返す `showFullContent: false, cutoffHeadingId: <headingId>`
+  - `freeContentHeading` が見つからない、またはnull: `showFullContent: true, cutoffHeadingId: null`（全文公開）
 - 副作用なし（テスト容易性を確保）
+
+*見出しベースコンテンツ分割処理* (`app/lib/blog/post-detail/splitContentByHeading.ts`):
+
+- 入力: HTML文字列、カットオフ見出しID（`cutoffHeadingId: string | null`）
+- 出力: `{ visibleContent: string, hiddenContent: string }`
+- 責務: 指定された見出しIDの終わり位置でHTMLコンテンツを分割する純粋関数
+- ロジック:
+  - `cutoffHeadingId === null`: 全文を`visibleContent`として返す
+  - `cutoffHeadingId`が指定: HTMLをパースし、該当IDを持つ見出しの次の兄弟要素の直前で分割
+- 副作用なし
 
 ### 🔌 副作用要件（app/data-io）
 

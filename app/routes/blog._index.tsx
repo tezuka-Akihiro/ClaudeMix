@@ -11,6 +11,7 @@ import { fetchPosts } from "~/data-io/blog/posts/fetchPosts.server";
 import { fetchAvailableFilters } from "~/data-io/blog/posts/fetchAvailableFilters.server";
 import { calculatePagination } from "~/lib/blog/posts/calculatePagination";
 import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
+import { getSession } from "~/data-io/account/common/getSession.server";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
 import "~/styles/blog/layer2-common.css";
@@ -27,7 +28,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const pageParam = url.searchParams.get('page');
   const page = pageParam ? parseInt(pageParam, 10) : 1;
@@ -41,6 +42,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (isNaN(page) || page < 1) {
     throw new Response('Invalid page number', { status: 400 });
   }
+
+  // セッションを取得して認証状態を確認
+  const session = await getSession(request, context as unknown as Parameters<typeof getSession>[1]);
+  const isAuthenticated = session !== null;
 
   // データ取得（副作用層）
   const spec = loadPostsSpec();
@@ -65,6 +70,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({
     posts,
     config,
+    isAuthenticated,
     pagination: {
       currentPage: paginationData.currentPage,
       totalPages: paginationData.totalPages,
@@ -87,6 +93,7 @@ export default function BlogIndex() {
   const {
     config,
     posts,
+    isAuthenticated,
     pagination,
     availableFilters,
     selectedFilters,
@@ -97,6 +104,7 @@ export default function BlogIndex() {
     <BlogLayout config={config}>
       <PostsSection
         posts={posts}
+        isAuthenticated={isAuthenticated}
         pagination={pagination}
         availableFilters={availableFilters}
         selectedFilters={selectedFilters}

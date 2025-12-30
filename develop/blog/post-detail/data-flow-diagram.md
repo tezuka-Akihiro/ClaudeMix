@@ -14,7 +14,7 @@ graph TD
 
     subgraph "データ取得・変換フロー"
         Route -->|"1. slug を渡す"| DataIO["fetchPostBySlug.server.ts<br/>(Data-IO層)"]
-        DataIO -->|"2. 記事データ返却<br/>(frontmatter含む: freeContentPercentage)"| Route
+        DataIO -->|"2. 記事データ返却<br/>(frontmatter含む: freeContentHeading)"| Route
 
         Route -->|"3a. source無し"| Content1["記事ファイル本文"]
         Route -->|"3b. source有り<br/>(例: /README.md)"| ExternalIO["fetchExternalMarkdown.server.ts<br/>(Data-IO層)"]
@@ -40,8 +40,9 @@ graph TD
     end
 
     subgraph "アクセス制御判定フロー"
-        Route -->|"hasActiveSubscription<br/>freeContentPercentage"| VisibilityLib["determineContentVisibility.ts<br/>(Pure Logic層)"]
-        VisibilityLib -->|"showFullContent<br/>visiblePercentage"| Route
+        Route -->|"hasActiveSubscription<br/>freeContentHeading<br/>見出し情報配列"| VisibilityLib["determineContentVisibility.ts<br/>(Pure Logic層)"]
+        VisibilityLib -->|"showFullContent<br/>cutoffHeadingId"| SplitLib["splitContentByHeading.ts<br/>(Pure Logic層)"]
+        SplitLib -->|"visibleContent<br/>hiddenContent"| Route
     end
 
     subgraph "UI表示フロー"
@@ -289,7 +290,7 @@ graph TD
 ### 正常系フロー
 
 1. **ユーザーアクセス**: ユーザーが `/blog/:slug` にアクセス
-2. **記事データ取得**: Route が `fetchPostBySlug.server.ts` を呼び出してslugに対応する記事データ（frontmatter含む: title, description, publishedAt, author, tags, category, source, freeContentPercentage）を取得
+2. **記事データ取得**: Route が `fetchPostBySlug.server.ts` を呼び出してslugに対応する記事データ（frontmatter含む: title, description, publishedAt, author, tags, category, source, freeContentHeading）を取得
 3. **本文取得の分岐**:
    - **sourceなし**: 記事ファイル本文をそのまま使用
    - **sourceあり** (例: `source: "/README.md"`): `fetchExternalMarkdown.server.ts` で外部ファイルを読み込み
@@ -299,15 +300,16 @@ graph TD
    - Session Cookieからユーザーの認証状態を確認
    - **認証済みの場合**: `getSubscriptionStatus.server.ts` を呼び出し、accountサービスのdata-io層を介してサブスクリプション状態を取得
    - **未認証の場合**: `hasActiveSubscription: false` として扱う
-5. **アクセス制御判定**: Route が `determineContentVisibility.ts` を呼び出し、サブスクリプション状態と`freeContentPercentage`から可視範囲を判定
-6. **マークダウン変換**: Route が取得した本文（マークダウン形式）を `markdownConverter.ts` に渡してHTML形式に変換
-7. **見出し抽出**: Route が `extractHeadings.ts` を呼び出して見出し情報を抽出
-8. **SEO対応**: `meta` 関数が loader データから OGP/Twitter Card メタデータを生成し、HTML Headに挿入
-9. **データ受け渡し**: Route が変換済みデータ（HTML本文、見出し情報、メタデータ、可視範囲判定結果）を `PostDetailSection.tsx` と `TableOfContents.tsx` に渡す
-10. **UI表示とアクセス制御**:
+5. **マークダウン変換**: Route が取得した本文（マークダウン形式）を `markdownConverter.ts` に渡してHTML形式に変換
+6. **見出し抽出**: Route が `extractHeadings.ts` を呼び出して見出し情報を抽出
+7. **アクセス制御判定**: Route が `determineContentVisibility.ts` を呼び出し、サブスクリプション状態と`freeContentHeading`、見出し情報配列から可視範囲を判定（カットオフ見出しIDを取得）
+8. **コンテンツ分割**: Route が `splitContentByHeading.ts` を呼び出し、HTML本文をカットオフ見出しIDで分割（visibleContent / hiddenContent）
+9. **SEO対応**: `meta` 関数が loader データから OGP/Twitter Card メタデータを生成し、HTML Headに挿入
+10. **データ受け渡し**: Route が変換済みデータ（HTML本文、見出し情報、メタデータ、可視範囲判定結果）を `PostDetailSection.tsx` と `TableOfContents.tsx` に渡す
+11. **UI表示とアクセス制御**:
     - **契約ユーザー（`showFullContent: true`）**: 記事全文を表示
     - **未契約ユーザー（`showFullContent: false`）**:
-      - `visiblePercentage`で指定された割合までのコンテンツを表示
+      - `visibleContent`（指定見出しの終わりまで）を表示
       - 制限を超えるコンテンツの前にPaywallを表示
       - Paywall内にSubscriptionPromotionBannerを表示し、`/account/subscription`へのCTAボタンを配置
 
