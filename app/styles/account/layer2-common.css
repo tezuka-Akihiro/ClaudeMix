@@ -238,7 +238,7 @@
 }
 
 .flash-message-info {
-  background-color: var(--color-interactive-primary-bg);
+  background-color: var(--color-interactive-primary-bg-opaque);
   border: var(--border-width-sm) solid var(--color-interactive-primary);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-3) var(--spacing-4);
