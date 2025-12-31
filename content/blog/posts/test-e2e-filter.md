@@ -3,7 +3,7 @@ slug: "test-e2e-filter"
 title: "Playwrightによるフィルター機能のE2Eテスト実装"
 author: "ClaudeMix Dev Team"
 publishedAt: "2025-11-15"
-category: "Tutorials & Use Cases"
+category: "起業"
 tags: ["Playwright", "testing"]
 description: "ブログのカテゴリ・タグフィルター機能をPlaywrightでテストする実装例"
 freeContentHeading: "テストデータの管理"

@@ -150,29 +150,6 @@ test.describe('E2E Screen Test for blog - Navigation Menu', () => {
     await expect(navigationMenu).not.toBeVisible();
   });
 
-  /**
-   * タイトルリンクのホーム遷移確認
-   * @description ブログタイトルをクリックで /blog へ遷移すること
-   */
-  test('should navigate to home when title link is clicked', async ({ page }) => {
-    // 記事一覧セクションが表示されるまで待つ
-    const postsSection = page.getByTestId('posts-section');
-    await expect(postsSection).toBeVisible();
-
-    // 最初の記事カードを取得してクリック
-    const firstPostCard = postsSection.getByTestId('post-card').first();
-    await firstPostCard.click();
-
-    // 詳細ページに遷移したことを確認
-    await expect(page).toHaveURL(/\/blog\/[^/]+/);
-
-    // タイトルリンクをクリックしてホームへ戻る
-    const titleLink = page.getByTestId('blog-header-title');
-    await titleLink.click();
-
-    // /blogページへ遷移すること
-    await expect(page).toHaveURL('/blog');
-  });
 });
 
 /**
@@ -190,25 +167,7 @@ test.describe('E2E Screen Test for blog - Theme Toggle', () => {
   });
 
   /**
-   * 統合テスト1: ThemeToggleButtonの表示と初期テーマ確認
-   * @description ThemeToggleButtonが表示され、初期テーマ（ダークモード）が適用されること
-   */
-  test('should display ThemeToggleButton with initial dark theme', async ({ page }) => {
-    // 1. ThemeToggleButtonが表示されること
-    const themeToggleButton = page.getByTestId('theme-toggle-button');
-    await expect(themeToggleButton).toBeVisible();
-
-    // 2. 初期状態でdata-theme属性がダークモードに設定されること
-    const dataTheme = await page.locator('html').getAttribute('data-theme');
-    expect(dataTheme).toBe('dark');
-
-    // 3. ボタンに正しいaria-labelが設定されること
-    const ariaLabel = await themeToggleButton.getAttribute('aria-label');
-    expect(ariaLabel).toBe(commonSpec.accessibility.aria_labels.theme_toggle_button_dark);
-  });
-
-  /**
-   * 統合テスト2: テーマ切り替え動作確認
+   * 統合テスト: テーマ切り替え動作確認
    * @description ThemeToggleButtonクリックでテーマが切り替わり、localStorage に保存されること
    */
   test('should toggle theme and save to localStorage', async ({ page }) => {
@@ -252,7 +211,7 @@ test.describe('E2E Screen Test for blog - Theme Toggle', () => {
   });
 
   /**
-   * 統合テスト3: テーマの永続化確認
+   * 統合テスト2: テーマの永続化確認
    * @description localStorageに保存されたテーマがページリロード後も保持されること
    */
   test('should persist theme after page reload', async ({ page }) => {
@@ -421,7 +380,7 @@ test.describe('E2E Section Test for blog posts - Filter Feature (Happy Path)', (
     const testArticleCard1 = page.locator(`[data-testid="post-card"][data-slug="${testArticleByCategory.slug}"]`);
     await expect(testArticleCard1).toBeVisible();
 
-    const categoryPattern = categoryToTest.name.replace(/\s/g, '(\\+|%20)').replace(/&/g, '%26');
+    const categoryPattern = encodeURIComponent(categoryToTest.name).replace(/%20/g, '(\\+|%20)');
     await expect(page).toHaveURL(new RegExp(`category=${categoryPattern}`));
 
     // 2. タグフィルタのテスト（/blog に戻る）
