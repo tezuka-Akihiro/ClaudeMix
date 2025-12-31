@@ -32,9 +32,8 @@ id = "228032d075f6418e9c8a770c3cf1180b"
 [[env.preview.d1_databases]]
 binding = "DB"
 database_name = "claudemix-preview"
-database_id = "PREVIEW_DB_ID_HERE"  # TODO: Replace with actual preview database ID
+database_id = "30acb93e-d2a4-4d68-a85c-4479763a5144"
 
 [[env.preview.kv_namespaces]]
 binding = "SESSION_KV"
-id = "PREVIEW_KV_ID_HERE"  # TODO: Replace with actual preview KV namespace ID
-
+id = "cf119c087e3a424e8731ae0b4ee78368"
