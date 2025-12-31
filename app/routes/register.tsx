@@ -165,6 +165,7 @@ export default function Register() {
           <div className="form-field-structure">
             <label htmlFor="email">メールアドレス</label>
             <input
+              className="form-field__input"
               id="email"
               name="email"
               type="email"
@@ -184,6 +185,7 @@ export default function Register() {
           <div className="form-field-structure">
             <label htmlFor="password">パスワード</label>
             <input
+              className="form-field__input"
               id="password"
               name="password"
               type="password"
@@ -203,6 +205,7 @@ export default function Register() {
           <div className="form-field-structure">
             <label htmlFor="confirmPassword">パスワード（確認）</label>
             <input
+              className="form-field__input"
               id="confirmPassword"
               name="confirmPassword"
               type="password"
@@ -221,7 +224,7 @@ export default function Register() {
             )}
           </div>
 
-          <button type="submit" disabled={isSubmitting} data-testid="submit-button">
+          <button type="submit" className="btn-primary" disabled={isSubmitting} data-testid="submit-button">
             {isSubmitting ? '登録中...' : '登録'}
           </button>
         </Form>

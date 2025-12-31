@@ -186,6 +186,7 @@ export default function Login() {
           <div className="form-field-structure">
             <label htmlFor="email">メールアドレス</label>
             <input
+              className="form-field__input"
               id="email"
               name="email"
               type="email"
@@ -205,6 +206,7 @@ export default function Login() {
           <div className="form-field-structure">
             <label htmlFor="password">パスワード</label>
             <input
+              className="form-field__input"
               id="password"
               name="password"
               type="password"
@@ -221,13 +223,13 @@ export default function Login() {
             )}
           </div>
 
-          <button type="submit" disabled={isSubmitting} data-testid="submit-button">
+          <button type="submit" className="btn-primary" disabled={isSubmitting} data-testid="submit-button">
             {isSubmitting ? 'ログイン中...' : 'ログイン'}
           </button>
         </Form>
 
         <div className="auth-divider" style={{ margin: '1.5rem 0', textAlign: 'center', position: 'relative' }}>
-          <span style={{ background: 'white', padding: '0 1rem', position: 'relative', zIndex: 1 }}>または</span>
+          <span style={{ background: 'white', padding: '0 1rem', position: 'relative', zIndex: 1, color: '#111111' }}>または</span>
           <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: '#e0e0e0', zIndex: 0 }}></div>
         </div>
 
