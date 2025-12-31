@@ -23,7 +23,7 @@ describe('getSubscriptionStatus', () => {
         planId: 'plan_monthly',
         status: 'active' as const,
         currentPeriodStart: new Date('2025-01-01').toISOString(),
-        currentPeriodEnd: new Date('2025-12-31').toISOString(),
+        currentPeriodEnd: new Date('2026-12-31').toISOString(),
         createdAt: new Date('2025-01-01').toISOString(),
         updatedAt: new Date('2025-01-01').toISOString(),
       }
@@ -89,6 +89,11 @@ describe('getSubscriptionStatus', () => {
 
   describe('異常系', () => {
     it('accountサービスdata-io層でエラーが発生した場合、安全側（false）に倒す', async () => {
+      // console.errorをモックしてエラーログ出力を抑制
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {})
+
       vi.mocked(getSubscriptionByUserId).mockRejectedValue(
         new Error('Database error')
       )
@@ -96,6 +101,12 @@ describe('getSubscriptionStatus', () => {
       const result = await getSubscriptionStatus('user_123')
 
       expect(result).toEqual({ hasActiveSubscription: false })
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Error in getSubscriptionStatus:',
+        expect.any(Error)
+      )
+
+      consoleErrorSpy.mockRestore()
     })
 
     it('userIdがnullの場合、hasActiveSubscription: falseを返す', async () => {

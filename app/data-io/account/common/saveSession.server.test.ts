@@ -27,24 +27,24 @@ describe('saveSession.server', () => {
   describe('Happy Path: Save session to KV and generate Cookie', () => {
     it('should save session to KV with correct TTL and return Set-Cookie header', async () => {
       // Arrange
+      const now = Date.now();
       const sessionData: SessionData = {
         sessionId: 'test-session-id-123',
         userId: 'user-123',
-        expiresAt: new Date(Date.now() + 604800000).toISOString(), // 7 days from now
-        createdAt: new Date().toISOString(),
+        expiresAt: new Date(now + 604800000).toISOString(), // 7 days from now
+        createdAt: new Date(now).toISOString(),
       };
-      const ttlSeconds = 604800; // 7 days
 
       // Act
       const setCookieHeader = await saveSession(sessionData, mockContext as any);
 
       // Assert
-      // Verify KV.put was called with correct key, value, and TTL
-      expect(mockKV.put).toHaveBeenCalledWith(
-        `session:${sessionData.sessionId}`,
-        JSON.stringify(sessionData),
-        { expirationTtl: ttlSeconds }
-      );
+      // Verify KV.put was called with TTL (allow 1 second tolerance for timing)
+      const kvPutCall = mockKV.put.mock.calls[0];
+      expect(kvPutCall[0]).toBe(`session:${sessionData.sessionId}`);
+      expect(kvPutCall[1]).toBe(JSON.stringify(sessionData));
+      expect(kvPutCall[2].expirationTtl).toBeGreaterThanOrEqual(604799);
+      expect(kvPutCall[2].expirationTtl).toBeLessThanOrEqual(604800);
 
       // Verify Set-Cookie header is returned
       expect(setCookieHeader).toBeDefined();
@@ -53,31 +53,30 @@ describe('saveSession.server', () => {
       expect(setCookieHeader).toContain('Secure');
       expect(setCookieHeader).toContain('SameSite=Lax');
       expect(setCookieHeader).toContain('Path=/');
-      expect(setCookieHeader).toContain('Max-Age=604800');
+      expect(setCookieHeader).toMatch(/Max-Age=(604799|604800)/);
     });
 
     it('should handle session with custom expiration', async () => {
       // Arrange
-      const customExpiryDate = new Date(Date.now() + 86400000); // 1 day from now
+      const now = Date.now();
       const sessionData: SessionData = {
         sessionId: 'short-lived-session',
         userId: 'user-456',
-        expiresAt: customExpiryDate.toISOString(),
-        createdAt: new Date().toISOString(),
+        expiresAt: new Date(now + 86400000).toISOString(), // 1 day from now
+        createdAt: new Date(now).toISOString(),
       };
-      const expectedTtl = 86400; // 1 day in seconds
 
       // Act
       const setCookieHeader = await saveSession(sessionData, mockContext as any);
 
       // Assert
-      expect(mockKV.put).toHaveBeenCalledWith(
-        `session:${sessionData.sessionId}`,
-        JSON.stringify(sessionData),
-        { expirationTtl: expectedTtl }
-      );
+      const kvPutCall = mockKV.put.mock.calls[0];
+      expect(kvPutCall[0]).toBe(`session:${sessionData.sessionId}`);
+      expect(kvPutCall[1]).toBe(JSON.stringify(sessionData));
+      expect(kvPutCall[2].expirationTtl).toBeGreaterThanOrEqual(86399);
+      expect(kvPutCall[2].expirationTtl).toBeLessThanOrEqual(86400);
       expect(setCookieHeader).toContain('session_id=short-lived-session');
-      expect(setCookieHeader).toContain('Max-Age=86400');
+      expect(setCookieHeader).toMatch(/Max-Age=(86399|86400)/);
     });
   });
 
