@@ -313,3 +313,11 @@ accessibility:
   semantic_elements:
     section_role: "region"
     card_role: "article"
+
+# ==========================================
+# アクセス制御設定
+# ==========================================
+access_control:
+  # 公開カテゴリ（未ログインでもアクセス可能）
+  public_categories:
+    - "起業"

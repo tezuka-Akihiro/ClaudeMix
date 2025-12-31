@@ -53,6 +53,34 @@
     line-height: var(--line-height-normal);
   }
 
+  /* Locked Post Card - Indicates authentication required */
+  .post-card--locked {
+    opacity: 0.7;
+    filter: grayscale(0.3);
+  }
+
+  .post-card--locked:hover {
+    opacity: 0.85;
+    filter: grayscale(0.1);
+  }
+
+  /* Lock Badge - 🔒 icon */
+  .post-card__lock-badge {
+    margin-left: var(--spacing-1);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
+  }
+
+  /* Lock Message - "ログインで読む" text */
+  .post-card__lock-message {
+    color: var(--color-interactive-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--spacing-1);
+    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
+  }
+
   /* === Pagination === */
   /* Pagination container */
   .pagination-nav {
