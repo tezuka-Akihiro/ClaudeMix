@@ -43,6 +43,7 @@ html {
   --color-interactive-primary-bg: rgb(34 211 238 / 0.3);
   --color-interactive-primary-bg-subtle: rgb(34 211 238 / 0.2);
   --color-interactive-primary-bg-faint: rgb(34 211 238 / 0.15);
+  --color-interactive-primary-bg-opaque: #164e63;
   --color-interactive-selected: #60a5fa;
   --color-interactive-selected-bg: rgb(96 165 250 / 0.2);
 

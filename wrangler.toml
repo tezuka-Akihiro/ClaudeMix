@@ -1,4 +1,4 @@
-name = "remix-boilerplate"
+name = "claudemix"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-09-23"
 
@@ -26,13 +26,14 @@ database_id = "f9a19560-ec16-4eb5-9d7c-a76dd1887640"
 binding = "SESSION_KV"
 id = "228032d075f6418e9c8a770c3cf1180b"
 
-# Preview environment configuration
+# Preview environment configuration (for all non-main branches)
+# SETUP REQUIRED: Create preview database and KV namespace
+# See docs/setup/preview-environment.md for instructions
 [[env.preview.d1_databases]]
 binding = "DB"
-database_name = "claudemix-prod"
-database_id = "f9a19560-ec16-4eb5-9d7c-a76dd1887640"
+database_name = "claudemix-preview"
+database_id = "30acb93e-d2a4-4d68-a85c-4479763a5144"
 
 [[env.preview.kv_namespaces]]
 binding = "SESSION_KV"
-id = "228032d075f6418e9c8a770c3cf1180b"
-
+id = "cf119c087e3a424e8731ae0b4ee78368"
