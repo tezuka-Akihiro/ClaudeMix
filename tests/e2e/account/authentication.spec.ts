@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { getAuthenticationSpec } from '../helpers/specHelper';
+import { loadSpec, type AccountAuthenticationSpec } from '../../utils/loadSpec';
 
 /**
  * E2E Test: Account Authentication Section
@@ -11,8 +11,12 @@ import { getAuthenticationSpec } from '../helpers/specHelper';
  * - Authentication state management
  */
 
-// Load spec for assertions
-const spec = getAuthenticationSpec();
+// Spec cache for test suite
+let spec: AccountAuthenticationSpec;
+
+test.beforeAll(async () => {
+  spec = await loadSpec<AccountAuthenticationSpec>('account', 'authentication');
+});
 
 // Helper function to generate unique email addresses for each test run
 function generateUniqueEmail(prefix: string = 'test'): string {
@@ -173,7 +177,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Verify error message is displayed
       const errorMessage = page.locator('[data-testid="error-message"]');
       await expect(errorMessage).toBeVisible();
-      await expect(errorMessage).toContainText(spec.error_messages.login.invalid_credentials);
+      await expect(errorMessage).toContainText(spec.error_messages.authentication.invalid_credentials);
     });
 
     test('should redirect to original page after login', async ({ page }) => {

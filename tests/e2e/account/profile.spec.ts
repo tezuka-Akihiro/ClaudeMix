@@ -7,10 +7,14 @@
  */
 
 import { expect, test, type Page } from '@playwright/test';
-import { getProfileSpec } from '../helpers/specHelper';
+import { loadSpec, type AccountProfileSpec } from '../../utils/loadSpec';
 
-// Load spec for assertions
-const spec = getProfileSpec();
+// Spec cache for test suite
+let spec: AccountProfileSpec;
+
+test.beforeAll(async () => {
+  spec = await loadSpec<AccountProfileSpec>('account', 'profile');
+});
 
 async function createAuthenticatedUser(page: Page, prefix = 'profile-test') {
   const email = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
