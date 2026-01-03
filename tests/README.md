@@ -8,20 +8,32 @@
 
 ## 2. ディレクトリ構造
 
-`tests` ディレクトリ配下は、テストの種類（`e2e`, `unit`, `lint`）ごとにディレクトリを分け、それぞれが自己完結するように構成されています。
+`tests` ディレクトリ配下は、テストの種類（`e2e`, `unit`）ごとにディレクトリを分け、それぞれが自己完結するように構成されています。
 
 ```plaintext
 tests/
 ├── e2e/
+│   ├── account/                # アカウント機能のE2Eテスト
+│   │   ├── authentication.spec.ts
+│   │   ├── common.spec.ts
+│   │   ├── password-reset.spec.ts
+│   │   ├── profile.spec.ts
+│   │   └── subscription.spec.ts
+│   ├── blog/                   # ブログ機能のE2Eテスト
+│   │   ├── access-control.spec.ts
+│   │   ├── common.spec.ts
+│   │   ├── post-detail.spec.ts
+│   │   └── posts.spec.ts
 │   ├── playwright.config.ts    # E2Eテスト (Playwright) の設定
-│   ├── screen/                 # 画面レベルのテストコード
-│   ├── section/                # セクションレベルのテストコード
+│   ├── tsconfig.json           # E2EテストのTypeScript設定
 │   ├── test-results/           # 実行結果 (Git管理外)
 │   └── playwright-report/      # HTMLレポート (Git管理外)
 ├── unit/
 │   ├── vitest.config.ts        # ユニットテスト (Vitest) の設定
+│   ├── setup-test-env.ts       # テスト環境のセットアップ
 │   └── coverage/               # カバレッジレポート (Git管理外)
-└── lint-report/            # 静的解析のレポート (Git管理外)
+└── utils/
+    └── loadSpec.ts             # テスト用のspec読み込みユーティリティ
 ```
 
 ## 3. テストコードの配置ルール
@@ -31,14 +43,21 @@ tests/
 ### E2Eテスト (Playwright)
 
 - **役割**: アプリケーション全体をユーザー視点でテストします。
-- **配置**: `tests/e2e/` 配下に集約します。
-  - `screen/`: ページ全体の骨格を検証するテスト (Outside-in TDDの起点)
-  - `section/`: 特定の機能セクションの詳細な振る舞いを検証するテスト
+- **配置**: `tests/e2e/` 配下に機能単位で集約します。
+  - `account/`: アカウント関連機能のテスト（認証、プロフィール、パスワードリセット、サブスクリプション等）
+  - `blog/`: ブログ関連機能のテスト（記事一覧、記事詳細、アクセス制御等）
+  - 新しい機能を追加する場合は、機能名のディレクトリを作成してテストを配置します
 
 ### ユニットテスト (Vitest)
 
 - **役割**: 特定のコンポーネントや関数の動作を単体でテストします。
 - **配置**: テスト対象との関連性を最重視し、`app/` 配下にソースコードと隣接して配置（コロケーション）します。
+
+### テストユーティリティ
+
+- **役割**: E2Eテストとユニットテストで共通して使用するヘルパー関数を提供します。
+- **配置**: `tests/utils/` 配下に集約します。
+  - `loadSpec.ts`: テスト用のspec読み込みユーティリティ（`{section}-spec.yaml`を読み込む）
 
 ## 4. 関連コマンド
 
@@ -56,29 +75,103 @@ npx playwright install
 npx playwright install --with-deps
 ```
 
-#### E2Eテストの実行コマンド
+#### E2Eテストの実行手順（必須）
 
-```bash
-# 全てのE2Eテストを実行
-npm run test:e2e
+**重要**: E2Eテストを実行する前に、必ず以下の手順を守ってください：
 
-# E2EテストをUIモードで実行
-npm run test:e2e:ui
+1. **開発サーバーを起動**:
 
-# E2Eテストをheadedモードで実行（ブラウザを表示）
-npm run test:e2e:headed
+   ```bash
+   npm run dev:wrangler
+   ```
 
-# E2Eテストをデバッグモードで実行
-npm run test:e2e:debug
+   - Wranglerでランタイム制約を反映した環境を使用（必須）
+   - 通常の `npm run dev` では正しくテストできません
 
-# 直前のテスト結果をHTMLレポートで表示
-npm run test:e2e:report
+2. **E2Eテストを実行**:
 
-# E2Eテストのタイプチェックのみ実行
-npm run typecheck:e2e
+   ```bash
+   # ブログ機能のE2Eテストを実行（デフォルト）
+   npm run test:e2e
+
+   # 特定の機能のテストを実行（例: accountフォルダ内のテスト）
+   npx playwright test tests/e2e/account --config=tests/e2e/playwright.config.ts --reporter=list
+
+   # E2EテストをUIモードで実行
+   npm run test:e2e:ui
+
+   # E2Eテストをheadedモードで実行（ブラウザを表示）
+   npm run test:e2e:headed
+
+   # E2Eテストをデバッグモードで実行
+   npm run test:e2e:debug
+
+   # 直前のテスト結果をHTMLレポートで表示
+   npm run test:e2e:report
+
+   # E2Eテストのタイプチェックのみ実行
+   npm run typecheck:e2e
+   ```
+
+3. **テスト終了後のクリーンアップ（必須）**:
+   - 開発サーバーを**必ず停止**すること
+   - 停止せずに放置するとポートが占有され次回起動に失敗します
+
+#### テストデータの動的生成（必須）
+
+E2Eテストを作成する際、**ハードコードされたテストデータは禁止**です。
+
+**禁止事項**:
+
+- 固定のメールアドレス、ユーザーID、その他のテストデータ
+- 固定値の使用（データベース競合・テスト失敗の原因）
+
+**必須パターン**:
+
+```typescript
+// メールアドレスの動的生成
+const email = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+
+// 例
+const email = `profile-test-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+const newEmail = `new-email-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
 ```
 
+**理由**:
+
+- テストの再実行可能性を保証
+- データベース上の重複エラーを防止
+- 並列実行時の競合を回避
+
 #### トラブルシューティング
+
+##### テストが接続エラーで失敗する / コンポーネントが表示されない
+
+**症状**: 以下のいずれかが発生した場合
+
+- テストが `ERR_CONNECTION_REFUSED` で全て失敗
+- モーダルやコンポーネントが表示されない
+- ナビゲーションテストが予期せず失敗
+- 開発サーバーが正常に起動しているのにテストが接続できない
+- コード変更が反映されない（stale cache）
+
+**原因**: Windows環境でのWranglerキャッシュ・プロセス問題
+
+Windowsのファイルロック機構により、`.wrangler/state/v3`フォルダ内のSQLiteデータベースやキャッシュファイルがNode.jsプロセスによってロックされ、削除できない状態になる。
+
+**解決策**: キャッシュクリーンアップスクリプトを実行
+
+```bash
+# Wranglerキャッシュをクリアして再起動
+bash scripts/clean-wrangler-cache.sh
+npm run dev:wrangler
+```
+
+このスクリプトは以下を自動実行します：
+
+- `.wrangler/state/v3`フォルダの削除を試行
+- 削除失敗時、自動的にNode.jsプロセスを停止
+- D1マイグレーションの再適用
 
 ##### Playwrightブラウザがダウンロードできない
 
@@ -101,9 +194,17 @@ npx playwright install chromium
 ### ユニットテスト (Vitest) の実行コマンド
 
 ```bash
-# 全てのユニットテストを実行
+# 全てのユニットテストを実行（watch mode）
 npm test
+
+# ユニットテストを1回だけ実行（CI向け）
+npm run test:run
+
+# テストカバレッジレポートを生成
+npm run coverage
 
 # ユニットテストをUIモードで実行
 npm run test:ui
 ```
+
+**注意**: ユニットテストは `app/` 配下にソースコードと隣接して配置されています（コロケーション方式）。例: `app/lib/blog/posts/filterPosts.test.ts`
