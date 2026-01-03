@@ -72,11 +72,75 @@ interface ActionData {
 }
 
 /**
- * Minimal loader to enable client-side navigation
+ * Loader: Provide UI spec to client
  * (actual auth data comes from parent route)
  */
 export async function loader() {
-  return json({});
+  const spec = loadSpec<AccountProfileSpec>('account/profile');
+
+  return json({
+    profileSpec: {
+      sections: spec.profile_display.sections,
+    },
+    emailChangeSpec: {
+      title: spec.forms.email_change.title,
+      fields: {
+        new_email: {
+          label: spec.forms.email_change.fields.new_email.label,
+        },
+        current_password: {
+          label: spec.forms.email_change.fields.current_password.label,
+        },
+      },
+      submit_button: {
+        label: spec.forms.email_change.submit_button.label,
+        loading_label: spec.forms.email_change.submit_button.loading_label,
+      },
+      cancel_button: {
+        label: spec.forms.email_change.cancel_button.label,
+      },
+    },
+    passwordChangeSpec: {
+      title: spec.forms.password_change.title,
+      fields: {
+        current_password: {
+          label: spec.forms.password_change.fields.current_password.label,
+        },
+        new_password: {
+          label: spec.forms.password_change.fields.new_password.label,
+        },
+        new_password_confirm: {
+          label: spec.forms.password_change.fields.new_password_confirm.label,
+        },
+      },
+      submit_button: {
+        label: spec.forms.password_change.submit_button.label,
+        loading_label: spec.forms.password_change.submit_button.loading_label,
+      },
+      cancel_button: {
+        label: spec.forms.password_change.cancel_button.label,
+      },
+    },
+    deleteAccountSpec: {
+      title: spec.forms.delete_account.title,
+      warning_message: spec.forms.delete_account.warning_message,
+      fields: {
+        current_password: {
+          label: spec.forms.delete_account.fields.current_password.label,
+        },
+        confirmation: {
+          label: spec.forms.delete_account.fields.confirmation.label,
+        },
+      },
+      submit_button: {
+        label: spec.forms.delete_account.submit_button.label,
+        loading_label: spec.forms.delete_account.submit_button.loading_label,
+      },
+      cancel_button: {
+        label: spec.forms.delete_account.cancel_button.label,
+      },
+    },
+  });
 }
 
 /**
@@ -282,9 +346,14 @@ export default function AccountSettings() {
 
   const { user } = parentData;
   const actionData = useActionData<typeof action>();
+  const loaderData = useRouteLoaderData<typeof loader>('routes/account.settings');
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  if (!loaderData) {
+    throw new Error('Loader data not found');
+  }
 
   return (
     <div className="profile-container profile-container-structure" data-testid="profile-display">
@@ -304,6 +373,7 @@ export default function AccountSettings() {
 
       <ProfileDisplay
         user={user}
+        spec={loaderData.profileSpec}
         onEmailChange={() => setEmailModalOpen(true)}
         onPasswordChange={() => setPasswordModalOpen(true)}
         onDeleteAccount={() => setDeleteModalOpen(true)}
@@ -312,18 +382,21 @@ export default function AccountSettings() {
       <EmailChangeModal
         isOpen={emailModalOpen}
         onClose={() => setEmailModalOpen(false)}
+        spec={loaderData.emailChangeSpec}
         errors={actionData?.fieldErrors}
       />
 
       <PasswordChangeModal
         isOpen={passwordModalOpen}
         onClose={() => setPasswordModalOpen(false)}
+        spec={loaderData.passwordChangeSpec}
         errors={actionData?.fieldErrors}
       />
 
       <DeleteAccountModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
+        spec={loaderData.deleteAccountSpec}
         errors={actionData?.fieldErrors}
       />
     </div>

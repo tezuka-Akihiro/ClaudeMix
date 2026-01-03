@@ -8,8 +8,37 @@
 
 import type { User } from '~/specs/account/types';
 
+export interface ProfileDisplaySpec {
+  sections: {
+    info: {
+      title: string;
+      fields: {
+        email: { label: string };
+        subscription_status: {
+          label: string;
+          values: {
+            active: string;
+            inactive: string;
+            trial: string;
+          };
+        };
+        created_at: { label: string };
+      };
+    };
+    actions: {
+      title: string;
+      buttons: Array<{
+        label: string;
+        action: string;
+        variant: string;
+      }>;
+    };
+  };
+}
+
 export interface ProfileDisplayProps {
   user: User;
+  spec: ProfileDisplaySpec;
   onEmailChange: () => void;
   onPasswordChange: () => void;
   onDeleteAccount: () => void;
@@ -17,31 +46,35 @@ export interface ProfileDisplayProps {
 
 export function ProfileDisplay({
   user,
+  spec,
   onEmailChange,
   onPasswordChange,
   onDeleteAccount,
 }: ProfileDisplayProps) {
+  const { info, actions } = spec.sections;
+
+  // Get subscription status label from spec
+  const subscriptionLabel =
+    info.fields.subscription_status.values[user.subscriptionStatus] ||
+    info.fields.subscription_status.values.inactive;
+
   return (
     <div className="profile-section profile-section-structure">
-      <h2 className="profile-section__title">プロフィール情報</h2>
+      <h2 className="profile-section__title">{info.title}</h2>
 
       <div className="profile-info-structure">
         <div className="profile-info__item">
-          <div className="profile-info__label">メールアドレス</div>
+          <div className="profile-info__label">{info.fields.email.label}</div>
           <div className="profile-info__value">{user.email}</div>
         </div>
 
         <div className="profile-info__item">
-          <div className="profile-info__label">サブスクリプション状態</div>
-          <div className="profile-info__value">
-            {user.subscriptionStatus === 'active' && 'アクティブ'}
-            {user.subscriptionStatus === 'inactive' && '非アクティブ'}
-            {user.subscriptionStatus === 'trial' && 'トライアル'}
-          </div>
+          <div className="profile-info__label">{info.fields.subscription_status.label}</div>
+          <div className="profile-info__value">{subscriptionLabel}</div>
         </div>
 
         <div className="profile-info__item">
-          <div className="profile-info__label">アカウント作成日</div>
+          <div className="profile-info__label">{info.fields.created_at.label}</div>
           <div className="profile-info__value">
             {new Date(user.createdAt).toLocaleDateString('ja-JP')}
           </div>
@@ -49,7 +82,7 @@ export function ProfileDisplay({
       </div>
 
       <div className="profile-section profile-section-structure">
-        <h3 className="profile-section__title">アカウント操作</h3>
+        <h3 className="profile-section__title">{actions.title}</h3>
 
         <div className="profile-actions-structure">
           <button
@@ -58,7 +91,7 @@ export function ProfileDisplay({
             className="profile-actions__button"
             data-testid="email-change-button"
           >
-            メールアドレスを変更
+            {actions.buttons[0].label}
           </button>
 
           <button
@@ -67,7 +100,7 @@ export function ProfileDisplay({
             className="profile-actions__button"
             data-testid="password-change-button"
           >
-            パスワードを変更
+            {actions.buttons[1].label}
           </button>
 
           <button
@@ -76,7 +109,7 @@ export function ProfileDisplay({
             className="profile-actions__button profile-actions__button--danger"
             data-testid="delete-account-button"
           >
-            アカウントを削除
+            {actions.buttons[2].label}
           </button>
         </div>
       </div>
