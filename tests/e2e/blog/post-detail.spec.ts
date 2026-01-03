@@ -12,8 +12,8 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * TDD_WORK_FLOW.md Phase 1 のゴール定義
    */
   test('Post Detail: 記事詳細の表示（タイトル、メタデータ、マークダウン変換、画像、Mermaid図）', async ({ page }) => {
-    // テストデータ（実際に存在する記事を使用）
-    const TEST_SLUG = 'about-claudemix';
+    // テストデータ（未認証でアクセス可能な「起業」カテゴリの記事を使用）
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -53,7 +53,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * Mermaidコードブロックが正しくSVG図表にレンダリングされることを検証
    */
   test('Post Detail: Mermaidコードブロックが正しくSVG図表にレンダリングされる', async ({ page }) => {
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -75,7 +75,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * コードブロックがShikiによって正しくハイライトされることを検証
    */
   test('Post Detail: コードブロックがShikiでハイライトされる', async ({ page }) => {
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -99,7 +99,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * 画像にloading="lazy"属性が付与されていることを検証
    */
   test('Post Detail: 画像に遅延読み込み属性が付与される', async ({ page }) => {
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -119,7 +119,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * 画像にmax-width: 100%スタイルが適用されていることを検証
    */
   test('Post Detail: 画像がレスポンシブ対応される', async ({ page }) => {
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -163,7 +163,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * 階層定義: develop/blog/post-detail/func-spec.md の「目次階層の定義」参照
    */
   test('Post Detail: 目次（Table of Contents）が表示される', async ({ page }) => {
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -189,7 +189,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * 目次項目をクリックすると該当の見出しにスクロールすることを検証
    */
   test('Post Detail: 目次リンククリックで該当見出しへスクロールする', async ({ page }) => {
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -220,7 +220,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * マークダウン変換後の見出しにID属性が付与されていることを検証
    */
   test('Post Detail: 見出しにID属性が付与される', async ({ page }) => {
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -254,7 +254,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
   test('Post Detail: 未契約ユーザーは見出しベースの制限コンテンツとペイウォールが表示される', async ({ page }) => {
     // TODO: freeContentHeading付きのテスト記事を作成後、TEST_SLUGを更新
     // 現在は既存記事でテスト（freeContentHeadingが未設定の場合は全文表示）
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 未契約状態で記事詳細ページにアクセス（デフォルトは未契約）
@@ -350,7 +350,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * ペイウォールが表示されないことを検証（後方互換性）
    */
   test('Post Detail: freeContentHeading未設定の記事は全文表示される', async ({ page }) => {
-    const TEST_SLUG = 'about-claudemix';
+    const TEST_SLUG = 'hazimemasite';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -364,6 +364,43 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     // 3. ペイウォールは表示されない（freeContentHeading未設定のため全文公開）
     const paywall = page.locator('text=続きを読むには会員登録が必要です');
     await expect(paywall).not.toBeVisible();
+  });
+
+  /**
+   * Post Detail: スクロール位置リセット確認
+   * @description
+   * 記事間の遷移時にスクロール位置がトップにリセットされることを検証
+   */
+  test('Post Detail: scroll position resets to top on article navigation', async ({ page }) => {
+    // 1. 最初の記事にアクセス
+    const FIRST_SLUG = 'about-claudemix';
+    const FIRST_URL = `/blog/${FIRST_SLUG}`;
+    await page.goto(FIRST_URL, { waitUntil: 'domcontentloaded' });
+
+    // 2. ページを下にスクロール
+    await page.evaluate(() => window.scrollTo(0, 500));
+    await page.waitForTimeout(100);
+
+    // 3. スクロール位置が下にあることを確認
+    const scrollYBefore = await page.evaluate(() => window.scrollY);
+    expect(scrollYBefore).toBeGreaterThan(0);
+
+    // 4. 別の記事に遷移（ブログトップから別の記事を選択）
+    await page.goto('/blog', { waitUntil: 'domcontentloaded' });
+    const postCards = page.getByTestId('post-card');
+    const postCount = await postCards.count();
+
+    if (postCount > 1) {
+      // 最初の記事とは異なる記事をクリック
+      const secondPostCard = postCards.nth(1);
+      await secondPostCard.click();
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(200);
+
+      // 5. スクロール位置がトップにリセットされていることを確認
+      const scrollYAfter = await page.evaluate(() => window.scrollY);
+      expect(scrollYAfter).toBe(0);
+    }
   });
 
 });

@@ -207,6 +207,13 @@ export interface AccountCommonSpec {
       exact_match: boolean;
     };
   };
+  services: {
+    items: Array<{
+      label: string;
+      path: string;
+      description: string;
+    }>;
+  };
   validation: {
     email: {
       pattern: string;

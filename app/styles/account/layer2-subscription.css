@@ -86,47 +86,9 @@
   border: var(--border-width-sm) solid var(--color-border-primary);
 }
 
-/* Button Styles */
-.btn-primary,
-.btn-secondary {
-  padding: var(--spacing-2) var(--spacing-4);
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.btn-primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-}
-
-.btn-primary:hover {
-  background-color: var(--color-primary-dark);
-}
-
-.btn-primary:disabled {
-  background-color: var(--color-bg-disabled);
-  color: var(--color-text-disabled);
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-primary);
-  border: var(--border-width-sm) solid var(--color-border-primary);
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-bg-tertiary);
-}
-
-.btn-secondary:disabled {
-  background-color: var(--color-bg-disabled);
-  color: var(--color-text-disabled);
-  cursor: not-allowed;
+/* Button Group */
+.subscription-button-group {
+  margin-top: var(--spacing-4);
 }
 
 /* Error Message */

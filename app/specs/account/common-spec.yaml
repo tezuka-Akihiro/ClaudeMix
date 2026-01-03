@@ -52,6 +52,9 @@ navigation:
     - label: "マイページ"
       path: "/account"
       icon: "home"
+    - label: "サービス一覧"
+      path: "/account/services"
+      icon: "apps"
     - label: "設定"
       path: "/account/settings"
       icon: "settings"
@@ -62,6 +65,15 @@ navigation:
   # アクティブ状態の判定
   active_detection:
     exact_match: true  # パスの完全一致で判定
+
+# ==========================================
+# サービス一覧設定
+# ==========================================
+services:
+  items:
+    - label: "ClaudeMix"
+      path: "/blog"
+      description: "ブログサービス"
 
 # ==========================================
 # UI要素セレクタ

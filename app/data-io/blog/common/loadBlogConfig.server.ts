@@ -26,10 +26,14 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
   // 設定されていない場合は spec.yaml のプレースホルダーを使用（開発環境用）
   const legalContent = process.env.LEGAL_CONTENT || spec.footer.legal_content;
 
+  // 動的に現在の年を生成してcopyrightを構築（SSoT原則に従い年はハードコードしない）
+  const currentYear = new Date().getFullYear();
+  const copyright = `© ${currentYear} ${spec.blog_config.copyright_name}`;
+
   return {
     blogTitle: spec.blog_config.title,
     menuItems: spec.navigation.menu_items,
-    copyright: spec.blog_config.copyright,
+    copyright,
     siteUrl: spec.blog_config.site_url,
     siteName: spec.blog_config.title,
     footerLinks,

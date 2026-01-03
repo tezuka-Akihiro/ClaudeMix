@@ -17,6 +17,8 @@ import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';
 
 // CSS imports
+import '~/styles/account/layer2-common.css';
+import '~/styles/account/layer2-profile.css';
 import '~/styles/account/layer2-subscription.css';
 
 export const meta: MetaFunction = () => {
@@ -102,22 +104,25 @@ export default function AccountSubscription() {
   };
 
   return (
-    <div className="subscription-container" data-testid="subscription-page">
+    <div className="profile-container profile-container-structure" data-testid="subscription-page">
       <h1>サブスクリプション</h1>
 
       {fetcher.data?.error && (
-        <div className="error-message">{fetcher.data.error}</div>
+        <div className="profile-error" role="alert">{fetcher.data.error}</div>
       )}
 
-      <div>
-        <SubscriptionStatusCard
-          status={user.subscriptionStatus}
-          onUpgrade={handleUpgrade}
-          onCancel={handleCancel}
-        />
+      <div className="profile-section profile-section-structure">
+        <h2 className="profile-section__title">サブスクリプション状態</h2>
+        <div>
+          <SubscriptionStatusCard
+            status={user.subscriptionStatus}
+            onUpgrade={handleUpgrade}
+            onCancel={handleCancel}
+          />
+        </div>
       </div>
 
-      <p style={{ marginTop: '2rem', fontSize: '0.875rem', color: '#666' }}>
+      <p className="text-sm text-gray-600 mt-8">
         注意: これはMVP実装です。実際の決済処理は未実装です。
       </p>
     </div>

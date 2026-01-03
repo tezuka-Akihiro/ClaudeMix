@@ -33,18 +33,21 @@ describe('loadBlogConfig - Side Effects Layer', () => {
         expect(item).toHaveProperty('label');
         expect(typeof item.label).toBe('string');
         expect(item.label.length).toBeGreaterThan(0);
-        expect(item.path).toMatch(/^\/blog/);
+        expect(item.path).toMatch(/^\//);
         expect(item.label).toBe(spec.navigation.menu_items[index].label);
         expect(item.path).toBe(spec.navigation.menu_items[index].path);
       });
     });
 
-    it('should return copyright from spec.yaml', async () => {
+    it('should return dynamically generated copyright with current year', async () => {
       // Act
       const result = await loadBlogConfig();
 
       // Assert
-      expect(result.copyright).toBe(spec.blog_config.copyright);
+      const currentYear = new Date().getFullYear();
+      const expectedCopyright = `© ${currentYear} ${spec.blog_config.copyright_name}`;
+      expect(result.copyright).toBe(expectedCopyright);
+      expect(result.copyright).toMatch(/^© \d{4} /);
     });
 
     it('should return site URL from spec.yaml', async () => {
@@ -89,7 +92,8 @@ describe('loadBlogConfig - Side Effects Layer', () => {
 
       // Assert
       expect(result.legalContent).toBe(spec.footer.legal_content);
-      expect(result.legalContent).toContain('特定商取引法');
+      expect(result.legalContent).toContain('<section>');
+      expect(result.legalContent).toContain('販売事業者');
     });
 
     it('should return complete blog config structure', async () => {

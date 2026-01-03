@@ -174,7 +174,7 @@ export type RenderedPost = Omit<Post, 'content' | 'summary' | 'testOnly'> & {
 export interface BlogCommonSpec {
   blog_config: {
     title: string;
-    copyright: string;
+    copyright_name: string;
     home_path: string;
     site_url: string;
   };

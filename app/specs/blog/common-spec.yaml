@@ -27,7 +27,7 @@ server_io:
 # ==========================================
 blog_config:
   title: "ClaudeMix Blog"
-  copyright: "© 2025 ClaudeMix"
+  copyright_name: "ClaudeMix"
   home_path: "/blog"
   site_url: "https://stg.claudemix.pages.dev"
 
@@ -36,6 +36,8 @@ blog_config:
 # ==========================================
 navigation:
   menu_items:
+    - label: "マイページ"
+      path: "/account"
     - label: "はじめまして"
       path: "/blog/hazimemasite"
     - label: "カテゴリー"
@@ -77,7 +79,6 @@ footer:
   # 開発環境では、このプレースホルダーが使用されます。
   #
   legal_content: |
-    <h2>特定商取引法に基づく表記</h2>
     <section>
       <h3>販売事業者</h3>
       <p>個人事業主 [事業者名]</p>

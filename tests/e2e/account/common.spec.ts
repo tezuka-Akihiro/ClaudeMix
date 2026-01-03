@@ -40,14 +40,15 @@ test.describe('Account Common Section - Happy Path', () => {
       const nav = page.locator('[data-testid="account-nav"]');
       await expect(nav).toBeVisible();
 
-      // Verify 3 navigation items are displayed
+      // Verify 4 navigation items are displayed
       const navItems = nav.locator('[data-testid="nav-item"]');
-      await expect(navItems).toHaveCount(3);
+      await expect(navItems).toHaveCount(4);
 
       // Verify navigation item labels
       await expect(navItems.nth(0)).toContainText('マイページ');
-      await expect(navItems.nth(1)).toContainText('設定');
-      await expect(navItems.nth(2)).toContainText('サブスクリプション');
+      await expect(navItems.nth(1)).toContainText('サービス一覧');
+      await expect(navItems.nth(2)).toContainText('設定');
+      await expect(navItems.nth(3)).toContainText('サブスクリプション');
 
       // Verify current page (マイページ) is highlighted
       const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
@@ -68,6 +69,49 @@ test.describe('Account Common Section - Happy Path', () => {
       // Verify 設定 is now highlighted
       const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
       await expect(activeItem).toContainText('設定');
+    });
+
+    test('should display account index page with announcements and logout button', async ({ page }) => {
+      await page.goto('/account');
+
+      // Verify announcements section is displayed
+      const announcementHeading = page.getByRole('heading', { name: 'お知らせ' });
+      await expect(announcementHeading).toBeVisible();
+
+      // Verify logout button is present
+      const logoutButton = page.locator('[data-testid="logout-button"]');
+      await expect(logoutButton).toBeVisible();
+      await expect(logoutButton).toHaveClass(/btn-primary/);
+      await expect(logoutButton).toHaveText('ログアウト');
+    });
+
+    test('should display services page with service links', async ({ page }) => {
+      await page.goto('/account/services');
+
+      // Verify page title is displayed
+      const pageTitle = page.locator('h1:has-text("サービス一覧")');
+      await expect(pageTitle).toBeVisible();
+
+      // Verify blog service link is present (using ClaudeMix label from spec)
+      const blogServiceLink = page.locator('[data-testid="service-link"]:has-text("ClaudeMix")');
+      await expect(blogServiceLink).toBeVisible();
+      await expect(blogServiceLink).toHaveClass(/btn-primary/);
+      await expect(blogServiceLink).toHaveAttribute('href', '/blog');
+    });
+
+    test('should navigate to services page from navigation', async ({ page }) => {
+      await page.goto('/account');
+
+      // Click on サービス一覧 navigation item
+      const nav = page.locator('[data-testid="account-nav"]');
+      await nav.locator('text=サービス一覧').click();
+
+      // Verify URL changed to /account/services
+      await expect(page).toHaveURL('/account/services');
+
+      // Verify サービス一覧 is now highlighted
+      const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
+      await expect(activeItem).toContainText('サービス一覧');
     });
   });
 
@@ -98,6 +142,14 @@ test.describe('Account Common Section - Happy Path', () => {
 
       // Verify redirected to /login with redirect-url parameter (URL-encoded)
       await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fsubscription$/);
+    });
+
+    test('should redirect to login when accessing /account/services', async ({ page }) => {
+      // Navigate to /account/services without authentication
+      await page.goto('/account/services');
+
+      // Verify redirected to /login with redirect-url parameter (URL-encoded)
+      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fservices$/);
     });
   });
 });

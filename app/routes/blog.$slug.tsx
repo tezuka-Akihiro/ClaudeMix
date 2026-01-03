@@ -4,6 +4,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { useEffect } from "react";
 import { fetchPostBySlug } from "~/data-io/blog/post-detail/fetchPostBySlug.server";
 import type { Heading } from "~/specs/blog/types";
 import { PostDetailSection } from "~/components/blog/post-detail/PostDetailSection";
@@ -166,6 +167,11 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
 
 export default function BlogPostDetail() {
   const { post, headings, config, subscriptionAccess } = useLoaderData<typeof loader>();
+
+  // Scroll to top on page navigation
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [post.slug]);
 
   return (
     <BlogLayout config={config}>

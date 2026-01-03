@@ -258,6 +258,17 @@ export const accountLayer3Plugin = plugin(function ({ addComponents }) {
         flexDirection: "column",
       },
     },
+
+    /**
+     * Subscription Button Group Structure
+     * - Horizontal layout with wrapping for subscription buttons
+     * - Items aligned with gap
+     */
+    ".subscription-button-group-structure": {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "var(--spacing-3)",
+    },
   });
 });
 

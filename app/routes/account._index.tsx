@@ -7,6 +7,12 @@
  */
 
 import type { MetaFunction } from '@remix-run/node';
+import { Form, useRouteLoaderData } from '@remix-run/react';
+import type { loader as accountLoader } from './account';
+
+// CSS imports
+import '~/styles/account/layer2-common.css';
+import '~/styles/account/layer2-profile.css';
 
 export const meta: MetaFunction = () => {
   return [
@@ -25,10 +31,39 @@ export const meta: MetaFunction = () => {
  * Data is provided by parent route (account.tsx)
  */
 export default function AccountIndex() {
+  const parentData = useRouteLoaderData<typeof accountLoader>('routes/account');
+
+  if (!parentData) {
+    throw new Error('Parent route data not found');
+  }
+
   return (
-    <div>
-      <h2>マイページ</h2>
-      <p>Welcome to your account page.</p>
+    <div className="profile-container profile-container-structure" data-testid="account-index-page">
+      <h1>マイページ</h1>
+
+      {/* Announcements section */}
+      <div className="profile-section profile-section-structure">
+        <h2 className="profile-section__title">お知らせ</h2>
+        <div>
+          <p className="profile-info__value">現在お知らせはありません。</p>
+        </div>
+      </div>
+
+      {/* Account actions section */}
+      <div className="profile-section profile-section-structure">
+        <h2 className="profile-section__title">アカウント</h2>
+        <div>
+          <Form method="post" action="/logout">
+            <button
+              type="submit"
+              className="btn-primary"
+              data-testid="logout-button"
+            >
+              ログアウト
+            </button>
+          </Form>
+        </div>
+      </div>
     </div>
   );
 }

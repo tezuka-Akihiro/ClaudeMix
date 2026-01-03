@@ -15,6 +15,8 @@ import { isSessionExpired } from '~/lib/account/common/isSessionExpired';
 import { getActiveNavItem } from '~/lib/account/common/getActiveNavItem';
 import AccountLayout from '~/components/account/common/AccountLayout';
 import type { NavItem } from '~/specs/account/types';
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountCommonSpec } from '~/specs/account/types';
 
 // Import CSS (Layer 2: Common components)
 import '~/styles/account/layer2-common.css';
@@ -54,12 +56,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
   }
 
+  // Load common spec
+  const commonSpec = loadSpec<AccountCommonSpec>('account/common');
+
   // Navigation items (from common-spec.yaml)
-  const navItems: NavItem[] = [
-    { label: 'マイページ', path: '/account', icon: 'home' },
-    { label: '設定', path: '/account/settings', icon: 'settings' },
-    { label: 'サブスクリプション', path: '/account/subscription', icon: 'payment' },
-  ];
+  const navItems: NavItem[] = commonSpec.navigation.menu_items;
 
   // Determine active navigation item
   const activeNavItem = getActiveNavItem(navItems, url.pathname);
@@ -68,6 +69,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     user,
     navItems,
     activeNavItem,
+    services: commonSpec.services,
   });
 }
 

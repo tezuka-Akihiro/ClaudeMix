@@ -4,6 +4,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { useEffect } from "react";
 import BlogLayout from "~/components/blog/common/BlogLayout";
 import PostsSection from "~/components/blog/posts/PostsSection";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
@@ -99,6 +100,11 @@ export default function BlogIndex() {
     selectedFilters,
     categorySpec,
   } = useLoaderData<typeof loader>();
+
+  // Scroll to top on pagination navigation
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pagination.currentPage]);
 
   return (
     <BlogLayout config={config}>

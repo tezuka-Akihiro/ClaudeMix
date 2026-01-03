@@ -67,7 +67,7 @@ export function SubscriptionStatusCard({
         <p>{statusInfo.description}</p>
       </div>
 
-      <div className="subscription-button-group">
+      <div className="subscription-button-group subscription-button-group-structure">
         {status !== 'active' && onUpgrade && (
           <button
             type="button"
