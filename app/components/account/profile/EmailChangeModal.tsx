@@ -9,16 +9,36 @@
 import { Form, useNavigation } from '@remix-run/react';
 import { useEffect, useRef } from 'react';
 
+export interface EmailChangeModalSpec {
+  title: string;
+  fields: {
+    new_email: {
+      label: string;
+    };
+    current_password: {
+      label: string;
+    };
+  };
+  submit_button: {
+    label: string;
+    loading_label: string;
+  };
+  cancel_button: {
+    label: string;
+  };
+}
+
 export interface EmailChangeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  spec: EmailChangeModalSpec;
   errors?: {
     newEmail?: string;
     currentPassword?: string;
   };
 }
 
-export function EmailChangeModal({ isOpen, onClose, errors }: EmailChangeModalProps) {
+export function EmailChangeModal({ isOpen, onClose, spec, errors }: EmailChangeModalProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
   const modalRef = useRef<HTMLDivElement>(null);
@@ -93,7 +113,7 @@ export function EmailChangeModal({ isOpen, onClose, errors }: EmailChangeModalPr
         aria-labelledby="email-change-modal-title"
       >
         <h2 id="email-change-modal-title" className="profile-modal__title">
-          メールアドレス変更
+          {spec.title}
         </h2>
 
         <Form method="post" className="profile-form">
@@ -101,7 +121,7 @@ export function EmailChangeModal({ isOpen, onClose, errors }: EmailChangeModalPr
 
           <div className="profile-form-field-structure">
             <label htmlFor="newEmail" className="profile-form__label">
-              新しいメールアドレス
+              {spec.fields.new_email.label}
             </label>
             <input
               id="newEmail"
@@ -118,7 +138,7 @@ export function EmailChangeModal({ isOpen, onClose, errors }: EmailChangeModalPr
 
           <div className="profile-form-field-structure">
             <label htmlFor="currentPassword" className="profile-form__label">
-              現在のパスワード
+              {spec.fields.current_password.label}
             </label>
             <input
               id="currentPassword"
@@ -140,7 +160,7 @@ export function EmailChangeModal({ isOpen, onClose, errors }: EmailChangeModalPr
               className="profile-modal__button profile-modal__button--primary"
               data-testid="save-button"
             >
-              {isSubmitting ? '保存中...' : '保存'}
+              {isSubmitting ? spec.submit_button.loading_label : spec.submit_button.label}
             </button>
             <button
               type="button"
@@ -148,7 +168,7 @@ export function EmailChangeModal({ isOpen, onClose, errors }: EmailChangeModalPr
               className="profile-modal__button profile-modal__button--secondary"
               data-testid="cancel-button"
             >
-              キャンセル
+              {spec.cancel_button.label}
             </button>
           </div>
         </Form>

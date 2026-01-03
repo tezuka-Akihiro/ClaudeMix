@@ -8,9 +8,32 @@
 
 import { Form, useNavigation } from '@remix-run/react';
 
+export interface PasswordChangeModalSpec {
+  title: string;
+  fields: {
+    current_password: {
+      label: string;
+    };
+    new_password: {
+      label: string;
+    };
+    new_password_confirm: {
+      label: string;
+    };
+  };
+  submit_button: {
+    label: string;
+    loading_label: string;
+  };
+  cancel_button: {
+    label: string;
+  };
+}
+
 export interface PasswordChangeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  spec: PasswordChangeModalSpec;
   errors?: {
     currentPassword?: string;
     newPassword?: string;
@@ -18,7 +41,7 @@ export interface PasswordChangeModalProps {
   };
 }
 
-export function PasswordChangeModal({ isOpen, onClose, errors }: PasswordChangeModalProps) {
+export function PasswordChangeModal({ isOpen, onClose, spec, errors }: PasswordChangeModalProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
 
@@ -31,14 +54,14 @@ export function PasswordChangeModal({ isOpen, onClose, errors }: PasswordChangeM
       data-testid="password-change-modal"
     >
       <div className="profile-modal profile-modal-structure" onClick={(e) => e.stopPropagation()}>
-        <h2 className="profile-modal__title">パスワード変更</h2>
+        <h2 className="profile-modal__title">{spec.title}</h2>
 
         <Form method="post" className="profile-form">
           <input type="hidden" name="intent" value="password-change" />
 
           <div className="profile-form-field-structure">
             <label htmlFor="currentPassword" className="profile-form__label">
-              現在のパスワード
+              {spec.fields.current_password.label}
             </label>
             <input
               id="currentPassword"
@@ -55,7 +78,7 @@ export function PasswordChangeModal({ isOpen, onClose, errors }: PasswordChangeM
 
           <div className="profile-form-field-structure">
             <label htmlFor="newPassword" className="profile-form__label">
-              新しいパスワード
+              {spec.fields.new_password.label}
             </label>
             <input
               id="newPassword"
@@ -72,7 +95,7 @@ export function PasswordChangeModal({ isOpen, onClose, errors }: PasswordChangeM
 
           <div className="profile-form-field-structure">
             <label htmlFor="newPasswordConfirm" className="profile-form__label">
-              新しいパスワード（確認）
+              {spec.fields.new_password_confirm.label}
             </label>
             <input
               id="newPasswordConfirm"
@@ -94,7 +117,7 @@ export function PasswordChangeModal({ isOpen, onClose, errors }: PasswordChangeM
               className="profile-modal__button profile-modal__button--primary"
               data-testid="save-button"
             >
-              {isSubmitting ? '保存中...' : '保存'}
+              {isSubmitting ? spec.submit_button.loading_label : spec.submit_button.label}
             </button>
             <button
               type="button"
@@ -102,7 +125,7 @@ export function PasswordChangeModal({ isOpen, onClose, errors }: PasswordChangeM
               className="profile-modal__button profile-modal__button--secondary"
               data-testid="cancel-button"
             >
-              キャンセル
+              {spec.cancel_button.label}
             </button>
           </div>
         </Form>

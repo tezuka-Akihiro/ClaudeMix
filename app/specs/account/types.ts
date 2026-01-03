@@ -377,6 +377,10 @@ export interface AccountAuthenticationSpec {
       path: string;
       redirect_after: string;
     };
+    forgot_password: {
+      path: string;
+      title: string;
+    };
   };
   forms: {
     register: {
@@ -447,6 +451,31 @@ export interface AccountAuthenticationSpec {
         };
       };
     };
+    forgot_password: {
+      title: string;
+      description: string;
+      fields: {
+        email: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          autocomplete: string;
+          required: boolean;
+        };
+      };
+      submit_button: {
+        label: string;
+        loading_label: string;
+      };
+      links: {
+        login: {
+          label: string;
+          path: string;
+        };
+      };
+      success_message: string;
+    };
   };
   validation: {
     email: {
@@ -501,6 +530,12 @@ export interface AccountAuthenticationSpec {
     logout: {
       completed: string;
     };
+  };
+  flash_messages: {
+    'session-expired': string;
+    'unauthorized': string;
+    'logout-success': string;
+    'password-reset-success': string;
   };
   security: {
     password_hash: {

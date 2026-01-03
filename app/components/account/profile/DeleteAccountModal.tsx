@@ -8,16 +8,37 @@
 
 import { Form, useNavigation } from '@remix-run/react';
 
+export interface DeleteAccountModalSpec {
+  title: string;
+  warning_message: string;
+  fields: {
+    current_password: {
+      label: string;
+    };
+    confirmation: {
+      label: string;
+    };
+  };
+  submit_button: {
+    label: string;
+    loading_label: string;
+  };
+  cancel_button: {
+    label: string;
+  };
+}
+
 export interface DeleteAccountModalProps {
   isOpen: boolean;
   onClose: () => void;
+  spec: DeleteAccountModalSpec;
   errors?: {
     currentPassword?: string;
     confirmation?: string;
   };
 }
 
-export function DeleteAccountModal({ isOpen, onClose, errors }: DeleteAccountModalProps) {
+export function DeleteAccountModal({ isOpen, onClose, spec, errors }: DeleteAccountModalProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
 
@@ -30,10 +51,10 @@ export function DeleteAccountModal({ isOpen, onClose, errors }: DeleteAccountMod
       data-testid="delete-account-modal"
     >
       <div className="profile-modal profile-modal-structure" onClick={(e) => e.stopPropagation()}>
-        <h2 className="profile-modal__title">アカウント削除</h2>
+        <h2 className="profile-modal__title">{spec.title}</h2>
 
         <div className="profile-modal__warning">
-          ⚠️ 警告: アカウントを削除すると元に戻せません。すべてのデータが完全に削除されます。
+          {spec.warning_message}
         </div>
 
         <Form method="post" className="profile-form">
@@ -41,7 +62,7 @@ export function DeleteAccountModal({ isOpen, onClose, errors }: DeleteAccountMod
 
           <div className="profile-form-field-structure">
             <label htmlFor="currentPassword" className="profile-form__label">
-              現在のパスワード
+              {spec.fields.current_password.label}
             </label>
             <input
               id="currentPassword"
@@ -67,7 +88,7 @@ export function DeleteAccountModal({ isOpen, onClose, errors }: DeleteAccountMod
               data-testid="confirmation-checkbox"
             />
             <label htmlFor="confirmation" className="profile-form__checkbox-label">
-              アカウントを削除することを理解しました
+              {spec.fields.confirmation.label}
             </label>
           </div>
           {errors?.confirmation && (
@@ -81,7 +102,7 @@ export function DeleteAccountModal({ isOpen, onClose, errors }: DeleteAccountMod
               className="profile-modal__button profile-modal__button--danger"
               data-testid="delete-button"
             >
-              {isSubmitting ? '削除中...' : 'アカウントを削除'}
+              {isSubmitting ? spec.submit_button.loading_label : spec.submit_button.label}
             </button>
             <button
               type="button"
@@ -89,7 +110,7 @@ export function DeleteAccountModal({ isOpen, onClose, errors }: DeleteAccountMod
               className="profile-modal__button profile-modal__button--secondary"
               data-testid="cancel-button"
             >
-              キャンセル
+              {spec.cancel_button.label}
             </button>
           </div>
         </Form>

@@ -10,9 +10,10 @@ import { join } from 'path';
 import { load } from 'js-yaml';
 import matter from 'gray-matter';
 import type { BlogPostsSpec } from '~/specs/blog/types';
+import type { AccountAuthenticationSpec, AccountProfileSpec } from '~/specs/account/types';
 
-// Re-export the type for convenience
-export type { BlogPostsSpec };
+// Re-export the types for convenience
+export type { BlogPostsSpec, AccountAuthenticationSpec, AccountProfileSpec };
 
 /**
  * テスト記事のフロントマター型定義

@@ -6,26 +6,26 @@
  * @responsibility メールアドレスフォーマット検証
  */
 
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
+
 /**
- * Validate email address format
+ * Validate email address format using spec-defined rules
  *
  * @param email - Email address to validate
  * @returns true if email is valid, false otherwise
  *
- * Validation Rules:
+ * Validation Rules (from spec):
  * - Must be a string
- * - Must contain exactly one @ symbol
- * - Must have local part (before @) and domain part (after @)
- * - Domain must have at least one dot (TLD required)
- * - Maximum length: 254 characters (RFC 5321)
+ * - Must match spec-defined regex pattern
+ * - Must not exceed spec-defined maximum length
  * - No leading/trailing dots in local part
  * - No consecutive dots in local part
- * - No spaces allowed
- *
- * Note: This is a basic validation for MVP. For production,
- * consider using a library like validator.js or email-validator
  */
 export function validateEmail(email: unknown): boolean {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const { pattern, max_length } = spec.validation.email;
+
   // Type guard
   if (typeof email !== 'string') {
     return false;
@@ -36,23 +36,13 @@ export function validateEmail(email: unknown): boolean {
     return false;
   }
 
-  // Length check (RFC 5321: max 254 characters)
-  if (email.length > 254) {
+  // Length check (from spec)
+  if (email.length > max_length) {
     return false;
   }
 
-  // Basic email regex pattern
-  // Pattern explanation:
-  // ^[^\s@.] - Start with non-whitespace, non-@, non-dot
-  // [^\s@]*  - Zero or more non-whitespace, non-@ characters
-  // @        - Exactly one @ symbol
-  // [^\s@.] - Domain starts with non-whitespace, non-@, non-dot
-  // [^\s@]*  - Zero or more non-whitespace, non-@ characters
-  // \.       - At least one dot (TLD separator)
-  // [^\s@.]+ - TLD: one or more non-whitespace, non-@, non-dot characters
-  // $        - End of string
-  const emailPattern = /^[^\s@.][^\s@]*@[^\s@.][^\s@]*\.[^\s@.]+$/;
-
+  // Email regex pattern (from spec)
+  const emailPattern = new RegExp(pattern);
   if (!emailPattern.test(email)) {
     return false;
   }

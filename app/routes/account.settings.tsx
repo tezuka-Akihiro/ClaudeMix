@@ -16,6 +16,10 @@ import type { loader as accountLoader } from './account';
 import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-profile.css';
 
+// Spec loader
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountProfileSpec } from '~/specs/account/types';
+
 // Data-IO layer
 import { deleteUser } from '~/data-io/account/profile/deleteUser.server';
 import { updateUserEmail } from '~/data-io/account/profile/updateUserEmail.server';
@@ -68,17 +72,83 @@ interface ActionData {
 }
 
 /**
- * Minimal loader to enable client-side navigation
+ * Loader: Provide UI spec to client
  * (actual auth data comes from parent route)
  */
 export async function loader() {
-  return json({});
+  const spec = loadSpec<AccountProfileSpec>('account/profile');
+
+  return json({
+    profileSpec: {
+      sections: spec.profile_display.sections,
+    },
+    emailChangeSpec: {
+      title: spec.forms.email_change.title,
+      fields: {
+        new_email: {
+          label: spec.forms.email_change.fields.new_email.label,
+        },
+        current_password: {
+          label: spec.forms.email_change.fields.current_password.label,
+        },
+      },
+      submit_button: {
+        label: spec.forms.email_change.submit_button.label,
+        loading_label: spec.forms.email_change.submit_button.loading_label,
+      },
+      cancel_button: {
+        label: spec.forms.email_change.cancel_button.label,
+      },
+    },
+    passwordChangeSpec: {
+      title: spec.forms.password_change.title,
+      fields: {
+        current_password: {
+          label: spec.forms.password_change.fields.current_password.label,
+        },
+        new_password: {
+          label: spec.forms.password_change.fields.new_password.label,
+        },
+        new_password_confirm: {
+          label: spec.forms.password_change.fields.new_password_confirm.label,
+        },
+      },
+      submit_button: {
+        label: spec.forms.password_change.submit_button.label,
+        loading_label: spec.forms.password_change.submit_button.loading_label,
+      },
+      cancel_button: {
+        label: spec.forms.password_change.cancel_button.label,
+      },
+    },
+    deleteAccountSpec: {
+      title: spec.forms.delete_account.title,
+      warning_message: spec.forms.delete_account.warning_message,
+      fields: {
+        current_password: {
+          label: spec.forms.delete_account.fields.current_password.label,
+        },
+        confirmation: {
+          label: spec.forms.delete_account.fields.confirmation.label,
+        },
+      },
+      submit_button: {
+        label: spec.forms.delete_account.submit_button.label,
+        loading_label: spec.forms.delete_account.submit_button.loading_label,
+      },
+      cancel_button: {
+        label: spec.forms.delete_account.cancel_button.label,
+      },
+    },
+  });
 }
 
 /**
  * Action: Handle profile update actions
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+  const spec = loadSpec<AccountProfileSpec>('account/profile');
+
   const session = await getSession(request, context as any);
   if (!session) {
     return redirect('/login');
@@ -102,13 +172,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     // Validation
     if (typeof newEmail !== 'string' || !newEmail) {
-      fieldErrors.newEmail = 'メールアドレスを入力してください';
+      fieldErrors.newEmail = spec.validation.new_email.error_messages.required;
     } else if (!validateEmail(newEmail)) {
-      fieldErrors.newEmail = '有効なメールアドレスを入力してください';
+      fieldErrors.newEmail = spec.validation.new_email.error_messages.invalid_format;
     }
 
     if (typeof currentPassword !== 'string' || !currentPassword) {
-      fieldErrors.currentPassword = 'パスワードを入力してください';
+      fieldErrors.currentPassword = spec.validation.current_password.error_messages.required;
     }
 
     if (Object.keys(fieldErrors).length > 0) {
@@ -119,7 +189,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const isPasswordValid = await verifyPassword(currentPassword as string, currentUser.passwordHash);
     if (!isPasswordValid) {
       return json<ActionData>(
-        { error: 'パスワードが正しくありません' },
+        { error: spec.validation.current_password.error_messages.incorrect },
         { status: 401 }
       );
     }
@@ -128,7 +198,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const sanitizedEmail = sanitizeEmail(newEmail);
     if (sanitizedEmail === currentUser.email) {
       return json<ActionData>(
-        { error: '現在のメールアドレスと同じです' },
+        { error: spec.error_messages.email_change.same_as_current },
         { status: 400 }
       );
     }
@@ -136,7 +206,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const existingUser = await getUserByEmail(sanitizedEmail, context as any);
     if (existingUser) {
       return json<ActionData>(
-        { error: 'このメールアドレスは既に登録されています' },
+        { error: spec.error_messages.email_change.email_exists },
         { status: 400 }
       );
     }
@@ -145,12 +215,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const emailUpdated = await updateUserEmail(session.userId, sanitizedEmail, context as any);
     if (!emailUpdated) {
       return json<ActionData>(
-        { error: 'メールアドレスの更新に失敗しました' },
+        { error: spec.error_messages.email_change.update_failed },
         { status: 500 }
       );
     }
 
-    return json<ActionData>({ success: 'メールアドレスを更新しました' });
+    return json<ActionData>({ success: spec.success_messages.email_change.completed });
   }
 
   // Handle password change
@@ -163,19 +233,19 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     // Validation
     if (typeof currentPassword !== 'string' || !currentPassword) {
-      fieldErrors.currentPassword = '現在のパスワードを入力してください';
+      fieldErrors.currentPassword = spec.validation.current_password.error_messages.required;
     }
 
     if (typeof newPassword !== 'string' || !newPassword) {
-      fieldErrors.newPassword = '新しいパスワードを入力してください';
+      fieldErrors.newPassword = spec.validation.new_password.error_messages.required;
     } else if (!validatePassword(newPassword)) {
-      fieldErrors.newPassword = 'パスワードは8文字以上、128文字以下で入力してください';
+      fieldErrors.newPassword = spec.validation.new_password.error_messages.weak;
     }
 
     if (typeof newPasswordConfirm !== 'string' || !newPasswordConfirm) {
-      fieldErrors.newPasswordConfirm = 'パスワード（確認）を入力してください';
+      fieldErrors.newPasswordConfirm = spec.validation.new_password_confirm.error_messages.required;
     } else if (newPassword !== newPasswordConfirm) {
-      fieldErrors.newPasswordConfirm = 'パスワードが一致しません';
+      fieldErrors.newPasswordConfirm = spec.validation.new_password_confirm.error_messages.mismatch;
     }
 
     if (Object.keys(fieldErrors).length > 0) {
@@ -186,7 +256,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const isPasswordValid = await verifyPassword(currentPassword as string, currentUser.passwordHash);
     if (!isPasswordValid) {
       return json<ActionData>(
-        { error: '現在のパスワードが正しくありません' },
+        { error: spec.error_messages.password_change.incorrect_current },
         { status: 401 }
       );
     }
@@ -198,12 +268,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const passwordUpdated = await updateUserPassword(session.userId, newPasswordHash, context as any);
     if (!passwordUpdated) {
       return json<ActionData>(
-        { error: 'パスワードの更新に失敗しました' },
+        { error: spec.error_messages.password_change.update_failed },
         { status: 500 }
       );
     }
 
-    return json<ActionData>({ success: 'パスワードを更新しました' });
+    return json<ActionData>({ success: spec.success_messages.password_change.completed });
   }
 
   // Handle account deletion
@@ -215,11 +285,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
     // Validation
     if (typeof currentPassword !== 'string' || !currentPassword) {
-      fieldErrors.currentPassword = 'パスワードを入力してください';
+      fieldErrors.currentPassword = spec.validation.current_password.error_messages.required;
     }
 
     if (confirmation !== 'true') {
-      fieldErrors.confirmation = '削除を確認してください';
+      fieldErrors.confirmation = spec.validation.confirmation.error_messages.required;
     }
 
     if (Object.keys(fieldErrors).length > 0) {
@@ -230,7 +300,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const isPasswordValid = await verifyPassword(currentPassword as string, currentUser.passwordHash);
     if (!isPasswordValid) {
       return json<ActionData>(
-        { error: 'パスワードが正しくありません' },
+        { error: spec.error_messages.delete_account.incorrect_password },
         { status: 401 }
       );
     }
@@ -250,7 +320,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const userDeleted = await deleteUser(session.userId, context as any);
     if (!userDeleted) {
       return json<ActionData>(
-        { error: 'アカウントの削除に失敗しました' },
+        { error: spec.error_messages.delete_account.delete_failed },
         { status: 500 }
       );
     }
@@ -276,9 +346,14 @@ export default function AccountSettings() {
 
   const { user } = parentData;
   const actionData = useActionData<typeof action>();
+  const loaderData = useRouteLoaderData<typeof loader>('routes/account.settings');
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  if (!loaderData) {
+    throw new Error('Loader data not found');
+  }
 
   return (
     <div className="profile-container profile-container-structure" data-testid="profile-display">
@@ -298,6 +373,7 @@ export default function AccountSettings() {
 
       <ProfileDisplay
         user={user}
+        spec={loaderData.profileSpec}
         onEmailChange={() => setEmailModalOpen(true)}
         onPasswordChange={() => setPasswordModalOpen(true)}
         onDeleteAccount={() => setDeleteModalOpen(true)}
@@ -306,18 +382,21 @@ export default function AccountSettings() {
       <EmailChangeModal
         isOpen={emailModalOpen}
         onClose={() => setEmailModalOpen(false)}
+        spec={loaderData.emailChangeSpec}
         errors={actionData?.fieldErrors}
       />
 
       <PasswordChangeModal
         isOpen={passwordModalOpen}
         onClose={() => setPasswordModalOpen(false)}
+        spec={loaderData.passwordChangeSpec}
         errors={actionData?.fieldErrors}
       />
 
       <DeleteAccountModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
+        spec={loaderData.deleteAccountSpec}
         errors={actionData?.fieldErrors}
       />
     </div>
