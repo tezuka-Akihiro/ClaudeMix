@@ -34,7 +34,6 @@
   "license": "ISC",
   "dependencies": {
     "@fontsource/noto-sans-jp": "^5.2.8",
-    "@iarna/toml": "^2.2.5",
     "@remix-run/cloudflare": "^2.17.2",
     "@remix-run/cloudflare-pages": "^2.17.2",
     "@remix-run/node": "^2.17.1",
