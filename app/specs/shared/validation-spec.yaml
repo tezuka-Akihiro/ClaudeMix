@@ -1,0 +1,30 @@
+metadata:
+  feature_name: "shared-validation"
+  version: "1.0.0"
+  description: "サービス横断のバリデーションルール定義"
+
+email:
+  pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+  max_length: 254
+  error_message: "有効なメールアドレスを入力してください"
+
+password:
+  min_length: 8
+  max_length: 128
+  pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
+  requirements:
+    - "8文字以上"
+    - "大文字を含む"
+    - "小文字を含む"
+    - "数字を含む"
+  error_message: "パスワードは8文字以上で、大文字・小文字・数字を含む必要があります"
+
+username:
+  min_length: 3
+  max_length: 20
+  pattern: "^[a-zA-Z0-9_-]+$"
+  error_message: "ユーザー名は3-20文字で、英数字・アンダースコア・ハイフンのみ使用できます"
+
+url:
+  pattern: "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$"
+  error_message: "有効なURLを入力してください"

@@ -1,0 +1,32 @@
+metadata:
+  feature_name: "shared-server"
+  version: "1.0.0"
+  description: "サーバーサイド処理の共通設定（タイムアウト、レート制限等）"
+
+loader:
+  timeout: 5000           # ms
+  retry:
+    max_attempts: 3
+    backoff: "exponential"
+    initial_delay: 1000   # ms
+
+action:
+  timeout: 10000          # ms
+  retry:
+    max_attempts: 2
+    backoff: "linear"
+    initial_delay: 2000   # ms
+
+rate_limit:
+  per_minute: 60
+  per_hour: 1000
+  per_day: 10000
+
+cache:
+  default_ttl: 300        # seconds (5分)
+  max_age: 3600           # seconds (1時間)
+
+security:
+  bcrypt_rounds: 10
+  session_max_age: 604800 # seconds (7日間)
+  csrf_token_length: 32
