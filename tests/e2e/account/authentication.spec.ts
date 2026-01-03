@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { getAuthenticationSpec } from '../helpers/specHelper';
 
 /**
  * E2E Test: Account Authentication Section
@@ -9,6 +10,9 @@ import { test, expect, type Page } from '@playwright/test';
  * - User logout flow
  * - Authentication state management
  */
+
+// Load spec for assertions
+const spec = getAuthenticationSpec();
 
 // Helper function to generate unique email addresses for each test run
 function generateUniqueEmail(prefix: string = 'test'): string {
@@ -32,8 +36,9 @@ test.describe('Account Authentication - Happy Path', () => {
       // Navigate to registration page
       await page.goto('/register');
 
-      // Verify page title
-      await expect(page).toHaveTitle(/アカウント登録/);
+      // Verify page title (contains registration title)
+      const titlePattern = new RegExp(spec.routes.register.title);
+      await expect(page).toHaveTitle(titlePattern);
 
       // Verify form is displayed
       const form = page.locator('form');
@@ -55,7 +60,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Verify submit button
       const submitButton = page.locator('button[type="submit"]');
       await expect(submitButton).toBeVisible();
-      await expect(submitButton).toContainText('登録');
+      await expect(submitButton).toContainText(spec.forms.register.submit_button.label);
     });
 
     test('should register new user successfully', async ({ page }) => {
@@ -95,7 +100,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Verify error message is displayed
       const errorMessage = page.locator('[data-testid="error-message"]');
       await expect(errorMessage).toBeVisible();
-      await expect(errorMessage).toContainText('パスワードが一致しません');
+      await expect(errorMessage).toContainText(spec.validation.password_confirm.error_messages.mismatch);
     });
   });
 
@@ -104,8 +109,9 @@ test.describe('Account Authentication - Happy Path', () => {
       // Navigate to login page
       await page.goto('/login');
 
-      // Verify page title
-      await expect(page).toHaveTitle(/ログイン/);
+      // Verify page title (contains login title)
+      const loginTitlePattern = new RegExp(spec.routes.login.title);
+      await expect(page).toHaveTitle(loginTitlePattern);
 
       // Verify form is displayed
       const form = page.locator('form');
@@ -123,7 +129,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Verify submit button
       const submitButton = page.locator('button[type="submit"]');
       await expect(submitButton).toBeVisible();
-      await expect(submitButton).toContainText('ログイン');
+      await expect(submitButton).toContainText(spec.forms.login.submit_button.label);
     });
 
     test('should login existing user successfully', async ({ page }) => {
@@ -167,7 +173,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Verify error message is displayed
       const errorMessage = page.locator('[data-testid="error-message"]');
       await expect(errorMessage).toBeVisible();
-      await expect(errorMessage).toContainText('メールアドレスまたはパスワードが正しくありません');
+      await expect(errorMessage).toContainText(spec.error_messages.login.invalid_credentials);
     });
 
     test('should redirect to original page after login', async ({ page }) => {
