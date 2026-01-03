@@ -1,0 +1,284 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RFC-005実装タスク: 構成化メカニズムの導入
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【プロジェクト情報】
+- プロジェクト名: ClaudeMix (Remix Boilerplate)
+- 新規ブランチ: claude/rfc-005-yaml-ref-XXXXX を作成
+- RFC文書: docs/specs/RFC-005-spec-reference-mechanism.md
+- 依存: RFC-004完了（推奨）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 タスク概要
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+YAML参照機能（anchor/alias、merge key）をサポートし、specファイル間での値の再利用を
+可能にする。これにより、spec定義の柔軟性が向上し、さらなるDRY原則の徹底が実現する。
+
+重要: js-yamlは既にanchor/alias/merge keyをサポートしているため、新規実装は不要。
+      このPhaseは主に「使用ガイドの整備」と「パイロット実装」が中心。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 目的
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. YAML anchor/aliasのサポート: spec内での値の再利用
+2. YAML merge keyのサポート: デフォルト値の継承
+3. 将来の拡張準備: JSONポインタ形式の $ref サポート（Phase 6以降）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 実装手順
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 1: 準備と既存機能確認】
+
+1. RFC-005ドキュメントを読んで全体像を把握
+
+2. js-yamlの既存サポートを確認（RFC-005の186-227行参照）:
+
+   テストコード例:
+
+   const yaml = require('js-yaml');
+
+   const yamlString = `
+   defaults: &defaults
+     timeout: 5000
+     retry: 3
+
+   loader:
+     <<: *defaults
+     method: "GET"
+   `;
+
+   const parsed = yaml.load(yamlString);
+   console.log(parsed);
+   // anchor/aliasが正しく展開されることを確認
+
+3. 新規ブランチ作成: git checkout -b claude/rfc-005-yaml-ref-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 2: 使用ガイドドキュメント作成】
+
+1. docs/specs/YAML_REFERENCE_GUIDE.md を作成
+   （RFC-005の469-647行参照）
+
+主要セクション:
+- 概要
+- 基本的な使い方（Anchor と Alias）
+- Merge Keyの使い方（継承と上書き）
+- 実践例
+  - 例1: フォームフィールドの共通化
+  - 例2: UIセレクタのパターン化
+- ベストプラクティス（DO/DON'T）
+- トラブルシューティング
+  - "unknown anchor" エラー
+  - TypeScriptエラー "_templates does not exist"
+- 制限事項
+  - spec間の参照は不可（同一ファイル内のみ）
+  - JSONポインタ形式は未サポート
+  - 動的な値生成は不可
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 3: パイロット実装】
+
+1. account/authentication-spec.yaml でanchor/aliasを試験的に使用
+   （RFC-005の142-177行参照）
+
+例:
+_field_defaults: &field_defaults
+  required: true
+
+_email_field: &email_field
+  <<: *field_defaults
+  label: "メールアドレス"
+  placeholder: "example@example.com"
+  type: "email"
+  autocomplete: "email"
+
+_password_field: &password_field
+  <<: *field_defaults
+  label: "パスワード"
+  placeholder: "8文字以上"
+  type: "password"
+
+forms:
+  login:
+    email:
+      <<: *email_field
+      autocomplete: "email"
+    password:
+      <<: *password_field
+      autocomplete: "current-password"
+
+  register:
+    email:
+      <<: *email_field
+    password:
+      <<: *password_field
+      autocomplete: "new-password"
+
+2. 命名規則の遵守（RFC-005の231-259行参照）:
+   - anchor名はアンダースコア接頭辞（_defaults）
+   - _templates セクションにanchor定義を集約
+   - 意味が明確な名前を使用
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 4: 型定義の更新】
+
+1. account/types.ts を確認（RFC-005の261-284行参照）
+
+重要: TypeScript型定義では _templates を除外
+
+export interface AccountAuthenticationSpec {
+  metadata: {...};
+  // _templates は含めない（実行時には存在するが、型には不要）
+  forms: {
+    login: {...};
+    register: {...};
+  };
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 5: 単体テスト作成】
+
+1. scripts/prebuild/generate-specs.test.js にテスト追加
+   （RFC-005の387-449行参照）
+
+テストケース:
+- anchorとaliasを正しく展開できる
+- 複数のmerge keyを処理できる
+- 上書きが正しく動作する
+
+例:
+describe('YAML anchor/alias support', () => {
+  it('anchorとaliasを正しく展開できる', () => {
+    const yamlString = `
+defaults: &defaults
+  timeout: 5000
+
+loader:
+  <<: *defaults
+  method: GET
+`;
+
+    const parsed = yaml.load(yamlString);
+
+    expect(parsed.loader.timeout).toBe(5000);
+    expect(parsed.loader.method).toBe('GET');
+  });
+
+  // 他のテストケースも実装
+});
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 6: ビルド確認】
+
+1. ビルド実行: npm run build
+
+2. 生成されたspecs.tsを確認:
+   - anchorが正しく展開されているか検証
+   - _templates セクションが含まれているか確認（実行時には存在）
+
+3. 型チェック: npm run typecheck
+   - _templates が型定義に含まれていないことを確認
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 7: 統合テスト】
+
+1. 全テスト実行: npm test
+
+2. E2Eテスト:
+   npx playwright test tests/e2e/account --config=tests/e2e/playwright.config.ts
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 8: コミット・プッシュ】
+
+git add .
+git commit -m "RFC-005: Enable YAML reference mechanism (anchor/alias)
+
+- Create YAML_REFERENCE_GUIDE.md with usage documentation
+  - Anchor/alias basics and merge key syntax
+  - Practical examples (form fields, UI selectors)
+  - Best practices and troubleshooting
+- Implement pilot in account/authentication-spec.yaml
+  - Use anchor/alias for form field definitions
+  - Reduce duplication in login/register forms
+- Add unit tests for YAML anchor/alias support
+- Verify js-yaml already supports anchor/alias/merge key
+- Update type definitions to exclude _templates section
+- All tests passing, build successful
+
+Enhancement: Enables DRY principle within spec files
+Future: Phase 6 will add cross-spec $ref support"
+
+git push -u origin claude/rfc-005-yaml-ref-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 成功基準
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ YAML_REFERENCE_GUIDE.md が作成されている
+  □ 基本的な使い方
+  □ 実践例
+  □ ベストプラクティス
+  □ トラブルシューティング
+
+□ パイロット実装が成功している
+  □ account/authentication-spec.yaml でanchor/alias使用
+  □ フォーム定義の重複が削減されている
+
+□ 単体テストが追加されている
+  □ anchor/alias展開のテスト
+  □ merge key処理のテスト
+  □ 上書き動作のテスト
+
+□ ビルドが正常終了する
+
+□ npm run typecheck がエラーなし
+
+□ 全テスト（単体・E2E）がパス
+
+□ 既存機能がすべて動作する
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ 注意事項
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 新規実装は最小限: js-yamlが既にサポートしているため
+2. anchor定義の配置: ファイル先頭の _templates セクションに集約
+3. 型定義から除外: _templates はTypeScript型定義に含めない
+4. Phase 5の範囲:
+   ✅ 実装する: anchor/alias/merge keyのサポート確認と使用ガイド
+   ❌ 実装しない: JSONポインタ形式の $ref（Phase 6以降）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 参考ドキュメント
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- RFC-005: docs/specs/RFC-005-spec-reference-mechanism.md
+- RFC-004: docs/specs/RFC-004-clarify-common-responsibility.md（推奨前提）
+- YAML公式仕様: https://yaml.org/spec/1.2/spec.html
+- js-yaml ドキュメント: https://github.com/nodeca/js-yaml
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 次のステップ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RFC-005完了後:
+
+1. Phase 6（optional）: spec間参照機能の実装
+   - JSONポインタ形式のサポート
+   - 循環参照の検出
+   - カスタムYAMLタグの実装
+
+2. 継続的改善: 既存specへのanchor/alias適用
+   - 繰り返しパターンの特定
+   - 段階的なリファクタリング
+   - 効果測定

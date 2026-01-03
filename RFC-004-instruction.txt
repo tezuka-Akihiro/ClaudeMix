@@ -1,0 +1,161 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RFC-004実装タスク: commonセクションの責務明確化
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【プロジェクト情報】
+- プロジェクト名: ClaudeMix (Remix Boilerplate)
+- 新規ブランチ: claude/rfc-004-common-clarity-XXXXX を作成
+- RFC文書: docs/specs/RFC-004-clarify-common-responsibility.md
+- 依存: RFC-003完了
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 タスク概要
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+「commonセクション」と「sharedセクション」の責務を明確に定義し、設計ドキュメント
+として文書化する。必要に応じて、誤って配置されている設定を適切なセクションに移行する。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 目的
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 責務の明確化: common vs shared の使い分けルールを定義
+2. 設計原則の文書化: 今後の開発での判断基準を提供
+3. 誤配置の是正: 必要に応じて設定を適切なセクションに移動
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 実装手順
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 1: 準備】
+
+1. RFC-004ドキュメントを読んで全体像を把握
+2. 既存のcommon/shared構造を確認
+3. 新規ブランチ作成: git checkout -b claude/rfc-004-common-clarity-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 2: 設計ドキュメント作成】
+
+1. docs/specs/COMMON_VS_SHARED.md を作成（RFC-004の50-343行参照）
+
+主要セクション:
+- 概要と責務の定義
+- shared セクション（サービス横断）の責務
+  - 対象設定: プロジェクト情報、技術設定、バリデーション、デザイントークン
+  - 判断基準とアンチパターン
+- common セクション（サービス内共通）の責務
+  - 対象設定: ナビゲーション、レイアウト、テーマ、ビジネスルール
+  - 判断基準とアンチパターン
+- 使い分けフローチャート
+- 具体例での判断（5例）
+- 移行が必要な設定の特定
+- セッション設定の移行判断（optional）
+- OGP設定の移行判断
+- 責務明確化のガイドライン（DO/DON'T）
+- まとめ表
+
+2. ドキュメント品質確認:
+   - 判断基準が明確か
+   - 具体例が十分か
+   - フローチャートが理解しやすいか
+   - アンチパターンが網羅されているか
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 3: CLAUDE.md更新】
+
+1. CLAUDE.md に「specファイルの配置ルール」セクションを追加
+   （RFC-004の363-390行参照）
+
+追加内容:
+- 3層のspec構造表（shared/common/section）
+- 配置判断のガイドライン
+- COMMON_VS_SHARED.md への参照リンク
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 4: 既存配置の妥当性確認】
+
+1. 既存specファイルをガイドラインに照らし合わせて評価
+
+確認項目（RFC-004の217-227行の表を参照）:
+- copyright_name: ✅ RFC-003で移行済み
+- timeout: ✅ RFC-003で移行済み
+- breakpoints: ✅ RFC-003で移行済み
+- validation: ✅ RFC-003で移行済み
+- session設定: ⚠️ 要検討（現状維持または将来移行）
+- テーマ設定: ✅ 適切（blog/common に配置）
+- ナビゲーション: ✅ 適切（各service/common に配置）
+- OGP設定: ✅ 適切（blog/common に配置）
+
+2. edge caseの特定:
+   - ガイドラインで判断できない設定がないか確認
+   - 必要に応じてドキュメントに追記
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 5: コミット・プッシュ】
+
+git add docs/specs/COMMON_VS_SHARED.md CLAUDE.md
+git commit -m "RFC-004: Clarify common vs shared responsibilities
+
+- Create COMMON_VS_SHARED.md design document
+  - Define shared scope: cross-service settings (validation, server, responsive)
+  - Define common scope: service-specific UI/UX (navigation, theme, layout)
+  - Provide decision flowchart and 5 concrete examples
+  - Document DO/DON'T guidelines
+- Update CLAUDE.md with spec placement rules
+  - Add 3-layer spec structure table (shared/common/section)
+  - Link to COMMON_VS_SHARED.md for detailed guidance
+- Validate existing spec placement
+  - Confirm current placements are appropriate
+  - Document session/OGP settings as acceptable
+
+Documentation: Establishes clear criteria for future spec placement decisions
+No code changes in this phase"
+
+git push -u origin claude/rfc-004-common-clarity-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 成功基準
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ COMMON_VS_SHARED.md が作成されている
+  □ 概要と責務定義
+  □ shared/commonの判断基準
+  □ 使い分けフローチャート
+  □ 具体例5つ
+  □ DO/DON'Tガイドライン
+  □ まとめ表
+
+□ CLAUDE.md にspec配置ルールが追記されている
+
+□ 既存specの配置が適切であることを確認
+
+□ 新規セクション追加時の判断基準が明確になっている
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ 注意事項
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. このPhaseはドキュメント作成のみ: コード変更なし
+2. セッション設定の移行は実施しない: 現状維持（将来検討）
+3. 判断基準は具体的に: 「なんとなく」で配置しない文化を醸成
+4. 実例を重視: 既存のspecファイルを具体例として活用
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 参考ドキュメント
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- RFC-004: docs/specs/RFC-004-clarify-common-responsibility.md
+- RFC-003: docs/specs/RFC-003-migrate-to-shared-refs.md（前提）
+- RFC-002: docs/specs/RFC-002-shared-spec-foundation.md（背景）
+- プロジェクト規範: CLAUDE.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 次のステップ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RFC-004完了後、RFC-005（構成化メカニズムの導入）に進む。
+RFC-005はRFC-004とは独立しているため、並行して進めることも可能。

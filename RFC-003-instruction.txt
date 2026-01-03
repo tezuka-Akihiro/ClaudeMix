@@ -1,0 +1,231 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RFC-003実装タスク: 重複の排除とshared参照への移行
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【プロジェクト情報】
+- プロジェクト名: ClaudeMix (Remix Boilerplate)
+- 新規ブランチ: claude/rfc-003-migrate-shared-XXXXX を作成
+- RFC文書: docs/specs/RFC-003-migrate-to-shared-refs.md
+- 依存: RFC-002完了
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 タスク概要
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+既存specファイルから重複している定義を削除し、RFC-002で作成したshared specへの
+参照に置き換える。これにより、80-120行の重複コードを削減し、SSoT原則を完全に実現する。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 目的
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 重複排除: 80-120行の重複定義を削除
+2. shared参照への移行: data-io層でshared specを読み込む実装に変更
+3. 保守性向上: 変更時の修正箇所を1箇所に集約
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 実装手順
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 1: 準備】
+
+1. RFC-003ドキュメントを読んで全体像を把握
+2. RFC-002で作成したshared specsを確認
+3. 新規ブランチ作成: git checkout -b claude/rfc-003-migrate-shared-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 2: data-io層の拡張（新規関数追加）】
+
+重要: 既存関数は変更せず、新規関数を追加して破壊的変更を回避
+
+1. blog/posts 関連（RFC-003の144-185行参照）:
+
+   app/data-io/blog/posts/loadPostsSpec.server.ts に追加:
+
+   export function loadPostsServerConfig() {
+     const serverSpec = loadSharedSpec<ServerSpec>('server');
+     return {
+       timeout: serverSpec.loader.timeout
+     };
+   }
+
+   export function loadPostsResponsiveConfig() {
+     const responsiveSpec = loadSharedSpec<ResponsiveSpec>('responsive');
+     return {
+       breakpoints: responsiveSpec.breakpoints
+     };
+   }
+
+   export function loadProjectInfo() {
+     const projectSpec = loadSharedSpec<ProjectSpec>('project');
+     return {
+       name: projectSpec.project.name,
+       copyrightName: projectSpec.project.name
+     };
+   }
+
+2. blog/common 関連（RFC-003の210-252行参照）:
+
+   app/data-io/blog/common/loadBlogConfig.server.ts を更新:
+   - loadSharedSpec('project') を使用
+   - copyright表示にプロジェクト名を使用
+
+3. account/authentication 関連（RFC-003の254-303行参照）:
+
+   app/data-io/account/authentication/validateCredentials.server.ts を更新:
+   - validateEmail(): shared/validation-spec から読み込み
+   - validatePassword(): shared/validation-spec から読み込み
+   - getPasswordRequirements(): 新規関数追加
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 3: routes層の段階的移行】
+
+1. 各routeファイルを1つずつ更新:
+   - blog._index.tsx: loadProjectInfo() を使用
+   - account 関連routes: 新しいvalidation関数を使用
+
+2. 動作確認を各ファイルごとに実施
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 4: 既存specファイルからの削除】
+
+routes層の移行完了後、specファイルから重複を削除:
+
+1. project名・copyright名の削除（RFC-003の40-57行参照）:
+   - blog/posts-spec.yaml: project セクション削除
+   - blog/common-spec.yaml: copyright_name 削除
+
+2. timeout設定の削除（RFC-003の60-78行参照）:
+   - 全7ファイル（blog/*, account/*）から server_io.loader.timeout 削除
+
+3. responsive設定の削除（RFC-003の80-103行参照）:
+   - blog/common-spec.yaml: breakpoints 削除
+   - blog/posts-spec.yaml: breakpoints 削除（grid_columnsは保持）
+   - account/common-spec.yaml: breakpoints 削除
+
+4. validation設定の削除（RFC-003の106-137行参照）:
+   - account/authentication-spec.yaml: validation.email, password 削除
+   - account/profile-spec.yaml: new_email, new_password 削除
+   - current_password は保持（profile固有）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 5: 型定義の更新】
+
+1. blog/types.ts の更新（RFC-003の309-362行参照）:
+   - BlogPostsSpec から project, server_io, responsive.breakpoints 削除
+   - BlogCommonSpec から copyright_name, responsive.breakpoints 削除
+
+2. account/types.ts の更新（RFC-003の364-415行参照）:
+   - AccountAuthenticationSpec から server_io, validation 削除
+   - AccountProfileSpec から new_email, new_password 削除
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 6: 単体テスト作成・更新】
+
+1. 新規テスト（RFC-003の483-505行参照）:
+   app/data-io/blog/posts/loadPostsSpec.server.test.ts
+
+2. 既存テスト更新（RFC-003の507-542行参照）:
+   app/data-io/account/authentication/validateCredentials.server.test.ts
+   - 254文字超のメールアドレステスト追加
+   - 128文字超のパスワードテスト追加
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 7: E2Eテスト実行】
+
+1. アカウント関連E2E:
+   npx playwright test tests/e2e/account --config=tests/e2e/playwright.config.ts
+
+2. ブログ関連E2E:
+   npx playwright test tests/e2e/screen/blog --config=tests/e2e/playwright.config.ts
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 8: 全体テストとビルド】
+
+1. 型チェック: npm run typecheck
+2. 全テスト: npm test
+3. リント: npm run lint:all
+4. ビルド: npm run build
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 9: 削減効果の測定】
+
+削減前後の行数を測定:
+
+wc -l app/specs/blog/*.yaml app/specs/account/*.yaml
+
+期待: 80-120行の削減（削減率 4-6%）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 10: コミット・プッシュ】
+
+git add .
+git commit -m "RFC-003: Migrate duplicates to shared spec references
+
+- Remove duplicate timeout settings from 7 spec files
+- Remove duplicate validation patterns from account specs
+- Remove duplicate breakpoints from blog/account specs
+- Remove duplicate project/copyright names
+- Add shared spec loader functions in data-io layer
+- Update validation functions to use shared/validation-spec
+- Update blog config to use shared/project-spec
+- Update type definitions to remove migrated fields
+- Add/update unit tests for shared spec loading
+- Reduced 80-120 lines of duplicate code
+
+Maintenance: Single point of change for common settings
+All tests passing, E2E tests verified"
+
+git push -u origin claude/rfc-003-migrate-shared-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 成功基準
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ data-io層に shared spec 読み込み関数が追加されている
+
+□ routes層が新しいdata-io関数を使用している
+
+□ 既存specファイルから重複が削除されている
+  □ timeout設定（7ファイル）
+  □ breakpoints設定（3ファイル）
+  □ validation設定（2ファイル）
+  □ project/copyright名（2ファイル）
+
+□ 型定義が更新されている（blog/types.ts, account/types.ts）
+
+□ 80-120行の削減を達成
+
+□ 全単体テストがパス
+
+□ E2Eテストがパス
+
+□ npm run typecheck がエラーなし
+
+□ 既存機能がすべて動作する
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ 注意事項
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 段階的移行: 一度に全てを変更せず、1セクションずつ確実に
+2. 破壊的変更回避: data-io層は新規関数追加のみ（既存関数は維持）
+3. 保持すべき設定: blog/posts-spec.yaml の grid_columns など固有設定は削除しない
+4. validation値の一致確認: shared/validation-spec.yaml の値が既存と完全一致することを確認
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 参考ドキュメント
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- RFC-003: docs/specs/RFC-003-migrate-to-shared-refs.md
+- RFC-002: docs/specs/RFC-002-shared-spec-foundation.md（前提）
+- プロジェクト規範: CLAUDE.md

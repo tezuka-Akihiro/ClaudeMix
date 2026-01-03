@@ -1,0 +1,183 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RFC-002実装タスク: サービス横断spec基盤の構築
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【プロジェクト情報】
+- プロジェクト名: ClaudeMix (Remix Boilerplate)
+- 新規ブランチ: claude/rfc-002-shared-spec-XXXXX を作成
+- RFC文書: docs/specs/RFC-002-shared-spec-foundation.md
+- 依存: RFC-001完了
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 タスク概要
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+app/specs/shared/ 配下に、サービス横断で使用する共通specファイル群を新規作成し、
+spec-loaderを拡張してこれらを読み込めるようにする。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 目的
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. SSoT原則の完全実装: サービス横断値を1箇所に集約
+2. 保守性向上: 共通設定変更時の修正箇所を削減（7箇所→1箇所）
+3. 拡張性確保: 今後追加されるサービスでも即座に共通設定を利用可能
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 実装手順
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 1: 準備】
+
+1. RFC-002ドキュメントを読んで全体像を把握
+2. 既存のspec構造を確認（blog/*, account/*）
+3. 新規ブランチ作成: git checkout -b claude/rfc-002-shared-spec-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 2: sharedディレクトリとspecファイル作成】
+
+1. ディレクトリ作成: mkdir -p app/specs/shared
+
+2. validation-spec.yaml を作成（RFC-002の82-113行参照）
+   - email, password, username, url のバリデーションルール定義
+   - 既存specファイルからの移行元を確認
+
+3. responsive-spec.yaml を作成（RFC-002の127-164行参照）
+   - breakpoints, grid_columns, spacing, font_sizes, container定義
+
+4. server-spec.yaml を作成（RFC-002の177-210行参照）
+   - loader, action, rate_limit, cache, security設定
+
+5. types.ts を作成（RFC-002の227-373行参照）
+   - ValidationSpec, ResponsiveSpec, ServerSpec, ProjectSpec型定義
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 3: spec-loader拡張】
+
+1. app/spec-loader/specLoader.server.ts を編集
+   - loadSharedSpec<T>(specName: string): T 関数を追加
+   - getSharedSpec を generated/specs.ts からインポート
+
+2. コード例（RFC-002の382-407行参照）:
+
+import { getSpec, getSharedSpec } from '~/generated/specs';
+
+export function loadSpec<T>(featurePath: string): T {
+  return getSpec<T>(featurePath);
+}
+
+export function loadSharedSpec<T>(specName: string): T {
+  return getSharedSpec<T>(specName);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 4: generate-specs.js拡張】
+
+1. scripts/prebuild/generate-specs.js を編集
+
+2. sharedSpecs オブジェクトを追加（RFC-002の447-485行参照）:
+   - sharedディレクトリの処理を追加
+   - project-spec.yaml → 'project'
+   - validation-spec.yaml → 'validation'
+   - responsive-spec.yaml → 'responsive'
+   - server-spec.yaml → 'server'
+
+3. TypeScript生成部分を更新（RFC-002の509-560行参照）:
+   - sharedSpecs 定義を追加
+   - getSharedSpec<T>(specName: string): T 関数を追加
+   - getAllSharedSpecNames(): string[] 関数を追加
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 5: 単体テスト作成】
+
+1. app/spec-loader/specLoader.server.test.ts を作成
+
+2. テストケース（RFC-002の640-684行参照）:
+   - validation specの読み込みテスト
+   - responsive specの読み込みテスト
+   - server specの読み込みテスト
+   - 存在しないspec名でエラーテスト
+   - 既存のloadSpec関数の動作確認
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 6: ビルド確認とテスト】
+
+1. ビルド実行: npm run build
+
+2. 生成ファイル確認:
+   cat app/generated/specs.ts | grep "sharedSpecs"
+
+3. 型チェック: npm run typecheck
+
+4. 単体テスト: npm test app/spec-loader/specLoader.server.test.ts
+
+5. 全テスト: npm test
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 7: コミット・プッシュ】
+
+git add .
+git commit -m "RFC-002: Create shared spec foundation
+
+- Create app/specs/shared/ directory structure
+- Add validation-spec.yaml (email, password, username, url)
+- Add responsive-spec.yaml (breakpoints, spacing, grid)
+- Add server-spec.yaml (timeout, retry, cache, security)
+- Add shared/types.ts with TypeScript definitions
+- Extend spec-loader with loadSharedSpec() function
+- Update generate-specs.js to process shared specs
+- Add unit tests for spec-loader
+- All tests passing, type checking passed
+
+Foundation: Enables cross-service spec sharing (SSoT principle)
+Next: RFC-003 will migrate duplicates to shared specs"
+
+git push -u origin claude/rfc-002-shared-spec-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 成功基準
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ app/specs/shared/ 配下に4ファイル作成完了
+  □ validation-spec.yaml
+  □ responsive-spec.yaml
+  □ server-spec.yaml
+  □ types.ts
+
+□ spec-loader に loadSharedSpec() 関数が追加されている
+
+□ generate-specs.js が shared specs を処理できる
+
+□ app/generated/specs.ts に sharedSpecs オブジェクトが含まれる
+
+□ 単体テストが全てパスする
+
+□ npm run build が正常終了
+
+□ npm run typecheck がエラーなし
+
+□ 全511テストがパス
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ 注意事項
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 既存specファイルは変更しない: RFC-003で移行を実施
+2. YAML構造はRFC-002の例に厳密に従う
+3. 型定義は共通spec構造に合わせる
+4. project-spec.yaml は既にRFC-001で作成済み（types.tsに定義追加のみ）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 参考ドキュメント
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- RFC-002: docs/specs/RFC-002-shared-spec-foundation.md
+- RFC-001: docs/specs/RFC-001-project-toml-to-yaml.md（前提）
+- プロジェクト規範: CLAUDE.md
+- 既存spec例: app/specs/blog/posts-spec.yaml
