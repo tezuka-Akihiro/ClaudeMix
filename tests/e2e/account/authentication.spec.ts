@@ -169,7 +169,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Fill in login form with invalid credentials (non-existent user)
       const email = generateUniqueEmail('nonexistent');
       await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'WrongPassword');
+      await page.fill('input[name="password"]', 'Wrong123');
 
       // Submit form
       await page.click('button[type="submit"]');

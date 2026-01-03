@@ -33,7 +33,7 @@ import { createSessionData } from '~/lib/account/common/createSessionData';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'アカウント登録 - ClaudeMix' },
+    { title: '会員登録 - ClaudeMix' },
     { name: 'description', content: 'ClaudeMixのアカウントを作成' },
   ];
 };
