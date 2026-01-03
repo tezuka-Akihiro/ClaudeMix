@@ -6,9 +6,13 @@
  * @responsibility パスワードリセット要求の処理
  */
 
-import type { ActionFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
-import { Form, useActionData, useNavigation } from '@remix-run/react';
+import { Form, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
+
+// Spec loader
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 // Data-IO layer
 import { generatePasswordResetToken } from '~/data-io/account/authentication/generatePasswordResetToken.server';
@@ -36,10 +40,55 @@ interface ActionData {
   };
 }
 
+interface LoaderData {
+  uiSpec: {
+    title: string;
+    description: string;
+    field: {
+      label: string;
+    };
+    submitButton: {
+      label: string;
+      loadingLabel: string;
+    };
+    links: {
+      loginLabel: string;
+      loginPath: string;
+    };
+  };
+}
+
+/**
+ * Loader: Provide UI spec to client
+ */
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+
+  return json<LoaderData>({
+    uiSpec: {
+      title: spec.forms.forgot_password.title,
+      description: spec.forms.forgot_password.description,
+      field: {
+        label: spec.forms.forgot_password.fields.email.label,
+      },
+      submitButton: {
+        label: spec.forms.forgot_password.submit_button.label,
+        loadingLabel: spec.forms.forgot_password.submit_button.loading_label,
+      },
+      links: {
+        loginLabel: spec.forms.forgot_password.links.login.label,
+        loginPath: spec.forms.forgot_password.links.login.path,
+      },
+    },
+  });
+}
+
 /**
  * Action: Handle password reset request
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+
   const formData = await request.formData();
   const email = formData.get('email');
 
@@ -47,9 +96,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   // Validation
   if (typeof email !== 'string' || !email) {
-    fieldErrors.email = 'メールアドレスを入力してください';
+    fieldErrors.email = spec.validation.email.error_messages.required;
   } else if (!validateEmail(email)) {
-    fieldErrors.email = '有効なメールアドレスを入力してください';
+    fieldErrors.email = spec.validation.email.error_messages.invalid_format;
   }
 
   if (Object.keys(fieldErrors).length > 0) {
@@ -85,24 +134,29 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   // Always return success message (security: don't reveal if email exists)
   return json<ActionData>({
-    success: 'パスワードリセットのメールを送信しました。メールをご確認ください。',
+    success: spec.forms.forgot_password.success_message,
   });
 }
 
 export default function ForgotPassword() {
   const actionData = useActionData<typeof action>();
+  const loaderData = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
+  const { uiSpec } = loaderData;
 
   return (
     <div className="auth-container auth-container-structure">
       <div className="auth-card auth-card-structure">
-        <h1 className="auth-card__title">パスワードリセット</h1>
+        <h1 className="auth-card__title">{uiSpec.title}</h1>
 
         <p className="auth-card__description">
-          登録時のメールアドレスを入力してください。
-          <br />
-          パスワードリセット用のリンクをお送りします。
+          {uiSpec.description.split('\n').map((line, i) => (
+            <span key={i}>
+              {line}
+              {i < uiSpec.description.split('\n').length - 1 && <br />}
+            </span>
+          ))}
         </p>
 
         {actionData?.success && (
@@ -120,7 +174,7 @@ export default function ForgotPassword() {
         <Form method="post" className="auth-form">
           <div className="auth-form-field-structure">
             <label htmlFor="email" className="auth-form__label">
-              メールアドレス
+              {uiSpec.field.label}
             </label>
             <input
               id="email"
@@ -142,13 +196,13 @@ export default function ForgotPassword() {
             className="auth-form__submit"
             data-testid="submit-button"
           >
-            {isSubmitting ? '送信中...' : 'リセットリンクを送信'}
+            {isSubmitting ? uiSpec.submitButton.loadingLabel : uiSpec.submitButton.label}
           </button>
         </Form>
 
         <div className="auth-card__footer">
-          <a href="/login" className="auth-card__link">
-            ログインに戻る
+          <a href={uiSpec.links.loginPath} className="auth-card__link">
+            {uiSpec.links.loginLabel}
           </a>
         </div>
       </div>

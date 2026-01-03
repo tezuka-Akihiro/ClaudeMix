@@ -49,6 +49,9 @@ routes:
     path: "/logout"
     # ログアウト後のリダイレクト先
     redirect_after: "/login"
+  forgot_password:
+    path: "/forgot-password"
+    title: "パスワードリセット"
 
 # ==========================================
 # フォーム設定
@@ -112,6 +115,29 @@ forms:
       register:
         label: "新規会員登録はこちら"
         path: "/register"
+
+  forgot_password:
+    title: "パスワードリセット"
+    description: "登録時のメールアドレスを入力してください。\nパスワードリセット用のリンクをお送りします。"
+    fields:
+      email:
+        name: "email"
+        label: "メールアドレス"
+        type: "email"
+        placeholder: "example@example.com"
+        autocomplete: "email"
+        required: true
+
+    submit_button:
+      label: "リセットリンクを送信"
+      loading_label: "送信中..."
+
+    links:
+      login:
+        label: "ログインに戻る"
+        path: "/login"
+
+    success_message: "パスワードリセットのメールを送信しました。メールをご確認ください。"
 
 # ==========================================
 # バリデーション設定

@@ -8,11 +8,15 @@
 
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
-import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
+import { Form, Link, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-authentication.css';
+
+// Spec loader
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 // Data-IO layer
 import { createUser } from '~/data-io/account/authentication/createUser.server';
@@ -43,22 +47,77 @@ interface ActionData {
   };
 }
 
+interface LoaderData {
+  uiSpec: {
+    title: string;
+    subtitle: string;
+    fields: {
+      email: {
+        label: string;
+      };
+      password: {
+        label: string;
+      };
+      confirmPassword: {
+        label: string;
+      };
+    };
+    submitButton: {
+      label: string;
+      loadingLabel: string;
+    };
+    links: {
+      loginPrompt: string;
+      loginLink: string;
+    };
+  };
+}
+
 /**
  * Loader: Check if user is already logged in
  * If logged in, redirect to /account
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+
   const session = await getSession(request, context as any);
   if (session) {
-    return redirect('/account');
+    return redirect(spec.server_io.loader.authenticated_redirect);
   }
-  return json({});
+
+  return json<LoaderData>({
+    uiSpec: {
+      title: spec.routes.register.title,
+      subtitle: `ClaudeMixのアカウントを作成`,
+      fields: {
+        email: {
+          label: spec.forms.register.fields.email.label,
+        },
+        password: {
+          label: spec.forms.register.fields.password.label,
+        },
+        confirmPassword: {
+          label: spec.forms.register.fields.password_confirm.label,
+        },
+      },
+      submitButton: {
+        label: spec.forms.register.submit_button.label,
+        loadingLabel: spec.forms.register.submit_button.loading_label,
+      },
+      links: {
+        loginPrompt: 'すでにアカウントをお持ちですか？',
+        loginLink: 'ログイン',
+      },
+    },
+  });
 }
 
 /**
  * Action: Handle registration form submission
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+
   const formData = await request.formData();
   const email = formData.get('email');
   const password = formData.get('password');
@@ -68,21 +127,21 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   // Validate inputs
   if (typeof email !== 'string' || !email) {
-    fieldErrors.email = 'メールアドレスを入力してください';
+    fieldErrors.email = spec.validation.email.error_messages.required;
   } else if (!validateEmail(email)) {
-    fieldErrors.email = '有効なメールアドレスを入力してください';
+    fieldErrors.email = spec.validation.email.error_messages.invalid_format;
   }
 
   if (typeof password !== 'string' || !password) {
-    fieldErrors.password = 'パスワードを入力してください';
+    fieldErrors.password = spec.validation.password.error_messages.required;
   } else if (!validatePassword(password)) {
-    fieldErrors.password = 'パスワードは8文字以上、128文字以下で入力してください';
+    fieldErrors.password = spec.validation.password.error_messages.weak;
   }
 
   if (typeof confirmPassword !== 'string' || !confirmPassword) {
-    fieldErrors.confirmPassword = 'パスワード（確認）を入力してください';
+    fieldErrors.confirmPassword = spec.validation.password_confirm.error_messages.required;
   } else if (password !== confirmPassword) {
-    fieldErrors.confirmPassword = 'パスワードが一致しません';
+    fieldErrors.confirmPassword = spec.validation.password_confirm.error_messages.mismatch;
   }
 
   // Return errors if validation failed
@@ -97,7 +156,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const existingUser = await getUserByEmail(sanitizedEmail, context as any);
   if (existingUser) {
     return json<ActionData>(
-      { error: 'このメールアドレスは既に登録されています' },
+      { error: spec.error_messages.registration.email_exists },
       { status: 400 }
     );
   }
@@ -109,7 +168,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const userCreated = await createUser(sanitizedEmail, passwordHash, context as any);
   if (!userCreated) {
     return json<ActionData>(
-      { error: 'アカウントの作成に失敗しました。もう一度お試しください' },
+      { error: spec.error_messages.registration.creation_failed },
       { status: 500 }
     );
   }
@@ -118,7 +177,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const newUser = await getUserByEmail(sanitizedEmail, context as any);
   if (!newUser) {
     return json<ActionData>(
-      { error: 'アカウントの作成に失敗しました。もう一度お試しください' },
+      { error: spec.error_messages.registration.creation_failed },
       { status: 500 }
     );
   }
@@ -131,14 +190,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const setCookieHeader = await saveSession(sessionData, context as any);
 
     // Set session cookie and redirect to /account
-    return redirect('/account', {
+    return redirect(spec.server_io.action.default_redirect, {
       headers: {
         'Set-Cookie': setCookieHeader,
       },
     });
   } catch (error) {
     return json<ActionData>(
-      { error: 'セッションの作成に失敗しました。ログインしてください' },
+      { error: spec.error_messages.authentication.session_creation_failed },
       { status: 500 }
     );
   }
@@ -146,14 +205,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 export default function Register() {
   const actionData = useActionData<typeof action>();
+  const loaderData = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
+  const { uiSpec } = loaderData;
 
   return (
     <div className="auth-container auth-container-structure" data-testid="register-page">
       <div className="auth-card auth-card-structure">
-        <h1 className="auth-header__title">アカウント登録</h1>
-        <p className="auth-header__subtitle">ClaudeMixのアカウントを作成</p>
+        <h1 className="auth-header__title">{uiSpec.title}</h1>
+        <p className="auth-header__subtitle">{uiSpec.subtitle}</p>
 
         {actionData?.error && (
           <div className="error-message-structure" role="alert" data-testid="error-message">
@@ -163,7 +224,7 @@ export default function Register() {
 
         <Form method="post" className="auth-form-structure">
           <div className="form-field-structure">
-            <label htmlFor="email">メールアドレス</label>
+            <label htmlFor="email">{uiSpec.fields.email.label}</label>
             <input
               className="form-field__input"
               id="email"
@@ -183,7 +244,7 @@ export default function Register() {
           </div>
 
           <div className="form-field-structure">
-            <label htmlFor="password">パスワード</label>
+            <label htmlFor="password">{uiSpec.fields.password.label}</label>
             <input
               className="form-field__input"
               id="password"
@@ -203,7 +264,7 @@ export default function Register() {
           </div>
 
           <div className="form-field-structure">
-            <label htmlFor="confirmPassword">パスワード（確認）</label>
+            <label htmlFor="confirmPassword">{uiSpec.fields.confirmPassword.label}</label>
             <input
               className="form-field__input"
               id="confirmPassword"
@@ -225,14 +286,14 @@ export default function Register() {
           </div>
 
           <button type="submit" className="btn-primary" disabled={isSubmitting} data-testid="submit-button">
-            {isSubmitting ? '登録中...' : '登録'}
+            {isSubmitting ? uiSpec.submitButton.loadingLabel : uiSpec.submitButton.label}
           </button>
         </Form>
 
         <p className="auth-link">
-          すでにアカウントをお持ちですか？{' '}
+          {uiSpec.links.loginPrompt}{' '}
           <Link to="/login" data-testid="login-link">
-            ログイン
+            {uiSpec.links.loginLink}
           </Link>
         </p>
       </div>
