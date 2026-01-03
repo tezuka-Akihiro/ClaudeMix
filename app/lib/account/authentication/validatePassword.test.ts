@@ -6,42 +6,61 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validatePassword } from './validatePassword';
+import { validatePassword, getPasswordRequirements } from './validatePassword';
 
 describe('validatePassword', () => {
-  describe('valid passwords', () => {
-    it('should return true for password with minimum length (8 chars)', () => {
-      expect(validatePassword('password')).toBe(true);
-    });
-
-    it('should return true for password with uppercase letters', () => {
+  describe('valid passwords (spec requirements: 8+ chars, uppercase, lowercase, digits)', () => {
+    it('should return true for password with minimum requirements', () => {
+      // Has uppercase (P), lowercase (a,s,s,w,o,r,d), and digits (1,2,3)
       expect(validatePassword('Password123')).toBe(true);
     });
 
     it('should return true for password with special characters', () => {
+      // Has uppercase (P), lowercase (a,s,s), digits (1,2,3), and special char (@)
       expect(validatePassword('Pass@123')).toBe(true);
     });
 
-    it('should return true for long password', () => {
-      expect(validatePassword('ThisIsAVeryLongPasswordWithMoreThan8Characters')).toBe(true);
+    it('should return true for long password with all requirements', () => {
+      // Has uppercase, lowercase, and digits
+      expect(validatePassword('ThisIsAVeryLongPassword123')).toBe(true);
     });
 
     it('should return true for password with mixed characters', () => {
       expect(validatePassword('MyP@ssw0rd!')).toBe(true);
     });
+
+    it('should return true for exactly 8 characters with all requirements', () => {
+      expect(validatePassword('Abcd1234')).toBe(true);
+    });
   });
 
-  describe('invalid passwords', () => {
+  describe('invalid passwords (complexity requirements)', () => {
     it('should return false for empty string', () => {
       expect(validatePassword('')).toBe(false);
     });
 
     it('should return false for password shorter than 8 characters', () => {
-      expect(validatePassword('pass')).toBe(false);
+      expect(validatePassword('Pass1')).toBe(false);
     });
 
     it('should return false for password with 7 characters', () => {
-      expect(validatePassword('passwor')).toBe(false);
+      expect(validatePassword('Passw0r')).toBe(false);
+    });
+
+    it('should return false for password with only lowercase (no uppercase, no digits)', () => {
+      expect(validatePassword('password')).toBe(false);
+    });
+
+    it('should return false for password without uppercase letters', () => {
+      expect(validatePassword('password123')).toBe(false);
+    });
+
+    it('should return false for password without lowercase letters', () => {
+      expect(validatePassword('PASSWORD123')).toBe(false);
+    });
+
+    it('should return false for password without digits', () => {
+      expect(validatePassword('Password')).toBe(false);
     });
 
     it('should return false for password with only spaces', () => {
@@ -49,7 +68,7 @@ describe('validatePassword', () => {
     });
 
     it('should return false for password with leading/trailing spaces', () => {
-      expect(validatePassword(' password ')).toBe(false);
+      expect(validatePassword(' Password123 ')).toBe(false);
     });
   });
 
@@ -67,8 +86,31 @@ describe('validatePassword', () => {
     });
 
     it('should return false for very long password (>128 chars)', () => {
-      const longPassword = 'a'.repeat(200);
+      // Even with all requirements, must not exceed max length
+      const longPassword = 'Aa1' + 'a'.repeat(200);
       expect(validatePassword(longPassword)).toBe(false);
+    });
+
+    it('should return true for password at exactly 128 characters with requirements', () => {
+      // Create a password with exactly 128 chars that has all requirements
+      const exactLength = 'A1' + 'a'.repeat(126); // 128 chars total
+      expect(validatePassword(exactLength)).toBe(true);
+    });
+  });
+
+  describe('getPasswordRequirements', () => {
+    it('should return array of password requirements', () => {
+      const requirements = getPasswordRequirements();
+
+      expect(requirements).toBeInstanceOf(Array);
+      expect(requirements.length).toBeGreaterThan(0);
+
+      // Should mention key requirements
+      const requirementsText = requirements.join(' ');
+      expect(requirementsText).toContain('文字');
+      expect(requirementsText).toContain('大文字');
+      expect(requirementsText).toContain('小文字');
+      expect(requirementsText).toContain('数字');
     });
   });
 });
