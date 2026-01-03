@@ -1,0 +1,37 @@
+metadata:
+  feature_name: "shared-responsive"
+  version: "1.0.0"
+  description: "レスポンシブデザインの共通設定（ブレークポイント、グリッド等）"
+
+breakpoints:
+  mobile: 768    # px
+  tablet: 1024   # px
+  desktop: 1440  # px
+
+grid_columns:
+  mobile: 1
+  tablet: 2
+  desktop: 3
+
+spacing:
+  mobile: 16   # px
+  tablet: 24   # px
+  desktop: 32  # px
+
+font_sizes:
+  mobile:
+    base: 16   # px
+    heading: 24
+  tablet:
+    base: 16
+    heading: 28
+  desktop:
+    base: 16
+    heading: 32
+
+container:
+  max_width: 1280  # px
+  padding:
+    mobile: 16     # px
+    tablet: 24
+    desktop: 32
