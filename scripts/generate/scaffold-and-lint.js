@@ -1,11 +1,11 @@
 // 引数ベースジェネレーター
 import fs from 'fs';
 import path from 'path';
-import toml from '@iarna/toml';
+import yaml from 'js-yaml';
 import { fileURLToPath } from 'url';
 
 // テスト用のパス書き換え可能変数
-let projectConfigPath = path.join(process.cwd(), 'scripts', 'project.toml');
+let projectConfigPath = path.join(process.cwd(), 'app', 'specs', 'shared', 'project-spec.yaml');
 let templateConfigPath = path.join(process.cwd(), 'scripts', 'generate', 'config.json');
 
 // テストからのみ使用されるヘルパー関数
@@ -21,16 +21,27 @@ export function __setTemplateConfigPath(newPath) {
 }
 
 /**
- * プロジェクト設定ファイル (scripts/project.toml) を読み込む
+ * プロジェクト設定ファイル (app/specs/shared/project-spec.yaml) を読み込む
  * @returns {Object} プロジェクト設定オブジェクト
  */
 function loadProjectConfig() {
   try {
     const content = fs.readFileSync(projectConfigPath, 'utf8');
-    return toml.parse(content);
+    const parsed = yaml.load(content);
+
+    // YAML構造をTOML互換形式に変換（既存コードとの互換性維持）
+    return {
+      project_name: parsed.project?.name || '',
+      service_name: parsed.project?.service_name || '',
+      concept: parsed.project?.concept || '',
+      target: parsed.project?.target || '',
+      value_proposition: parsed.project?.value_proposition || '',
+      references: parsed.references || {},
+      services: parsed.services || {}
+    };
   } catch (error) {
     if (error.code === 'ENOENT') {
-      throw new Error('プロジェクト設定ファイル (scripts/project.toml) が見つかりません');
+      throw new Error('プロジェクト設定ファイル (app/specs/shared/project-spec.yaml) が見つかりません');
     }
     throw error;
   }

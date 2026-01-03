@@ -20,7 +20,7 @@ describe('設定読み込み機能', () => {
 
       expect(() => {
         loadProjectConfig();
-      }).toThrow('プロジェクト設定ファイル (scripts/project.toml) が見つかりません');
+      }).toThrow('プロジェクト設定ファイル (app/specs/shared/project-spec.yaml) が見つかりません');
     });
   });
 
