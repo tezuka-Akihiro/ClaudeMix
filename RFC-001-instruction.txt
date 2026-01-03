@@ -1,0 +1,177 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RFC-001実装タスク: project.toml から YAML への移行
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【プロジェクト情報】
+- プロジェクト名: ClaudeMix (Remix Boilerplate)
+- 新規ブランチ: claude/rfc-001-yaml-migration-XXXXX を作成
+- RFC文書: docs/specs/RFC-001-project-toml-to-yaml.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 タスク概要
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+scripts/project.toml を YAML 形式に変換し、app/specs/shared/project-spec.yaml
+として再配置することで、プロジェクト全体の設定フォーマットを YAML に統一します。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 目的
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. セキュリティ向上: TOMLパーサー（@iarna/toml）依存を排除
+2. 保守性向上: YAML統一によるフォーマット一貫性確保
+3. 拡張性確保: 将来のサービス横断spec導入の基盤整備
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 実装手順
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 1: 準備（必須）】
+
+1. RFC-001ドキュメントを読んで全体像を把握
+2. 現在のscripts/project.tomlの内容を確認
+3. 新規ブランチ作成: git checkout -b claude/rfc-001-yaml-migration-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 2: YAMLファイル作成】
+
+1. app/specs/shared/ ディレクトリ作成
+2. scripts/project.toml を YAML 形式に変換
+   - RFC-001の「フォーマット変換例」（78-163行目）を参考
+   - メタデータセクション追加（version, migrated_from, migration_date）
+3. app/specs/shared/project-spec.yaml として保存
+4. app/specs/shared/project-spec.example.yaml も作成
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 3: スクリプト修正】
+
+1. scripts/generate/scaffold-and-lint.js を修正
+   - import文変更: @iarna/toml → js-yaml
+   - ファイルパス変更
+   - loadProjectConfig() 関数を YAML 対応に変更
+     （RFC-001の202-223行目参照）
+   - YAML構造をTOML互換形式に変換する処理を追加
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 4: テスト更新】
+
+1. scripts/generate/scaffold-and-lint.test.js のテストケース確認
+2. 必要に応じてテストを更新（YAML読み込みに対応）
+3. テスト実行: npm test scripts/generate/scaffold-and-lint.test.js
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 5: 統合テスト】
+
+1. コード生成機能のテスト:
+   npm run generate -- --type ui --ui-type component --service blog --section posts --name TestComponent
+
+2. 生成されたファイルが正しいか確認
+3. 型チェック: npm run typecheck
+4. 全テスト実行: npm test
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 6: パッケージ削除】
+
+1. TOMLパッケージ削除: npm uninstall @iarna/toml
+2. package.json から依存関係が削除されたことを確認
+3. npm install でロックファイル更新
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 7: クリーンアップ】
+
+1. 旧ファイル削除:
+   - scripts/project.toml
+   - scripts/project.example.toml
+2. 最終テスト実行（全テストパス確認）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【Phase 8: コミット・プッシュ】
+
+1. 変更をコミット:
+
+git add .
+git commit -m "RFC-001: Migrate project.toml to YAML format
+
+- Convert scripts/project.toml to app/specs/shared/project-spec.yaml
+- Update scaffold-and-lint.js to use js-yaml instead of @iarna/toml
+- Remove @iarna/toml dependency from package.json
+- Add metadata section to project-spec.yaml
+- All tests passing, type checking passed
+
+Security: Eliminates TOML parser vulnerability risk
+Maintainability: Unifies all spec files to YAML format"
+
+2. プッシュ: git push -u origin claude/rfc-001-yaml-migration-XXXXX
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 成功基準
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ app/specs/shared/project-spec.yaml が正しく作成されている
+□ scaffold-and-lint.js が YAML を正しく読み込む
+□ コード生成機能が全て正常動作する
+□ 全単体テストがパスする（511テスト）
+□ 型チェックがパスする
+□ @iarna/toml が package.json から削除されている
+□ 旧 TOML ファイルが削除されている
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ 注意事項
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. YAML構造の変換: RFC-001の「フォーマット変換例」を厳密に参照
+2. 互換性維持: loadProjectConfig() は既存コードとの互換性を保つため、
+   TOML形式のオブジェクト構造を返す必要がある
+3. テストファースト: 各変更後、必ずテストを実行して動作確認
+4. CLAUDE.md参照: プロジェクト規範に従った実装を心がける
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 参考ドキュメント
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- RFC-001: docs/specs/RFC-001-project-toml-to-yaml.md
+- プロジェクト規範: CLAUDE.md
+- 既存YAMLファイル例: app/specs/blog/posts-spec.yaml
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 開始コマンド
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+新しいチャットでこのメッセージを送信後、以下のように開始してください:
+
+「RFC-001の実装を開始します。まず現在のproject.tomlの内容を確認して、
+YAML形式への変換を行います。」
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 補足情報
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【現在のプロジェクト状態】
+- 完了済み: RFC-006（Account Service Spec Migration）全4フェーズ完了
+- ブランチ: claude/refactor-spec-files-GFXD6
+- 最新コミット: ff74f79 (Fix: Use centralized spec loader from tests/utils)
+- テスト状態: ✅ 全511テストパス、型チェック通過
+
+【新チャットでの作業効率化のコツ】
+1. 最初にプロジェクト構造を把握
+   - CLAUDE.md を最初に読ませる
+   - RFC-001ドキュメントの全文を理解させる
+
+2. 段階的な進行
+   - 一度に全てを変更せず、Phase単位で進める
+   - 各Phaseごとにテストを実行して確認
+
+3. TodoWrite活用
+   - Todoリストを作成して進捗管理
+
+4. 型安全性の確保
+   - 変更後は必ず npm run typecheck を実行
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
