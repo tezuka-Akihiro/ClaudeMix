@@ -44,6 +44,20 @@ export async function loadSpec<T = BlogPostsSpec>(service: string ,section: stri
 }
 
 /**
+ * Shared spec.yamlを読み込む
+ *
+ * @param specName - 'project', 'validation', 'responsive', 'server' のいずれか
+ * @returns spec.yamlの内容
+ */
+export async function loadSharedSpec<T>(specName: string): Promise<T> {
+  const specPath = join(process.cwd(), 'app/specs/shared/', specName + '-spec.yaml');
+  const content = await readFile(specPath, 'utf-8');
+  const spec = load(content) as T;
+
+  return spec;
+}
+
+/**
  * テスト専用記事（test-e2e-*.md）を読み込む
  *
  * @returns テスト記事のフロントマター配列

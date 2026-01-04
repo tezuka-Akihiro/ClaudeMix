@@ -1,23 +1,27 @@
 import { test, expect, type Page } from '@playwright/test';
 import {
   loadSpec,
+  loadSharedSpec,
   getTestArticlesByCategory,
   getTestArticlesByTag,
   loadTestArticles,
   type TestArticleFrontmatter
 } from '../../utils/loadSpec';
 import type { BlogCommonSpec, BlogPostsSpec } from '~/specs/blog/types';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 const TARGET_URL = '/blog';
 
 // テスト全体で使用する spec データとテスト記事をキャッシュ
 let commonSpec: BlogCommonSpec;
 let postsSpec: BlogPostsSpec;
+let projectSpec: ProjectSpec;
 let testArticles: TestArticleFrontmatter[];
 
 test.beforeAll(async () => {
   commonSpec = await loadSpec<BlogCommonSpec>('blog', 'common');
   postsSpec = await loadSpec<BlogPostsSpec>('blog', 'posts');
+  projectSpec = await loadSharedSpec<ProjectSpec>('project');
   testArticles = await loadTestArticles();
 });
 
@@ -76,7 +80,7 @@ test.describe('E2E Screen Test for blog - Basic Layout', () => {
     const copyright = page.getByTestId('copyright');
     const currentYear = new Date().getFullYear();
     await expect(copyright).toBeVisible();
-    await expect(copyright).toHaveText(`© ${currentYear} ${postsSpec.project.copyright_name}`);
+    await expect(copyright).toHaveText(`© ${currentYear} ${projectSpec.project.name}`);
   });
 
 });

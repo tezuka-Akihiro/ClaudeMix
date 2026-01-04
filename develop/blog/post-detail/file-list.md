@@ -54,8 +54,6 @@ post-detailセクションの実装に必要な全ファイルを3大層分離�
 | slugify.test.ts | app/lib/blog/post-detail/slugify.test.ts | slugify.tsのテスト。英数字、日本語、特殊文字のスラグ化を検証 |
 | determineContentVisibility.ts | app/lib/blog/post-detail/determineContentVisibility.ts | サブスクリプション状態（`hasActiveSubscription: boolean`）、記事の公開範囲見出し（`freeContentHeading: string | null`）、見出し情報配列（`headings: Heading[]`）を受け取り、コンテンツの可視範囲を判定する純粋関数。`{ showFullContent: boolean, cutoffHeadingId: string | null }` を返す。副作用なし（テスト容易性を確保） |
 | determineContentVisibility.test.ts | app/lib/blog/post-detail/determineContentVisibility.test.ts | determineContentVisibility.tsのテスト。サブスクリプションがアクティブな場合（全文表示）、非アクティブな場合（見出しベース部分表示）、見出しが見つからない場合のフォールバックを検証 |
-| splitContentByHeading.ts | app/lib/blog/post-detail/splitContentByHeading.ts | HTML文字列とカットオフ見出しID（`cutoffHeadingId: string | null`）を受け取り、指定された見出しの終わり位置でコンテンツを分割する純粋関数。`{ visibleContent: string, hiddenContent: string }` を返す。副作用なし |
-| splitContentByHeading.test.ts | app/lib/blog/post-detail/splitContentByHeading.test.ts | splitContentByHeading.tsのテスト。見出しIDでの分割、見出しが見つからない場合のフォールバック、エッジケースを検証 |
 
 ---
 

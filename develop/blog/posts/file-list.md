@@ -77,5 +77,6 @@ postsセクションの実装に必要な全ファイルを3大層分離アー�
 | fetchAvailableFilters.server.ts | app/data-io/blog/posts/fetchAvailableFilters.server.ts | 利用可能なフィルタ情報の取得。すべての記事から利用可能なカテゴリとタグを抽出し、タググループ情報（tagGroups）も生成して返す。 |
 | fetchAvailableFilters.server.test.ts | app/data-io/blog/posts/fetchAvailableFilters.server.test.ts | ユニットテスト（tagGroupsフィールドの検証を含む） |
 | loadPostsSpec.server.ts | app/data-io/blog/posts/loadPostsSpec.server.ts | spec.yamlからカテゴリ定義を読み込む。PostsSpec（categories: Category[]）を返す |
+| loadPostsSpec.server.test.ts | app/data-io/blog/posts/loadPostsSpec.server.test.ts | ユニットテスト |
 
 ---
