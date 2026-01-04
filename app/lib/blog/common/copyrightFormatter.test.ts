@@ -1,12 +1,13 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { formatCopyright } from './copyrightFormatter';
-import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
+import { loadSharedSpec } from '~/spec-loader/specLoader.server';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 describe('formatCopyright - Pure Logic Layer', () => {
-  let spec: BlogPostsSpec;
+  let projectSpec: ProjectSpec;
 
-  beforeAll(async () => {
-    spec = await loadSpec('blog','posts');
+  beforeAll(() => {
+    projectSpec = loadSharedSpec<ProjectSpec>('project');
   });
 
   describe('formatCopyright function', () => {
@@ -37,13 +38,14 @@ describe('formatCopyright - Pure Logic Layer', () => {
       const result = formatCopyright();
 
       // Assert
-      expect(result).toContain(spec.project.copyright_name);
+      // The function has a hardcoded default of "ClaudeMix"
+      expect(result).toContain("ClaudeMix");
     });
 
     it('should format correctly (© YYYY ProjectName)', () => {
       // Arrange
       const currentYear = new Date().getFullYear();
-      const projectName = spec.project.copyright_name;
+      const projectName = projectSpec.project.name;
 
       // Act
       const result = formatCopyright(projectName);

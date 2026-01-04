@@ -15,9 +15,7 @@ metadata:
 # サーバー処理設定 (Loader/Action)
 # ==========================================
 server_io:
-  loader:
-    # loader処理のタイムアウト設定 (ms)
-    timeout: 5000
+  loader: {}
   action:
     # このセクションではactionは不要（共通コンポーネントは表示のみ）
     intents: {}
@@ -27,7 +25,6 @@ server_io:
 # ==========================================
 blog_config:
   title: "ClaudeMix Blog"
-  copyright_name: "ClaudeMix"
   home_path: "/blog"
   site_url: "https://stg.claudemix.pages.dev"
 
@@ -163,10 +160,6 @@ ui_selectors:
 # レスポンシブ設定
 # ==========================================
 responsive:
-  breakpoints:
-    mobile: 768 # px
-    tablet: 1024 # px
-
   menu_display_mode:
     mobile: "modal" # 全画面モーダル形式
     tablet: "dropdown" # ドロップダウン形式

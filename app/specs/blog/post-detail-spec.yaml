@@ -15,9 +15,7 @@ metadata:
 # サーバー処理設定 (Loader/Action)
 # ==========================================
 server_io:
-  loader:
-    # loader処理のタイムアウト設定 (ms)
-    timeout: 5000
+  loader: {}
   # このセクションではactionは存在しない（閲覧のみ）
   action: null
 

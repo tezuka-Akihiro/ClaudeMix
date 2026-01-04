@@ -1,14 +1,18 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { loadBlogConfig } from '../../../data-io/blog/common/loadBlogConfig.server';
 import { loadSpec } from '../../../../tests/utils/loadSpec';
+import { loadSharedSpec } from '../../../spec-loader/specLoader.server';
 import type { BlogCommonSpec } from '../../../specs/blog/types';
+import type { ProjectSpec } from '../../../specs/shared/types';
 
 describe('loadBlogConfig - Side Effects Layer', () => {
   let spec: BlogCommonSpec;
+  let projectSpec: ProjectSpec;
 
   beforeAll(async () => {
     // Load spec.yaml dynamically to ensure tests stay in sync with spec
     spec = await loadSpec<BlogCommonSpec>('blog', 'common');
+    projectSpec = loadSharedSpec<ProjectSpec>('project');
   });
 
   describe('loadBlogConfig function', () => {
@@ -45,7 +49,7 @@ describe('loadBlogConfig - Side Effects Layer', () => {
 
       // Assert
       const currentYear = new Date().getFullYear();
-      const expectedCopyright = `© ${currentYear} ${spec.blog_config.copyright_name}`;
+      const expectedCopyright = `© ${currentYear} ${projectSpec.project.name}`;
       expect(result.copyright).toBe(expectedCopyright);
       expect(result.copyright).toMatch(/^© \d{4} /);
     });
