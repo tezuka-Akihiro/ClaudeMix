@@ -28,7 +28,7 @@ import { getSession } from '~/data-io/account/common/getSession.server';
 // Pure logic layer
 import { sanitizeEmail } from '~/lib/account/authentication/sanitizeEmail';
 import { validateEmail } from '~/lib/account/authentication/validateEmail';
-import { validatePassword } from '~/lib/account/authentication/validatePassword';
+import { validatePasswordDetailed } from '~/lib/account/authentication/validatePassword';
 import { createSessionData } from '~/lib/account/common/createSessionData';
 
 export const meta: MetaFunction = () => {
@@ -134,8 +134,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   if (typeof password !== 'string' || !password) {
     fieldErrors.password = spec.validation.password.error_messages.required;
-  } else if (!validatePassword(password)) {
-    fieldErrors.password = spec.validation.password.error_messages.weak;
+  } else {
+    const passwordValidation = validatePasswordDetailed(password);
+    if (!passwordValidation.isValid && passwordValidation.error) {
+      fieldErrors.password = spec.validation.password.error_messages[passwordValidation.error];
+    }
   }
 
   if (typeof confirmPassword !== 'string' || !confirmPassword) {

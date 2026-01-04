@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validatePassword, getPasswordRequirements } from './validatePassword';
+import { validatePassword, validatePasswordDetailed, getPasswordRequirements } from './validatePassword';
 
 describe('validatePassword', () => {
   describe('valid passwords (spec requirements: 8+ chars, uppercase, lowercase, digits)', () => {
@@ -111,6 +111,85 @@ describe('validatePassword', () => {
       expect(requirementsText).toContain('大文字');
       expect(requirementsText).toContain('小文字');
       expect(requirementsText).toContain('数字');
+    });
+  });
+});
+
+describe('validatePasswordDetailed', () => {
+  describe('valid passwords', () => {
+    it('should return isValid: true for valid password', () => {
+      const result = validatePasswordDetailed('Password123');
+      expect(result.isValid).toBe(true);
+      expect(result.error).toBeUndefined();
+    });
+  });
+
+  describe('required error', () => {
+    it('should return "required" error for empty string', () => {
+      const result = validatePasswordDetailed('');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('required');
+    });
+
+    it('should return "required" error for null', () => {
+      const result = validatePasswordDetailed(null);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('required');
+    });
+
+    it('should return "required" error for non-string', () => {
+      const result = validatePasswordDetailed(12345);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('required');
+    });
+  });
+
+  describe('too_short error', () => {
+    it('should return "too_short" error for 7 characters', () => {
+      const result = validatePasswordDetailed('Pass123');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('too_short');
+    });
+
+    it('should return "too_short" error for 1 character', () => {
+      const result = validatePasswordDetailed('P');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('too_short');
+    });
+  });
+
+  describe('too_long error', () => {
+    it('should return "too_long" error for 129+ characters', () => {
+      const longPassword = 'Aa1' + 'a'.repeat(200);
+      const result = validatePasswordDetailed(longPassword);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('too_long');
+    });
+  });
+
+  describe('weak error', () => {
+    it('should return "weak" error for password without uppercase', () => {
+      const result = validatePasswordDetailed('password123');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('weak');
+    });
+
+    it('should return "weak" error for password without lowercase', () => {
+      const result = validatePasswordDetailed('PASSWORD123');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('weak');
+    });
+
+    it('should return "weak" error for password without digits', () => {
+      const result = validatePasswordDetailed('PasswordABC');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('weak');
+    });
+
+    it('should return "weak" error for password with only letters', () => {
+      const result = validatePasswordDetailed('abcdefghijk');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('weak');
     });
   });
 });

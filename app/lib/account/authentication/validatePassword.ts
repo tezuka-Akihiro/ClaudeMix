@@ -64,6 +64,52 @@ export function validatePassword(password: unknown): boolean {
 }
 
 /**
+ * Password validation result with detailed error information
+ */
+export interface PasswordValidationResult {
+  isValid: boolean;
+  error?: 'required' | 'too_short' | 'too_long' | 'weak';
+}
+
+/**
+ * Validate password with detailed error information
+ *
+ * @param password - Password to validate
+ * @returns Validation result with specific error type
+ */
+export function validatePasswordDetailed(password: unknown): PasswordValidationResult {
+  const validationSpec = loadSharedSpec<ValidationSpec>('validation');
+  const { min_length, max_length, pattern } = validationSpec.password;
+
+  // Type guard and empty check
+  if (typeof password !== 'string' || !password) {
+    return { isValid: false, error: 'required' };
+  }
+
+  // Whitespace checks
+  if (password.trim() !== password || password.trim() === '') {
+    return { isValid: false, error: 'required' };
+  }
+
+  // Length checks
+  if (password.length < min_length) {
+    return { isValid: false, error: 'too_short' };
+  }
+
+  if (password.length > max_length) {
+    return { isValid: false, error: 'too_long' };
+  }
+
+  // Complexity check
+  const passwordPattern = new RegExp(pattern);
+  if (!passwordPattern.test(password)) {
+    return { isValid: false, error: 'weak' };
+  }
+
+  return { isValid: true };
+}
+
+/**
  * Get password requirements for display in UI
  *
  * @returns Array of password requirement strings
