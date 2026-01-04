@@ -16,16 +16,12 @@ metadata:
 # ==========================================
 server_io:
   loader:
-    # loader処理のタイムアウト設定 (ms)
-    timeout: 5000
     # 既にログイン済みの場合のリダイレクト先
     authenticated_redirect: "/account"
 
   action:
     # 認証成功時のデフォルトリダイレクト先
     default_redirect: "/account"
-    # 処理タイムアウト設定 (ms)
-    timeout: 10000
 
     # actionの種類
     intents:
@@ -144,20 +140,12 @@ forms:
 # ==========================================
 validation:
   email:
-    # 正規表現パターン（commonから継承）
-    pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-    max_length: 254
     error_messages:
       required: "メールアドレスを入力してください"
       invalid_format: "有効なメールアドレスを入力してください"
       already_exists: "このメールアドレスは既に登録されています"
 
   password:
-    # パスワード強度要件
-    min_length: 8
-    max_length: 128
-    # 大文字・小文字・数字を含む
-    pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
     error_messages:
       required: "パスワードを入力してください"
       too_short: "パスワードは8文字以上で入力してください"

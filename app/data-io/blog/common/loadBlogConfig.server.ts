@@ -1,8 +1,9 @@
 // loadBlogConfig.server - 🔌 副作用層
 // ブログ設定情報（タイトル、メニュー項目、コピーライト、フッターリンク）を返す
 // spec.yamlから設定を読み込む（SSoTパターン）
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { BlogConfig, MenuItem, FooterLink, BlogCommonSpec } from '~/specs/blog/types';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 // 型を再エクスポート
 export type { BlogConfig, MenuItem, FooterLink };
@@ -14,6 +15,7 @@ export type { BlogConfig, MenuItem, FooterLink };
  */
 export async function loadBlogConfig(): Promise<BlogConfig> {
   const spec = loadSpec<BlogCommonSpec>('blog/common');
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
   // フッターリンクをFooterLink型に変換（is_modal → isModal）
   const footerLinks: FooterLink[] = spec.footer.legal_links.map((link) => ({
@@ -28,7 +30,7 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
 
   // 動的に現在の年を生成してcopyrightを構築（SSoT原則に従い年はハードコードしない）
   const currentYear = new Date().getFullYear();
-  const copyright = `© ${currentYear} ${spec.blog_config.copyright_name}`;
+  const copyright = `© ${currentYear} ${projectSpec.project.name}`;
 
   return {
     blogTitle: spec.blog_config.title,

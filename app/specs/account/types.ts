@@ -215,17 +215,6 @@ export interface AccountCommonSpec {
     }>;
   };
   validation: {
-    email: {
-      pattern: string;
-      max_length: number;
-      error_message: string;
-    };
-    password: {
-      min_length: number;
-      max_length: number;
-      pattern: string;
-      error_message: string;
-    };
     required: {
       error_message: string;
     };
@@ -291,10 +280,6 @@ export interface AccountCommonSpec {
     };
   };
   responsive: {
-    breakpoints: {
-      mobile: number;
-      tablet: number;
-    };
     navigation_layout: {
       mobile: string;
       tablet: string;
@@ -350,12 +335,10 @@ export interface AccountAuthenticationSpec {
   };
   server_io: {
     loader: {
-      timeout: number;
       authenticated_redirect: string;
     };
     action: {
       default_redirect: string;
-      timeout: number;
       intents: {
         register: string;
         login: string;
@@ -479,8 +462,6 @@ export interface AccountAuthenticationSpec {
   };
   validation: {
     email: {
-      pattern: string;
-      max_length: number;
       error_messages: {
         required: string;
         invalid_format: string;
@@ -488,9 +469,6 @@ export interface AccountAuthenticationSpec {
       };
     };
     password: {
-      min_length: number;
-      max_length: number;
-      pattern: string;
       error_messages: {
         required: string;
         too_short: string;
@@ -596,10 +574,6 @@ export interface AccountAuthenticationSpec {
     };
   };
   responsive: {
-    breakpoints: {
-      mobile: number;
-      tablet: number;
-    };
     form_container: {
       mobile: string;
       tablet: string;
@@ -726,11 +700,8 @@ export interface AccountProfileSpec {
     version: string;
   };
   server_io: {
-    loader: {
-      timeout: number;
-    };
+    loader: {};
     action: {
-      timeout: number;
       intents: {
         email_change: string;
         password_change: string;
@@ -873,8 +844,6 @@ export interface AccountProfileSpec {
   };
   validation: {
     new_email: {
-      pattern: string;
-      max_length: number;
       error_messages: {
         required: string;
         invalid_format: string;
@@ -883,9 +852,6 @@ export interface AccountProfileSpec {
       };
     };
     new_password: {
-      min_length: number;
-      max_length: number;
-      pattern: string;
       error_messages: {
         required: string;
         too_short: string;
@@ -901,6 +867,7 @@ export interface AccountProfileSpec {
       };
     };
     current_password: {
+      min_length: number;
       error_messages: {
         required: string;
         incorrect: string;
@@ -958,10 +925,6 @@ export interface AccountProfileSpec {
     close_on_escape: boolean;
   };
   responsive: {
-    breakpoints: {
-      mobile: number;
-      tablet: number;
-    };
     container: {
       mobile: string;
       tablet: string;
@@ -1159,11 +1122,8 @@ export interface AccountSubscriptionSpec {
     version: string;
   };
   server_io: {
-    loader: {
-      timeout: number;
-    };
+    loader: {};
     action: {
-      timeout: number;
       intents: {
         create_checkout: string;
         cancel_subscription: string;
@@ -1452,10 +1412,6 @@ export interface AccountSubscriptionSpec {
     };
   };
   responsive: {
-    breakpoints: {
-      mobile: number;
-      tablet: number;
-    };
     plan_card: {
       mobile: string;
       tablet: string;

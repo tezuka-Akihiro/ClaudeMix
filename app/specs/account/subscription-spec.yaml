@@ -15,14 +15,9 @@ metadata:
 # サーバー処理設定 (Loader/Action)
 # ==========================================
 server_io:
-  loader:
-    # loader処理のタイムアウト設定 (ms)
-    timeout: 5000
+  loader: {}
 
   action:
-    # 処理タイムアウト設定 (ms)
-    timeout: 10000
-
     # actionの種類
     intents:
       create_checkout: "create-checkout"

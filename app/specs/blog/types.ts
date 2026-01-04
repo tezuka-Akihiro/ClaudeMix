@@ -8,10 +8,6 @@ export interface TagSpec {
 }
 
 export interface BlogPostsSpec {
-  project: {
-    name: string;
-    copyright_name: string;
-  };
   tags: TagSpec[];
   categories: Array<{
     id: number;
@@ -174,7 +170,6 @@ export type RenderedPost = Omit<Post, 'content' | 'summary' | 'testOnly'> & {
 export interface BlogCommonSpec {
   blog_config: {
     title: string;
-    copyright_name: string;
     home_path: string;
     site_url: string;
   };

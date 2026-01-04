@@ -6,8 +6,8 @@
  * @responsibility パスワード強度検証
  */
 
-import { loadSpec } from '~/spec-loader/specLoader.server';
-import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import { loadSharedSpec } from '~/spec-loader/specLoader.server';
+import type { ValidationSpec } from '~/specs/shared/types';
 
 /**
  * Validate password strength and format using spec-defined rules
@@ -23,8 +23,8 @@ import type { AccountAuthenticationSpec } from '~/specs/account/types';
  * - No leading or trailing whitespace
  */
 export function validatePassword(password: unknown): boolean {
-  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
-  const { min_length, max_length, pattern } = spec.validation.password;
+  const validationSpec = loadSharedSpec<ValidationSpec>('validation');
+  const { min_length, max_length, pattern } = validationSpec.password;
 
   // Type guard
   if (typeof password !== 'string') {
@@ -69,14 +69,6 @@ export function validatePassword(password: unknown): boolean {
  * @returns Array of password requirement strings
  */
 export function getPasswordRequirements(): string[] {
-  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
-  const { min_length, max_length } = spec.validation.password;
-
-  return [
-    `${min_length}文字以上`,
-    `${max_length}文字以下`,
-    '大文字を含む',
-    '小文字を含む',
-    '数字を含む',
-  ];
+  const validationSpec = loadSharedSpec<ValidationSpec>('validation');
+  return validationSpec.password.requirements;
 }

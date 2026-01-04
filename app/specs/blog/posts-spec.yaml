@@ -12,19 +12,10 @@ metadata:
   version: "1.0.0"
 
 # ==========================================
-# プロジェクト設定
-# ==========================================
-project:
-  name: "ClaudeMix"
-  copyright_name: "ClaudeMix"
-
-# ==========================================
 # サーバー処理設定 (Loader/Action)
 # ==========================================
 server_io:
   loader:
-    # loader処理のタイムアウト設定 (ms)
-    timeout: 5000
     # 記事一覧取得のデフォルト設定
     default_sort: "desc" # 投稿日の降順（新しい順）
   action:
@@ -246,10 +237,6 @@ ui_selectors:
     loading: "[data-testid='loading-spinner']"
     error: "[data-testid='error-message']"
 responsive:
-  breakpoints:
-    mobile: 768 # px
-    tablet: 1024 # px
-
   grid_columns:
     mobile: 1 # モバイル: 1列
     tablet: 2 # タブレット: 2列

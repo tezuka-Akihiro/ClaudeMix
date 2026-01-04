@@ -6,8 +6,8 @@
  * @responsibility メールアドレスフォーマット検証
  */
 
-import { loadSpec } from '~/spec-loader/specLoader.server';
-import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import { loadSharedSpec } from '~/spec-loader/specLoader.server';
+import type { ValidationSpec } from '~/specs/shared/types';
 
 /**
  * Validate email address format using spec-defined rules
@@ -23,8 +23,8 @@ import type { AccountAuthenticationSpec } from '~/specs/account/types';
  * - No consecutive dots in local part
  */
 export function validateEmail(email: unknown): boolean {
-  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
-  const { pattern, max_length } = spec.validation.email;
+  const validationSpec = loadSharedSpec<ValidationSpec>('validation');
+  const { pattern, max_length } = validationSpec.email;
 
   // Type guard
   if (typeof email !== 'string') {
