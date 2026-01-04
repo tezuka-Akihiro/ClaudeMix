@@ -108,6 +108,28 @@ content/
 3. **汎用的な記述**: 設計書や実装コメントでは、「複数回」「特定の条件下で」のような汎用表現を用い、具体的な値を記述しません（例: `3回`はNG）
 4. **参照案内の禁止**: 「`{section}-spec.yaml`を参照」といったコメントは、コードの自己説明性を損なうため禁止
 
+### specファイルの配置ルール
+
+**3層のspec構造**
+
+ClaudeMixでは、3層のspec構造を採用しています：
+
+| 層 | 配置場所 | 責務 | 例 |
+|---|---------|-----|---|
+| **shared** | `app/specs/shared/` | サービス横断の共通設定 | validation, server, responsive, project |
+| **common** | `app/specs/{service}/common-spec.yaml` | サービス内の共通設定 | navigation, theme, layout |
+| **section** | `app/specs/{service}/{section}-spec.yaml` | セクション固有の設定 | categories, tags, forms |
+
+**配置判断のガイドライン**
+
+詳細は [`docs/specs/COMMON_VS_SHARED.md`](docs/specs/COMMON_VS_SHARED.md) を参照してください。
+
+**簡易判断**:
+
+1. 全サービスで統一すべき → `shared/`
+2. サービス内で共有 → `{service}/common-spec.yaml`
+3. セクション固有 → `{service}/{section}-spec.yaml`
+
 ### スタイリング規律（Tailwind + 4層CSS）
 
 **実装者は常に「Tailwindクラス」のみを参照すること。**
