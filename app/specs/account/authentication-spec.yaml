@@ -12,6 +12,29 @@ metadata:
   version: "1.0.0"
 
 # ==========================================
+# テンプレート定義（anchor定義専用セクション）
+# ==========================================
+_templates:
+  # フィールド共通デフォルト
+  _field_defaults: &field_defaults
+    required: true
+
+  # メールフィールドベース
+  _email_field_base: &email_field_base
+    <<: *field_defaults
+    name: "email"
+    label: "メールアドレス"
+    type: "email"
+    placeholder: "example@example.com"
+
+  # パスワードフィールドベース
+  _password_field_base: &password_field_base
+    <<: *field_defaults
+    name: "password"
+    label: "パスワード"
+    type: "password"
+
+# ==========================================
 # サーバー処理設定 (Loader/Action)
 # ==========================================
 server_io:
@@ -56,26 +79,19 @@ forms:
   register:
     fields:
       email:
-        name: "email"
-        label: "メールアドレス"
-        type: "email"
-        placeholder: "example@example.com"
+        <<: *email_field_base
         autocomplete: "email"
-        required: true
       password:
-        name: "password"
-        label: "パスワード"
-        type: "password"
+        <<: *password_field_base
         placeholder: "8文字以上、大文字・小文字・数字を含む"
         autocomplete: "new-password"
-        required: true
       password_confirm:
+        <<: *field_defaults
         name: "passwordConfirm"
         label: "パスワード確認"
         type: "password"
         placeholder: "パスワードを再入力してください"
         autocomplete: "new-password"
-        required: true
 
     submit_button:
       label: "登録する"
@@ -89,19 +105,12 @@ forms:
   login:
     fields:
       email:
-        name: "email"
-        label: "メールアドレス"
-        type: "email"
-        placeholder: "example@example.com"
+        <<: *email_field_base
         autocomplete: "email"
-        required: true
       password:
-        name: "password"
-        label: "パスワード"
-        type: "password"
+        <<: *password_field_base
         placeholder: "パスワードを入力してください"
         autocomplete: "current-password"
-        required: true
 
     submit_button:
       label: "ログイン"
@@ -117,12 +126,8 @@ forms:
     description: "登録時のメールアドレスを入力してください。\nパスワードリセット用のリンクをお送りします。"
     fields:
       email:
-        name: "email"
-        label: "メールアドレス"
-        type: "email"
-        placeholder: "example@example.com"
+        <<: *email_field_base
         autocomplete: "email"
-        required: true
 
     submit_button:
       label: "リセットリンクを送信"
