@@ -23,6 +23,8 @@ import { validatePassword } from '~/lib/account/authentication/validatePassword'
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
+import '~/styles/account/layer2-authentication.css';
+import '~/styles/account/layer3-authentication.css';
 
 export const meta: MetaFunction = () => {
   return [
@@ -177,17 +179,17 @@ export default function ResetPassword() {
     return (
       <div className="auth-container auth-container-structure">
         <div className="auth-card auth-card-structure">
-          <h1 className="auth-card__title">無効なリンク</h1>
-          <p className="auth-card__description">
+          <h1 className="auth-header__title">無効なリンク</h1>
+          <p className="auth-header__subtitle">
             このリンクは無効です。
             <br />
             パスワードリセットを再度リクエストしてください。
           </p>
-          <div className="auth-card__footer">
-            <a href="/forgot-password" className="auth-card__link">
+          <p className="auth-link" style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
+            <a href="/forgot-password">
               パスワードリセットに戻る
             </a>
-          </div>
+          </p>
         </div>
       </div>
     );
@@ -196,19 +198,19 @@ export default function ResetPassword() {
   return (
     <div className="auth-container auth-container-structure">
       <div className="auth-card auth-card-structure">
-        <h1 className="auth-card__title">パスワード再設定</h1>
+        <h1 className="auth-header__title">パスワード再設定</h1>
 
-        <p className="auth-card__description">新しいパスワードを入力してください。</p>
+        <p className="auth-header__subtitle">新しいパスワードを入力してください。</p>
 
         {actionData?.error && (
-          <div className="auth-error" role="alert" data-testid="error-message">
+          <div className="error-message-structure" role="alert" data-testid="error-message">
             {actionData.error}
           </div>
         )}
 
-        <Form method="post" className="auth-form">
-          <div className="auth-form-field-structure">
-            <label htmlFor="newPassword" className="auth-form__label">
+        <Form method="post" className="auth-form-structure">
+          <div className="form-field-structure">
+            <label htmlFor="newPassword" className="form-field__label">
               新しいパスワード
             </label>
             <input
@@ -218,17 +220,19 @@ export default function ResetPassword() {
               autoComplete="new-password"
               minLength={8}
               maxLength={128}
-              className={`auth-form__input ${actionData?.fieldErrors?.newPassword ? 'auth-form__input--error' : ''}`}
+              className="form-field__input"
+              aria-invalid={actionData?.fieldErrors?.newPassword ? true : undefined}
+              aria-describedby={actionData?.fieldErrors?.newPassword ? 'new-password-error' : undefined}
               required
               data-testid="new-password-input"
             />
             {actionData?.fieldErrors?.newPassword && (
-              <span className="auth-form__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPassword}</span>
+              <span id="new-password-error" className="form-field__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPassword}</span>
             )}
           </div>
 
-          <div className="auth-form-field-structure">
-            <label htmlFor="newPasswordConfirm" className="auth-form__label">
+          <div className="form-field-structure">
+            <label htmlFor="newPasswordConfirm" className="form-field__label">
               新しいパスワード（確認）
             </label>
             <input
@@ -238,30 +242,32 @@ export default function ResetPassword() {
               autoComplete="new-password"
               minLength={8}
               maxLength={128}
-              className={`auth-form__input ${actionData?.fieldErrors?.newPasswordConfirm ? 'auth-form__input--error' : ''}`}
+              className="form-field__input"
+              aria-invalid={actionData?.fieldErrors?.newPasswordConfirm ? true : undefined}
+              aria-describedby={actionData?.fieldErrors?.newPasswordConfirm ? 'new-password-confirm-error' : undefined}
               required
               data-testid="new-password-confirm-input"
             />
             {actionData?.fieldErrors?.newPasswordConfirm && (
-              <span className="auth-form__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPasswordConfirm}</span>
+              <span id="new-password-confirm-error" className="form-field__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPasswordConfirm}</span>
             )}
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="auth-form__submit"
+            className="btn-primary"
             data-testid="submit-button"
           >
             {isSubmitting ? '設定中...' : 'パスワードを再設定'}
           </button>
         </Form>
 
-        <div className="auth-card__footer">
-          <a href="/login" className="auth-card__link">
+        <p className="auth-link" style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
+          <a href="/login">
             ログインに戻る
           </a>
-        </div>
+        </p>
       </div>
     </div>
   );

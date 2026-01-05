@@ -1,0 +1,58 @@
+/* ========================================
+ * Authentication Pages - Structure
+ * Layer 3: Structure (layout positioning) - uses Layer 2 skin + Layer 1 tokens
+ * ======================================== */
+
+/* === Authentication Container Structure === */
+/* Centered container with consistent top spacing */
+.auth-container-structure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-6) var(--spacing-4);
+  min-height: 100vh;
+}
+
+/* === Authentication Card Structure === */
+/* Card layout with proper spacing */
+.auth-card-structure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+/* === Authentication Form Structure === */
+/* Form layout with consistent field spacing */
+.auth-form-structure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+/* === Form Field Structure === */
+/* Individual form field layout */
+.form-field-structure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+/* === Error Message Structure === */
+/* Error message container */
+.error-message-structure {
+  background-color: var(--color-status-error-strong-bg);
+  border: var(--border-width-sm) solid var(--color-status-error-strong);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-3);
+  color: var(--color-status-error-strong);
+  font-family: var(--font-stack-system-ui);
+  font-size: var(--font-size-base);
+}
+
+/* === Authentication Form Field Structure === */
+/* Specific form field structure for reset password page */
+.auth-form-field-structure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}

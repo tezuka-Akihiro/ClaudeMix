@@ -13,6 +13,7 @@ import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParam
 // CSS imports
 import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-authentication.css';
+import '~/styles/account/layer3-authentication.css';
 
 // UI Components
 import { FlashMessage } from '~/components/account/common/FlashMessage';
@@ -350,12 +351,19 @@ export default function Login() {
           </Link>
         </p>
 
-        <p className="auth-link">
-          {uiSpec.links.registerPrompt}{' '}
-          <Link to="/register" data-testid="register-link">
+        <div style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
+          <p style={{ color: 'var(--color-text-primary)', marginBottom: 'var(--spacing-2)', fontSize: 'var(--font-size-sm)' }}>
+            {uiSpec.links.registerPrompt}
+          </p>
+          <Link
+            to="/register"
+            className="btn-secondary"
+            data-testid="register-link"
+            style={{ display: 'inline-block', textDecoration: 'none' }}
+          >
             {uiSpec.links.registerLink}
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

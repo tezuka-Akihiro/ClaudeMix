@@ -24,6 +24,8 @@ import { validateEmail } from '~/lib/account/authentication/validateEmail';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
+import '~/styles/account/layer2-authentication.css';
+import '~/styles/account/layer3-authentication.css';
 
 export const meta: MetaFunction = () => {
   return [
@@ -148,9 +150,9 @@ export default function ForgotPassword() {
   return (
     <div className="auth-container auth-container-structure">
       <div className="auth-card auth-card-structure">
-        <h1 className="auth-card__title">{uiSpec.title}</h1>
+        <h1 className="auth-header__title">{uiSpec.title}</h1>
 
-        <p className="auth-card__description">
+        <p className="auth-header__subtitle">
           {uiSpec.description.split('\n').map((line, i) => (
             <span key={i}>
               {line}
@@ -160,20 +162,20 @@ export default function ForgotPassword() {
         </p>
 
         {actionData?.success && (
-          <div className="auth-success" role="alert" data-testid="success-message">
+          <div className="error-message-structure" role="alert" data-testid="success-message" style={{ backgroundColor: 'var(--color-status-success-bg)', borderColor: 'var(--color-status-success)', color: 'var(--color-status-success)' }}>
             {actionData.success}
           </div>
         )}
 
         {actionData?.error && (
-          <div className="auth-error" role="alert" data-testid="error-message">
+          <div className="error-message-structure" role="alert" data-testid="error-message">
             {actionData.error}
           </div>
         )}
 
-        <Form method="post" className="auth-form">
-          <div className="auth-form-field-structure">
-            <label htmlFor="email" className="auth-form__label">
+        <Form method="post" className="auth-form-structure">
+          <div className="form-field-structure">
+            <label htmlFor="email" className="form-field__label">
               {uiSpec.field.label}
             </label>
             <input
@@ -181,30 +183,32 @@ export default function ForgotPassword() {
               name="email"
               type="email"
               autoComplete="email"
-              className={`auth-form__input ${actionData?.fieldErrors?.email ? 'auth-form__input--error' : ''}`}
+              className="form-field__input"
+              aria-invalid={actionData?.fieldErrors?.email ? true : undefined}
+              aria-describedby={actionData?.fieldErrors?.email ? 'email-error' : undefined}
               required
               data-testid="email-input"
             />
             {actionData?.fieldErrors?.email && (
-              <span className="auth-form__error">{actionData.fieldErrors.email}</span>
+              <span id="email-error" className="form-field__error" role="alert">{actionData.fieldErrors.email}</span>
             )}
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="auth-form__submit"
+            className="btn-primary"
             data-testid="submit-button"
           >
             {isSubmitting ? uiSpec.submitButton.loadingLabel : uiSpec.submitButton.label}
           </button>
         </Form>
 
-        <div className="auth-card__footer">
-          <a href={uiSpec.links.loginPath} className="auth-card__link">
+        <p className="auth-link" style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
+          <a href={uiSpec.links.loginPath}>
             {uiSpec.links.loginLabel}
           </a>
-        </div>
+        </p>
       </div>
     </div>
   );
