@@ -67,9 +67,11 @@ interface LoaderData {
     fields: {
       email: {
         label: string;
+        placeholder: string;
       };
       password: {
         label: string;
+        placeholder: string;
       };
     };
     submitButton: {
@@ -118,9 +120,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       fields: {
         email: {
           label: spec.forms.login.fields.email.label,
+          placeholder: spec.forms.login.fields.email.placeholder,
         },
         password: {
           label: spec.forms.login.fields.password.label,
+          placeholder: spec.forms.login.fields.password.placeholder,
         },
       },
       submitButton: {
@@ -249,6 +253,7 @@ export default function Login() {
               id="email"
               name="email"
               type="email"
+              placeholder={uiSpec.fields.email.placeholder}
               autoComplete="email"
               required
               aria-invalid={actionData?.fieldErrors?.email ? true : undefined}
@@ -269,6 +274,7 @@ export default function Login() {
               id="password"
               name="password"
               type="password"
+              placeholder={uiSpec.fields.password.placeholder}
               autoComplete="current-password"
               required
               aria-invalid={actionData?.fieldErrors?.password ? true : undefined}

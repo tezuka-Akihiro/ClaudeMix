@@ -87,9 +87,11 @@ export async function loader() {
       fields: {
         new_email: {
           label: spec.forms.email_change.fields.new_email.label,
+          placeholder: spec.forms.email_change.fields.new_email.placeholder,
         },
         current_password: {
           label: spec.forms.email_change.fields.current_password.label,
+          placeholder: spec.forms.email_change.fields.current_password.placeholder,
         },
       },
       submit_button: {
@@ -105,12 +107,15 @@ export async function loader() {
       fields: {
         current_password: {
           label: spec.forms.password_change.fields.current_password.label,
+          placeholder: spec.forms.password_change.fields.current_password.placeholder,
         },
         new_password: {
           label: spec.forms.password_change.fields.new_password.label,
+          placeholder: spec.forms.password_change.fields.new_password.placeholder,
         },
         new_password_confirm: {
           label: spec.forms.password_change.fields.new_password_confirm.label,
+          placeholder: spec.forms.password_change.fields.new_password_confirm.placeholder,
         },
       },
       submit_button: {
@@ -127,6 +132,7 @@ export async function loader() {
       fields: {
         current_password: {
           label: spec.forms.delete_account.fields.current_password.label,
+          placeholder: spec.forms.delete_account.fields.current_password.placeholder,
         },
         confirmation: {
           label: spec.forms.delete_account.fields.confirmation.label,

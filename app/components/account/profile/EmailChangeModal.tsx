@@ -14,9 +14,11 @@ export interface EmailChangeModalSpec {
   fields: {
     new_email: {
       label: string;
+      placeholder: string;
     };
     current_password: {
       label: string;
+      placeholder: string;
     };
   };
   submit_button: {
@@ -68,9 +70,9 @@ export function EmailChangeModal({ isOpen, onClose, spec, errors }: EmailChangeM
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
-    // Set initial focus to first element
+    // Set initial focus to first element without scrolling
     if (firstElement) {
-      firstElement.focus();
+      firstElement.focus({ preventScroll: true });
     }
 
     // Trap focus within modal
@@ -81,13 +83,13 @@ export function EmailChangeModal({ isOpen, onClose, spec, errors }: EmailChangeM
         // Shift+Tab: moving backwards
         if (document.activeElement === firstElement) {
           event.preventDefault();
-          lastElement?.focus();
+          lastElement?.focus({ preventScroll: true });
         }
       } else {
         // Tab: moving forwards
         if (document.activeElement === lastElement) {
           event.preventDefault();
-          firstElement?.focus();
+          firstElement?.focus({ preventScroll: true });
         }
       }
     };
@@ -116,40 +118,46 @@ export function EmailChangeModal({ isOpen, onClose, spec, errors }: EmailChangeM
           {spec.title}
         </h2>
 
-        <Form method="post" className="profile-form">
+        <Form method="post" className="auth-form-structure">
           <input type="hidden" name="intent" value="email-change" />
 
-          <div className="profile-form-field-structure">
-            <label htmlFor="newEmail" className="profile-form__label">
-              {spec.fields.new_email.label}
-            </label>
+          <div className="form-field-structure">
+            <label htmlFor="newEmail">{spec.fields.new_email.label}</label>
             <input
               id="newEmail"
               name="newEmail"
               type="email"
-              className={`profile-form__input ${errors?.newEmail ? 'profile-form__input--error' : ''}`}
+              className="form-field__input"
+              placeholder={spec.fields.new_email.placeholder}
               required
+              aria-invalid={errors?.newEmail ? true : undefined}
+              aria-describedby={errors?.newEmail ? 'new-email-error' : undefined}
               data-testid="new-email-input"
             />
             {errors?.newEmail && (
-              <span className="profile-form__error">{errors.newEmail}</span>
+              <span id="new-email-error" className="error-message-structure" role="alert">
+                {errors.newEmail}
+              </span>
             )}
           </div>
 
-          <div className="profile-form-field-structure">
-            <label htmlFor="currentPassword" className="profile-form__label">
-              {spec.fields.current_password.label}
-            </label>
+          <div className="form-field-structure">
+            <label htmlFor="currentPassword">{spec.fields.current_password.label}</label>
             <input
               id="currentPassword"
               name="currentPassword"
               type="password"
-              className={`profile-form__input ${errors?.currentPassword ? 'profile-form__input--error' : ''}`}
+              className="form-field__input"
+              placeholder={spec.fields.current_password.placeholder}
               required
+              aria-invalid={errors?.currentPassword ? true : undefined}
+              aria-describedby={errors?.currentPassword ? 'current-password-error' : undefined}
               data-testid="current-password-input"
             />
             {errors?.currentPassword && (
-              <span className="profile-form__error">{errors.currentPassword}</span>
+              <span id="current-password-error" className="error-message-structure" role="alert">
+                {errors.currentPassword}
+              </span>
             )}
           </div>
 
@@ -157,7 +165,7 @@ export function EmailChangeModal({ isOpen, onClose, spec, errors }: EmailChangeM
             <button
               type="submit"
               disabled={isSubmitting}
-              className="profile-modal__button profile-modal__button--primary"
+              className="btn-primary"
               data-testid="save-button"
             >
               {isSubmitting ? spec.submit_button.loading_label : spec.submit_button.label}
@@ -165,7 +173,7 @@ export function EmailChangeModal({ isOpen, onClose, spec, errors }: EmailChangeM
             <button
               type="button"
               onClick={onClose}
-              className="profile-modal__button profile-modal__button--secondary"
+              className="btn-secondary"
               data-testid="cancel-button"
             >
               {spec.cancel_button.label}
