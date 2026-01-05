@@ -76,7 +76,6 @@
 | **II. スコープ逸脱の監視** | `node scripts/lint-template/engine.js` | 禁止ワード（例: プロジェクト範囲超過、不適切な外部サービス名）を提案または実装に含めていないかをチェック。違反箇所は直ちに削除し、MVPスコープを遵守してください。 |
 | **III. スタイリング規律の強制** | `docs/CSS_structure/STYLING_CHARTER.md` | **実装者は常に「Tailwindクラス」のみを参照すること**。`globals.css`のカスタムクラスやトークンへの直接参照は禁止。階層飛越も禁止。詳細: [`STYLING_CHARTER.md`](docs/CSS_structure/STYLING_CHARTER.md) |
 | **IV. スタイリング規律の検証** | `npm run lint:css-arch` | `globals.css`の規約違反や、実装層でのTailwindユーティリティクラスの直接使用を検出します。違反があった場合は、`tests/lint/css-arch-layer-report.md` の内容に従って修正してください。 |
-| **V. ファイルリスト整合性の検証** | `node scripts/lint-file-list/check-diff.js <develop-section-path>` | file-list.mdに未定義のファイルを検出。設計書への追加または不要ファイルの削除を実施してください。 |
 
 ## 🎯 あなたの行動指針
 
