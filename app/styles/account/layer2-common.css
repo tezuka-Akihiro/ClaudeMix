@@ -339,7 +339,7 @@
   box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
   padding: var(--spacing-6);
   width: 100%;
-  max-width: var(--layout-form-max-width);
+  max-width: var(--layout-page-container-width);
 }
 
 /* === Badge === */
