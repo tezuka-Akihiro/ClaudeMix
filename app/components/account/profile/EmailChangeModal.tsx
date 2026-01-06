@@ -34,13 +34,14 @@ export interface EmailChangeModalProps {
   isOpen: boolean;
   onClose: () => void;
   spec: EmailChangeModalSpec;
+  error?: string;
   errors?: {
     newEmail?: string;
     currentPassword?: string;
   };
 }
 
-export function EmailChangeModal({ isOpen, onClose, spec, errors }: EmailChangeModalProps) {
+export function EmailChangeModal({ isOpen, onClose, spec, error, errors }: EmailChangeModalProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
   const modalRef = useRef<HTMLDivElement>(null);
@@ -117,6 +118,12 @@ export function EmailChangeModal({ isOpen, onClose, spec, errors }: EmailChangeM
         <h2 id="email-change-modal-title" className="profile-modal__title">
           {spec.title}
         </h2>
+
+        {error && (
+          <div className="profile-error" role="alert" data-testid="modal-error-message">
+            {error}
+          </div>
+        )}
 
         <Form method="post" className="auth-form-structure">
           <input type="hidden" name="intent" value="email-change" />

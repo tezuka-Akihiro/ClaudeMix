@@ -38,6 +38,7 @@ export interface PasswordChangeModalProps {
   isOpen: boolean;
   onClose: () => void;
   spec: PasswordChangeModalSpec;
+  error?: string;
   errors?: {
     currentPassword?: string;
     newPassword?: string;
@@ -45,7 +46,7 @@ export interface PasswordChangeModalProps {
   };
 }
 
-export function PasswordChangeModal({ isOpen, onClose, spec, errors }: PasswordChangeModalProps) {
+export function PasswordChangeModal({ isOpen, onClose, spec, error, errors }: PasswordChangeModalProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
   const modalRef = useRef<HTMLDivElement>(null);
@@ -122,6 +123,12 @@ export function PasswordChangeModal({ isOpen, onClose, spec, errors }: PasswordC
         <h2 id="password-change-modal-title" className="profile-modal__title">
           {spec.title}
         </h2>
+
+        {error && (
+          <div className="profile-error" role="alert" data-testid="modal-error-message">
+            {error}
+          </div>
+        )}
 
         <Form method="post" className="auth-form-structure">
           <input type="hidden" name="intent" value="password-change" />
