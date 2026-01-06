@@ -19,10 +19,10 @@
 
 .profile-section {
   background-color: var(--color-background-secondary);
-  border: var(--border-width-sm) solid var(--color-border-primary);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
+  border: none;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
 }
 
 .profile-section__title {
@@ -34,8 +34,8 @@
 
 /* Profile Info Display */
 .profile-info__item {
-  padding: var(--spacing-3);
-  border-bottom: var(--border-width-sm) solid var(--color-border-secondary);
+  padding: var(--spacing-4);
+  border-bottom: var(--border-width-sm) solid var(--color-interactive-primary-bg-faint);
 }
 
 .profile-info__item:last-child {
@@ -59,9 +59,9 @@
   background-color: var(--color-interactive-primary-bg);
   color: var(--color-interactive-primary);
   border: var(--border-width-sm) solid var(--color-interactive-primary);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-2) var(--spacing-4);
-  font-size: var(--font-size-md);
+  border-radius: var(--border-radius-full);
+  padding: var(--spacing-3) var(--spacing-6);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s;
@@ -93,10 +93,10 @@
 
 .profile-modal {
   background-color: var(--color-background-primary);
-  border: var(--border-width-sm) solid var(--color-interactive-primary);
+  border: none;
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-6);
-  box-shadow: 0 0 var(--shadow-blur-lg) var(--color-overlay-medium);
+  padding: var(--spacing-7);
+  box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
   max-width: var(--layout-page-container-width);
   width: 100%;
 }

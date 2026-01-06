@@ -298,7 +298,7 @@ export default function Login() {
           <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: '#e0e0e0', zIndex: 0 }}></div>
         </div>
 
-        <div className="auth-oauth-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+        <div className="auth-oauth-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
           <a
             href="/auth/google"
             className="auth-oauth-button"
@@ -307,9 +307,9 @@ export default function Login() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '0.75rem 1rem',
-              border: '1px solid #dadce0',
-              borderRadius: '4px',
+              padding: '1rem 2rem',
+              border: 'none',
+              borderRadius: '9999px',
               backgroundColor: 'white',
               color: '#3c4043',
               textDecoration: 'none',
@@ -334,9 +334,9 @@ export default function Login() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '0.75rem 1rem',
-              border: '1px solid #000',
-              borderRadius: '4px',
+              padding: '1rem 2rem',
+              border: 'none',
+              borderRadius: '9999px',
               backgroundColor: '#000',
               color: 'white',
               textDecoration: 'none',
