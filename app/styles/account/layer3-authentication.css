@@ -18,7 +18,7 @@
 .auth-card-structure {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
+  gap: var(--spacing-4);
 }
 
 /* === Authentication Form Structure === */
@@ -26,7 +26,7 @@
 .auth-form-structure {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
+  gap: var(--spacing-4);
 }
 
 /* === Form Field Structure === */
@@ -34,16 +34,16 @@
 .form-field-structure {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
+  gap: var(--spacing-3);
 }
 
 /* === Error Message Structure === */
 /* Error message container */
 .error-message-structure {
   background-color: var(--color-status-error-strong-bg);
-  border: var(--border-width-sm) solid var(--color-status-error-strong);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-3);
+  border: none;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-4);
   color: var(--color-status-error-strong);
   font-family: var(--font-stack-system-ui);
   font-size: var(--font-size-base);

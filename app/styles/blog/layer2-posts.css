@@ -4,8 +4,8 @@
  * ======================================== */
 
 .posts-section {
-    background-color: var(--color-background-primary);
-    padding: var(--spacing-4);
+    background-color: var(--color-background-secondary);
+    padding: var(--spacing-6);
   }
 
   .posts-section__title {
@@ -20,20 +20,20 @@
   /* === PostCard === */
   /* Individual post card */
   .post-card {
-    background-color: var(--color-interactive-primary-bg-faint);
-    border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
+    background-color: var(--color-background-primary);
+    border: none;
     cursor: pointer;
-    padding: var(--spacing-3);
+    padding: var(--spacing-5);
     text-decoration: none;
     backdrop-filter: blur(var(--blur-glass-effect));
     -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    border-radius: var(--border-radius-lg);
   }
 
   .post-card:hover {
-    border-color: var(--color-interactive-primary);
-    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
-    transform: translateY(calc(-1 * var(--shadow-offset-xs)));
+    box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
+    transform: translateY(calc(-1 * var(--shadow-offset-sm)));
   }
 
   .post-card__title {
@@ -91,13 +91,13 @@
   /* Pagination Button (前へ/次へ) */
   .pagination-button {
     background-color: var(--color-interactive-primary-bg-subtle);
-    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    border: none;
     color: var(--color-interactive-primary);
     font-family: var(--font-heading-primary);
     font-size: var(--font-size-sm);
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-5);
     text-decoration: none;
-    border-radius: 0;
+    border-radius: var(--border-radius-full);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
   }
 
@@ -111,9 +111,9 @@
     color: var(--color-text-secondary);
     font-family: var(--font-heading-primary);
     font-size: var(--font-size-base);
-    padding: var(--spacing-1) var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
     text-decoration: none;
-    border-radius: 0;
+    border-radius: var(--border-radius-full);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
   }
 
@@ -140,9 +140,9 @@
   /* FilterToggleButton - Button to open/close filter panel */
   .filter-toggle-button {
     width:100%;
-    margin-bottom:var(--spacing-4);
+    margin-bottom:var(--spacing-6);
     background-color: var(--color-interactive-primary-bg-subtle);
-    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    border: none;
     color: var(--color-interactive-primary);
     cursor: pointer;
     font-family: var(--font-heading-primary);
@@ -151,6 +151,8 @@
     position: relative;
     text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    border-radius: var(--border-radius-full);
+    padding: var(--spacing-3) var(--spacing-5);
   }
 
   .filter-toggle-button:hover {
@@ -179,12 +181,12 @@
   /* FilterPanel - Modal panel container */
   .filter-panel {
     background-color: var(--color-surface-dark-opaque);
-    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    border: none;
     box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
     max-height: calc(100vh - var(--layout-header-height) - var(--spacing-4));
     max-width: 90vw;
     overflow-y: auto;
-    padding: var(--spacing-4);
+    padding: var(--spacing-6);
     position: fixed;
     top: var(--layout-header-height);
     left: var(--spacing-2);
@@ -192,21 +194,23 @@
     z-index: var(--z-index-modal);
     backdrop-filter: blur(var(--blur-glass-effect));
     -webkit-backdrop-filter: blur(var(--blur-glass-effect));
+    border-radius: var(--border-radius-lg);
   }
 
   /* CategorySelector - Dropdown selector for categories */
   .category-selector {
-    margin-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-6);
     background-color: transparent;
-    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    border: var(--border-width-sm) solid var(--color-interactive-primary-bg-faint);
     color: var(--color-interactive-primary);
     font-family: var(--font-weight-normal);
     font-size: var(--font-size-base);
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
     width: 100%;
     cursor: pointer;
     text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    border-radius: var(--border-radius-full);
   }
 
   .category-selector:hover,
@@ -246,12 +250,13 @@
   /* TagButton - Individual toggle button for tags */
   .tag-button {
     background-color: var(--color-interactive-primary-bg-faint);
-    border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
+    border: none;
     color: var(--color-text-secondary);
     cursor: pointer;
-    padding: var(--spacing-1) var(--spacing-1);
+    padding: var(--spacing-2) var(--spacing-3);
     text-align: center;
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    border-radius: var(--border-radius-full);
   }
 
   .tag-button:hover {
@@ -266,26 +271,26 @@
 
   /* TagButton - Selected state (aria-pressed="true") */
   .tag-button[aria-pressed="true"] {
-    background-color: var(--color-interactive-primary-bg);
-    border-color: var(--color-interactive-primary);
-    color: var(--color-text-primary);
+    background-color: var(--color-interactive-primary);
+    color: var(--color-background-primary);
     box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
   }
 
   /* FilterSubmitButton - Submit button to apply filter */
   .filter-submit-button {
-    margin-top: var(--spacing-4);
-    background-color: var(--color-interactive-primary-bg);
-    border: var(--border-width-sm) solid var(--color-interactive-primary);
-    color: var(--color-text-primary);
+    margin-top: var(--spacing-6);
+    background-color: var(--color-interactive-primary);
+    border: none;
+    color: var(--color-background-primary);
     cursor: pointer;
     font-family: var(--font-heading-primary);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
-    padding: var(--spacing-3) var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-6);
     width: 100%;
     text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    border-radius: var(--border-radius-full);
   }
 
   .filter-submit-button:hover {
@@ -322,7 +327,7 @@
     overflow: hidden;
     padding-right: var(--spacing-inline-code-horizontal);
     padding-left: var(--spacing-inline-code-horizontal);
-    border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
+    border: none;
     display: -webkit-box;
     -webkit-line-clamp: var(--text-line-clamp);
     -webkit-box-orient: vertical;

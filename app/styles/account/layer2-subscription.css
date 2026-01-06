@@ -30,11 +30,11 @@
 
 /* Subscription Status Card */
 .subscription-status-card {
-  background-color: var(--color-bg-primary);
-  border: var(--border-width-sm) solid var(--color-border-primary);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-4);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--color-background-primary);
+  border: none;
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
 }
 
 .subscription-status-card h2 {
@@ -95,9 +95,9 @@
 .error-message {
   background-color: var(--color-status-error-bg);
   color: var(--color-status-error);
-  padding: var(--spacing-3);
-  border-radius: var(--border-radius-md);
-  border: var(--border-width-sm) solid var(--color-status-error);
+  padding: var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  border: none;
   margin-top: var(--spacing-3);
 }
 

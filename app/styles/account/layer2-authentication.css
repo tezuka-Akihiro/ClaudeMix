@@ -6,7 +6,7 @@
 /* === Authentication Container === */
 /* Container for centered authentication forms */
 .auth-container {
-  background-color: var(--color-background-primary);
+  background-color: var(--color-background-secondary);
   color: var(--color-text-primary);
   min-height: 100vh;
 }
@@ -14,10 +14,10 @@
 /* === Authentication Card === */
 /* Card containing the login/register form */
 .auth-card {
-  background-color: var(--color-background-secondary);
-  border: var(--border-width-sm) solid var(--color-interactive-primary);
+  background-color: var(--color-background-primary);
+  border: none;
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-6);
+  padding: var(--spacing-7);
   box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
 }
 
