@@ -34,13 +34,14 @@ export interface DeleteAccountModalProps {
   isOpen: boolean;
   onClose: () => void;
   spec: DeleteAccountModalSpec;
+  error?: string;
   errors?: {
     currentPassword?: string;
     confirmation?: string;
   };
 }
 
-export function DeleteAccountModal({ isOpen, onClose, spec, errors }: DeleteAccountModalProps) {
+export function DeleteAccountModal({ isOpen, onClose, spec, error, errors }: DeleteAccountModalProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
   const modalRef = useRef<HTMLDivElement>(null);
@@ -117,6 +118,12 @@ export function DeleteAccountModal({ isOpen, onClose, spec, errors }: DeleteAcco
         <h2 id="delete-account-modal-title" className="profile-modal__title">
           {spec.title}
         </h2>
+
+        {error && (
+          <div className="profile-error" role="alert" data-testid="modal-error-message">
+            {error}
+          </div>
+        )}
 
         <div className="profile-modal__warning">
           {spec.warning_message}

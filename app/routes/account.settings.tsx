@@ -9,7 +9,7 @@
 import type { ActionFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { useActionData, useRouteLoaderData } from '@remix-run/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { loader as accountLoader } from './account';
 
 // CSS imports
@@ -361,6 +361,15 @@ export default function AccountSettings() {
     throw new Error('Loader data not found');
   }
 
+  // Close modals only on successful submission
+  useEffect(() => {
+    if (actionData?.success) {
+      setEmailModalOpen(false);
+      setPasswordModalOpen(false);
+      setDeleteModalOpen(false);
+    }
+  }, [actionData?.success]);
+
   return (
     <div className="profile-container profile-container-structure" data-testid="profile-display">
       <h1>アカウント設定</h1>
@@ -368,12 +377,6 @@ export default function AccountSettings() {
       {actionData?.success && (
         <div className="profile-success" role="alert" data-testid="success-message">
           {actionData.success}
-        </div>
-      )}
-
-      {actionData?.error && (
-        <div className="profile-error" role="alert" data-testid="error-message">
-          {actionData.error}
         </div>
       )}
 
@@ -389,6 +392,7 @@ export default function AccountSettings() {
         isOpen={emailModalOpen}
         onClose={() => setEmailModalOpen(false)}
         spec={loaderData.emailChangeSpec}
+        error={actionData?.error}
         errors={actionData?.fieldErrors}
       />
 
@@ -396,6 +400,7 @@ export default function AccountSettings() {
         isOpen={passwordModalOpen}
         onClose={() => setPasswordModalOpen(false)}
         spec={loaderData.passwordChangeSpec}
+        error={actionData?.error}
         errors={actionData?.fieldErrors}
       />
 
@@ -403,6 +408,7 @@ export default function AccountSettings() {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         spec={loaderData.deleteAccountSpec}
+        error={actionData?.error}
         errors={actionData?.fieldErrors}
       />
     </div>
