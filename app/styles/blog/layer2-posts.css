@@ -64,14 +64,6 @@
     filter: grayscale(0.1);
   }
 
-  /* Lock Badge - 🔒 icon */
-  .post-card__lock-badge {
-    margin-left: var(--spacing-1);
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
-  }
-
   /* Lock Message - "ログインで読む" text */
   .post-card__lock-message {
     color: var(--color-interactive-primary);
@@ -366,18 +358,13 @@
   }
 
   /* === Metadata Components === */
-  /* TagBadge - Pill-shaped badge for displaying tags */
+  /* TagBadge - Plain text for displaying tags */
   .tag-badge {
-    background-color: var(--color-interactive-primary-bg-subtle);
-    border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
-    color: var(--color-text-primary);
+    color: var(--color-text-secondary);
     font-family: var(--font-weight-normal);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-normal);
-    padding: var(--spacing-inline-code-vertical) var(--spacing-2);
-    border-radius: var(--border-radius-full);
     text-decoration: none;
-    white-space: nowrap;
   }
 
   .post-description {
