@@ -38,11 +38,7 @@ export function PostDetailSection({
   subscriptionAccess
 }: PostDetailSectionProps) {
   // publishedAtをフォーマット
-  const formattedDate = new Date(post.publishedAt).toLocaleDateString('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const formattedDate = formatPublishedDate(post.publishedAt);
 
   useEffect(() => {
     // Mermaidダイアグラムが含まれる場合のみ動的にロード

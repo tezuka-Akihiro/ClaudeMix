@@ -18,11 +18,6 @@ describe("TableOfContents", () => {
     expect(screen.getByTestId("table-of-contents")).toBeInTheDocument();
   });
 
-  it("目次タイトル「目次」が表示される", () => {
-    render(<TableOfContents headings={mockHeadings} />);
-    expect(screen.getByText("目次")).toBeInTheDocument();
-  });
-
   it("すべての見出しがリンクとして表示される", () => {
     render(<TableOfContents headings={mockHeadings} />);
     expect(screen.getByText("はじめに")).toBeInTheDocument();

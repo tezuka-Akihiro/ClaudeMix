@@ -43,7 +43,6 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       className="table-of-contents"
       aria-label="目次"
     >
-      <h2 className="table-of-contents__title">目次</h2>
       <ul className="table-of-contents__list">
         {headings.map((heading, index) => (
           <li
