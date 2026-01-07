@@ -361,7 +361,7 @@ Host (Claude Code)
 
 ---
 
-## 7. Remix-boilerplate適用戦略
+## 7. ClaudeMix適用戦略
 
 ### Layer 1: 公式準拠の実装
 

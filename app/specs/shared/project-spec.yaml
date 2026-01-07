@@ -1,5 +1,4 @@
 # プロジェクト設定ファイル (YAML版)
-# RFC-001により scripts/project.toml から移行
 
 metadata:
   version: "1.0.0"
@@ -7,7 +6,7 @@ metadata:
   migration_date: "2026-01-03"
 
 project:
-  name: "New Remix Project"
+  name: "ClaudeMix"
   service_name: "My Awesome App"
   concept: "このプロジェクトのコンセプトを記述します"
   target: "このプロジェクトのターゲットユーザーを記述します"

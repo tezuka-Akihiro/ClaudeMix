@@ -229,7 +229,7 @@ Claudeにロールや行動様式を割り当て、一貫した振る舞いを�
 
 ## 10. Layer 1（公式準拠）への適用
 
-### Remix-boilerplateでの活用方針
+### ClaudeMixでの活用方針
 
 #### 1. Promptsとして実装
 

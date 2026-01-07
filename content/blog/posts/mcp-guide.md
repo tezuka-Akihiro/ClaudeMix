@@ -228,7 +228,7 @@ if __name__ == "__main__":
 
 ## 10. Layer 1（公式準拠）への適用
 
-### Remix-boilerplate での活用
+### ClaudeMix での活用
 
 #### 品質チェックツールの統合
 

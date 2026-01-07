@@ -190,7 +190,7 @@ git pull
 
 ## 8. Layer 1（公式準拠）への適用
 
-### Remix-boilerplateでの活用
+### ClaudeMixでの活用
 
 現在の絵文字数式フローの各フェーズを、Skillsとして実装することで:
 

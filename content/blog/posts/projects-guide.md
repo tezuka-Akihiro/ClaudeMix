@@ -214,7 +214,7 @@ gh auth login
 
 ## 7. Layer 1（公式準拠）への適用
 
-### Remix-boilerplateでの活用
+### ClaudeMixでの活用
 
 #### CLAUDE.mdの構成
 
