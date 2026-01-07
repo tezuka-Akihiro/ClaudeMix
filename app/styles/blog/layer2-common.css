@@ -17,7 +17,7 @@
     left: 0;
     right: 0;
     z-index: var(--z-index-fixed);
-    padding: var(--spacing-3) var(--spacing-6);
+    padding: var(--spacing-3) var(--spacing-4);
     background-color: var(--color-interactive-primary-bg-faint);
     border: none;
     box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
