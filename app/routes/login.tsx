@@ -293,11 +293,6 @@ export default function Login() {
           </button>
         </Form>
 
-        <div className="auth-divider" style={{ margin: '1.5rem 0', textAlign: 'center', position: 'relative' }}>
-          <span style={{ background: 'white', padding: '0 1rem', position: 'relative', zIndex: 1, color: '#111111' }}>または</span>
-          <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: '#e0e0e0', zIndex: 0 }}></div>
-        </div>
-
         <div className="auth-oauth-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
           <a
             href="/auth/google"
