@@ -176,13 +176,14 @@
     border: none;
     box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
     max-height: calc(100vh - var(--layout-header-height) - var(--spacing-4));
-    max-width: 90vw;
+    max-width: var(--layout-page-container-width);
     overflow-y: auto;
     padding: var(--spacing-4);
     position: fixed;
     top: var(--layout-header-height);
     left: var(--spacing-2);
     right: var(--spacing-2);
+    margin: 0 auto;
     z-index: var(--z-index-modal);
     backdrop-filter: blur(var(--blur-glass-effect));
     -webkit-backdrop-filter: blur(var(--blur-glass-effect));
