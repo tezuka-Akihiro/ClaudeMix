@@ -51,7 +51,7 @@ describe('PostCard', () => {
       expect(titleElement).toBeInTheDocument();
       expect(titleElement).toHaveTextContent('Test Post Title');
       expect(dateElement).toBeInTheDocument();
-      expect(dateElement).toHaveTextContent('2024年5月1日');
+      expect(dateElement).toHaveTextContent('2024.05.01');
     });
 
     it('should render as a link element', () => {
@@ -164,9 +164,9 @@ describe('PostCard', () => {
     it('should format date correctly for different dates', () => {
       // Arrange - Test multiple date formats
       const testCases = [
-        { publishedAt: '2024-01-01', expected: '2024年1月1日' },
-        { publishedAt: '2024-12-31', expected: '2024年12月31日' },
-        { publishedAt: '2024-07-15', expected: '2024年7月15日' },
+        { publishedAt: '2024-01-01', expected: '2024.01.01' },
+        { publishedAt: '2024-12-31', expected: '2024.12.31' },
+        { publishedAt: '2024-07-15', expected: '2024.07.15' },
       ];
 
       testCases.forEach(({ publishedAt, expected }) => {

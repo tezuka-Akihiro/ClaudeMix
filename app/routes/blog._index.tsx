@@ -87,6 +87,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       categories: spec.categories,
       defaultEmoji: spec.business_rules.display.default_category_emoji,
     },
+    pageTitle: spec.posts_config.page_title,
   });
 }
 
@@ -99,6 +100,7 @@ export default function BlogIndex() {
     availableFilters,
     selectedFilters,
     categorySpec,
+    pageTitle,
   } = useLoaderData<typeof loader>();
 
   // Scroll to top on pagination navigation
@@ -115,6 +117,7 @@ export default function BlogIndex() {
         availableFilters={availableFilters}
         selectedFilters={selectedFilters}
         categorySpec={categorySpec}
+        pageTitle={pageTitle}
       />
     </BlogLayout>
   );

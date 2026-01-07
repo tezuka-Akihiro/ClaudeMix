@@ -3,24 +3,24 @@ import { formatPublishedDate } from "./formatPublishedDate";
 
 describe("formatPublishedDate", () => {
   describe("正常系", () => {
-    it("ISO形式（YYYY-MM-DD）を日本語形式（YYYY年M月D日）に変換できること", () => {
-      expect(formatPublishedDate("2024-05-01")).toBe("2024年5月1日");
-      expect(formatPublishedDate("2024-12-25")).toBe("2024年12月25日");
-      expect(formatPublishedDate("2024-03-20")).toBe("2024年3月20日");
+    it("ISO形式（YYYY-MM-DD）をドット記法形式（YYYY.MM.DD）に変換できること", () => {
+      expect(formatPublishedDate("2024-05-01")).toBe("2024.05.01");
+      expect(formatPublishedDate("2024-12-25")).toBe("2024.12.25");
+      expect(formatPublishedDate("2024-03-20")).toBe("2024.03.20");
     });
   });
 
   describe("境界値", () => {
     it("1月1日の変換が正しいこと", () => {
-      expect(formatPublishedDate("2024-01-01")).toBe("2024年1月1日");
+      expect(formatPublishedDate("2024-01-01")).toBe("2024.01.01");
     });
 
     it("12月31日の変換が正しいこと", () => {
-      expect(formatPublishedDate("2024-12-31")).toBe("2024年12月31日");
+      expect(formatPublishedDate("2024-12-31")).toBe("2024.12.31");
     });
 
     it("うるう年の2月29日の変換が正しいこと", () => {
-      expect(formatPublishedDate("2024-02-29")).toBe("2024年2月29日");
+      expect(formatPublishedDate("2024-02-29")).toBe("2024.02.29");
     });
   });
 

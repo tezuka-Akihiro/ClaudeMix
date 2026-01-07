@@ -48,11 +48,6 @@ const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category,
         {description && (
           <p className="post-description">{description}</p>
         )}
-        {tags && tags.length > 0 && (
-          <p className="tag-badge" data-testid="tag-badge">
-            {tags.join(' ')}
-          </p>
-        )}
       </div>
     </Link>
   );
