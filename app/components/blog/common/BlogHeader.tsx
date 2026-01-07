@@ -37,7 +37,7 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({ blogTitle, menuItems }) => {
           data-testid="blog-header-menu-button"
           aria-label="Toggle menu"
         >
-          Menu
+          ☰
         </button>
       </div>
       <NavigationMenu
