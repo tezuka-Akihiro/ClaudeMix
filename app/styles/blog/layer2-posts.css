@@ -197,41 +197,102 @@
     border-radius: var(--border-radius-lg);
   }
 
-  /* CategorySelector - Dropdown selector for categories */
+  /* CategorySelector - Custom dropdown selector for categories */
   .category-selector {
-    margin-bottom: var(--spacing-6);
-    background-color: transparent;
-    border: var(--border-width-sm) solid var(--color-interactive-primary-bg-faint);
-    color: var(--color-interactive-primary);
-    font-family: var(--font-weight-normal);
-    font-size: var(--font-size-base);
-    padding: var(--spacing-3) var(--spacing-4);
+    position: relative;
     width: 100%;
-    cursor: pointer;
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
-    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
-    border-radius: var(--border-radius-full);
+    margin-bottom: var(--spacing-6);
   }
 
-  .category-selector:hover,
-  .category-selector:focus {
+  /* Trigger Button */
+  .category-selector__button {
+    background-color: var(--color-interactive-primary-bg-subtle);
+    border: none;
+    border-radius: var(--border-radius-full);
+    padding: var(--spacing-3) var(--spacing-5);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-interactive-primary);
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 44px;
+    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
+  }
+
+  .category-selector__button:hover {
     background-color: var(--color-interactive-primary-bg);
+    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+  }
+
+  /* Dropdown Icon */
+  .category-selector__icon {
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: var(--font-size-sm);
+  }
+
+  .category-selector__button[aria-expanded="true"] .category-selector__icon {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown Menu */
+  .category-selector__menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-2));
+    left: 0;
+    right: 0;
+    background-color: var(--color-surface-dark-opaque);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
+    padding: var(--spacing-2);
+    z-index: var(--z-index-dropdown);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
+    max-height: 320px;
+    overflow-y: auto;
+    animation: dropdownFadeIn 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Menu Overlay */
+  .category-selector__overlay {
+    position: fixed;
+    inset: 0;
+    background-color: var(--color-overlay-strong);
+    z-index: calc(var(--z-index-dropdown) - 1);
+  }
+
+  /* Menu Item */
+  .category-selector__item {
+    background-color: transparent;
+    border: none;
+    border-radius: var(--border-radius-full);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-base);
+    color: var(--color-interactive-primary);
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-heading-primary);
+  }
+
+  .category-selector__item:hover,
+  .category-selector__item:focus {
     color: var(--color-text-primary);
     outline: none;
-    box-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
   }
 
-  /* CategorySelector option styling - matches navigation menu */
-  .category-selector option {
-    background-color: var(--color-surface-dark-opaque);
-    color: var(--color-interactive-primary);
-    padding: var(--spacing-1) var(--spacing-3);
-  }
-
-  .category-selector option:hover,
-  .category-selector option:checked {
-    background-color: var(--color-interactive-primary-bg);
+  .category-selector__item[aria-selected="true"] {
     color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
   }
 
   /* TagGrid - Grid container for tag buttons */

@@ -28,28 +28,6 @@
   margin-bottom: var(--spacing-3);
 }
 
-/* Subscription Status Card */
-.subscription-status-card {
-  background-color: var(--color-background-primary);
-  border: none;
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-6);
-  box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
-}
-
-.subscription-status-card h2 {
-  font-size: var(--font-size-heading-3);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-3);
-}
-
-.subscription-status-card p {
-  font-size: var(--font-size-body-sm);
-  color: var(--color-text-secondary);
-  margin-top: var(--spacing-2);
-}
-
 /* Badge Variants */
 .badge-success,
 .badge-warning,
@@ -104,10 +82,6 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .subscription-container {
-    padding: var(--spacing-3);
-  }
-
-  .subscription-status-card {
     padding: var(--spacing-3);
   }
 

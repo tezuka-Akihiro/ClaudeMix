@@ -17,11 +17,9 @@
     left: 0;
     right: 0;
     z-index: var(--z-index-fixed);
-    padding: var(--spacing-2) var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-6);
     background-color: var(--color-interactive-primary-bg-faint);
-    border-bottom-width: var(--border-width-sm);
-    border-bottom-style: solid;
-    border-bottom-color: var(--color-interactive-primary);
+    border: none;
     box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
     backdrop-filter: blur(var(--blur-glass-effect));
     -webkit-backdrop-filter: blur(var(--blur-glass-effect));
@@ -58,7 +56,7 @@
     width: var(--spacing-6);
     height: var(--spacing-6);
     /* Layout defined in Layer 3 (Tailwind classes) */
-    border-radius: var(--border-radius-md);
+    border-radius: var(--border-radius-full);
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -76,14 +74,15 @@
   /* Menu button in header */
   .blog-header__menu-button {
     background-color: var(--color-interactive-primary-bg-subtle);
-    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    border: none;
     color: var(--color-text-secondary);
     cursor: pointer;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    padding: var(--spacing-1) var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-4);
     text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    border-radius: var(--border-radius-full);
   }
 
   .blog-header__menu-button:hover {
@@ -96,8 +95,8 @@
   /* Menu container styling */
   .navigation-menu {
     background-color: var(--color-surface-dark-opaque);
-    border: var(--border-width-sm) solid var(--color-interactive-primary);
-    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+    border: none;
+    box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
     position: absolute;
     right: var(--spacing-3);
     top: calc(100% + var(--spacing-1));
@@ -106,6 +105,22 @@
     -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     min-width: var(--layout-card-width);
     width: max-content;
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2);
+
+    /* Smooth fade-in animation */
+    animation: dropdownFadeIn 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes dropdownFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Menu overlay for mobile */
@@ -126,19 +141,16 @@
     cursor: pointer;
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-normal);
-    padding: var(--spacing-1) var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-4);
     text-decoration: none;
-    border-radius: 0;
+    border-radius: var(--border-radius-full);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
   }
 
   .navigation-menu__item:hover,
   .navigation-menu__item:focus {
-    background-color: var(--color-interactive-primary-bg);
     color: var(--color-text-primary);
     outline: none;
-    backdrop-filter: blur(var(--blur-glass-effect));
-    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
   }
 
   /* === BlogFooter === */
@@ -146,7 +158,7 @@
   .blog-footer {
     height: var(--layout-footer-height);
     background-color: var(--color-interactive-primary-bg-faint);
-    border-top: var(--border-width-sm) solid var(--color-interactive-primary);
+    border: none;
     box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
     backdrop-filter: blur(var(--blur-glass-effect));
     -webkit-backdrop-filter: blur(var(--blur-glass-effect));
@@ -201,20 +213,21 @@
   /* Modal dialog */
   .legal-modal__dialog {
     background-color: var(--color-background-secondary);
-    border: var(--border-width-sm) solid var(--color-interactive-primary);
+    border: none;
     box-shadow: 0 0 var(--spacing-6) var(--color-interactive-primary-bg);
     max-height: 90vh;
     max-width: 600px;
     width: 90%;
     z-index: calc(var(--z-index-modal) + 1);
+    border-radius: var(--border-radius-lg);
     /* Layout defined in Layer 3 (Tailwind classes) */
   }
 
   /* Modal header */
   .legal-modal__header {
     background-color: var(--color-interactive-primary-bg-faint);
-    border-bottom: var(--border-width-sm) solid var(--color-interactive-primary);
-    padding: var(--spacing-3);
+    border: none;
+    padding: var(--spacing-4);
     /* Layout defined in Layer 3 (Tailwind classes) */
   }
 
@@ -249,7 +262,7 @@
     font-size: var(--font-size-base);
     line-height: var(--line-height-relaxed);
     overflow-y: auto;
-    padding: var(--spacing-4);
+    padding: var(--spacing-6);
   }
 
   /* Modal content headings */

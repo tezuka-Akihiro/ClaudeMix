@@ -55,8 +55,8 @@ export function SubscriptionStatusCard({
   const statusInfo = getStatusInfo();
 
   return (
-    <div className="subscription-status-card" data-testid="subscription-status-card">
-      <h2>現在のプラン</h2>
+    <div className="profile-section profile-section-structure" data-testid="subscription-status-card">
+      <h2 className="profile-section__title">現在のプラン</h2>
       <div>
         <span
           className={`badge-${statusInfo.variant}`}

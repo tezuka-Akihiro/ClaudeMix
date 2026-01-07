@@ -22,6 +22,9 @@
   border: none;
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-6);
+}
+
+.profile-section:not(:last-child) {
   margin-bottom: var(--spacing-6);
 }
 

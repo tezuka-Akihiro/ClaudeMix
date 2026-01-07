@@ -111,16 +111,11 @@ export default function AccountSubscription() {
         <div className="profile-error" role="alert">{fetcher.data.error}</div>
       )}
 
-      <div className="profile-section profile-section-structure">
-        <h2 className="profile-section__title">サブスクリプション状態</h2>
-        <div>
-          <SubscriptionStatusCard
-            status={user.subscriptionStatus}
-            onUpgrade={handleUpgrade}
-            onCancel={handleCancel}
-          />
-        </div>
-      </div>
+      <SubscriptionStatusCard
+        status={user.subscriptionStatus}
+        onUpgrade={handleUpgrade}
+        onCancel={handleCancel}
+      />
 
       <p className="text-sm text-gray-600 mt-8">
         注意: これはMVP実装です。実際の決済処理は未実装です。
