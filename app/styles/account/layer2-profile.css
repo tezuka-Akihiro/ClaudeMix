@@ -10,7 +10,7 @@
 .profile-container {
   background-color: var(--color-background-primary);
   color: var(--color-text-primary);
-  padding: var(--spacing-6);
+  padding: var(--spacing-4);
   border-radius: var(--border-radius-lg);
   max-width: var(--layout-page-container-width);
   margin: 0 auto;
@@ -21,11 +21,11 @@
   background-color: var(--color-background-secondary);
   border: none;
   border-radius: var(--border-radius-lg);
-  padding: var(--spacing-6);
+  padding: var(--spacing-4);
 }
 
 .profile-section:not(:last-child) {
-  margin-bottom: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
 }
 
 .profile-section__title {

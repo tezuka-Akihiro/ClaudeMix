@@ -262,7 +262,7 @@
     font-size: var(--font-size-base);
     line-height: var(--line-height-relaxed);
     overflow-y: auto;
-    padding: var(--spacing-6);
+    padding: var(--spacing-4);
   }
 
   /* Modal content headings */

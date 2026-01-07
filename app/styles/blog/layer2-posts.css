@@ -178,7 +178,7 @@
     max-height: calc(100vh - var(--layout-header-height) - var(--spacing-4));
     max-width: 90vw;
     overflow-y: auto;
-    padding: var(--spacing-6);
+    padding: var(--spacing-4);
     position: fixed;
     top: var(--layout-header-height);
     left: var(--spacing-2);
