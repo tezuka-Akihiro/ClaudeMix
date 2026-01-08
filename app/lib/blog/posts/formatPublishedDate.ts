@@ -1,13 +1,13 @@
 /**
- * ISO形式の日付文字列を日本語形式に変換する純粋関数
+ * ISO形式の日付文字列をドット記法形式に変換する純粋関数
  *
  * @param isoDate - ISO形式の日付文字列（例: "2024-05-01"）
- * @returns 日本語形式の日付文字列（例: "2024年5月1日"）
+ * @returns ドット記法形式の日付文字列（例: "2024.05.01"）
  * @throws {Error} 不正な日付形式の場合
  *
  * @example
- * formatPublishedDate("2024-05-01") // => "2024年5月1日"
- * formatPublishedDate("2024-12-25") // => "2024年12月25日"
+ * formatPublishedDate("2024-05-01") // => "2024.05.01"
+ * formatPublishedDate("2024-12-25") // => "2024.12.25"
  */
 export function formatPublishedDate(isoDate: string): string {
   // ISO形式（YYYY-MM-DD）のフォーマットチェック
@@ -32,6 +32,6 @@ export function formatPublishedDate(isoDate: string): string {
     throw new Error("Invalid date format");
   }
 
-  // 日本語形式に変換（月と日の0埋めを除去）
-  return `${year}年${month}月${day}日`;
+  // ドット記法形式に変換（月と日を0埋めして2桁にする）
+  return `${year}.${monthStr}.${dayStr}`;
 }

@@ -36,11 +36,6 @@ const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category,
       <div className="post-card__content-structure">
         <h2 className="post-card__title" data-testid="post-card-title">
           {title}
-          {isLocked && (
-            <span className="post-card__lock-badge" data-testid="lock-badge">
-              🔒
-            </span>
-          )}
         </h2>
         <p className="post-card__date" data-testid="post-card-date">
           {formattedDate}
@@ -52,15 +47,6 @@ const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category,
         )}
         {description && (
           <p className="post-description">{description}</p>
-        )}
-        {tags && tags.length > 0 && (
-          <div className="tag-list-structure">
-            {tags.map(tag => (
-              <span key={tag} className="tag-badge" data-testid="tag-badge">
-                {tag}
-              </span>
-            ))}
-          </div>
         )}
       </div>
     </Link>

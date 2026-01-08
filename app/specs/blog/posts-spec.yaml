@@ -195,7 +195,7 @@ tag_groups:
 # 記事一覧表示設定
 # ==========================================
 posts_config:
-  page_title: "Articles"
+  page_title: "Latest Update"
   # 記事データのソース
   posts_directory: "content/posts" # マークダウンファイルの配置ディレクトリ
   # フロントマター（YAML）で読み取るフィールド
@@ -293,7 +293,7 @@ business_rules:
 # ==========================================
 accessibility:
   aria_labels:
-    posts_section: "Articles"
+    posts_section: "Latest Update"
     post_card: "記事カード"
     post_link: "記事詳細へ移動"
 

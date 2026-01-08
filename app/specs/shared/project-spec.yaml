@@ -31,7 +31,7 @@ services:
         output: "app/components/blog/配下に配置された共通UIコンポーネント"
         doc_path: "develop/blog/common/func-spec.md"
       posts:
-        name: "Articles"
+        name: "Latest Update"
         abstract_purpose: "投稿されたブログ記事を時系列で一覧表示する。"
         specific_purpose: "記事のタイトル、投稿日、概要などをリスト形式で表示し、各記事へのリンクを提供する。"
         input: "記事データのリスト"

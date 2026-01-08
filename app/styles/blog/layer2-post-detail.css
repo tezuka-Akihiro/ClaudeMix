@@ -218,51 +218,71 @@
   }
 
   /* --- Table Styling --- */
+  /* テーブルラッパー（オーバーフロー対応） */
   .post-detail-section__content table {
+    display: block;
+    overflow-x: auto;
     border-collapse: collapse;
     margin: var(--spacing-5) 0;
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
+    /* スクロールバーのスタイリング（Webkit） */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* スクロールバーのカスタマイズ */
+  .post-detail-section__content table::-webkit-scrollbar {
+    height: var(--spacing-2);
+  }
+
+  .post-detail-section__content table::-webkit-scrollbar-track {
+    background-color: var(--color-interactive-primary-bg-faint);
+  }
+
+  .post-detail-section__content table::-webkit-scrollbar-thumb {
+    background-color: var(--color-interactive-primary);
+    border-radius: var(--border-radius-sm);
   }
 
   .post-detail-section__content th,
   .post-detail-section__content td {
     border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
     padding: var(--spacing-2);
-    color: var(--color-text-primary); /* テーブル内のテキストを通常色に修正 */
+    color: var(--color-text-primary);
+    /* 最小幅を設定して読みやすさを確保 */
+    min-width: 100px;
+    /* テキストの適切な折り返し */
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    /* 縦方向の配置 */
+    vertical-align: top;
   }
 
   .post-detail-section__content th {
     background-color: var(--color-interactive-primary-bg-faint);
     font-weight: var(--font-weight-medium);
+    /* ヘッダーは少し広めの最小幅 */
+    min-width: 120px;
+  }
+
+  /* 最初の列（見出し列）は狭めでもOK */
+  .post-detail-section__content th:first-child,
+  .post-detail-section__content td:first-child {
+    min-width: 80px;
   }
 
   /* === Table of Contents === */
   /* 目次コンテナ */
   .table-of-contents {
-    background-color: var(--color-interactive-primary-bg-faint);
-    border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
-    padding: var(--spacing-3);
     margin-bottom: var(--spacing-4);
-    backdrop-filter: blur(var(--blur-glass-effect));
-    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
-  }
-
-  /* 目次タイトル */
-  .table-of-contents__title {
-    font-family: var(--font-heading-primary);
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-base);
-    color: var(--color-text-primary);
-    padding-bottom: var(--spacing-2);
-    border-bottom: var(--border-width-sm) solid var(--color-interactive-primary-bg);
-    margin: 0;
   }
 
   /* 目次リスト */
   .table-of-contents__list {
     list-style: none;
     margin: 0;
-    padding-top: var(--spacing-2);
+    padding: 0;
   }
 
   /* 目次アイテム */

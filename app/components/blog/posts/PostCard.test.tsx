@@ -51,7 +51,7 @@ describe('PostCard', () => {
       expect(titleElement).toBeInTheDocument();
       expect(titleElement).toHaveTextContent('Test Post Title');
       expect(dateElement).toBeInTheDocument();
-      expect(dateElement).toHaveTextContent('2024年5月1日');
+      expect(dateElement).toHaveTextContent('2024.05.01');
     });
 
     it('should render as a link element', () => {
@@ -164,9 +164,9 @@ describe('PostCard', () => {
     it('should format date correctly for different dates', () => {
       // Arrange - Test multiple date formats
       const testCases = [
-        { publishedAt: '2024-01-01', expected: '2024年1月1日' },
-        { publishedAt: '2024-12-31', expected: '2024年12月31日' },
-        { publishedAt: '2024-07-15', expected: '2024年7月15日' },
+        { publishedAt: '2024-01-01', expected: '2024.01.01' },
+        { publishedAt: '2024-12-31', expected: '2024.12.31' },
+        { publishedAt: '2024-07-15', expected: '2024.07.15' },
       ];
 
       testCases.forEach(({ publishedAt, expected }) => {
@@ -246,7 +246,7 @@ describe('PostCard', () => {
       expect(descriptionElement).toHaveClass('post-description');
     });
 
-    it('should display tags as pill-shaped badges', () => {
+    it('should display tags as space-separated plain text', () => {
       // Arrange
       const props = {
         slug: 'test-post',
@@ -261,16 +261,9 @@ describe('PostCard', () => {
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const tagBadges = screen.getAllByTestId('tag-badge');
-      expect(tagBadges).toHaveLength(3);
-      expect(tagBadges[0]).toHaveTextContent('AI');
-      expect(tagBadges[1]).toHaveTextContent('Claude');
-      expect(tagBadges[2]).toHaveTextContent('TDD');
-
-      // Check that each tag has the correct class
-      tagBadges.forEach(badge => {
-        expect(badge).toHaveClass('tag-badge');
-      });
+      const tagBadge = screen.getByTestId('tag-badge');
+      expect(tagBadge).toHaveTextContent('AI Claude TDD');
+      expect(tagBadge).toHaveClass('tag-badge');
     });
 
     it('should handle posts without tags', () => {
@@ -289,8 +282,8 @@ describe('PostCard', () => {
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const tagBadges = screen.queryAllByTestId('tag-badge');
-      expect(tagBadges).toHaveLength(0);
+      const tagBadge = screen.queryByTestId('tag-badge');
+      expect(tagBadge).not.toBeInTheDocument();
     });
 
     it('should display both description and tags together', () => {
@@ -312,8 +305,8 @@ describe('PostCard', () => {
       const descriptionElement = screen.getByText('Comprehensive guide');
       expect(descriptionElement).toBeInTheDocument();
 
-      const tagBadges = screen.getAllByTestId('tag-badge');
-      expect(tagBadges).toHaveLength(2);
+      const tagBadge = screen.getByTestId('tag-badge');
+      expect(tagBadge).toHaveTextContent('Remix TypeScript');
     });
   });
 });

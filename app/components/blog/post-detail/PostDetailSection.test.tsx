@@ -71,7 +71,7 @@ describe('PostDetailSection', () => {
 
       const dateElement = screen.getByTestId('post-published-date');
       expect(dateElement).toBeInTheDocument();
-      expect(dateElement).toHaveTextContent('2024年7月26日');
+      expect(dateElement).toHaveTextContent('2024.07.26');
       expect(dateElement).toHaveAttribute('dateTime', '2024-07-26');
 
       const contentElement = screen.getByTestId('post-content-visible');
@@ -83,9 +83,9 @@ describe('PostDetailSection', () => {
 
   describe('Date Formatting', () => {
     it.each([
-      { date: '2024-01-01', expected: '2024年1月1日' },
-      { date: '2024-12-31', expected: '2024年12月31日' },
-      { date: '2024-06-15', expected: '2024年6月15日' },
+      { date: '2024-01-01', expected: '2024.01.01' },
+      { date: '2024-12-31', expected: '2024.12.31' },
+      { date: '2024-06-15', expected: '2024.06.15' },
     ])('should format date "$date" as "$expected"', ({ date, expected }) => {
       // Arrange
       const post = createMockPost({ publishedAt: date });

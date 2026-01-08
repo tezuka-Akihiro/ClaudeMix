@@ -10,6 +10,7 @@ import type { PostsPageData } from '~/specs/blog/types';
 
 interface PostsSectionProps extends PostsPageData {
   isAuthenticated: boolean;
+  pageTitle: string;
 }
 
 const PostsSection: React.FC<PostsSectionProps> = ({
@@ -19,6 +20,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
   availableFilters,
   selectedFilters,
   categorySpec,
+  pageTitle,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -44,7 +46,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
         onClose={() => setIsFilterOpen(false)}
       />
       <h1 className="posts-section__title" data-testid="posts-section-title">
-        Articles
+        {pageTitle}
       </h1>
       {posts.length === 0 ? (
         <p data-testid="posts-section-empty">記事がまだありません</p>

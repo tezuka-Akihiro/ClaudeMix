@@ -158,14 +158,14 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
 
     /**
      * PostCard Structure
-     * - Horizontal layout with two areas
-     * - Left: Category emoji
-     * - Right: Card content (title and date)
+     * - Vertical layout with two areas
+     * - Top: Category emoji
+     * - Bottom: Card content (title and date)
      */
     ".post-card-structure": {
       display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: "column",
+      alignItems: "flex-start",
       gap: "var(--spacing-3)",
     },
 

@@ -83,7 +83,7 @@ describe('BlogHeader', () => {
       // Assert
       const menuButton = screen.getByTestId('blog-header-menu-button');
       expect(menuButton).toBeInTheDocument();
-      expect(menuButton).toHaveTextContent('Menu');
+      expect(menuButton).toHaveTextContent('☰');
     });
 
     it('should render theme toggle button', () => {

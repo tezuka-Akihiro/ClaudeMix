@@ -12,6 +12,7 @@ const renderWithRouter = (ui: React.ReactElement) => {
 
 interface MockPostsSectionProps extends PostsPageData {
   isAuthenticated: boolean;
+  pageTitle: string;
 }
 
 describe('PostsSection', () => {
@@ -59,13 +60,14 @@ describe('PostsSection', () => {
         categories: spec.categories,
         defaultEmoji: spec.business_rules.display.default_category_emoji,
       },
+      pageTitle: spec.posts_config.page_title,
     };
   });
 
   describe('Rendering', () => {
     it('should display the section title', () => {
       renderWithRouter(<PostsSection {...mockProps} />);
-      expect(screen.getByTestId('posts-section-title')).toHaveTextContent('Articles');
+      expect(screen.getByTestId('posts-section-title')).toHaveTextContent(spec.posts_config.page_title);
     });
 
     it('should render a grid of post cards when posts are available', () => {
