@@ -73,22 +73,18 @@
 
   /* Menu button in header */
   .blog-header__menu-button {
-    background-color: var(--color-interactive-primary-bg-subtle);
+    background-color: transparent;
     border: none;
     color: var(--color-text-secondary);
     cursor: pointer;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    padding: var(--spacing-2) var(--spacing-4);
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
-    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
-    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-normal);
+    padding: 0;
+    transition: color var(--transition-duration-fast) var(--transition-timing-function-default);
   }
 
   .blog-header__menu-button:hover {
-    background-color: var(--color-interactive-primary-bg);
-    color: var(--color-text-secondary);
-    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
+    color: var(--color-interactive-primary);
   }
 
   /* === NavigationMenu === */
