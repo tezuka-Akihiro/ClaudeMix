@@ -1,9 +1,9 @@
 ---
-slug: "seminar-2025-MM-DD"
+slug: "seminar-2026-MM-DD"
 title: "【聞いてきた】[講師名]さんの話が凄すぎたので、僕らの生存戦略に落とし込んでみた"
 description: "スタハブで[講師名]さんのセミナーに参加。圧倒的な実績を持つ『本物』の思考を、僕たちのこれからの活動にどう活かすべきか、優しく解説します。"
 author: "優作 / The Sound Edge"
-publishedAt: "2025-MM-DD"
+publishedAt: "2026-MM-DD"
 category: "起業"
 tags: ["セミナー"]
 ---

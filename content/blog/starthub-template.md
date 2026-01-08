@@ -1,9 +1,9 @@
 ---
-slug: "starthub-report-2025-MM-DD"
+slug: "starthub-report-2026-MM-DD"
 title: "【スタハブ多摩】タイトルをここに記入"
 description: "東京都スタートアップハブ多摩での活動レポートです。交流会、セミナー、メンタリング、他のメンバーとの交流など、スタハブでの体験と学びを共有します。"
 author: "優作 / The Sound Edge"
-publishedAt: "2025-MM-DD"
+publishedAt: "2026-MM-DD"
 category: "起業"
 tags: ["スタハブ多摩"]
 ---
