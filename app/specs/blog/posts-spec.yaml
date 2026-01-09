@@ -233,6 +233,10 @@ ui_selectors:
     tag_button: "[data-testid='tag-button']"
     filter_submit_button: "[data-testid='filter-submit-button']"
 
+  load_more:
+    load_more_button: "[data-testid='load-more-button']"
+    loading_spinner: "[data-testid='loading-spinner']"
+
   states:
     loading: "[data-testid='loading-spinner']"
     error: "[data-testid='error-message']"
@@ -267,6 +271,11 @@ messages:
     title: "記事がありません"
     description: "現在公開されている記事はありません"
 
+  load_more:
+    button_label: "More"
+    loading_label: "Loading..."
+    no_more_posts: "すべての記事を読み込みました"
+
 # ==========================================
 # 日付フォーマット設定
 # ==========================================
@@ -280,9 +289,9 @@ date_format:
 # ==========================================
 # アプリケーション全体で使用される定数値
 business_rules:
-  pagination:
-    posts_per_page: 6 # 1ページあたりの表示記事数（パフォーマンス最適化）
-    default_page: 1 # デフォルトページ番号
+  load_more:
+    posts_per_load: 6 # 1回の読み込み件数（パフォーマンス最適化）
+    initial_load: 6 # 初回読み込み件数
 
   display:
     max_tags_per_card: 5 # PostCardに表示する最大タグ数

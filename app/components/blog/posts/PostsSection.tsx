@@ -1,12 +1,13 @@
 // PostsSection - Component (components層)
 // 記事一覧のメインコンテナ（タイトルと記事カードのグリッドを表示）
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useFetcher } from '@remix-run/react';
 import PostCard from '~/components/blog/posts/PostCard';
-import Pagination from '~/components/blog/posts/Pagination';
+import LoadMoreButton from '~/components/blog/posts/LoadMoreButton';
 import { FilterToggleButton } from '~/components/blog/posts/FilterToggleButton';
 import { FilterPanel } from '~/components/blog/posts/FilterPanel';
-import type { PostsPageData } from '~/specs/blog/types';
+import type { PostsPageData, PostSummary } from '~/specs/blog/types';
 
 interface PostsSectionProps extends PostsPageData {
   isAuthenticated: boolean;
@@ -14,18 +15,48 @@ interface PostsSectionProps extends PostsPageData {
 }
 
 const PostsSection: React.FC<PostsSectionProps> = ({
-  posts,
+  posts: initialPosts,
   isAuthenticated,
-  pagination,
+  loadMoreInfo: initialLoadMoreInfo,
   availableFilters,
   selectedFilters,
   categorySpec,
   pageTitle,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [posts, setPosts] = useState<PostSummary[]>(initialPosts);
+  const [loadMoreInfo, setLoadMoreInfo] = useState(initialLoadMoreInfo);
+  const fetcher = useFetcher();
 
   const { categories: availableCategories, tags: availableTags, tagGroups } = availableFilters;
   const { category: selectedCategory, tags: selectedTags } = selectedFilters;
+
+  // fetcherで取得した記事を追加
+  useEffect(() => {
+    if (fetcher.data && fetcher.data.posts) {
+      setPosts(prevPosts => [...prevPosts, ...fetcher.data.posts]);
+      setLoadMoreInfo(fetcher.data.loadMoreInfo);
+    }
+  }, [fetcher.data]);
+
+  const handleLoadMore = () => {
+    const params = new URLSearchParams();
+    params.append('loaded', loadMoreInfo.loadedCount.toString());
+
+    if (selectedFilters.category) {
+      params.append('category', selectedFilters.category);
+    }
+
+    if (selectedFilters.tags && selectedFilters.tags.length > 0) {
+      selectedFilters.tags.forEach(tag => {
+        params.append('tags', tag);
+      });
+    }
+
+    fetcher.load(`/blog?${params.toString()}`);
+  };
+
+  const isLoading = fetcher.state === 'loading' || fetcher.state === 'submitting';
 
   return (
     <section className="posts-section" data-testid="posts-section">
@@ -73,13 +104,12 @@ const PostsSection: React.FC<PostsSectionProps> = ({
             })}
           </div>
 
-          {/* ページネーション */}
-          {pagination.totalPages > 1 && (
-            <Pagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-            />
-          )}
+          {/* もっと見るボタン */}
+          <LoadMoreButton
+            onClick={handleLoadMore}
+            isLoading={isLoading}
+            hasMore={loadMoreInfo.hasMore}
+          />
         </>
       )}
     </section>

@@ -181,30 +181,15 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
     },
 
     /**
-     * Pagination Structure
-     * - Horizontal layout with centered alignment
-     * - Left: Previous button
-     * - Center: Page numbers
-     * - Right: Next button
+     * LoadMoreButton Container Structure
+     * - Centered layout for load more button
+     * - Button positioned at the center
      */
-    ".pagination-nav-structure": {
+    ".load-more-container-structure": {
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      gap: "var(--spacing-4)",
-    },
-
-    /**
-     * Pagination Numbers Container Structure
-     * - Horizontal layout for page numbers
-     * - Numbers arranged in a row with gap
-     */
-    ".pagination-numbers-structure": {
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: "var(--spacing-2)",
     },
 
     /**

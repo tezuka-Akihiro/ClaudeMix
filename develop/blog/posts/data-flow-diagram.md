@@ -28,13 +28,13 @@ graph TD
         PostsSection["PostsSection<br/>(記事一覧コンテナ)"]
         FilterPanel["FilterPanel<br/>(フィルタUI)"]
         PostCard["PostCard<br/>(記事カード)"]
-        Pagination["Pagination<br/>(ページネーション)"]
+        LoadMoreButton["LoadMoreButton<br/>(もっと見るボタン)"]
     end
 
     subgraph "純粋ロジック層 (lib)"
         FormatDate["formatPublishedDate<br/>(日付フォーマット)"]
         FilterPosts["filterPosts<br/>(記事フィルタリング)"]
-        CalcPagination["calculatePagination<br/>(ページネーション計算)"]
+        CalcLoadMore["calculateLoadMore<br/>(追加読み込み情報計算)"]
         GroupTags["groupTagsByCategory<br/>(タググループ化)"]
     end
 
@@ -52,15 +52,15 @@ graph TD
     FetchFilters -->|AvailableFilters<br/>(categories, tags, tagGroups)| Route
     Route -->|クエリパラメータ| FilterPosts
     FilterPosts -->|filtered posts| Route
-    Route -->|posts, pagination| CalcPagination
-    CalcPagination -->|PaginationData| Route
+    Route -->|posts, loadedCount| CalcLoadMore
+    CalcLoadMore -->|LoadMoreInfo| Route
     Route -->|loader data| BlogLayout
     BlogLayout -->|children| PostsSection
     BlogLayout --> BlogHeader
     BlogLayout --> BlogFooter
     PostsSection -->|filters| FilterPanel
     PostsSection -->|posts: PostSummary[]| PostCard
-    PostsSection -->|pagination| Pagination
+    PostsSection -->|loadMoreInfo| LoadMoreButton
     PostCard -->|publishedAt: string| FormatDate
     FormatDate -->|formatted date| PostCard
 
@@ -72,8 +72,8 @@ graph TD
     classDef externalStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
 
     class Route routeStyle
-    class BlogLayout,BlogHeader,BlogFooter,PostsSection,FilterPanel,PostCard,Pagination uiStyle
-    class FormatDate,FilterPosts,CalcPagination libStyle
+    class BlogLayout,BlogHeader,BlogFooter,PostsSection,FilterPanel,PostCard,LoadMoreButton uiStyle
+    class FormatDate,FilterPosts,CalcLoadMore,GroupTags libStyle
     class FetchPosts,FetchFilters dataIOStyle
     class FS externalStyle
 ```
@@ -100,10 +100,10 @@ graph TD
 
 | コンポーネント | 責務 | 依存先 |
 | :--- | :--- | :--- |
-| **PostsSection** | 記事一覧のメインコンテナ。ページタイトル、FilterPanel、記事カードグリッド、Paginationを配置 | FilterPanel, PostCard, Pagination |
+| **PostsSection** | 記事一覧のメインコンテナ。ページタイトル、FilterPanel、記事カードグリッド、LoadMoreButtonを配置 | FilterPanel, PostCard, LoadMoreButton |
 | **FilterPanel** | フィルタUIコンポーネント。カテゴリフィルタ（ラジオボタン）とタグフィルタ（チェックボックス）を提供 | - |
 | **PostCard** | 個別記事の表示カード。タイトル、投稿日、カテゴリバッジ、タグバッジを表示し、クリックで記事詳細へ遷移 | formatPublishedDate |
-| **Pagination** | ページネーションUIコンポーネント。「前へ」「次へ」ボタンとページ番号リンクを表示。フィルタパラメータを保持 | - |
+| **LoadMoreButton** | 追加記事を読み込むボタン。クリックでuseFetcherを使用して追加記事を取得し、記事一覧に追加表示 | - |
 
 ### 純粋ロジック層（lib）
 
@@ -111,7 +111,7 @@ graph TD
 | :--- | :--- | :--- |
 | **formatPublishedDate** | 投稿日フォーマット処理。ISO形式（"2024-05-01"）を日本語形式（"2024年5月1日"）に変換 | - |
 | **filterPosts** | 記事フィルタリング処理。記事一覧を指定された条件（category, tags）でフィルタリング。タグ条件はAND条件 | - |
-| **calculatePagination** | ページネーション計算処理。総記事数と現在ページから、ページネーション情報（currentPage, totalPages, totalPosts, postsPerPage）を計算 | - |
+| **calculateLoadMore** | 追加読み込み情報計算処理。総記事数と現在読み込み済み件数から、追加読み込み可能かを判定（hasMore, loadedCount, totalPosts, postsPerLoad）を返す | - |
 | **groupTagsByCategory** | タググループ化処理。利用可能なタグリストとspec.yamlのタグ定義から、グループ別タグ情報（{ group: string; tags: string[] }[]）を生成する純粋関数 | - |
 
 ### 副作用層（data-io）
@@ -127,16 +127,16 @@ graph TD
 
 ### 1. 記事データの取得とフィルタリング（loader）
 
-1. ユーザーが `/blog` または `/blog?page=2&category=Tutorials&tags=Remix,AI` にアクセス
+1. ユーザーが `/blog` または `/blog?loaded=6&category=Tutorials&tags=Remix,AI` にアクセス
 2. `blog._index.tsx` の `loader` が実行される
-3. `loader` がURLクエリパラメータ（page, category, tags）を取得
+3. `loader` がURLクエリパラメータ（loaded, category, tags）を取得
 4. `loader` が `fetchPosts.server.ts` を呼び出し
 5. `fetchPosts.server.ts` がファイルシステム（`content/posts/*.md`）から記事メタデータを読み込む
 6. `fetchPosts.server.ts` が `filterPosts` を呼び出し、category/tagsでフィルタリング
-7. フィルタリング後の記事に対してlimit/offsetを適用し、ページネーション
+7. フィルタリング後の記事に対してlimit/offsetを適用し、追加読み込み
 8. `loader` が `fetchAvailableFilters.server.ts` を呼び出し、利用可能なカテゴリ・タグを取得
-9. `loader` が `calculatePagination` を呼び出し、ページネーション情報を計算
-10. `loader` がUIコンポーネントにデータ（posts, filters, pagination）を渡す
+9. `loader` が `calculateLoadMore` を呼び出し、追加読み込み情報を計算
+10. `loader` がUIコンポーネントにデータ（posts, filters, loadMoreInfo）を渡す
 
 ### 2. UIの構築
 
@@ -146,16 +146,17 @@ graph TD
 4. `PostsSection` が `PostCard` を繰り返しレンダリング（記事数分）
 5. `PostCard` が `formatPublishedDate` を呼び出して投稿日を日本語形式に変換
 6. `PostCard` がタイトル、変換済み投稿日、カテゴリバッジ、タグバッジを表示
-7. `PostsSection` が `Pagination` をレンダリング（ページネーション情報とフィルタパラメータを渡す）
+7. `PostsSection` が `LoadMoreButton` をレンダリング（追加読み込み情報とフィルタパラメータを渡す）
 
 ### 3. ユーザーインタラクション
 
 1. ユーザーが `FilterPanel` でカテゴリ・タグを選択し、「適用」ボタンをクリック
 2. `/blog?category=...&tags=...` へ遷移（フィルタ適用）
-3. ユーザーが `Pagination` のページ番号リンクをクリック
-4. `/blog?page=N&category=...&tags=...` へ遷移（フィルタ状態を保持したままページ移動）
-5. ユーザーが `PostCard` をクリック
-6. `/blog/${slug}` へ遷移（記事詳細ページ）
+3. ユーザーが `LoadMoreButton` をクリック
+4. useFetcherを使用してサーバーから追加記事を取得（loaded, category, tagsパラメータを送信）
+5. 取得した記事を既存の記事一覧の最下部に追加表示
+6. ユーザーが `PostCard` をクリック
+7. `/blog/${slug}` へ遷移（記事詳細ページ）
 
 ---
 

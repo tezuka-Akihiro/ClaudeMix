@@ -20,9 +20,9 @@ export interface BlogPostsSpec {
     order: string[];
   };
   business_rules: {
-    pagination: {
-      posts_per_page: number;
-      default_page: number;
+    load_more: {
+      posts_per_load: number;
+      initial_load: number;
     };
     display: {
       max_tags_per_card: number;
@@ -115,14 +115,13 @@ export interface FooterLink {
 }
 
 /**
- * ページネーションに関するすべての情報を持つ基底の型
+ * 追加読み込み（Load More）に関するすべての情報を持つ基底の型
  */
-export interface PaginationInfo {
-  currentPage: number;
-  totalPages: number;
+export interface LoadMoreInfo {
+  loadedCount: number;
   totalPosts: number;
-  postsPerPage: number;
-  offset: number;
+  hasMore: boolean;
+  postsPerLoad: number;
 }
 
 /**
@@ -147,7 +146,7 @@ export interface FilteredPostsResult {
  */
 export interface PostsPageData {
   posts: PostSummary[];
-  pagination: Pick<PaginationInfo, 'currentPage' | 'totalPages'>;
+  loadMoreInfo: Pick<LoadMoreInfo, 'loadedCount' | 'hasMore'>;
   availableFilters: AvailableFilters;
   selectedFilters: FilterOptions;
   categorySpec: {

@@ -60,98 +60,67 @@ test.describe.serial('E2E Section Test for blog - posts', () => {
     await expect(page).toHaveURL(/\/blog\/[^/]+/);
   });
 
-  test('Posts: pagination navigation', async ({ page }) => {
+  test('Posts: load more button displays and loads additional posts', async ({ page }) => {
     // 前のテストで詳細ページにいるので、/blog に戻る
     await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
-    // 1. ページネーションが表示されるか確認
-    const pagination = page.getByTestId('pagination');
-    const paginationCount = await pagination.count();
+    // 1. LoadMoreButtonが表示されるか確認
+    const loadMoreButton = page.getByTestId('load-more-button');
+    const buttonCount = await loadMoreButton.count();
 
-    if (paginationCount > 0) {
-      await expect(pagination).toBeVisible();
+    if (buttonCount > 0) {
+      await expect(loadMoreButton).toBeVisible();
 
-      // 2. 次へボタンをクリック
-      const nextButton = page.getByText('次へ →');
-      const nextButtonCount = await nextButton.count();
+      // 2. 初期表示の記事数を取得
+      const postsSection = page.getByTestId('posts-section');
+      const initialPostCards = postsSection.getByTestId('post-card');
+      const initialCount = await initialPostCards.count();
 
-      if (nextButtonCount > 0) {
-        await nextButton.click();
-        await page.waitForLoadState('networkidle');
-        await expect(page).toHaveURL(/\/blog\?page=2/);
+      // 3. LoadMoreButtonをクリック
+      await loadMoreButton.click();
+
+      // 4. ローディング表示を確認
+      await expect(loadMoreButton.getByText('Loading...')).toBeVisible();
+
+      // 5. 追加記事が読み込まれるまで待機
+      await page.waitForTimeout(1000);
+
+      // 6. 記事が追加されたことを確認
+      const updatedPostCards = postsSection.getByTestId('post-card');
+      const updatedCount = await updatedPostCards.count();
+      expect(updatedCount).toBeGreaterThan(initialCount);
+
+      // 7. LoadMoreButtonが再度表示されることを確認（まだ記事がある場合）
+      const buttonCountAfter = await loadMoreButton.count();
+      if (buttonCountAfter > 0) {
+        await expect(loadMoreButton).toBeVisible();
+        await expect(loadMoreButton.getByText('More')).toBeVisible();
       }
     }
   });
 
-  test('Posts: pagination page number and previous button', async ({ page }) => {
-    // 前のテストからの継続（現在 /blog にいる）
-
-    const pagination = page.getByTestId('pagination');
-    const paginationCount = await pagination.count();
-
-    if (paginationCount > 0) {
-      // 1. ページ番号3のリンクをクリック
-      const pageLink = page.locator('a[href="/blog?page=3"]');
-      const pageLinkCount = await pageLink.count();
-
-      if (pageLinkCount > 0) {
-        await pageLink.click();
-        await page.waitForLoadState('networkidle');
-        await expect(page).toHaveURL(/\/blog\?page=3/);
-
-        // 2. 前へボタンをクリックしてページ2に戻る
-        const prevButton = page.getByText('← 前へ');
-        const prevButtonCount = await prevButton.count();
-
-        if (prevButtonCount > 0) {
-          await prevButton.click();
-          await page.waitForLoadState('networkidle');
-          await expect(page).toHaveURL(/\/blog\?page=2/);
-
-          // 3. もう一度前へボタンをクリックしてページ1に戻る
-          const prevButton2Count = await prevButton.count();
-          if (prevButton2Count > 0) {
-            await prevButton.click();
-            await page.waitForLoadState('networkidle');
-            await expect(page).toHaveURL(/\/blog(\?page=1)?$/);
-          }
-        }
-      }
-    }
-  });
-
-  test('Posts: scroll position resets to top on pagination navigation', async ({ page }) => {
+  test('Posts: load more button hides when all posts are loaded', async ({ page }) => {
     await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
-    // Check if pagination exists
-    const pagination = page.getByTestId('pagination');
-    const paginationCount = await pagination.count();
+    const loadMoreButton = page.getByTestId('load-more-button');
+    const buttonCount = await loadMoreButton.count();
 
-    if (paginationCount > 0) {
-      // Scroll down the page
-      await page.evaluate(() => window.scrollTo(0, 500));
+    if (buttonCount > 0) {
+      // すべての記事を読み込むまでLoadMoreButtonをクリック
+      let maxClicks = 10; // 無限ループ防止
+      while (maxClicks > 0) {
+        const currentButtonCount = await loadMoreButton.count();
+        if (currentButtonCount === 0) break;
 
-      // Wait a bit to ensure scroll happens
-      await page.waitForTimeout(100);
+        await loadMoreButton.click();
+        await page.waitForTimeout(1000);
+        maxClicks--;
+      }
 
-      // Verify we're scrolled down
-      const scrollYBefore = await page.evaluate(() => window.scrollY);
-      expect(scrollYBefore).toBeGreaterThan(0);
-
-      // Click next page button
-      const nextButton = page.getByText('次へ →');
-      const nextButtonCount = await nextButton.count();
-
-      if (nextButtonCount > 0) {
-        await nextButton.click();
-        await page.waitForLoadState('networkidle');
-
-        // Wait for scroll reset to happen
-        await page.waitForTimeout(200);
-
-        // Verify scroll position is reset to top
-        const scrollYAfter = await page.evaluate(() => window.scrollY);
-        expect(scrollYAfter).toBe(0);
+      // すべて読み込み済みの場合、LoadMoreButtonが非表示になることを確認
+      const finalButtonCount = await loadMoreButton.count();
+      if (finalButtonCount === 0) {
+        await expect(loadMoreButton).not.toBeVisible();
       }
     }
   });

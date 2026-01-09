@@ -4,19 +4,18 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
 import BlogLayout from "~/components/blog/common/BlogLayout";
 import PostsSection from "~/components/blog/posts/PostsSection";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { fetchPosts } from "~/data-io/blog/posts/fetchPosts.server";
 import { fetchAvailableFilters } from "~/data-io/blog/posts/fetchAvailableFilters.server";
-import { calculatePagination } from "~/lib/blog/posts/calculatePagination";
+import { calculateLoadMore } from "~/lib/blog/posts/calculateLoadMore";
 import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
 import { getSession } from "~/data-io/account/common/getSession.server";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
 import "~/styles/blog/layer2-common.css";
-// 記事一覧ページ専用のCSS（PostCard, FilterPanel, Pagination等）
+// 記事一覧ページ専用のCSS（PostCard, FilterPanel, LoadMoreButton等）
 import "~/styles/blog/layer2-posts.css";
 
 export const meta: MetaFunction = () => {
@@ -31,8 +30,8 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const pageParam = url.searchParams.get('page');
-  const page = pageParam ? parseInt(pageParam, 10) : 1;
+  const loadedParam = url.searchParams.get('loaded');
+  const loadedCount = loadedParam ? parseInt(loadedParam, 10) : 0;
 
   // フィルタパラメータを取得
   const category = url.searchParams.get('category') || undefined;
@@ -40,8 +39,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const tags = tagsParam.length > 0 ? tagsParam : undefined;
 
   // バリデーション
-  if (isNaN(page) || page < 1) {
-    throw new Response('Invalid page number', { status: 400 });
+  if (isNaN(loadedCount) || loadedCount < 0) {
+    throw new Response('Invalid loaded count', { status: 400 });
   }
 
   // セッションを取得して認証状態を確認
@@ -50,34 +49,26 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   // データ取得（副作用層）
   const spec = loadPostsSpec();
-  const postsPerPage = spec.business_rules.pagination.posts_per_page;
+  const postsPerLoad = spec.business_rules.load_more.posts_per_load;
+  const limit = loadedCount === 0 ? spec.business_rules.load_more.initial_load : postsPerLoad;
   const { posts, total } = await fetchPosts({
-    limit: postsPerPage,
-    offset: (page - 1) * postsPerPage,
+    limit,
+    offset: loadedCount,
     category,
     tags,
   });
   const config = await loadBlogConfig();
   const availableFilters = await fetchAvailableFilters();
 
-  // ページネーション情報を計算（純粋ロジック層）
-  const paginationData = calculatePagination(total, page, postsPerPage);
-
-  // ページ範囲チェック
-  if (page > paginationData.totalPages && paginationData.totalPages > 0) {
-    throw new Response('Page not found', { status: 404 });
-  }
+  // 追加読み込み情報を計算（純粋ロジック層）
+  const newLoadedCount = loadedCount + posts.length;
+  const loadMoreInfo = calculateLoadMore(total, newLoadedCount, postsPerLoad);
 
   return json({
     posts,
     config,
     isAuthenticated,
-    pagination: {
-      currentPage: paginationData.currentPage,
-      totalPages: paginationData.totalPages,
-      total: paginationData.totalPosts,
-      limit: paginationData.postsPerPage,
-    },
+    loadMoreInfo,
     availableFilters,
     selectedFilters: {
       category,
@@ -96,24 +87,19 @@ export default function BlogIndex() {
     config,
     posts,
     isAuthenticated,
-    pagination,
+    loadMoreInfo,
     availableFilters,
     selectedFilters,
     categorySpec,
     pageTitle,
   } = useLoaderData<typeof loader>();
 
-  // Scroll to top on pagination navigation
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pagination.currentPage]);
-
   return (
     <BlogLayout config={config}>
       <PostsSection
         posts={posts}
         isAuthenticated={isAuthenticated}
-        pagination={pagination}
+        loadMoreInfo={loadMoreInfo}
         availableFilters={availableFilters}
         selectedFilters={selectedFilters}
         categorySpec={categorySpec}

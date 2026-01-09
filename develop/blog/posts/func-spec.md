@@ -45,7 +45,7 @@ Posts List (記事一覧)
 3. **レイアウト**: 共通レイアウト（BlogLayout）を使用
    - ヘッダー: BlogHeader（commonセクション）
    - フッター: BlogFooter（commonセクション）
-   - メインコンテンツ: FilterPanel + PostsSection
+   - メインコンテンツ: FilterPanel + PostsSection + LoadMoreButton
 
 4. **カテゴリベースのアクセス制御**:
    - **目的**: フリーミアムモデルを実現し、段階的な価値提供でコンバージョンを最適化
@@ -71,7 +71,7 @@ Posts List (記事一覧)
 
 loaderが受け取るリクエスト情報：
 
-- **ページ番号**: URLクエリパラメータ（例: `?page=2`）
+- **読み込み済み件数**: URLクエリパラメータ（例: `?loaded=6`）またはfetcherリクエスト
 - **カテゴリフィルタ**: URLクエリパラメータ（例: `?category=Tutorials`）
 - **タグフィルタ**: URLクエリパラメータ（例: `?tags=Remix,Cloudflare`、AND条件）
 
@@ -87,11 +87,11 @@ loaderがUIに提供すべきデータ：
   - カテゴリ
   - タグ配列
 
-- **ページネーション情報**: ページ切り替えに必要な情報
-  - 現在のページ番号
-  - 総ページ数
+- **読み込み情報**: 記事追加読み込みに必要な情報
+  - 現在読み込み済み件数
   - 総記事数
-  - 1ページあたりの記事数
+  - 追加読み込み可能かどうか（hasMore: boolean）
+  - 1回の読み込み件数
 
 - **フィルタ情報**: フィルタUIに必要な情報
   - 利用可能なカテゴリ一覧
@@ -157,7 +157,7 @@ loaderがUIに提供すべきデータ：
      - FilterToggleButtonを表示
      - ページタイトル表示（"Articles"）
      - PostCardコンポーネントを繰り返し表示
-     - **Paginationコンポーネントを表示**
+     - **LoadMoreButtonコンポーネントを表示**
      - レスポンシブ対応（モバイル: 1列、タブレット: 2列、デスクトップ: 3列）
 
    - PostCard.tsx:
@@ -171,16 +171,19 @@ loaderがUIに提供すべきデータ：
      - ホバー時のスタイル変化（視覚的フィードバック）
      - デザイントークンを使用したスタイリング
 
-   - Pagination.tsx:
-     - ページネーションUIコンポーネント
+   - LoadMoreButton.tsx:
+     - 追加記事を読み込むボタンコンポーネント
+     - 配置: 記事一覧の最下部
      - 表示内容:
-       - 「前へ」ボタン（1ページ目では非表示）
-       - ページ番号リンク（現在ページの前後2ページ）
-       - 「次へ」ボタン（最終ページでは非表示）
-     - クリックで該当ページへ遷移（`/blog?page=N&category=...&tags=...`）
+       - デフォルト: "More" のラベル
+       - ローディング中: スピナーアイコンと "Loading..." テキスト
+       - 全件読み込み済み: ボタン非表示
+     - 動作:
+       - ボタンクリックでuseFetcherを使用してサーバーから追加記事を取得
+       - 取得した記事を既存の記事一覧の最下部に追加
+       - 読み込み中はボタンを無効化
        - **重要**: フィルタパラメータを保持すること
-     - 現在のページをハイライト表示
-     - アクセシビリティ対応（aria-label、キーボードナビゲーション）
+     - アクセシビリティ: aria-label="さらに記事を読み込む"、aria-busy属性でローディング状態を表現
 ```
 
 ### 🧠 純粋ロジック要件（app/lib/blog/posts）
@@ -195,21 +198,19 @@ loaderがUIに提供すべきデータ：
      - 出力: string (formatted date)
      - 純粋関数（副作用なし）
 
-   - calculatePagination.ts: ページネーション計算処理
-     - 総記事数と現在ページから、ページネーション情報を計算
+   - calculateLoadMore.ts: 追加読み込み情報の計算
+     - 現在の読み込み済み件数と総記事数から、追加読み込み可能かを判定
      - 入力:
        - totalPosts: number (総記事数)
-       - currentPage: number (現在のページ番号、1始まり)
-       - postsPerPage: number (1ページあたりの記事数)
-     - 出力: PaginationData
-       - currentPage: number (現在のページ番号)
-       - totalPages: number (総ページ数)
+       - loadedCount: number (現在読み込み済み件数)
+       - postsPerLoad: number (1回の読み込み件数、デフォルト6)
+     - 出力: LoadMoreInfo
+       - loadedCount: number (現在読み込み済み件数)
        - totalPosts: number (総記事数)
-       - postsPerPage: number (1ページあたりの記事数)
+       - hasMore: boolean (追加読み込み可能か)
+       - postsPerLoad: number (1回の読み込み件数)
      - ロジック:
-       - 総ページ数 = Math.ceil(totalPosts / postsPerPage)
-       - 現在ページのバリデーション（1 <= currentPage <= totalPages)
-       - ページ番号リスト生成（現在ページの前後2ページ）
+       - hasMore = loadedCount < totalPosts
      - 純粋関数（副作用なし）
 
    - filterPosts.ts: 記事フィルタリング処理【新規】
@@ -237,7 +238,7 @@ loaderがUIに提供すべきデータ：
 3. [副作用層の責務]
    - fetchPosts.server.ts: 記事一覧データの取得
      - ビルド時に生成されたバンドルから記事メタデータを読み込む
-     - **ページネーション対応**: limit/offsetパラメータによる部分取得
+     - **追加読み込み対応**: limit/offsetパラメータによる部分取得。offsetは既に読み込まれた件数を指定
      - **フィルタ対応**: category/tagsパラメータによる絞り込み【拡張】
      - 入力:
        - options?: FetchPostsOptions
