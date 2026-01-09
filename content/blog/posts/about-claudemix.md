@@ -4,8 +4,8 @@ title: "このプロジェクトについて"
 description: "会社員時代にできなかった理想の開発環境を、AIコーディングで実現する挑戦。自動テスト、ドキュメント保守、テスト容易性の高いアーキテクチャ——これらすべてがAIと相性抜群であることに気づいた僕が、RemixとCloudflare Edgeで100% AIコーディングのブログを作った理由。"
 author: "ClaudeMix Team"
 publishedAt: "2025-11-16"
-category: "ClaudeMix Philosophy"
-tags: ["Workers", "MCP", "architecture"]
+category: "インフォメーション"
+tags: []
 ---
 
 このプロジェクト「ClaudeMix」は、僕の開発者としての経歴と、AIコーディングへの確信から生まれました。

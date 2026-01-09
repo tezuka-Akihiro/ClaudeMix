@@ -280,7 +280,7 @@ npm run lint:css-arch
 - **テストケース**:
   1. **カテゴリフィルタ**:
      - `category: "Tutorials & Use Cases"` で該当カテゴリの記事のみ返す
-     - `category: ""` (空文字列) または `undefined` の場合、すべての記事を返す（"All Categories"）
+     - `category: "インフォメーション"` (空文字列) または `undefined` の場合、すべての記事を返す（"All Categories"）
   2. **タグフィルタ (AND条件)**:
      - `tags: ["Remix", "Cloudflare"]` で両方のタグを含む記事のみ返す
      - `tags: []` または `undefined` の場合、すべての記事を返す

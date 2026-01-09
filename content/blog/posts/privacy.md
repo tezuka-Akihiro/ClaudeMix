@@ -3,8 +3,8 @@ slug: "privacy"
 title: "プライバシーポリシー"
 author: "ClaudeMix Team"
 publishedAt: "2025-11-01"
-category: "起業"
 description: "ClaudeMixのプライバシーポリシーです。個人情報の取り扱いについて説明しています。"
+category: "インフォメーション"
 tags: []
 ---
 

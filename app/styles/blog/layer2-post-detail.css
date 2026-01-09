@@ -11,12 +11,6 @@
     width: 100%;
   }
 
-  /* Article metadata area */
-  .post-detail-section__meta {
-    border-bottom: var(--border-width-sm) solid var(--color-interactive-primary);
-    padding-bottom: var(--spacing-3);
-  }
-
   /* Article title */
   .post-detail-section__title {
     font-family: var(--font-heading-primary);
@@ -282,22 +276,13 @@
   .table-of-contents__list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: var(--spacing-2);
+    background-color: var(--color-interactive-primary-bg-faint);
   }
 
   /* 目次アイテム */
   .table-of-contents__item {
     padding: 0;
-  }
-
-  /* 目次アイテム（h3レベル） */
-  .table-of-contents__item--level-3 {
-    padding-left: var(--spacing-3);
-  }
-
-  /* 目次アイテム（h4レベル） */
-  .table-of-contents__item--level-4 {
-    padding-left: var(--spacing-5);
   }
 
   /* 目次リンク - 詳細度を上げてグローバルaスタイルを上書き */

@@ -3,8 +3,8 @@ slug: "terms"
 title: "利用規約"
 author: "ClaudeMix Team"
 publishedAt: "2025-11-01"
-category: "起業"
 description: "ClaudeMixの利用規約です。サービスをご利用いただく前に必ずお読みください。"
+category: "インフォメーション"
 tags: []
 ---
 

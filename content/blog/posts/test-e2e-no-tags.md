@@ -3,7 +3,7 @@ slug: "test-e2e-no-tags"
 title: "タグなし記事のエッジケーステスト"
 author: "ClaudeMix Dev Team"
 publishedAt: "2025-11-16"
-category: "起業"
+category: "インフォメーション"
 tags: []
 description: "タグを持たない記事の表示とフィルタリング動作のテスト実装"
 ---

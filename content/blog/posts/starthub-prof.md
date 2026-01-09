@@ -4,8 +4,8 @@ title: "スタハブ用プロフィール"
 description: "スタートアップハブ多摩での活動と開発進捗を記録したプロフィール"
 author: "優作 / The Sound Edge"
 publishedAt: "2025-12-15"
-category: "起業"
-tags: ["スタハブ多摩"]
+category: "インフォメーション"
+tags: []
 ---
 
 ## 🏢 スタハブ利用履歴
