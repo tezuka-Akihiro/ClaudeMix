@@ -32,6 +32,11 @@ export interface BlogPostsSpec {
   access_control: {
     public_categories: string[];
   };
+  posts_config: {
+    page_title: string;
+    posts_directory: string;
+    frontmatter_fields: string[];
+  };
 }
 
 export interface TagGroup {

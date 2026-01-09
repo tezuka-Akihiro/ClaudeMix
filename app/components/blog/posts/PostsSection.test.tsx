@@ -28,6 +28,7 @@ const renderWithRouter = (ui: React.ReactElement) => {
 interface MockPostsSectionProps extends PostsPageData {
   isAuthenticated: boolean;
   pageTitle: string;
+  publicCategories: string[];
 }
 
 describe('PostsSection', () => {
@@ -76,6 +77,7 @@ describe('PostsSection', () => {
         defaultEmoji: spec.business_rules.display.default_category_emoji,
       },
       pageTitle: spec.posts_config.page_title,
+      publicCategories: spec.access_control.public_categories,
     };
   });
 

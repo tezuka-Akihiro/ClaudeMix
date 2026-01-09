@@ -35,9 +35,10 @@ const PostsSection: React.FC<PostsSectionProps> = ({
 
   // fetcherで取得した記事を追加
   useEffect(() => {
-    if (fetcher.data && fetcher.data.posts) {
-      setPosts(prevPosts => [...prevPosts, ...fetcher.data.posts]);
-      setLoadMoreInfo(fetcher.data.loadMoreInfo);
+    if (fetcher.data && typeof fetcher.data === 'object' && 'posts' in fetcher.data) {
+      const data = fetcher.data as { posts: PostSummary[]; loadMoreInfo: typeof initialLoadMoreInfo };
+      setPosts(prevPosts => [...prevPosts, ...data.posts]);
+      setLoadMoreInfo(data.loadMoreInfo);
     }
   }, [fetcher.data]);
 

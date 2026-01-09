@@ -74,18 +74,11 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   // カテゴリベースのアクセス制御: 認証必須
   const postsSpec = loadSpec<BlogPostsSpec>('blog/posts');
   const accessControl = postsSpec.access_control || {};
-  const publicCategories = accessControl.public_categories;
-  const restrictedCategories = accessControl.restricted_categories || [];
+  const publicCategories = accessControl.public_categories || [];
 
-  if (!isAuthenticated) {
-    // 制限カテゴリに含まれている、または（公開カテゴリが定義されている場合）公開カテゴリに含まれていない場合はアクセス不可
-    const isRestricted = restrictedCategories.includes(post.category);
-    const isNotPublic = publicCategories ? !publicCategories.includes(post.category) : false;
-
-    if (isRestricted || isNotPublic) {
-      const returnTo = encodeURIComponent(url.pathname);
-      return redirect(`/login?returnTo=${returnTo}`);
-    }
+  if (!isAuthenticated && !publicCategories.includes(post.category)) {
+    const returnTo = encodeURIComponent(url.pathname);
+    return redirect(`/login?returnTo=${returnTo}`);
   }
 
   // NOTE: コンテンツはビルド時にHTML変換済み、見出しもビルド時に抽出済み
