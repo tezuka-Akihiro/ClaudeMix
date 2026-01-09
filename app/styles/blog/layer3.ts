@@ -235,7 +235,7 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
       display: "flex",
       flexWrap: "wrap",
       gap: "var(--spacing-2)",
-      justifyContent: "center",
+      justifyContent: "left",
     },
 
     /**
