@@ -79,6 +79,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       defaultEmoji: spec.business_rules.display.default_category_emoji,
     },
     pageTitle: spec.posts_config.page_title,
+    publicCategories: spec.access_control.public_categories,
   });
 }
 
@@ -92,6 +93,7 @@ export default function BlogIndex() {
     selectedFilters,
     categorySpec,
     pageTitle,
+    publicCategories,
   } = useLoaderData<typeof loader>();
 
   return (
@@ -104,6 +106,7 @@ export default function BlogIndex() {
         selectedFilters={selectedFilters}
         categorySpec={categorySpec}
         pageTitle={pageTitle}
+        publicCategories={publicCategories}
       />
     </BlogLayout>
   );

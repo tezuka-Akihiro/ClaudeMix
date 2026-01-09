@@ -12,6 +12,7 @@ import type { PostsPageData, PostSummary } from '~/specs/blog/types';
 interface PostsSectionProps extends PostsPageData {
   isAuthenticated: boolean;
   pageTitle: string;
+  publicCategories: string[];
 }
 
 const PostsSection: React.FC<PostsSectionProps> = ({
@@ -22,6 +23,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
   selectedFilters,
   categorySpec,
   pageTitle,
+  publicCategories,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [posts, setPosts] = useState<PostSummary[]>(initialPosts);
@@ -85,8 +87,8 @@ const PostsSection: React.FC<PostsSectionProps> = ({
         <>
           <div className="post-card-grid" data-testid="post-card-grid">
             {posts.map((post) => {
-              // 起業カテゴリ以外は認証必須
-              const isLocked = !isAuthenticated && post.category !== '起業';
+              // 公開カテゴリ以外は認証必須
+              const isLocked = !isAuthenticated && !publicCategories.includes(post.category);
 
               return (
                 <PostCard
