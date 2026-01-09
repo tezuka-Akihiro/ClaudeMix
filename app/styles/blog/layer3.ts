@@ -229,11 +229,13 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
      * TagGroupGrid Structure
      * - Flex layout for tags within a group
      * - Tags will size according to their text content
+     * - Center aligned for visual balance
      */
     ".tag-group-grid-structure": {
       display: "flex",
       flexWrap: "wrap",
       gap: "var(--spacing-2)",
+      justifyContent: "center",
     },
 
     /**

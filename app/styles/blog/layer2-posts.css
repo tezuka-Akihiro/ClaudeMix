@@ -88,9 +88,9 @@
     font-family: var(--font-heading-primary);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
-    padding: var(--spacing-4) var(--spacing-6);
+    padding: var(--spacing-2) var(--spacing-4);
     cursor: pointer;
-    width: 100%;
+    width: calc(var(--layout-card-width) * 2);
     text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-full);
@@ -116,8 +116,7 @@
   /* === Filter Components === */
   /* FilterToggleButton - Button to open/close filter panel */
   .filter-toggle-button {
-    width:100%;
-    margin-bottom:var(--spacing-6);
+    width: calc(var(--layout-card-width) * 2);
     background-color: var(--color-interactive-primary-bg-subtle);
     border: none;
     color: var(--color-interactive-primary);
@@ -130,6 +129,8 @@
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-full);
     padding: var(--spacing-3) var(--spacing-5);
+    margin: var(--spacing-3) auto;
+    display: block;
   }
 
   .filter-toggle-button:hover {
@@ -288,20 +289,24 @@
 
   /* TagButton - Individual toggle button for tags */
   .tag-button {
-    background-color: var(--color-interactive-primary-bg-faint);
+    background-color: var(--color-interactive-primary-bg-subtle);
     border: none;
-    color: var(--color-text-secondary);
+    color: var(--color-interactive-primary);
     cursor: pointer;
-    padding: var(--spacing-2) var(--spacing-3);
+    font-family: var(--font-heading-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    padding: var(--spacing-2) var(--spacing-4);
     text-align: center;
+    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-full);
   }
 
   .tag-button:hover {
-    border-color: var(--color-interactive-primary);
-    color: var(--color-interactive-primary);
-    box-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
+    background-color: var(--color-interactive-primary-bg);
+    color: var(--color-text-primary);
+    box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
   }
 
   .tag-button:focus {
