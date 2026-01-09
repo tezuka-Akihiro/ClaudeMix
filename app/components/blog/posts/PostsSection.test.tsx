@@ -5,6 +5,21 @@ import PostsSection from './PostsSection';
 import type { PostsPageData } from '~/specs/blog/types';
 import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
+// Mock useFetcher from Remix
+vi.mock('@remix-run/react', async () => {
+  const actual = await vi.importActual('@remix-run/react');
+  return {
+    ...actual,
+    useFetcher: () => ({
+      data: undefined,
+      state: 'idle',
+      load: vi.fn(),
+      submit: vi.fn(),
+      Form: 'form',
+    }),
+  };
+});
+
 // Helper function to render component with Router context
 const renderWithRouter = (ui: React.ReactElement) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
@@ -43,9 +58,9 @@ describe('PostsSection', () => {
         },
       ],
       isAuthenticated: true,
-      pagination: {
-        currentPage: 1,
-        totalPages: 5,
+      loadMoreInfo: {
+        hasMore: true,
+        loadedCount: 2,
       },
       availableFilters: {
         categories: ['Category 1', 'Category 2'],
@@ -86,17 +101,17 @@ describe('PostsSection', () => {
     });
   });
 
-  describe('Pagination', () => {
-    it('should render pagination when totalPages is greater than 1', () => {
-      mockProps.pagination.totalPages = 2;
+  describe('Load More', () => {
+    it('should render LoadMoreButton when hasMore is true', () => {
+      mockProps.loadMoreInfo.hasMore = true;
       renderWithRouter(<PostsSection {...mockProps} />);
-      expect(screen.getByTestId('pagination')).toBeInTheDocument();
+      expect(screen.getByTestId('load-more-button')).toBeInTheDocument();
     });
 
-    it('should not render pagination when totalPages is 1', () => {
-      mockProps.pagination.totalPages = 1;
+    it('should not render LoadMoreButton when hasMore is false', () => {
+      mockProps.loadMoreInfo.hasMore = false;
       renderWithRouter(<PostsSection {...mockProps} />);
-      expect(screen.queryByTestId('pagination')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('load-more-button')).not.toBeInTheDocument();
     });
   });
 
@@ -121,14 +136,15 @@ describe('PostsSection', () => {
 
     it('should pass correct filter data to FilterPanel', () => {
       mockProps.selectedFilters = { category: 'Category 1', tags: ['Tag 1'] };
-      renderWithRouter(<PostsSection {...mockProps} />);
-      
+      const { container } = renderWithRouter(<PostsSection {...mockProps} />);
+
       // Open the panel to check its contents
       fireEvent.click(screen.getByTestId('filter-toggle-button'));
-      
-      const categorySelector = screen.getByRole('combobox');
-      expect(categorySelector).toHaveValue('Category 1');
-      
+
+      // Check hidden input value for category
+      const categoryInput = container.querySelector('input[name="category"]') as HTMLInputElement;
+      expect(categoryInput.value).toBe('Category 1');
+
       const tagButton = screen.getByRole('button', { name: 'Tag 1' });
       expect(tagButton).toHaveAttribute('aria-pressed', 'true');
     });

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { CategorySelector } from './CategorySelector';
 
 describe('CategorySelector', () => {
@@ -21,11 +21,11 @@ describe('CategorySelector', () => {
       const availableCategories = ['Claude Best Practices'];
 
       // Act
-      render(<CategorySelector availableCategories={availableCategories} />);
+      const { container } = render(<CategorySelector availableCategories={availableCategories} />);
 
       // Assert
-      const selector = screen.getByTestId('category-selector');
-      expect(selector).toHaveClass('category-selector');
+      const selectorContainer = container.querySelector('.category-selector');
+      expect(selectorContainer).toBeInTheDocument();
     });
   });
 
@@ -36,11 +36,12 @@ describe('CategorySelector', () => {
 
       // Act
       render(<CategorySelector availableCategories={availableCategories} />);
+      const button = screen.getByTestId('category-selector');
+      fireEvent.click(button);
 
       // Assert
       const allCategoriesOption = screen.getByRole('option', { name: /All Categories/i });
       expect(allCategoriesOption).toBeInTheDocument();
-      expect(allCategoriesOption).toHaveValue('');
     });
 
     it('should display all available categories as options', () => {
@@ -53,6 +54,8 @@ describe('CategorySelector', () => {
 
       // Act
       render(<CategorySelector availableCategories={availableCategories} />);
+      const button = screen.getByTestId('category-selector');
+      fireEvent.click(button);
 
       // Assert
       const options = screen.getAllByRole('option');
@@ -62,7 +65,6 @@ describe('CategorySelector', () => {
       availableCategories.forEach(category => {
         const option = screen.getByRole('option', { name: category });
         expect(option).toBeInTheDocument();
-        expect(option).toHaveValue(category);
       });
     });
 
@@ -72,7 +74,7 @@ describe('CategorySelector', () => {
       const selectedCategory = 'Claude Best Practices';
 
       // Act
-      render(
+      const { container } = render(
         <CategorySelector
           availableCategories={availableCategories}
           selectedCategory={selectedCategory}
@@ -80,8 +82,8 @@ describe('CategorySelector', () => {
       );
 
       // Assert
-      const selector = screen.getByTestId('category-selector') as unknown as HTMLSelectElement;
-      expect(selector.value).toBe(selectedCategory);
+      const hiddenInput = container.querySelector('input[name="category"]') as HTMLInputElement;
+      expect(hiddenInput.value).toBe(selectedCategory);
     });
 
     it('should default to empty string when no category is selected', () => {
@@ -89,11 +91,11 @@ describe('CategorySelector', () => {
       const availableCategories = ['Claude Best Practices'];
 
       // Act
-      render(<CategorySelector availableCategories={availableCategories} />);
+      const { container } = render(<CategorySelector availableCategories={availableCategories} />);
 
       // Assert
-      const selector = screen.getByTestId('category-selector') as unknown as HTMLSelectElement;
-      expect(selector.value).toBe('');
+      const hiddenInput = container.querySelector('input[name="category"]') as HTMLInputElement;
+      expect(hiddenInput.value).toBe('');
     });
   });
 
@@ -103,11 +105,11 @@ describe('CategorySelector', () => {
       const availableCategories = ['Claude Best Practices'];
 
       // Act
-      render(<CategorySelector availableCategories={availableCategories} />);
+      const { container } = render(<CategorySelector availableCategories={availableCategories} />);
 
       // Assert
-      const selector = screen.getByTestId('category-selector');
-      expect(selector).toHaveAttribute('name', 'category');
+      const hiddenInput = container.querySelector('input[name="category"]');
+      expect(hiddenInput).toHaveAttribute('name', 'category');
     });
   });
 });

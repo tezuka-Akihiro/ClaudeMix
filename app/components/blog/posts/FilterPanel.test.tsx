@@ -124,7 +124,7 @@ describe('FilterPanel', () => {
 
     it('should pass selectedCategory to CategorySelector', () => {
       // Act
-      render(
+      const { container } = render(
         <FilterPanel
           availableCategories={availableCategories}
           availableTags={availableTags}
@@ -135,8 +135,8 @@ describe('FilterPanel', () => {
       );
 
       // Assert
-      const selector = screen.getByTestId('category-selector') as unknown as HTMLSelectElement;
-      expect(selector.value).toBe('Tech');
+      const hiddenInput = container.querySelector('input[name="category"]') as HTMLInputElement;
+      expect(hiddenInput.value).toBe('Tech');
     });
 
     it('should pass selectedTags to TagGrid', () => {

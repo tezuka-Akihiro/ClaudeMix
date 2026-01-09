@@ -108,14 +108,14 @@ describe('fetchPosts - Side Effects Layer', () => {
       });
 
       // Act & Assert
-      await expect(fetchPosts()).rejects.toThrow('Failed to fetch posts');
+      await expect(fetchPosts()).rejects.toThrow('Failed to fetch posts: Failed to get posts');
     });
   });
 
   describe('fetchPosts - Pagination', () => {
     it('should return first page with configured limit', async () => {
       // Arrange
-      const postsPerPage = spec.business_rules.pagination.posts_per_page;
+      const postsPerPage = spec.business_rules.load_more.posts_per_load;
       const totalPosts = 15;
       const mockPosts = Array.from({ length: totalPosts }, (_, i) => ({
         slug: `post${i + 1}`,
@@ -138,7 +138,7 @@ describe('fetchPosts - Side Effects Layer', () => {
 
     it('should return second page with configured limit', async () => {
       // Arrange
-      const postsPerPage = spec.business_rules.pagination.posts_per_page;
+      const postsPerPage = spec.business_rules.load_more.posts_per_load;
       const totalPosts = 12;
       const mockPosts = Array.from({ length: totalPosts }, (_, i) => ({
         slug: `post${i + 1}`,
