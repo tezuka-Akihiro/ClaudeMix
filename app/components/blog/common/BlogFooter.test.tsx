@@ -69,9 +69,7 @@ describe('BlogFooter', () => {
       // Assert
       const footerElement = screen.getByTestId('blog-footer');
       expect(footerElement).toHaveClass('blog-footer');
-      expect(footerElement).toHaveClass('flex');
-      expect(footerElement).toHaveClass('flex-col');
-      expect(footerElement).toHaveClass('items-center');
+      expect(footerElement).toHaveClass('blog-footer-structure');
     });
 
     it('should render footer links', () => {

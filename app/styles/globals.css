@@ -168,6 +168,20 @@ html {
   /* --- Effect (エフェクト) --- */
   --blur-glass-effect: 10px;
 
+  /* --- Transform (変形) --- */
+  --rotation-half-turn: 180deg;
+
+  /* --- Touch Target (タッチターゲット) --- */
+  --touch-target-min-height: 44px;
+
+  /* --- Dropdown (ドロップダウン) --- */
+  --dropdown-max-height: 320px;
+
+  /* --- Table (テーブル) --- */
+  --table-cell-min-width: 100px;
+  --table-header-min-width: 120px;
+  --table-first-column-min-width: 80px;
+
   /* ========================================
    * Surface Colors for Code Display (コード表示用サーフェス)
    * 追加日: 2025-11-17

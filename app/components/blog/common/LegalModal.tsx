@@ -89,26 +89,26 @@ export default function LegalModal({ isOpen, onClose, content }: LegalModalProps
 
   return (
     <div
-      className="legal-modal__overlay flex items-center justify-center"
+      className="legal-modal__overlay legal-modal__overlay-structure"
       onClick={onClose}
       data-testid="legal-modal-overlay"
     >
       <div
         ref={modalRef}
-        className="legal-modal__dialog rounded-lg flex flex-col"
+        className="legal-modal__dialog legal-modal__dialog-structure"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="legal-modal-title"
       >
-        <div className="legal-modal__header flex justify-between items-center">
+        <div className="legal-modal__header legal-modal__header-structure">
           <h2 id="legal-modal-title" className="legal-modal__title">
             特定商取引法に基づく表記
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="legal-modal__close-button flex items-center justify-center rounded"
+            className="legal-modal__close-button legal-modal__close-button-structure"
             aria-label="閉じる"
             data-testid="close-button"
           >

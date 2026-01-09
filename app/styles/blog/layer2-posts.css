@@ -53,17 +53,6 @@
     line-height: var(--line-height-normal);
   }
 
-  /* Locked Post Card - Indicates authentication required */
-  .post-card--locked {
-    opacity: 0.7;
-    filter: grayscale(0.3);
-  }
-
-  .post-card--locked:hover {
-    opacity: 0.85;
-    filter: grayscale(0.1);
-  }
-
   /* Lock Message - "ログインで読む" text */
   .post-card__lock-message {
     color: var(--color-interactive-primary);
@@ -103,7 +92,7 @@
   }
 
   .load-more-button:disabled {
-    opacity: 0.7;
+    opacity: var(--opacity-disabled);
     cursor: not-allowed;
   }
 
@@ -195,11 +184,8 @@
     cursor: pointer;
     width: 100%;
     text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    min-height: 44px;
+    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    min-height: var(--touch-target-min-height);
     text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
   }
 
@@ -210,12 +196,12 @@
 
   /* Dropdown Icon */
   .category-selector__icon {
-    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--transition-duration-fast) var(--transition-timing-function-default);
     font-size: var(--font-size-sm);
   }
 
   .category-selector__button[aria-expanded="true"] .category-selector__icon {
-    transform: rotate(180deg);
+    transform: rotate(var(--rotation-half-turn));
   }
 
   /* Dropdown Menu */
@@ -232,9 +218,9 @@
     z-index: var(--z-index-dropdown);
     backdrop-filter: blur(var(--blur-glass-effect));
     -webkit-backdrop-filter: blur(var(--blur-glass-effect));
-    max-height: 320px;
+    max-height: var(--dropdown-max-height);
     overflow-y: auto;
-    animation: dropdownFadeIn 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    animation: dropdownFadeIn var(--transition-duration-fast) var(--transition-timing-function-default);
   }
 
   /* Menu Overlay */
@@ -256,10 +242,8 @@
     cursor: pointer;
     width: 100%;
     text-align: left;
-    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    min-height: 44px;
-    display: flex;
-    align-items: center;
+    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    min-height: var(--touch-target-min-height);
     font-family: var(--font-heading-primary);
   }
 

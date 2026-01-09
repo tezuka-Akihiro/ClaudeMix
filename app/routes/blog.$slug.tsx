@@ -12,7 +12,7 @@ import BlogLayout from "~/components/blog/common/BlogLayout";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { loadSpec } from "~/spec-loader/specLoader.server";
-import type { BlogCommonSpec } from "~/specs/blog/types";
+import type { BlogCommonSpec, BlogPostsSpec } from "~/specs/blog/types";
 import { getSubscriptionStatus } from "~/data-io/blog/post-detail/getSubscriptionStatus.server";
 import { determineContentVisibility } from "~/lib/blog/post-detail/determineContentVisibility";
 import { getSession } from "~/data-io/account/common/getSession.server";
@@ -71,11 +71,21 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const userId = session?.userId ?? null;
   const isAuthenticated = userId !== null;
 
-  // カテゴリベースのアクセス制御: 起業以外は認証必須
-  if (!isAuthenticated && post.category !== '起業') {
-    // 未認証ユーザーは起業カテゴリ以外の記事にアクセスできない
-    const returnTo = encodeURIComponent(url.pathname);
-    return redirect(`/login?returnTo=${returnTo}`);
+  // カテゴリベースのアクセス制御: 認証必須
+  const postsSpec = loadSpec<BlogPostsSpec>('blog/posts');
+  const accessControl = postsSpec.access_control || {};
+  const publicCategories = accessControl.public_categories;
+  const restrictedCategories = accessControl.restricted_categories || [];
+
+  if (!isAuthenticated) {
+    // 制限カテゴリに含まれている、または（公開カテゴリが定義されている場合）公開カテゴリに含まれていない場合はアクセス不可
+    const isRestricted = restrictedCategories.includes(post.category);
+    const isNotPublic = publicCategories ? !publicCategories.includes(post.category) : false;
+
+    if (isRestricted || isNotPublic) {
+      const returnTo = encodeURIComponent(url.pathname);
+      return redirect(`/login?returnTo=${returnTo}`);
+    }
   }
 
   // NOTE: コンテンツはビルド時にHTML変換済み、見出しもビルド時に抽出済み

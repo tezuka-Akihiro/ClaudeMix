@@ -29,6 +29,9 @@ export interface BlogPostsSpec {
       default_category_emoji: string;
     };
   };
+  access_control: {
+    public_categories: string[];
+  };
 }
 
 export interface TagGroup {

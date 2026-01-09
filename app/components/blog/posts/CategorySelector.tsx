@@ -60,7 +60,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
     <div className="category-selector" ref={dropdownRef}>
       <button
         type="button"
-        className="category-selector__button"
+        className="category-selector__button category-selector__button-structure"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
@@ -79,7 +79,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
           <div className="category-selector__menu" role="listbox">
             <button
               type="button"
-              className="category-selector__item"
+              className="category-selector__item category-selector__item-structure"
               role="option"
               aria-selected={selected === ''}
               onClick={() => handleSelect('')}
@@ -90,7 +90,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
               <button
                 key={category}
                 type="button"
-                className="category-selector__item"
+                className="category-selector__item category-selector__item-structure"
                 role="option"
                 aria-selected={selected === category}
                 onClick={() => handleSelect(category)}

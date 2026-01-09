@@ -28,8 +28,8 @@ const BlogFooter: React.FC<BlogFooterProps> = ({ copyright, footerLinks, legalCo
 
   return (
     <>
-      <footer className="blog-footer flex flex-col items-center justify-center gap-2" data-testid="blog-footer">
-        <nav className="blog-footer__links flex flex-wrap items-center justify-center gap-4" data-testid="footer-links">
+      <footer className="blog-footer blog-footer-structure" data-testid="blog-footer">
+        <nav className="blog-footer__links blog-footer__links-structure" data-testid="footer-links">
           {footerLinks.map((link, index) => (
             <React.Fragment key={link.label}>
               {link.isModal ? (

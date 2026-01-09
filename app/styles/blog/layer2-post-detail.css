@@ -244,7 +244,7 @@
     padding: var(--spacing-2);
     color: var(--color-text-primary);
     /* 最小幅を設定して読みやすさを確保 */
-    min-width: 100px;
+    min-width: var(--table-cell-min-width);
     /* テキストの適切な折り返し */
     word-break: break-word;
     overflow-wrap: break-word;
@@ -257,13 +257,13 @@
     background-color: var(--color-interactive-primary-bg-faint);
     font-weight: var(--font-weight-medium);
     /* ヘッダーは少し広めの最小幅 */
-    min-width: 120px;
+    min-width: var(--table-header-min-width);
   }
 
   /* 最初の列（見出し列）は狭めでもOK */
   .post-detail-section__content th:first-child,
   .post-detail-section__content td:first-child {
-    min-width: 80px;
+    min-width: var(--table-first-column-min-width);
   }
 
   /* === Table of Contents === */
@@ -342,9 +342,6 @@
 
   /* プラン一覧 */
   .subscription-plans {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
     padding-bottom: var(--spacing-3);
   }
 
@@ -353,9 +350,6 @@
     background-color: var(--color-background-primary);
     border: var(--border-width-sm) solid var(--color-interactive-primary-bg);
     padding: var(--spacing-2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 
   /* プラン期間 */

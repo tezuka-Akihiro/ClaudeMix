@@ -212,8 +212,8 @@
     border: none;
     box-shadow: 0 0 var(--spacing-6) var(--color-interactive-primary-bg);
     max-height: 90vh;
-    max-width: 600px;
-    width: 90%;
+    max-width: var(--layout-page-container-width);
+    width: 100%;
     z-index: calc(var(--z-index-modal) + 1);
     border-radius: var(--border-radius-lg);
     /* Layout defined in Layer 3 (Tailwind classes) */

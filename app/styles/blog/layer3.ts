@@ -76,13 +76,29 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
 
     /**
      * BlogFooter Structure
+     * - Vertical stack layout
      * - Centered content
-     * - Uses flex-grow on main content to push footer to bottom
      */
     ".blog-footer-structure": {
       display: "flex",
+      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
+      gap: "var(--spacing-2)",
+    },
+
+    /**
+     * BlogFooter Links Structure
+     * - Horizontal layout for footer links
+     * - Wraps to next line when needed
+     * - Centered alignment
+     */
+    ".blog-footer__links-structure": {
+      display: "flex",
+      flexWrap: "wrap",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "var(--spacing-4)",
     },
 
     /**
@@ -249,6 +265,89 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
       flexDirection: "row",
       flexWrap: "wrap",
       gap: "var(--spacing-2)",
+    },
+
+    /**
+     * CategorySelector Button Structure
+     * - Horizontal layout for button content
+     * - Text on left, icon on right
+     */
+    ".category-selector__button-structure": {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+
+    /**
+     * CategorySelector Item Structure
+     * - Horizontal layout for menu items
+     * - Centered vertically
+     */
+    ".category-selector__item-structure": {
+      display: "flex",
+      alignItems: "center",
+    },
+
+    /**
+     * LegalModal Overlay Structure
+     * - Full screen overlay
+     * - Centers the modal dialog
+     */
+    ".legal-modal__overlay-structure": {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    /**
+     * LegalModal Dialog Structure
+     * - Vertical stack layout for dialog content
+     */
+    ".legal-modal__dialog-structure": {
+      display: "flex",
+      flexDirection: "column",
+    },
+
+    /**
+     * LegalModal Header Structure
+     * - Horizontal layout for header
+     * - Title on left, close button on right
+     */
+    ".legal-modal__header-structure": {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+
+    /**
+     * LegalModal Close Button Structure
+     * - Centered layout for close button icon
+     */
+    ".legal-modal__close-button-structure": {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    /**
+     * Subscription Plans Structure
+     * - Vertical stack layout for subscription plans
+     */
+    ".subscription-plans-structure": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "var(--spacing-2)",
+    },
+
+    /**
+     * Subscription Plan Structure
+     * - Horizontal layout for plan details
+     * - Duration on left, price on right
+     */
+    ".subscription-plan-structure": {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
   });
 });
