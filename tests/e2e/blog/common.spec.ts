@@ -398,8 +398,13 @@ test.describe('E2E Section Test for blog posts - Filter Feature (Happy Path)', (
     // 1. カテゴリフィルタのテスト
     let filterPanel = await openFilterPanel(page);
 
+    // Open category dropdown
     const categorySelector = page.getByTestId('category-selector');
-    await categorySelector.selectOption(categoryToTest.name);
+    await categorySelector.click();
+
+    // Select category option from dropdown
+    const categoryOption = page.locator(`[role="option"]:has-text("${categoryToTest.name}")`);
+    await categoryOption.click();
 
     const filterSubmitButton = page.getByTestId('filter-submit-button');
     // force: true to click even if it's animating

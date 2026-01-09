@@ -96,8 +96,8 @@ test.describe('Account Profile Section', () => {
       await page.click('[data-testid="save-button"]');
 
       // Verify error
-      await expect(page.locator('[data-testid="error-message"]')).toBeVisible();
-      await expect(page.locator('[data-testid="error-message"]')).toContainText(
+      await expect(page.locator('[data-testid="modal-error-message"]')).toBeVisible();
+      await expect(page.locator('[data-testid="modal-error-message"]')).toContainText(
         spec.validation.current_password.error_messages.incorrect
       );
     });
@@ -117,7 +117,7 @@ test.describe('Account Profile Section', () => {
       await page.click('[data-testid="save-button"]');
 
       // Verify error (email already exists)
-      await expect(page.locator('[data-testid="error-message"]')).toContainText(
+      await expect(page.locator('[data-testid="modal-error-message"]')).toContainText(
         spec.error_messages.email_change.email_exists
       );
     });
@@ -184,7 +184,7 @@ test.describe('Account Profile Section', () => {
       await page.click('[data-testid="save-button"]');
 
       // Verify error
-      await expect(page.locator('[data-testid="error-message"]')).toContainText(
+      await expect(page.locator('[data-testid="modal-error-message"]')).toContainText(
         spec.error_messages.password_change.incorrect_current
       );
     });
@@ -201,7 +201,7 @@ test.describe('Account Profile Section', () => {
       await page.click('[data-testid="save-button"]');
 
       // Verify field error message for password mismatch
-      await expect(page.locator('.profile-form__error')).toContainText(
+      await expect(page.locator('#new-password-confirm-error')).toContainText(
         spec.validation.new_password_confirm.error_messages.mismatch
       );
     });
@@ -218,7 +218,7 @@ test.describe('Account Profile Section', () => {
       await page.click('[data-testid="save-button"]');
 
       // Verify field validation error for weak password
-      await expect(page.locator('.profile-form__error')).toBeVisible();
+      await expect(page.locator('#new-password-error')).toBeVisible();
     });
   });
 
@@ -267,7 +267,7 @@ test.describe('Account Profile Section', () => {
       await page.click('[data-testid="delete-button"]');
 
       // Verify error
-      await expect(page.locator('[data-testid="error-message"]')).toContainText(
+      await expect(page.locator('[data-testid="modal-error-message"]')).toContainText(
         spec.error_messages.delete_account.incorrect_password
       );
     });

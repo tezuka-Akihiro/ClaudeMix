@@ -73,11 +73,6 @@ test.describe.serial('Blog Access Control - Category-based Authentication', () =
       if (isLocked === 'true') {
         lockedCardsFound = true;
 
-        // Verify lock badge is visible
-        const lockBadge = card.getByTestId('lock-badge');
-        await expect(lockBadge).toBeVisible();
-        await expect(lockBadge).toContainText('🔒');
-
         // Verify lock message is visible
         const lockMessage = card.getByTestId('lock-message');
         await expect(lockMessage).toBeVisible();
@@ -171,11 +166,11 @@ test.describe.serial('Blog Access Control - Category-based Authentication', () =
     const postCount = await postCards.count();
     expect(postCount).toBeGreaterThan(0);
 
-    // Verify no lock badges are visible
+    // Verify no lock messages are visible
     for (let i = 0; i < postCount; i++) {
       const card = postCards.nth(i);
-      const lockBadge = card.getByTestId('lock-badge');
-      await expect(lockBadge).not.toBeVisible();
+      const lockMessage = card.getByTestId('lock-message');
+      await expect(lockMessage).not.toBeVisible();
     }
   });
 

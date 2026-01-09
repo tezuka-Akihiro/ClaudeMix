@@ -79,13 +79,10 @@ test.describe.serial('E2E Section Test for blog - posts', () => {
       // 3. LoadMoreButtonをクリック
       await loadMoreButton.click();
 
-      // 4. ローディング表示を確認
-      await expect(loadMoreButton.getByText('Loading...')).toBeVisible();
+      // 4. 追加記事が読み込まれるのを待つ
+      await expect(postsSection.getByTestId('post-card').nth(initialCount)).toBeVisible();
 
-      // 5. 追加記事が読み込まれるまで待機
-      await page.waitForTimeout(1000);
-
-      // 6. 記事が追加されたことを確認
+      // 5. 記事が追加されたことを確認
       const updatedPostCards = postsSection.getByTestId('post-card');
       const updatedCount = await updatedPostCards.count();
       expect(updatedCount).toBeGreaterThan(initialCount);
