@@ -1,7 +1,7 @@
 // blog.$slug - Route: 記事詳細ページ
 // データフローとページ構成を担当
 
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
@@ -18,9 +18,32 @@ import { determineContentVisibility } from "~/lib/blog/post-detail/determineCont
 import { getSession } from "~/data-io/account/common/getSession.server";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
-import "~/styles/blog/layer2-common.css";
+import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
 // 記事詳細ページ専用のCSS（PostDetailSection, TableOfContents等）
-import "~/styles/blog/layer2-post-detail.css";
+import layer2PostDetailStyles from "~/styles/blog/layer2-post-detail.css?url";
+
+export const links: LinksFunction = () => [
+  // 共通CSSをpreloadして早期ダウンロード
+  {
+    rel: "preload",
+    href: layer2CommonStyles,
+    as: "style",
+  },
+  {
+    rel: "stylesheet",
+    href: layer2CommonStyles,
+  },
+  // 記事詳細専用CSSをpreloadして早期ダウンロード
+  {
+    rel: "preload",
+    href: layer2PostDetailStyles,
+    as: "style",
+  },
+  {
+    rel: "stylesheet",
+    href: layer2PostDetailStyles,
+  },
+];
 
 export interface PostDetailLoaderData {
   post: {

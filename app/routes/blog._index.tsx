@@ -1,7 +1,7 @@
 // blog/index - Route (routes層)
 // ブログトップページのRoute
 
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import BlogLayout from "~/components/blog/common/BlogLayout";
@@ -14,9 +14,32 @@ import { loadPostsSpec } from "~/data-io/blog/posts/loadPostsSpec.server";
 import { getSession } from "~/data-io/account/common/getSession.server";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
-import "~/styles/blog/layer2-common.css";
+import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
 // 記事一覧ページ専用のCSS（PostCard, FilterPanel, LoadMoreButton等）
-import "~/styles/blog/layer2-posts.css";
+import layer2PostsStyles from "~/styles/blog/layer2-posts.css?url";
+
+export const links: LinksFunction = () => [
+  // 共通CSSをpreloadして早期ダウンロード
+  {
+    rel: "preload",
+    href: layer2CommonStyles,
+    as: "style",
+  },
+  {
+    rel: "stylesheet",
+    href: layer2CommonStyles,
+  },
+  // 記事一覧専用CSSをpreloadして早期ダウンロード
+  {
+    rel: "preload",
+    href: layer2PostsStyles,
+    as: "style",
+  },
+  {
+    rel: "stylesheet",
+    href: layer2PostsStyles,
+  },
+];
 
 export const meta: MetaFunction = () => {
   return [
