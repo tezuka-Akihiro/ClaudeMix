@@ -378,9 +378,10 @@ async function generateBlogPosts() {
 
     console.log(`✅ Parsed ${posts.length} posts`);
 
-    // 本番環境ではテスト専用記事を除外
+    // 本番環境ではテスト専用記事を除外（E2Eテスト時は除外しない）
     const isProduction = process.env.NODE_ENV === 'production';
-    const filteredPosts = isProduction
+    const isE2ETest = process.env.E2E_TEST === 'true';
+    const filteredPosts = (isProduction && !isE2ETest)
       ? posts.filter(post => !post.frontmatter.testOnly)
       : posts;
 
