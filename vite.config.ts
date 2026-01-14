@@ -48,6 +48,22 @@ export default defineConfig({
         /\.spec\.(ts|tsx|js|jsx)$/,
       ],
       output: {
+        // Lighthouse最適化: ベンダーとコンポーネントを分割してキャッシュ効率化
+        manualChunks: (id) => {
+          // node_modulesを別チャンクに分離
+          if (id.includes('node_modules')) {
+            // React関連を専用チャンクに
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor-react';
+            }
+            // Remix関連を専用チャンクに
+            if (id.includes('@remix-run')) {
+              return 'vendor-remix';
+            }
+            // その他のベンダー
+            return 'vendor';
+          }
+        },
         // アセットファイル名の最適化（キャッシュ効率化）
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name?.split('.');

@@ -4,28 +4,13 @@ import {
   Outlet,
   Scripts,
 } from "@remix-run/react";
+// セルフホスティングフォント (Lighthouse最適化: 外部リクエスト削減)
+import "@fontsource/oswald/400.css";
+import "@fontsource/oswald/500.css";
+import "@fontsource/oswald/700.css";
 
 export function links() {
-  return [
-    {
-      rel: "preconnect",
-      href: "https://fonts.googleapis.com",
-    },
-    {
-      rel: "preconnect",
-      href: "https://fonts.gstatic.com",
-      crossOrigin: "anonymous",
-    },
-    {
-      rel: "preload",
-      as: "style",
-      href: "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap",
-    },
-    {
-      rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap",
-    },
-  ];
+  return [];
 }
 
 export default function App() {
@@ -36,6 +21,12 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         <Meta />
+        {/* クリティカルCSS: 初期レンダリングに必要な最小限のスタイル */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}:root{--color-background-primary:#111;--color-text-primary:#E8E8E8;--color-accent-gold:#D4BC89;--color-interactive-primary:#22d3ee;--spacing-3:16px;--spacing-4:24px;--font-heading-primary:'Oswald'}`,
+          }}
+        />
         <Links />
         {/* FOUC防止: テーマをlocalStorageから即座に適用 */}
         <script

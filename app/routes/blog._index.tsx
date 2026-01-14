@@ -19,21 +19,9 @@ import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
 import layer2PostsStyles from "~/styles/blog/layer2-posts.css?url";
 
 export const links: LinksFunction = () => [
-  // 共通CSSをpreloadして早期ダウンロード
-  {
-    rel: "preload",
-    href: layer2CommonStyles,
-    as: "style",
-  },
   {
     rel: "stylesheet",
     href: layer2CommonStyles,
-  },
-  // 記事一覧専用CSSをpreloadして早期ダウンロード
-  {
-    rel: "preload",
-    href: layer2PostsStyles,
-    as: "style",
   },
   {
     rel: "stylesheet",

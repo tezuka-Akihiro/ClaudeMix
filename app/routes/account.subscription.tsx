@@ -118,7 +118,7 @@ export default function AccountSubscription() {
       />
 
       <p className="text-sm text-gray-600 mt-8">
-        注意: これはMVP実装です。実際の決済処理は未実装です。
+        注意: これは初期実装です。実際の決済処理は未実装です。
       </p>
     </div>
   );
