@@ -223,7 +223,7 @@ export default function Login() {
   const { uiSpec } = loaderData;
 
   return (
-    <div className="auth-container auth-container-structure" data-testid="login-page">
+    <main className="auth-container auth-container-structure" data-testid="login-page">
       <div className="auth-card auth-card-structure">
         <h1 className="auth-header__title">{uiSpec.title}</h1>
         <p className="auth-header__subtitle">{uiSpec.subtitle}</p>
@@ -366,6 +366,6 @@ export default function Login() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

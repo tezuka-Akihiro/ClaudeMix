@@ -148,7 +148,7 @@ export default function ForgotPassword() {
   const { uiSpec } = loaderData;
 
   return (
-    <div className="auth-container auth-container-structure">
+    <main className="auth-container auth-container-structure">
       <div className="auth-card auth-card-structure">
         <h1 className="auth-header__title">{uiSpec.title}</h1>
 
@@ -210,6 +210,6 @@ export default function ForgotPassword() {
           </a>
         </p>
       </div>
-    </div>
+    </main>
   );
 }
