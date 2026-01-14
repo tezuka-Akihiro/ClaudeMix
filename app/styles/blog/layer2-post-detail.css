@@ -212,30 +212,34 @@
   }
 
   /* --- Table Styling --- */
-  /* テーブルラッパー（オーバーフロー対応） */
-  .post-detail-section__content table {
-    display: block;
+  /* テーブルラッパー（横スクロール対応） */
+  .post-detail-section__content .table-wrapper {
     overflow-x: auto;
-    border-collapse: collapse;
     margin: var(--spacing-5) 0;
-    width: max-content;
-    min-width: 100%;
     /* スクロールバーのスタイリング（Webkit） */
     -webkit-overflow-scrolling: touch;
   }
 
   /* スクロールバーのカスタマイズ */
-  .post-detail-section__content table::-webkit-scrollbar {
+  .post-detail-section__content .table-wrapper::-webkit-scrollbar {
     height: var(--spacing-2);
   }
 
-  .post-detail-section__content table::-webkit-scrollbar-track {
+  .post-detail-section__content .table-wrapper::-webkit-scrollbar-track {
     background-color: var(--color-interactive-primary-bg-faint);
   }
 
-  .post-detail-section__content table::-webkit-scrollbar-thumb {
+  .post-detail-section__content .table-wrapper::-webkit-scrollbar-thumb {
     background-color: var(--color-interactive-primary);
     border-radius: var(--border-radius-sm);
+  }
+
+  /* テーブル本体 */
+  .post-detail-section__content table {
+    border-collapse: collapse;
+    margin: 0;
+    width: max-content;
+    min-width: 100%;
   }
 
   .post-detail-section__content th,

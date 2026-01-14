@@ -65,6 +65,23 @@ export function PostDetailSection({
     }
   }, [hasMermaid]); // hasMermaidの変更を監視
 
+  useEffect(() => {
+    // テーブルを横スクロール可能なラッパーで囲む
+    const contentDivs = document.querySelectorAll('.post-detail-section__content');
+    contentDivs.forEach((contentDiv) => {
+      const tables = contentDiv.querySelectorAll('table');
+      tables.forEach((table) => {
+        // すでにラッパーで囲まれていない場合のみ処理
+        if (!table.parentElement?.classList.contains('table-wrapper')) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'table-wrapper';
+          table.parentNode?.insertBefore(wrapper, table);
+          wrapper.appendChild(table);
+        }
+      });
+    });
+  }, [post.visibleContent, post.hiddenContent]);
+
   return (
     <article
       className="post-detail-section post-detail-section-structure"
