@@ -105,7 +105,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const ogpImageHeight = spec.ogp.image.height;
 
   // サブスクリプション状態を取得（セッションからuserIdを使用）
-  const subscriptionStatus = await getSubscriptionStatus(userId);
+  const subscriptionStatus = await getSubscriptionStatus(userId, context as unknown as Parameters<typeof getSubscriptionStatus>[1]);
 
   // アクセス制御判定（見出しベース）
   const freeContentHeading = post.freeContentHeading ?? null;

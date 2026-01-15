@@ -4,25 +4,52 @@
  *
  * @layer 副作用層 (Data-IO)
  * @responsibility D1データベース読み取り
- *
- * NOTE: This is a stub implementation. Full implementation will be added when account service is developed.
  */
 
 import type { Subscription } from '~/specs/account/types'
 
 /**
+ * AppLoadContext type for Cloudflare Workers environment
+ */
+interface CloudflareEnv {
+  DB: D1Database
+}
+
+interface CloudflareLoadContext {
+  env: CloudflareEnv
+}
+
+/**
  * Get subscription by user ID
  *
  * @param userId - User ID to query
+ * @param context - Cloudflare Workers load context with D1 binding
  * @returns Subscription object if found, null otherwise
- *
- * STUB IMPLEMENTATION: Currently returns null (no active subscription)
- * This will be implemented when account service subscription feature is completed.
  */
 export async function getSubscriptionByUserId(
-  userId: string
+  userId: string,
+  context: CloudflareLoadContext
 ): Promise<Subscription | null> {
-  // STUB: Return null to indicate no subscription
-  // In production, this will query the D1 database
-  return null
+  try {
+    // Return null for empty user ID
+    if (!userId) {
+      return null
+    }
+
+    // Query subscription from D1 database using parameterized query (SQL injection protection)
+    const db = context.env.DB
+    const stmt = db
+      .prepare('SELECT * FROM subscriptions WHERE userId = ? ORDER BY createdAt DESC LIMIT 1')
+      .bind(userId)
+    const subscription = await stmt.first<Subscription>()
+
+    if (!subscription) {
+      return null
+    }
+
+    return subscription
+  } catch (error) {
+    console.error('Error retrieving subscription by user ID:', error)
+    return null
+  }
 }

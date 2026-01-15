@@ -8,6 +8,13 @@ vi.mock('~/data-io/account/subscription/getSubscriptionByUserId.server', () => (
 
 import { getSubscriptionByUserId } from '~/data-io/account/subscription/getSubscriptionByUserId.server'
 
+// モックのCloudflareLoadContext
+const mockContext = {
+  env: {
+    DB: {} as D1Database,
+  },
+}
+
 describe('getSubscriptionStatus', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -30,16 +37,16 @@ describe('getSubscriptionStatus', () => {
 
       vi.mocked(getSubscriptionByUserId).mockResolvedValue(mockSubscription)
 
-      const result = await getSubscriptionStatus('user_123')
+      const result = await getSubscriptionStatus('user_123', mockContext)
 
       expect(result).toEqual({ hasActiveSubscription: true })
-      expect(getSubscriptionByUserId).toHaveBeenCalledWith('user_123')
+      expect(getSubscriptionByUserId).toHaveBeenCalledWith('user_123', mockContext)
     })
 
     it('サブスクリプションが存在しない場合、hasActiveSubscription: falseを返す', async () => {
       vi.mocked(getSubscriptionByUserId).mockResolvedValue(null)
 
-      const result = await getSubscriptionStatus('user_123')
+      const result = await getSubscriptionStatus('user_123', mockContext)
 
       expect(result).toEqual({ hasActiveSubscription: false })
     })
@@ -60,7 +67,7 @@ describe('getSubscriptionStatus', () => {
 
       vi.mocked(getSubscriptionByUserId).mockResolvedValue(mockSubscription)
 
-      const result = await getSubscriptionStatus('user_123')
+      const result = await getSubscriptionStatus('user_123', mockContext)
 
       expect(result).toEqual({ hasActiveSubscription: false })
     })
@@ -81,7 +88,7 @@ describe('getSubscriptionStatus', () => {
 
       vi.mocked(getSubscriptionByUserId).mockResolvedValue(mockSubscription)
 
-      const result = await getSubscriptionStatus('user_123')
+      const result = await getSubscriptionStatus('user_123', mockContext)
 
       expect(result).toEqual({ hasActiveSubscription: false })
     })
@@ -98,7 +105,7 @@ describe('getSubscriptionStatus', () => {
         new Error('Database error')
       )
 
-      const result = await getSubscriptionStatus('user_123')
+      const result = await getSubscriptionStatus('user_123', mockContext)
 
       expect(result).toEqual({ hasActiveSubscription: false })
       expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -110,14 +117,14 @@ describe('getSubscriptionStatus', () => {
     })
 
     it('userIdがnullの場合、hasActiveSubscription: falseを返す', async () => {
-      const result = await getSubscriptionStatus(null)
+      const result = await getSubscriptionStatus(null, mockContext)
 
       expect(result).toEqual({ hasActiveSubscription: false })
       expect(getSubscriptionByUserId).not.toHaveBeenCalled()
     })
 
     it('userIdが空文字の場合、hasActiveSubscription: falseを返す', async () => {
-      const result = await getSubscriptionStatus('')
+      const result = await getSubscriptionStatus('', mockContext)
 
       expect(result).toEqual({ hasActiveSubscription: false })
       expect(getSubscriptionByUserId).not.toHaveBeenCalled()
