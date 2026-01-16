@@ -1,0 +1,30 @@
+// MangaPanelGrid - Component (components層)
+// 漫画パネルをグリッドレイアウトで配置
+
+import React from 'react';
+import MangaPanel from './MangaPanel';
+import type { MangaAsset } from '~/specs/blog/types';
+
+interface MangaPanelGridProps {
+  mangaAssets: MangaAsset[];
+  heroMaxCount?: number;
+}
+
+const MangaPanelGrid: React.FC<MangaPanelGridProps> = ({ mangaAssets, heroMaxCount = 2 }) => {
+  return (
+    <section
+      className="manga-panel-grid manga-panel-grid-structure"
+      data-testid="manga-panel-grid"
+    >
+      {mangaAssets.map((asset, index) => (
+        <MangaPanel
+          key={asset.fileName}
+          asset={asset}
+          loading={index < heroMaxCount ? 'eager' : 'lazy'}
+        />
+      ))}
+    </section>
+  );
+};
+
+export default MangaPanelGrid;
