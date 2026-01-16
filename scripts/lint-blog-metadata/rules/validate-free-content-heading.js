@@ -4,6 +4,44 @@ import matter from 'gray-matter';
  * Free Content Heading Validation ルール
  * frontmatterの`freeContentHeading`で指定された見出しが実際に記事内に存在するかを検証
  */
+
+/**
+ * マークダウンから見出し（レベル2〜4）を抽出
+ * コードブロック内の見出しは除外
+ * @param {string} markdown
+ * @returns {Array<{level: number, text: string}>}
+ */
+function extractHeadings(markdown) {
+  const headings = [];
+  const lines = markdown.split('\n');
+  let inCodeBlock = false;
+  const codeBlockDelimiter = /^```/;
+  const headingRegex = /^(#{2,4})\s+(.+)$/;
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    // コードブロックの開始/終了を検出
+    if (codeBlockDelimiter.test(trimmedLine)) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+
+    // コードブロック内の行はスキップ
+    if (inCodeBlock) continue;
+
+    // 見出し（##, ###, ####）を検出
+    const match = headingRegex.exec(trimmedLine);
+    if (match) {
+      const level = match[1].length;
+      const text = match[2].trim();
+      headings.push({ level, text });
+    }
+  }
+
+  return headings;
+}
+
 export function getFreeContentHeadingRules() {
   return {
     'free-content-heading-exists': {
@@ -22,7 +60,7 @@ export function getFreeContentHeadingRules() {
 
         const freeContentHeading = data.freeContentHeading;
 
-        // 記事から見出しを抽出（レベル2のみ、## で始まる行）
+        // 記事から見出しを抽出（レベル2〜4）
         const headings = this.extractHeadings(markdown);
         const headingTexts = headings.map(h => h.text);
 
