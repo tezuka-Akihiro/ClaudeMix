@@ -6,6 +6,7 @@ author: "ClaudeMix Team"
 publishedAt: "2025-12-09"
 category: "Claude Best Practices"
 tags: ["architecture", "testing", "Vite", "Projects"]
+freeContentHeading: "具体的なタスク"
 ---
 
 ## はじめに
@@ -51,14 +52,18 @@ tags: ["architecture", "testing", "Vite", "Projects"]
 ## 具体的なタスク
 
 - **Before**:
-  既存の3つのリントシステム（Markdown, Template, CSS Architecture）のアーキテクチャ（※）を調査し、一貫性のある設計方針を策定しました。
+  既存のリントシステムのアーキテクチャ（※）を調査し、一貫性のある設計方針を策定しました。
 - **Current**:
-  6つの検証ルール（必須フィールド、カテゴリ、タグ、日付形式、slug 形式、description 長）を実装し、spec.yaml（※）から許可値を動的に読み込む仕組みを構築しました。
+  複数の検証ルール（必須フィールド、カテゴリ、タグ、日付形式、slug 形式、description 長）を実装し、spec.yaml（※）から許可値を動的に読み込む仕組みを構築しました。
 - **Next**:
-  実際のブログ記事にリントを適用し、検出された問題を修正。TypeScript タグの追加や description フィールドの拡充を行いました。
+  実際のブログ記事にリントを適用し、検出された問題を修正しました。
 
 > ※ **アーキテクチャ**: システム全体の設計図や骨組みのこと。
 > ※ **spec.yaml**: サイトの設定（例: 使えるカテゴリ名など）を書いておく設定ファイル。
+
+ここからは、実際にClaudeMixで実装した具体的な設計と実装コードを公開します。
+
+プラグイン形式のRuleEngineクラス実装、spec.yamlとの統合方法、AIレビューによる設計改善プロセス、そして二段階レポート機能の実装まで、ClaudeMixで実際に記述したJavaScriptコードを、ステップバイステップで解説します。
 
 ## 課題と解決策
 
