@@ -41,13 +41,15 @@ function slugify(text) {
 
 /**
  * extractHeadings - マークダウンから見出しを抽出
+ * h2〜h4（##〜####）を抽出し、目次表示およびペイウォール区切り指定に使用
  */
 function extractHeadings(markdown) {
   const headings = [];
   const lines = markdown.split("\n");
   let inCodeBlock = false;
   const codeBlockDelimiter = /^```/;
-  const headingRegex = /^(#{2})\s+(.+)$/;
+  // h2〜h4（##〜####）を抽出
+  const headingRegex = /^(#{2,4})\s+(.+)$/;
 
   for (const line of lines) {
     const trimmedLine = line.trim();

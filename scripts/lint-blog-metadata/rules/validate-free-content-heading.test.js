@@ -172,16 +172,37 @@ Main content`
   });
 
   describe('extractHeadings helper', () => {
-    test('レベル2見出しのみを抽出', () => {
+    test('レベル2〜4見出しを抽出', () => {
       const rules = getFreeContentHeadingRules();
       const rule = rules['free-content-heading-exists'];
 
-      const markdown = '# レベル1\n\n## レベル2-1\n\n### レベル3\n\n## レベル2-2';
+      const markdown = '# レベル1\n\n## レベル2\n\n### レベル3\n\n#### レベル4\n\n##### レベル5';
       const headings = rule.extractHeadings(markdown);
 
-      expect(headings).toHaveLength(2);
-      expect(headings[0].text).toBe('レベル2-1');
-      expect(headings[1].text).toBe('レベル2-2');
+      expect(headings).toHaveLength(3);
+      expect(headings[0].text).toBe('レベル2');
+      expect(headings[1].text).toBe('レベル3');
+      expect(headings[2].text).toBe('レベル4');
+    });
+
+    test('h3見出しでfreeContentHeadingが設定可能', async () => {
+      const markdown = createMarkdown(
+        'title: Test Article\nfreeContentHeading: "サブセクション"',
+        '## はじめに\n\n### サブセクション\n\n詳細内容\n\n## まとめ'
+      );
+
+      const results = await runRule('free-content-heading-exists', markdown);
+      expect(results).toHaveLength(0);
+    });
+
+    test('h4見出しでfreeContentHeadingが設定可能', async () => {
+      const markdown = createMarkdown(
+        'title: Test Article\nfreeContentHeading: "詳細項目"',
+        '## はじめに\n\n### サブ\n\n#### 詳細項目\n\n内容\n\n## まとめ'
+      );
+
+      const results = await runRule('free-content-heading-exists', markdown);
+      expect(results).toHaveLength(0);
     });
 
     test('コードブロック内の見出しを除外', () => {

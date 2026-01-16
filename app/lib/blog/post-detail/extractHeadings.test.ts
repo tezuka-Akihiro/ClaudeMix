@@ -1,5 +1,5 @@
 // extractHeadings.test.ts - マークダウンから見出しを抽出するテスト
-// 階層定義: develop/blog/post-detail/func-spec.md の「目次階層の定義」参照
+// h2〜h4（##〜####）を抽出し、目次表示およびペイウォール区切り指定に使用
 
 import { describe, it, expect } from "vitest";
 import { extractHeadings, type Heading } from "./extractHeadings";
@@ -13,14 +13,35 @@ describe("extractHeadings", () => {
     ]);
   });
 
-  it("h3見出しは除外する（目次は1階層のみ）", () => {
+  it("h3見出しを抽出する（ペイウォール区切り対応）", () => {
     const markdown = "## セクション\n\n### サブセクション\n\n本文";
     const result = extractHeadings(markdown);
-    expect(result).toEqual([{ level: 2, text: "セクション", id: "セクション" }]);
+    expect(result).toEqual([
+      { level: 2, text: "セクション", id: "セクション" },
+      { level: 3, text: "サブセクション", id: "サブセクション" },
+    ]);
+  });
+
+  it("h4見出しを抽出する（ペイウォール区切り対応）", () => {
+    const markdown = "## セクション\n\n### サブ\n\n#### 詳細\n\n本文";
+    const result = extractHeadings(markdown);
+    expect(result).toEqual([
+      { level: 2, text: "セクション", id: "セクション" },
+      { level: 3, text: "サブ", id: "サブ" },
+      { level: 4, text: "詳細", id: "詳細" },
+    ]);
   });
 
   it("h1見出しは除外する（タイトル用）", () => {
     const markdown = "# タイトル\n\n## セクション\n\n本文";
+    const result = extractHeadings(markdown);
+    expect(result).toEqual([
+      { level: 2, text: "セクション", id: "セクション" },
+    ]);
+  });
+
+  it("h5以上の見出しは除外する", () => {
+    const markdown = "## セクション\n\n##### 深すぎる\n\n本文";
     const result = extractHeadings(markdown);
     expect(result).toEqual([
       { level: 2, text: "セクション", id: "セクション" },
@@ -36,9 +57,11 @@ describe("extractHeadings", () => {
 
 ## まとめ`;
     const result = extractHeadings(markdown);
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(4);
     expect(result[0].text).toBe("概要");
-    expect(result[1].text).toBe("まとめ");
+    expect(result[1].text).toBe("詳細1");
+    expect(result[2].text).toBe("詳細2");
+    expect(result[3].text).toBe("まとめ");
   });
 
   it("見出しがない場合は空配列を返す", () => {

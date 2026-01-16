@@ -134,9 +134,10 @@ export interface LoadMoreInfo {
 
 /**
  * 記事の見出し情報
+ * h2〜h4（##〜####）を対象とし、目次表示およびペイウォール区切り指定に使用
  */
 export interface Heading {
-  level: 2;
+  level: 2 | 3 | 4;
   text: string;
   id: string;
 }
