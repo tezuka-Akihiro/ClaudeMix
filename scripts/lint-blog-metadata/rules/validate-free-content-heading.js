@@ -42,7 +42,7 @@ export function getFreeContentHeadingRules() {
       },
 
       /**
-       * マークダウンから見出し（レベル2）を抽出
+       * マークダウンから見出し（レベル2〜4）を抽出
        * コードブロック内の見出しは除外
        */
       extractHeadings: function(markdown) {
@@ -50,7 +50,8 @@ export function getFreeContentHeadingRules() {
         const lines = markdown.split('\n');
         let inCodeBlock = false;
         const codeBlockDelimiter = /^```/;
-        const headingRegex = /^(#{2})\s+(.+)$/;
+        // h2〜h4（##〜####）を抽出
+        const headingRegex = /^(#{2,4})\s+(.+)$/;
 
         for (const line of lines) {
           const trimmedLine = line.trim();
@@ -64,7 +65,7 @@ export function getFreeContentHeadingRules() {
           // コードブロック内の行はスキップ
           if (inCodeBlock) continue;
 
-          // 見出し（## のみ）を検出
+          // 見出し（h2〜h4）を検出
           const match = headingRegex.exec(trimmedLine);
           if (match) {
             const level = match[1].length;
@@ -118,7 +119,8 @@ export function getFreeContentHeadingRules() {
         const lines = markdown.split('\n');
         let inCodeBlock = false;
         const codeBlockDelimiter = /^```/;
-        const headingRegex = /^(#{2})\s+(.+)$/;
+        // h2〜h4（##〜####）を抽出
+        const headingRegex = /^(#{2,4})\s+(.+)$/;
 
         for (const line of lines) {
           const trimmedLine = line.trim();

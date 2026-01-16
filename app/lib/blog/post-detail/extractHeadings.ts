@@ -9,8 +9,8 @@ import type { Heading } from '~/specs/blog/types';
 export type { Heading };
 
 /**
- * マークダウンテキストから目次用の見出しを抽出する
- * 階層定義は develop/blog/post-detail/func-spec.md の「目次階層の定義」を参照
+ * マークダウンテキストから見出しを抽出する
+ * h2〜h4（##〜####）を抽出し、目次表示およびペイウォール区切り指定に使用
  *
  * コードブロック（```で囲まれた部分）内の見出しは除外する
  *
@@ -23,7 +23,8 @@ export function extractHeadings(markdown: string): Heading[] {
 
   let inCodeBlock = false;
   const codeBlockDelimiter = /^```/;
-  const headingRegex = /^(#{2})\s+(.+)$/;
+  // h2〜h4（##〜####）を抽出
+  const headingRegex = /^(#{2,4})\s+(.+)$/;
 
   for (const line of lines) {
     // Windows改行コード(\r)を除去
@@ -40,10 +41,10 @@ export function extractHeadings(markdown: string): Heading[] {
       continue;
     }
 
-    // コードブロック外の見出しを抽出（階層定義に従う）
+    // コードブロック外の見出しを抽出（h2〜h4）
     const match = headingRegex.exec(trimmedLine);
     if (match) {
-      const level = match[1].length as 2;
+      const level = match[1].length as 2 | 3 | 4;
       const text = match[2].trim();
       const id = slugify(text);
 
