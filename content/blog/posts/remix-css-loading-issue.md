@@ -6,6 +6,7 @@ publishedAt: "2025-11-21"
 category: "Tutorials & Use Cases"
 description: "RemixとCloudflare Workers環境で発生したCSS読み込み問題を解決するデバッグプロセスを解説。パスエイリアス、SSRレンダリングの不整合、開発環境設定の誤りといった複数の原因を特定し、`wrangler pages dev`とViteプラグインを使った正しい開発方法を明らかにします。"
 tags: ["SSR", "Vite", "Workers", "troubleshooting"]
+freeContentHeading: "💡 根本原因の特定"
 ---
 
 ## はじめに
@@ -53,8 +54,6 @@ RemixとCloudflare Workersで最新のWebアプリを作ろうとした。
 - **ホスティング**: Cloudflare Workers
 - **ビルドツール**: Vite
 
----
-
 ## ⚠️ 問題の発見と症状
 
 ### 症状
@@ -65,115 +64,40 @@ RemixとCloudflare Workersで最新のWebアプリを作ろうとした。
 
 ### 初期調査
 
-```bash
-git show 0c1c665 --stat
-```
+問題のコミットを調査したところ、以下の変更が行われていました：
 
-このコミットで変更されたファイル:
-
-- `app/entry.client.tsx`: CSSインポートの追加
-- `app/entry.server.tsx`: レンダリング方式の変更
-- `app/styles/globals.css`: `@import`文の削除
-
----
+- クライアント側のエントリーポイント: CSSインポートの追加
+- サーバー側のエントリーポイント: レンダリング方式の変更
+- グローバルスタイル: インポート文の削除
 
 ## 🔍 調査と試行錯誤のプロセス
 
 ### 仮説1: パスエイリアスの問題ではないか？
 
-### 原因1: パスエイリアスの解決失敗
+クライアント側のエントリーポイントで、パスエイリアスを使ってCSSをインポートしていました。しかし、このアプローチには3つの問題がありました：
 
-**問題のコード** (`app/entry.client.tsx`):
-
-```typescript
-import "~/styles/globals.css";
-import "~/styles/service-name/layer2.css";
-import "~/styles/blog/layer2.css";
-```
-
-**なぜ問題なのか:**
-
-- `entry.client.tsx`はクライアントサイドでのみ実行される
-- SSR時にはこれらのCSSが含まれない
-- `~`エイリアスがビルド時に解決されない場合がある
-
-**正しいアプローチ:**
-
-```typescript
-import "./styles/globals.css";
-import "./styles/service-name/layer2.css";
-import "./styles/blog/layer2.css";
-```
-
-相対パスを使用することで、Viteが確実にパスを解決できます。
+1. **クライアント専用実行**: このファイルはクライアントサイドでのみ実行されるため、SSR時にCSSが含まれない
+2. **パス解決の不確実性**: ビルドツールがエイリアスを解決できない場合がある
+3. **環境依存の挙動**: 開発環境とビルド環境でパス解決の挙動が異なる
 
 ### 仮説2: レンダリング環境の不整合を疑う
 
-**問題のコード** (`app/entry.server.tsx`):
+サーバー側のエントリーポイントで、異なるランタイム向けのレンダリングAPIを使用していました。プロジェクトはCloudflare Workers向けに設定されているにもかかわらず、Node.js専用のAPIを使用していたため、以下の問題が発生：
 
-```typescript
-// Node.js用のレンダリング
-import { renderToPipeableStream } from "react-dom/server";
-import { PassThrough } from "node:stream";
-```
-
-**なぜ問題なのか:**
-
-- プロジェクトはCloudflare Workers向けに設定
-- `vite.config.ts`で`ssr.noExternal: true`が設定されている
-- `wrangler.toml`にCloudflare Workers設定が存在
-- Node.js APIは使用できない
-
-**正しいアプローチ:**
-
-```typescript
-// Cloudflare Workers用のレンダリング
-import { renderToReadableStream } from "react-dom/server";
-import type { AppLoadContext, EntryContext } from "@remix-run/cloudflare";
-
-export default async function handleRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  remixContext: EntryContext,
-  loadContext: AppLoadContext
-) {
-  const body = await renderToReadableStream(
-    <RemixServer
-      context={remixContext}
-      url={request.url}
-      abortDelay={ABORT_DELAY}
-    />,
-    {
-      signal: controller.signal,
-      onError(error: unknown) {
-        if (!controller.signal.aborted) {
-          console.error(error);
-        }
-        responseStatusCode = 500;
-      },
-    }
-  );
-
-  return new Response(body, {
-    headers: responseHeaders,
-    status: responseStatusCode,
-  });
-}
-```
-
----
+1. **ランタイムの不一致**: Workers環境ではNode.js専用のAPIが使用できない
+2. **設定の矛盾**: ビルド設定はWorkers向けなのに、レンダリングコードはNode.js向け
+3. **開発環境の誤り**: 開発サーバーがデプロイ環境と異なるランタイムで動作
 
 ## 💡 根本原因の特定
 
 調査の結果、以下の2つの根本原因が特定されました。
 
-1. **パスエイリアス(`~`)の解決失敗**: `entry.client.tsx`でチルダエイリアスを使用していたため、Viteがビルド時にパスを解決できませんでした。
-2. **レンダリング環境の不整合**: `entry.server.tsx`でNode.js用のレンダリングAPI(`renderToPipeableStream`)を使用していたため、Cloudflare Workers環境では動作しませんでした。
+1. **パスエイリアスの解決失敗**: クライアント側のエントリーポイントでパスエイリアスを使用していたため、ビルドツールがビルド時にパスを解決できませんでした。
+2. **レンダリング環境の不整合**: サーバー側のエントリーポイントでNode.js用のレンダリングAPIを使用していたため、Cloudflare Workers環境では動作しませんでした。
 
 これらの問題は、開発環境とデプロイ環境の違いを理解せず、設定を曖昧なままにしていたことが原因でした。
 
----
+では、実際にどのようにこれらの問題を解決したのか。パスエイリアスと相対パスの違い、Node.js用とWorkers用のレンダリングAPIの具体的な書き分け、そして`wrangler pages dev`を使った正しい開発環境のセットアップ方法まで、すべて公開します。また、ビルド出力の検証方法や、curlを使ったCSS読み込み確認の具体的なコマンドも紹介します。
 
 ## 🔧 解決策
 
@@ -254,8 +178,6 @@ CSSの内容:
 - `blog/layer2.css`
 
 すべてのCSSが含まれています！
-
----
 
 ## 🎓 学んだこと・まとめ
 
@@ -398,8 +320,6 @@ TypeScriptのパスエイリアス設定(`tsconfig.json`):
 3. **SSR考慮**: クライアントサイドだけでなく、SSR時の動作も考慮する
 4. **段階的デバッグ**: git diff → build → 検証の順で問題を特定
 5. **ドキュメント確認**: Remix、Vite、Cloudflare Workersのドキュメントを参照
-
----
 
 ## 🔗 関連リソース
 

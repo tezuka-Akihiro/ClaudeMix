@@ -6,6 +6,7 @@ publishedAt: "2025-12-28"
 slug: "ai-remix-react-history-ssr"
 category: "Claude Best Practices"
 tags: ["React", "SSR", "troubleshooting", "Prompts"]
+freeContentHeading: "第3層：構造的な解剖 ― ハイドレーションという名の「アイデンティティ不安」"
 ---
 
 ## はじめに
@@ -59,41 +60,13 @@ AIが書いた「論理的に完璧なコード」が動かない。この不気
 
 FlashMessageコンポーネントを実装しました。5秒後に自動で消える、よくある機能です。
 
-```typescript
-export function FlashMessage({
-  message,
-  autoDismiss = true,
-  autoDismissDelay = 5000,
-  onClose
-}: FlashMessageProps) {
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    if (!autoDismiss) return;
-
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      onClose?.();
-    }, autoDismissDelay);
-
-    return () => clearTimeout(timer);
-  }, [autoDismiss, autoDismissDelay]);
-
-  if (!isVisible) return null;
-
-  // ... render JSX
-}
-```
-
-**このコードは論理的に完璧です。** useEffectでタイマーを設定し、クリーンアップ関数で解除している。依存配列も最小限に絞っている。
+Reactのフックを使ってタイマーを設定し、クリーンアップ関数で解除している。依存配列も最小限に絞っている。**このコードは論理的に完璧です。**
 
 しかし、E2Eテストは失敗します。
 
-```bash
-# 期待: 5秒後に消える
-# 現実: 10秒待っても消えない
-Expected: not.toBeVisible()
-Received: visible
+```text
+期待: 5秒後に消える
+現実: 10秒待っても消えない
 ```
 
 AIに聞いても「コードは正しい」と言う。依存配列を修正しても動かない。**ここに、AI時代特有の不気味さが現れます。**
@@ -156,6 +129,8 @@ AIは「コードの論理」を見ています。しかし、この問題は「
 - 現実の問題: 「そもそもコンポーネントが何度も殺されている」
 
 **AIは論理には強いが、文脈（歴史や環境）の衝突には疎い。** これがAI時代に人間が理解すべき最も重要なことです。
+
+では、この「アイデンティティ不安」をどう解決するのか。古い道具（keyプロップ）を新しい意味で使う建築家的アプローチ、具体的なコード実装、依存配列の最小化テクニック、そしてCLAUDE.mdへの知見の蓄積方法まで、すべて公開します。
 
 ## 第4層：解決の思想 ― keyプロップは「効率化」ではなく「生存戦略」
 
