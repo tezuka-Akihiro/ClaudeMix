@@ -279,4 +279,95 @@ graph TD
 
 ## 6 TDD_WORK_FLOW.md 簡易版
 
-*(この章は承認後に作成)*
+以下の全項目に対して、実際のパスと編集内容を1行で記載します。完全な計画ではなく、大枠がわかれば十分です。
+
+### 👁️ e2e-screen-test
+
+**該当なし**（LPは画面単位のE2Eテストではなく、セクション単位でテストする）
+
+---
+
+### 👁️ e2e-section-test
+
+- `tests/e2e/section/blog/landing.spec.ts`: LP表示、ターゲットパラメータ検証、スクロールアニメーション動作、CTA導線確認のE2Eテスト
+
+---
+
+### 🎨 CSS実装 (layer2.css, layer3.ts, layer4.ts)
+
+- `app/styles/globals.css`: LPカラー変数追加（`--color-lp-primary: #22d3ee`, `--color-lp-dark: #0a0a0a`, `--color-lp-accent: #BFA978`）
+- `app/styles/blog/layer2-landing.css`: 漫画パネル、CTAボタン、LPフッターの見た目定義
+- `app/styles/blog/layer3-landing.ts`: MangaPanelGrid（CSS Grid）、ScrollSection（Flexbox縦積み）のレイアウトクラス生成
+- `app/styles/blog/layer4-landing.ts`: スクロールアニメーション用`@keyframes`定義（fadeInUp, slideIn等）
+
+---
+
+### 🪨 route
+
+- `app/routes/blog.landing.$target.tsx`:
+  - URL: `/blog/landing/:target`、loaderでターゲットパラメータ取得・検証
+  - `getLandingContent.server.ts`でコンテンツYAML読み込み
+  - `getMangaAssets.server.ts`で漫画画像パス取得
+  - HeroSection, ScrollSection, MangaPanelGrid, CTASection, LandingFooterをレンダリング
+  - ErrorBoundaryでターゲット不正時のフォールバック表示
+
+---
+
+### 🚧 components.test
+
+- `app/components/blog/landing/HeroSection.test.tsx`: ファーストビュー表示テスト
+- `app/components/blog/landing/MangaPanel.test.tsx`: 漫画パネル画像読み込み、遅延ロードテスト
+- `app/components/blog/landing/ScrollSection.test.tsx`: スクロールアニメーション領域の構造テスト
+- `app/components/blog/landing/AnimatedBlock.test.tsx`: 個別アニメーション要素の表示・非表示テスト
+- `app/components/blog/landing/CTASection.test.tsx`: CTAボタン群のリンク検証テスト
+- `app/components/blog/landing/LandingFooter.test.tsx`: フッター法務リンクテスト
+
+---
+
+### 🪨 components
+
+- `app/components/blog/landing/HeroSection.tsx`: ファーストビュー（漫画パネル1-2枚、キャッチコピー）
+- `app/components/blog/landing/MangaPanel.tsx`: 漫画パネル単体（`<img loading="lazy">`、WebP形式）
+- `app/components/blog/landing/ScrollSection.tsx`: スクロールアニメーション領域（AnimatedBlock × N を配置）
+- `app/components/blog/landing/AnimatedBlock.tsx`: 個別アニメーション要素（Intersection Observer連携、data-testid付与）
+- `app/components/blog/landing/CTASection.tsx`: CTAボタン群（ドキュメント、GitHub、デモへのリンク）
+- `app/components/blog/landing/LandingFooter.tsx`: LPフッター（法務リンク、プライバシーポリシー等）
+
+---
+
+### 🚧 logic.test
+
+- `app/lib/blog/landing/scrollAnimation.test.ts`: スクロール位置計算、アニメーション発火判定のユニットテスト
+- `app/lib/blog/landing/targetValidation.test.ts`: ターゲットパラメータ検証（正常値、不正値、デフォルト値）のユニットテスト
+
+---
+
+### 🪨 logic
+
+- `app/lib/blog/landing/scrollAnimation.ts`: スクロール位置計算、ビューポート閾値判定（70%）、アニメーション発火ロジック（純粋関数）
+- `app/lib/blog/landing/targetValidation.ts`: ターゲットパラメータ検証（`engineer`等の許可リスト照合）、デフォルト値フォールバック（純粋関数）
+
+---
+
+### 🚧 data-io.test
+
+- `app/data-io/blog/landing/getLandingContent.server.test.ts`: コンテンツYAML読み込み、パース処理のユニットテスト（ファイル存在確認、エラーハンドリング）
+- `app/data-io/blog/landing/getMangaAssets.server.test.ts`: 漫画画像パス取得、ファイル存在確認のユニットテスト
+
+---
+
+### 🪨 data-io
+
+- `app/data-io/blog/landing/getLandingContent.server.ts`: `content/blog/landing/{target}/content.yaml`を読み込み、パースしてLandingContent型で返す
+- `app/data-io/blog/landing/getMangaAssets.server.ts`: `content/blog/landing/{target}/manga/`配下の画像ファイル一覧を取得、パス配列で返す
+
+---
+
+### その他
+
+- `app/specs/blog/landing-spec.yaml`: LP設定の単一真実の源（SSoT）- ターゲット、カラー、アニメーション、CTA、性能設定を定義
+- `content/blog/landing/engineer/content.yaml`: エンジニア向けコンテンツ（キャッチコピー、説明文、CTA文言）
+- `content/blog/landing/engineer/manga/*.webp`: エンジニア向け漫画画像アセット（8枚）
+- `docs/thinking/landing-css-inline.md`: Critical CSSインライン化の判断経緯を記録（性能最適化の妥協点）
+- `develop/blog/landing/TECHNICAL_DESIGN.md`: 技術設計書（Layer別の詳細設計、コンポーネント仕様、データフロー）
+- `develop/blog/landing/IMPLEMENTATION_PLAN.md`: 実装手順書（タスク分解、依存関係、検証ポイント）
