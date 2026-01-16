@@ -46,6 +46,14 @@ services:
         processing: "指定された記事データを取得し、マークダウンをHTMLに変換して整形・表示する。サブスクリプション状態に基づいて記事の可視範囲を判定し、未契約ユーザーにはペイウォールを表示する。"
         output: "記事詳細UIコンポーネント、部分表示UI、購読促進バナー"
         doc_path: "develop/blog/post-detail/func-spec.md"
+      landing:
+        name: "ランディングページ"
+        abstract_purpose: "ClaudeMixの技術力を視覚的にデモンストレーションし、ターゲット別の価値提案を行う。"
+        specific_purpose: "スクロール駆動型アニメーション、漫画コンテンツ、CTAボタンを組み合わせたランディングページを実装する。Remix性能のデモンストレーションと差別化を実現する。"
+        input: "ターゲットパラメータ（engineer等）、コンテンツYAML、漫画画像アセット"
+        processing: "ターゲットに応じたコンテンツを読み込み、Intersection Observerでスクロールアニメーションを制御し、レスポンシブ対応のLPをレンダリングする。"
+        output: "スクロール駆動型LPコンポーネント、漫画パネル、CTAセクション"
+        doc_path: "develop/blog/landing/func-spec.md"
 
   account:
     name: "アカウント"
