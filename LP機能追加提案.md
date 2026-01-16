@@ -175,7 +175,7 @@ LP全体コンテナ
   - スクロール位置 → アニメーション発火（閾値: ビューポート70%）
   - 画像遅延ロード → `loading="lazy"`属性使用
 - **CSS戦略**:
-  - Layer 1: ClaudeMixカラー（`--color-lp-primary: シアン`、`--color-lp-dark: 黒`）をglobals.cssに追加
+  - Layer 1: 既存のカラー変数を使用（`--color-interactive-primary`、`--color-surface-dark`、`--color-accent-gold`）
   - Layer 2: `app/styles/blog/layer2-landing.css`（漫画パネル、CTAボタンスタイル）
   - Layer 3: `app/styles/blog/layer3-landing.ts`（Grid/Flexレイアウト定義）
   - Layer 4: `app/styles/blog/layer4-landing.ts`（スクロールアニメーション`@keyframes`）
@@ -200,9 +200,9 @@ targets:
     manga_panels: 8
 
 colors:
-  primary: "#22d3ee"       # シアン
-  dark: "#0a0a0a"          # 黒
-  accent_gold: "#BFA978"   # アクセント
+  primary: "var(--color-interactive-primary)"     # シアン (#22d3ee)
+  dark: "var(--color-surface-dark)"               # 黒 (#0a0a0a)
+  accent: "var(--color-accent-gold)"              # アクセント (#D4BC89)
 
 scroll_animation:
   trigger_offset: 0.7      # ビューポート70%
@@ -295,8 +295,7 @@ graph TD
 
 ### 🎨 CSS実装 (layer2.css, layer3.ts, layer4.ts)
 
-- `app/styles/globals.css`: LPカラー変数追加（`--color-lp-primary: #22d3ee`, `--color-lp-dark: #0a0a0a`, `--color-lp-accent: #BFA978`）
-- `app/styles/blog/layer2-landing.css`: 漫画パネル、CTAボタン、LPフッターの見た目定義
+- `app/styles/blog/layer2-landing.css`: 漫画パネル、CTAボタン、LPフッターの見た目定義（既存のカラー変数を使用）
 - `app/styles/blog/layer3-landing.ts`: MangaPanelGrid（CSS Grid）、ScrollSection（Flexbox縦積み）のレイアウトクラス生成
 - `app/styles/blog/layer4-landing.ts`: スクロールアニメーション用`@keyframes`定義（fadeInUp, slideIn等）
 
