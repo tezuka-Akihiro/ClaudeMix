@@ -110,7 +110,170 @@ LP全体コンテナ
 
 ## 5 設計フロー
 
-*(この章は承認後に作成)*
+以下の設計ドキュメントを上から順に確認し、編集内容を追記します。
+
+### 🗾 GUIDING_PRINCIPLES.md
+
+**編集場所**: `develop/blog/GUIDING_PRINCIPLES.md`
+
+**編集内容**:
+- **セクション4（セクション間連携と共通化方針）** の「セクション定義」に`landing`セクションを追加
+- 追加内容:
+  ```markdown
+  - **`landing`**: ターゲット別ランディングページ。ClaudeMixの技術力を視覚的にデモンストレーションし、スクロールアニメーション、漫画コンテンツ、CTAボタンで価値提案を行う
+  ```
+- **URL設計セクション**に以下を追加:
+  ```markdown
+  - **ランディングページ**: `/blog/landing/:target` → `app/routes/blog.landing.$target.tsx`
+    - 例: `/blog/landing/engineer`（エンジニア向けLP）
+  ```
+
+---
+
+### 📚️ func-spec.md
+
+**新規作成場所**: `develop/blog/landing/func-spec.md`
+
+**記載内容の骨子**:
+- **機能概要**: Landing Page - ターゲット別技術デモンストレーション
+- **所属サービス**: blog の landing セクション
+- **機能の目的**: ClaudeMixの技術力を視覚的に証明、Remix性能のデモ、漫画表現による差別化
+- **実装優先度**: MEDIUM（初期は engineer ターゲットのみ実装）
+- **基本機能**:
+  1. スクロールアニメーション（Intersection Observer API使用、60fps維持）
+  2. 漫画パネル表示（WebP形式、遅延ロード）
+  3. ターゲット別コンテンツ配信（URLパラメータ: `/blog/landing/:target`）
+  4. CTA導線（ドキュメント、GitHub、デモへのリンク）
+  5. レスポンシブ対応（モバイル/デスクトップ）
+- **データフロー**:
+  - loader: ターゲットパラメータ取得 → コンテンツファイル読み込み（`content/blog/landing/{target}/content.yaml`） → 漫画アセットパス取得
+  - UI: スクロール位置検出 → アニメーション適用 → CTA表示
+- **スコープ外**: フォーム送信、ユーザー登録、分析トラッキング（初期実装では除外）
+
+---
+
+### 🖼️ uiux-spec.md
+
+**新規作成場所**: `develop/blog/landing/uiux-spec.md`
+
+**記載内容の骨子**:
+- **セクション概要**: Landing Page（ターゲット別技術デモ）
+- **レイアウトコンポーネント構造**（Mermaid図）:
+  ```
+  LandingPage (Route)
+  ├── HeroSection（ファーストビュー、漫画パネル1-2枚）
+  ├── ScrollSection（スクロールアニメーション領域）
+  │   └── AnimatedBlock × N（個別アニメーション要素）
+  ├── MangaPanelGrid（漫画パネル配列）
+  ├── CTASection（ドキュメント/GitHubへのリンク）
+  └── LandingFooter（法務リンク）
+  ```
+- **並列配置規範**:
+  - MangaPanelGrid: CSS Grid（レスポンシブ、モバイル1列/デスクトップ2列）
+  - AnimatedBlock: Flexbox縦積み、Intersection Observer連携
+- **状態遷移ルール**:
+  - スクロール位置 → アニメーション発火（閾値: ビューポート70%）
+  - 画像遅延ロード → `loading="lazy"`属性使用
+- **CSS戦略**:
+  - Layer 1: ClaudeMixカラー（`--color-lp-primary: シアン`、`--color-lp-dark: 黒`）をglobals.cssに追加
+  - Layer 2: `app/styles/blog/layer2-landing.css`（漫画パネル、CTAボタンスタイル）
+  - Layer 3: `app/styles/blog/layer3-landing.ts`（Grid/Flexレイアウト定義）
+  - Layer 4: `app/styles/blog/layer4-landing.ts`（スクロールアニメーション`@keyframes`）
+  - **妥協点**: Critical CSS（Above-the-fold）のみ`<style>`タグでインライン化（性能最適化のため、`landing-spec.yaml`に理由を明記）
+
+---
+
+### 📋️ spec.yaml
+
+**新規作成場所**: `app/specs/blog/landing-spec.yaml`（SSoT）
+
+**記載内容の骨子**:
+```yaml
+metadata:
+  feature_name: "blog-landing"
+  slug: "landing"
+  version: "1.0.0"
+
+targets:
+  - slug: "engineer"
+    label: "エンジニア"
+    manga_panels: 8
+
+colors:
+  primary: "#22d3ee"       # シアン
+  dark: "#0a0a0a"          # 黒
+  accent_gold: "#BFA978"   # アクセント
+
+scroll_animation:
+  trigger_offset: 0.7      # ビューポート70%
+  duration_ms: 800
+  easing: "cubic-bezier(0.4, 0, 0.2, 1)"
+
+cta:
+  button_text: "ドキュメントを見る"
+  links:
+    - label: "GitHub"
+      url: "https://github.com/..."
+    - label: "デモ"
+      url: "/blog"
+
+performance:
+  critical_css_inline: true   # 妥協点（理由: 初回ロード最適化）
+  lazy_load_images: true
+  image_format: "webp"
+
+ui_selectors:
+  manga_panel: "[data-testid='manga-panel']"
+  scroll_action: "[data-testid='scroll-action']"
+  cta_button: "[data-testid='cta-button']"
+```
+
+---
+
+### 🗂️ file-list.md
+
+**新規作成場所**: `develop/blog/landing/file-list.md`
+
+**記載内容の骨子**:
+- **E2Eテスト**: `tests/e2e/blog/landing/landing-navigation.spec.ts`（ページ表示、CTA導線）
+- **Route層**: `app/routes/blog.landing.$target.tsx`（URL: `/blog/landing/:target`、loaderでコンテンツ取得）
+- **UI層（Components）**:
+  - `HeroSection.tsx`（ファーストビュー）
+  - `MangaPanel.tsx`（漫画パネル単体）
+  - `ScrollSection.tsx`（スクロールアニメーション領域）
+  - `AnimatedBlock.tsx`（個別アニメーション要素）
+  - `CTASection.tsx`（CTAボタン群）
+  - `LandingFooter.tsx`（フッター）
+- **純粋ロジック層（lib）**:
+  - `scrollAnimation.ts`（スクロール位置計算、アニメーション判定）
+  - `targetValidation.ts`（ターゲットパラメータ検証）
+- **副作用層（data-io）**:
+  - `getLandingContent.server.ts`（コンテンツYAML読み込み）
+  - `getMangaAssets.server.ts`（漫画画像パス取得）
+- **CSS層**:
+  - `app/styles/blog/layer2-landing.css`
+  - `app/styles/blog/layer3-landing.ts`
+  - `app/styles/blog/layer4-landing.ts`
+
+---
+
+### 🧬 data-flow-diagram.md
+
+**新規作成場所**: `develop/blog/landing/data-flow-diagram.md`
+
+**記載内容の骨子**（Mermaid図）:
+```mermaid
+graph TD
+    FS["ファイルシステム<br/>(content/blog/landing/)"] -->|YAML/画像読み込み| GetContent["getLandingContent.server"]
+    GetContent -->|LandingContent| Route["blog.landing.$target.tsx"]
+    Route -->|target param| ValidateTarget["targetValidation"]
+    ValidateTarget -->|validated target| Route
+    Route -->|loader data| HeroSection
+    Route -->|loader data| ScrollSection
+    ScrollSection -->|scroll position| ScrollAnimation["scrollAnimation.ts"]
+    ScrollAnimation -->|animate| AnimatedBlock
+    Route -->|CTA links| CTASection
+```
 
 ---
 
