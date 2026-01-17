@@ -101,8 +101,6 @@ export interface BlogConfig {
   copyright: string;
   siteUrl: string;
   siteName: string;
-  footerLinks: FooterLink[];
-  legalContent: string;
 }
 
 /**
@@ -188,14 +186,7 @@ export interface BlogCommonSpec {
       transition_timing: string;
     };
   };
-  footer: {
-    legal_links: Array<{
-      label: string;
-      href?: string;
-      is_modal: boolean;
-    }>;
-    legal_content: string;
-  };
+  footer: {};
   theme: {
     modes: string[];
     default_mode: string;
@@ -361,5 +352,13 @@ export interface BlogLandingSpec {
       hero_max: number;
       total_max: number;
     };
+  };
+  footer: {
+    legal_links: Array<{
+      label: string;
+      href?: string;
+      is_modal: boolean;
+    }>;
+    legal_content: string;
   };
 }

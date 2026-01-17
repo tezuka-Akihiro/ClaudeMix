@@ -71,35 +71,6 @@ describe('loadBlogConfig - Side Effects Layer', () => {
       expect(result.siteName).toBe(spec.blog_config.title);
     });
 
-    it('should return footer links from spec.yaml', async () => {
-      // Act
-      const result = await loadBlogConfig();
-
-      // Assert
-      expect(result.footerLinks).toHaveLength(spec.footer.legal_links.length);
-      result.footerLinks.forEach((link, index) => {
-        expect(link).toHaveProperty('label');
-        expect(link).toHaveProperty('isModal');
-        expect(typeof link.label).toBe('string');
-        expect(typeof link.isModal).toBe('boolean');
-        expect(link.label).toBe(spec.footer.legal_links[index].label);
-        expect(link.isModal).toBe(spec.footer.legal_links[index].is_modal);
-        if (link.href) {
-          expect(link.href).toBe(spec.footer.legal_links[index].href);
-        }
-      });
-    });
-
-    it('should return legal content from spec.yaml', async () => {
-      // Act
-      const result = await loadBlogConfig();
-
-      // Assert
-      expect(result.legalContent).toBe(spec.footer.legal_content);
-      expect(result.legalContent).toContain('<section>');
-      expect(result.legalContent).toContain('販売事業者');
-    });
-
     it('should return complete blog config structure', async () => {
       // Act
       const result = await loadBlogConfig();
@@ -110,10 +81,7 @@ describe('loadBlogConfig - Side Effects Layer', () => {
       expect(result).toHaveProperty('copyright');
       expect(result).toHaveProperty('siteUrl');
       expect(result).toHaveProperty('siteName');
-      expect(result).toHaveProperty('footerLinks');
-      expect(result).toHaveProperty('legalContent');
       expect(Array.isArray(result.menuItems)).toBe(true);
-      expect(Array.isArray(result.footerLinks)).toBe(true);
     });
   });
 });

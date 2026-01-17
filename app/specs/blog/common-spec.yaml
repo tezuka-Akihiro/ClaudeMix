@@ -48,80 +48,12 @@ navigation:
     transition_timing: "ease-in-out"
 
 # ==========================================
-# フッターリンク設定
+# フッター設定
 # ==========================================
 footer:
-  # 法的リンク
-  legal_links:
-    - label: "利用規約"
-      href: "/blog/terms"
-      is_modal: false
-    - label: "プライバシーポリシー"
-      href: "/blog/privacy"
-      is_modal: false
-    - label: "特定商取引法に基づく表記"
-      is_modal: true
-
-  # 特定商取引法の内容（モーダル表示用）
-  #
-  # 【本番環境での設定方法】
-  # 個人情報（住所、電話番号など）を含むため、以下の方法で設定してください：
-  #
-  # 1. このファイル：プレースホルダー（[...]）のまま保持（テンプレート）
-  # 2. Cloudflare Pages 環境変数：実際の個人情報を設定
-  #    - 変数名: LEGAL_CONTENT
-  #    - 値: 以下のHTMLを実際の情報で置き換えたもの
-  #
-  # 環境変数が設定されている場合、そちらが優先的に使用されます。
-  # 開発環境では、このプレースホルダーが使用されます。
-  #
-  legal_content: |
-    <section>
-      <h3>販売事業者</h3>
-      <p>個人事業主 [事業者名]</p>
-    </section>
-    <section>
-      <h3>運営統括責任者</h3>
-      <p>[責任者名]</p>
-    </section>
-    <section>
-      <h3>所在地</h3>
-      <p>[住所]</p>
-      <p>※個人情報保護のため、具体的な住所はご購入後にメールにてお知らせいたします。</p>
-    </section>
-    <section>
-      <h3>電話番号</h3>
-      <p>[電話番号]</p>
-      <p>※お問い合わせは原則としてメールにて承っております。</p>
-    </section>
-    <section>
-      <h3>メールアドレス</h3>
-      <p>[メールアドレス]</p>
-    </section>
-    <section>
-      <h3>販売価格</h3>
-      <p>各商品ページに記載の通りです。</p>
-    </section>
-    <section>
-      <h3>商品代金以外の必要料金</h3>
-      <p>消費税、振込手数料</p>
-    </section>
-    <section>
-      <h3>支払方法</h3>
-      <p>クレジットカード決済（Stripe）</p>
-    </section>
-    <section>
-      <h3>支払時期</h3>
-      <p>ご購入時に即時決済されます。</p>
-    </section>
-    <section>
-      <h3>商品の引渡時期</h3>
-      <p>決済完了後、即時アクセス可能となります。</p>
-    </section>
-    <section>
-      <h3>返品・キャンセルについて</h3>
-      <p>デジタルコンテンツの性質上、原則として返品・返金はお受けできません。ただし、商品に瑕疵がある場合はこの限りではありません。</p>
-    </section>
+  # フッターは各セクションで独自に実装
+  # common層では設定なし
+  {}
 
 # ==========================================
 # UI要素セレクタ
@@ -147,14 +79,6 @@ ui_selectors:
   footer:
     blog_footer: "[data-testid='blog-footer']"
     copyright: "[data-testid='copyright']"
-    footer_links: "[data-testid='footer-links']"
-    footer_link: "[data-testid^='footer-link-']"
-
-  legal_modal:
-    modal_overlay: "[data-testid='legal-modal-overlay']"
-    modal_dialog: "[role='dialog']"
-    modal_title: "#legal-modal-title"
-    close_button: "[data-testid='close-button']"
 
 # ==========================================
 # レスポンシブ設定
@@ -178,11 +102,9 @@ accessibility:
     theme_toggle_button: "テーマを切り替え"
     theme_toggle_button_light: "ダークモードに切り替え"
     theme_toggle_button_dark: "ライトモードに切り替え"
-    legal_modal_close: "閉じる"
 
   keyboard_shortcuts:
     close_menu: "Escape"
-    close_modal: "Escape"
 
 # ==========================================
 # テーマ設定
