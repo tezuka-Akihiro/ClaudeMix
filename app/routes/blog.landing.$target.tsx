@@ -20,6 +20,18 @@ import layer2LandingStyles from "~/styles/blog/layer2-landing.css?url";
 import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
 
 export const links: LinksFunction = () => [
+  // Preload critical CSS for faster rendering
+  {
+    rel: "preload",
+    href: layer2LandingStyles,
+    as: "style",
+  },
+  {
+    rel: "preload",
+    href: layer2CommonStyles,
+    as: "style",
+  },
+  // Stylesheets
   {
     rel: "stylesheet",
     href: layer2LandingStyles,
@@ -106,7 +118,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="landing-page">
+    <main className="landing-page">
       {/* ヒーローセクション（ファーストビュー） */}
       <HeroSection
         catchCopy={content.catchCopy}
@@ -130,7 +142,7 @@ export default function LandingPage() {
 
       {/* フッター */}
       <LandingFooter links={footerLinks} legalContent={legalContent} />
-    </div>
+    </main>
   );
 }
 

@@ -16,6 +16,8 @@ const MangaPanel: React.FC<MangaPanelProps> = ({ asset, loading = 'lazy' }) => {
         src={asset.path}
         alt={`漫画パネル ${asset.order}`}
         loading={loading}
+        width="400"
+        height="300"
       />
     </div>
   );

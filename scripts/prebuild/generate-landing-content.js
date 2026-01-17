@@ -40,6 +40,10 @@ async function generateLandingContent() {
       targets = [];
     }
 
+    // public/images/blog/landing ディレクトリを作成
+    const publicLandingDir = path.join(rootDir, 'public/images/blog/landing');
+    await fs.mkdir(publicLandingDir, { recursive: true });
+
     for (const target of targets) {
       const targetPath = path.join(landingDir, target);
       const stat = await fs.stat(targetPath);
@@ -78,6 +82,10 @@ async function generateLandingContent() {
         const imageExtensions = ['.webp', '.png', '.jpg', '.jpeg'];
         const imageFiles = [];
 
+        // public/images/blog/landing/${target}/manga ディレクトリを作成
+        const publicTargetMangaDir = path.join(publicLandingDir, target, 'manga');
+        await fs.mkdir(publicTargetMangaDir, { recursive: true });
+
         for (const file of files) {
           const ext = file.toLowerCase().slice(file.lastIndexOf('.'));
           if (!imageExtensions.includes(ext)) continue;
@@ -86,19 +94,24 @@ async function generateLandingContent() {
           const fileStat = await fs.stat(filePath);
           if (fileStat.isFile()) {
             imageFiles.push(file);
+
+            // 画像をpublicディレクトリにコピー
+            const destPath = path.join(publicTargetMangaDir, file);
+            await fs.copyFile(filePath, destPath);
           }
         }
 
         // ファイル名でソート
         const sortedFiles = imageFiles.sort((a, b) => a.localeCompare(b));
 
-        // MangaAsset型に変換
+        // MangaAsset型に変換（publicからアクセス可能なパスに変更）
         mangaAssets[target] = sortedFiles.map((file, index) => ({
           fileName: file,
-          path: `/content/blog/landing/${target}/manga/${file}`,
+          path: `/images/blog/landing/${target}/manga/${file}`,
           order: index + 1,
         }));
         console.log(`   ✅ Loaded ${sortedFiles.length} manga assets for: ${target}`);
+        console.log(`   📁 Copied ${sortedFiles.length} images to public directory`);
       } catch {
         // manga ディレクトリが存在しない場合は空配列
         mangaAssets[target] = [];
