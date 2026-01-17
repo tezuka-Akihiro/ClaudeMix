@@ -280,3 +280,86 @@ export interface BlogCommonSpec {
     };
   };
 }
+
+/**
+ * Landing page section types
+ */
+
+/**
+ * CTAリンクの情報
+ */
+export interface CTALink {
+  label: string;
+  url: string;
+  aria_label: string;
+}
+
+/**
+ * 漫画アセットの情報
+ */
+export interface MangaAsset {
+  fileName: string;
+  path: string;
+  order: number;
+}
+
+/**
+ * ランディングページのコンテンツ情報
+ */
+export interface LandingContent {
+  targetSlug: string;
+  catchCopy: string;
+  description: string;
+  ctaButtonText: string;
+  ctaLinks: CTALink[];
+  mangaPanelCount: number;
+}
+
+/**
+ * Landing section spec.yamlの型定義
+ */
+export interface BlogLandingSpec {
+  metadata: {
+    version: string;
+    last_updated: string;
+  };
+  targets: {
+    supported: string[];
+    default: string;
+  };
+  colors: {
+    primary: string;
+    dark: string;
+    accent: string;
+  };
+  animation: {
+    viewport_threshold: number;
+    duration_ms: number;
+    easing: string;
+    types: string[];
+  };
+  cta: {
+    buttons: CTALink[];
+  };
+  performance: {
+    critical_css_inline: boolean;
+    image_format: string;
+    lazy_load: boolean;
+  };
+  accessibility: {
+    aria_labels: {
+      hero_section: string;
+      scroll_section: string;
+      manga_panel_grid: string;
+      cta_section: string;
+      landing_footer: string;
+    };
+  };
+  business_rules: {
+    manga_panel_count: {
+      hero_min: number;
+      hero_max: number;
+      total_max: number;
+    };
+  };
+}
