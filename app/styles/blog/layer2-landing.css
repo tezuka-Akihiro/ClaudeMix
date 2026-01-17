@@ -3,6 +3,13 @@
  * HeroSection, MangaPanel, ScrollSection, AnimatedBlock, CTASection, LandingFooter
  * ======================================== */
 
+
+/* === Landing Page Container === */
+.landing-page {
+  max-width: var(--layout-page-container-width);
+  margin: 0 auto;
+  width: 100%;
+}
 /* === HeroSection === */
 .hero-section {
   background: linear-gradient(
