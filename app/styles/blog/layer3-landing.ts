@@ -44,16 +44,12 @@ export const landingLayer3Plugin = plugin(function ({ addComponents }) {
     /**
      * MangaPanelGrid Structure
      * - CSS Grid layout
-     * - Responsive: 1 column (mobile) / 2 columns (desktop)
+     * - Single column layout for all devices
      */
     ".manga-panel-grid-structure": {
       display: "grid",
       gridTemplateColumns: "1fr",
       gap: "var(--spacing-6)",
-
-      "@media (min-width: 1024px)": {
-        gridTemplateColumns: "repeat(2, 1fr)",
-      },
     },
 
     /**

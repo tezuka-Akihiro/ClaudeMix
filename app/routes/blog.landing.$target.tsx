@@ -8,7 +8,7 @@ import { getLandingContent } from "~/data-io/blog/landing/getLandingContent.serv
 import { getMangaAssets } from "~/data-io/blog/landing/getMangaAssets.server";
 import { validateTarget } from "~/lib/blog/landing/targetValidation";
 import { loadSpec } from "~/spec-loader/specLoader.server";
-import type { BlogLandingSpec, LandingContent, MangaAsset } from "~/specs/blog/types";
+import type { BlogLandingSpec, BlogCommonSpec, LandingContent, MangaAsset } from "~/specs/blog/types";
 import HeroSection from "~/components/blog/landing/HeroSection";
 import ScrollSection from "~/components/blog/landing/ScrollSection";
 import MangaPanelGrid from "~/components/blog/landing/MangaPanelGrid";
@@ -17,11 +17,16 @@ import LandingFooter from "~/components/blog/landing/LandingFooter";
 
 // Landing page専用のCSS
 import layer2LandingStyles from "~/styles/blog/layer2-landing.css?url";
+import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
 
 export const links: LinksFunction = () => [
   {
     rel: "stylesheet",
     href: layer2LandingStyles,
+  },
+  {
+    rel: "stylesheet",
+    href: layer2CommonStyles,
   },
 ];
 
@@ -30,11 +35,13 @@ export interface LandingLoaderData {
   mangaAssets: MangaAsset[];
   spec: BlogLandingSpec;
   validatedTarget: string;
+  legalContent: string;
 }
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  // landing-spec.yaml を読み込み
+  // landing-spec.yaml と common-spec.yaml を読み込み
   const landingSpec = loadSpec<BlogLandingSpec>('blog/landing');
+  const commonSpec = loadSpec<BlogCommonSpec>('blog/common');
 
   // ターゲットパラメータを検証（不正値はデフォルトにフォールバック）
   const validatedTarget = validateTarget(
@@ -55,6 +62,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
       mangaAssets,
       spec: landingSpec,
       validatedTarget,
+      legalContent: commonSpec.footer.legal_content,
     });
   } catch (error) {
     // コンテンツファイルが存在しない場合は404
@@ -84,16 +92,17 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function LandingPage() {
-  const { content, mangaAssets, spec } = useLoaderData<typeof loader>();
+  const { content, mangaAssets, spec, legalContent } = useLoaderData<typeof loader>();
 
   // Above-the-fold用の漫画パネル（最初のN枚）
   const heroMaxCount = spec.business_rules.manga_panel_count.hero_max;
   const heroMangaAssets = mangaAssets.slice(0, heroMaxCount);
 
-  // フッター用の法務リンク（簡易版）
+  // フッター用の法務リンク
   const footerLinks = [
-    { label: 'プライバシーポリシー', href: '/privacy' },
-    { label: '利用規約', href: '/terms' },
+    { label: 'プライバシーポリシー', href: '/privacy', isModal: false },
+    { label: '利用規約', href: '/terms', isModal: false },
+    { label: '特定商取引法に基づく表記', isModal: true },
   ];
 
   return (
@@ -120,7 +129,7 @@ export default function LandingPage() {
       <CTASection ctaLinks={content.ctaLinks} />
 
       {/* フッター */}
-      <LandingFooter links={footerLinks} />
+      <LandingFooter links={footerLinks} legalContent={legalContent} />
     </div>
   );
 }
