@@ -52,12 +52,12 @@ describe('LandingFooter', () => {
     expect(copyright).toBeInTheDocument();
   });
 
-  it('should apply landing-footer CSS classes', () => {
+  it('should apply blog-footer CSS classes for design consistency', () => {
     renderWithRouter(<LandingFooter links={mockLinks} legalContent={mockLegalContent} />);
 
     const footer = screen.getByTestId('landing-footer');
-    expect(footer).toHaveClass('landing-footer');
-    expect(footer).toHaveClass('landing-footer-structure');
+    expect(footer).toHaveClass('blog-footer');
+    expect(footer).toHaveClass('blog-footer-structure');
   });
 
   it('should render with empty links array', () => {

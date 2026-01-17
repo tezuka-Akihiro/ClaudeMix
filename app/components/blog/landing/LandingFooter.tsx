@@ -28,17 +28,17 @@ const LandingFooter: React.FC<LandingFooterProps> = ({ links, legalContent }) =>
   return (
     <>
       <footer
-        className="landing-footer landing-footer-structure"
+        className="blog-footer blog-footer-structure"
         data-testid="landing-footer"
       >
-        <nav>
+        <nav className="blog-footer__links blog-footer__links-structure">
           {links.map((link) => (
             <React.Fragment key={link.label}>
               {link.isModal ? (
                 <button
                   type="button"
                   onClick={() => handleLinkClick(link)}
-                  className="landing-footer__link landing-footer__link--modal"
+                  className="blog-footer__link blog-footer__link--modal"
                   data-testid="footer-link"
                 >
                   {link.label}
@@ -46,7 +46,7 @@ const LandingFooter: React.FC<LandingFooterProps> = ({ links, legalContent }) =>
               ) : (
                 <Link
                   to={link.href || '#'}
-                  className="landing-footer__link"
+                  className="blog-footer__link"
                   data-testid="footer-link"
                 >
                   {link.label}
@@ -55,7 +55,7 @@ const LandingFooter: React.FC<LandingFooterProps> = ({ links, legalContent }) =>
             </React.Fragment>
           ))}
         </nav>
-        <p className="landing-footer__copyright">
+        <p className="blog-footer__copyright">
           © {new Date().getFullYear()} ClaudeMix
         </p>
       </footer>

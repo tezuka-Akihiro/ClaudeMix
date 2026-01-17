@@ -70,24 +70,7 @@ export const landingLayer3Plugin = plugin(function ({ addComponents }) {
         gap: "var(--spacing-6)",
       },
     },
-
-    /**
-     * LandingFooter Structure
-     * - Horizontal layout (desktop) / Vertical layout (mobile)
-     * - Centered alignment
-     */
-    ".landing-footer-structure": {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "var(--spacing-3)",
-
-      "@media (min-width: 640px)": {
-        flexDirection: "row",
-        gap: "var(--spacing-6)",
-      },
-    },
+    // LandingFooter uses blog-footer-structure from layer3.ts
   });
 });
 
