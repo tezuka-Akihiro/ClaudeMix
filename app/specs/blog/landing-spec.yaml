@@ -1,0 +1,65 @@
+# Landing Page Specification (SSoT)
+# landing セクションのすべてのリテラル値を定義
+
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-01-16"
+
+# サポートするターゲット
+targets:
+  supported:
+    - engineer
+    - designer
+    - manager
+  default: engineer
+
+# カラー設定（既存変数を参照）
+colors:
+  primary: "var(--color-interactive-primary)"     # シアン (#22d3ee)
+  dark: "var(--color-surface-dark)"               # 黒 (#0a0a0a)
+  accent: "var(--color-accent-gold)"              # アクセント (#D4BC89)
+
+# スクロールアニメーション設定
+animation:
+  viewport_threshold: 0.7                         # ビューポート閾値（70%）
+  duration_ms: 800                                # アニメーション時間（ミリ秒）
+  easing: "cubic-bezier(0.4, 0, 0.2, 1)"         # イージング関数
+  types:
+    - fadeInUp
+    - slideIn
+    - scale
+
+# CTA設定
+cta:
+  buttons:
+    - label: "ドキュメント"
+      url: "/blog"
+      aria_label: "ドキュメントページへ移動"
+    - label: "GitHub"
+      url: "https://github.com/Tezuka-Akihiro/ClaudeMix"
+      aria_label: "GitHubリポジトリへ移動"
+    - label: "デモ"
+      url: "/blog/landing/engineer"
+      aria_label: "デモページへ移動"
+
+# 性能設定
+performance:
+  critical_css_inline: true                       # Above-the-fold領域のCSSインライン化
+  image_format: "webp"                            # 画像形式
+  lazy_load: true                                 # 遅延ロード
+
+# アクセシビリティ設定
+accessibility:
+  aria_labels:
+    hero_section: "ヒーローセクション"
+    scroll_section: "スクロールセクション"
+    manga_panel_grid: "漫画パネルグリッド"
+    cta_section: "CTAセクション"
+    landing_footer: "ランディングページフッター"
+
+# ビジネスルール
+business_rules:
+  manga_panel_count:
+    hero_min: 1                                   # Above-the-fold最小枚数
+    hero_max: 2                                   # Above-the-fold最大枚数
+    total_max: 8                                  # 全体最大枚数
