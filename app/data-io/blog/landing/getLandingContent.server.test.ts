@@ -94,7 +94,7 @@ describe('getLandingContent - Side Effects Layer', () => {
     it('should throw error for non-existent target', async () => {
       // Act & Assert
       await expect(getLandingContent('non-existent-target')).rejects.toThrow(
-        'Landing content file not found'
+        'Landing content not found'
       );
     });
 

@@ -1,7 +1,7 @@
 /**
  * scripts/start-dev.js
  * 役割: 新規サービス開発の初期環境をセットアップする。
- * 動作: project.toml を参照し、指定されたサービス(--slug)のディレクトリを生成する。
+ * 動作: project.yaml を参照し、指定されたサービス(--slug)のディレクトリを生成する。
  *      - セクションフォルダ: <ルート>/<サービス>/<セクション>
  *      - サービスフォルダ: <ルート>/<サービス>
  */
@@ -9,7 +9,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import toml from '@iarna/toml';
+import yaml from 'js-yaml';
 import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -54,15 +54,15 @@ function getSlug() {
 }
 
 /**
- * project.toml を読み込み、設定を返す
+ * project-spec.yaml を読み込み、設定を返す
  * @returns {object} プロジェクト設定
  */
 function loadProjectConfig() {
-    const projectConfigPath = path.join(__dirname, 'project.toml');
+    const projectConfigPath = path.join(__dirname, '..', 'app', 'specs', 'shared', 'project-spec.yaml');
     if (!fs.existsSync(projectConfigPath)) {
         throw new Error(`設定ファイルが見つかりません: ${projectConfigPath}`);
     }
-    return toml.parse(fs.readFileSync(projectConfigPath, 'utf-8'));
+    return yaml.load(fs.readFileSync(projectConfigPath, 'utf-8'));
 }
 
 /**
@@ -137,7 +137,7 @@ async function main() {
     try {
         const projectConfig = loadProjectConfig();
         const serviceSections = projectConfig.services?.[slug]?.sections;
-        if (!serviceSections) throw new Error(`project.toml にサービス "${slug}" またはそのセクションが見つかりません。`);
+        if (!serviceSections) throw new Error(`project-spec.yaml にサービス "${slug}" またはそのセクションが見つかりません。`);
 
         const sectionKeys = Object.keys(serviceSections);
         if (sectionKeys.length === 0) console.warn(`⚠️ 警告: サービス "${slug}" にセクションが定義されていません。`);

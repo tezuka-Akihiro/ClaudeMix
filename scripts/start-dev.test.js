@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import toml from '@iarna/toml';
+import yaml from 'js-yaml';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 // --- モジュールのモック化 ---
 // 外部依存（ファイルシステム、コマンド実行など）をモックします。
 vi.mock('fs');
-vi.mock('@iarna/toml');
+vi.mock('js-yaml');
 vi.mock('child_process');
 
 // --- テスト本体 ---
@@ -38,16 +38,16 @@ describe('scripts/start-dev.js', () => {
             `--slug=${MOCK_SLUG}`,
         ]);
 
-        // fs と toml のモック設定
-        // project.tomlのチェックではtrueを、それ以外（ディレクトリ作成時）ではfalseを返すように設定
+        // fs と yaml のモック設定
+        // project-spec.yamlのチェックではtrueを、それ以外（ディレクトリ作成時）ではfalseを返すように設定
         vi.mocked(fs.existsSync).mockImplementation((p) => {
-            if (p.endsWith('project.toml')) {
+            if (p.endsWith('project-spec.yaml')) {
                 return true;
             }
             return false;
         });
-        vi.mocked(fs.readFileSync).mockReturnValue(''); // toml.parseでモックするので内容は空でOK
-        vi.mocked(toml.parse).mockReturnValue(mockProjectConfig);
+        vi.mocked(fs.readFileSync).mockReturnValue(''); // yaml.loadでモックするので内容は空でOK
+        vi.mocked(yaml.load).mockReturnValue(mockProjectConfig);
 
         // コンソール出力を抑制
         vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -145,7 +145,7 @@ describe('scripts/start-dev.js', () => {
 
             // existsSync の振る舞いを変更: 作成されたディレクトリは存在するとみなす
             vi.mocked(fs.existsSync).mockImplementation((p) => {
-                if (p.endsWith('project.toml')) return true;
+                if (p.endsWith('project-spec.yaml')) return true;
                 return actuallyCreatedDirs.includes(p);
             });
 
