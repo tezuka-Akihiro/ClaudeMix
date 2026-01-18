@@ -27,8 +27,6 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ config, children }) => {
       </main>
       <BlogFooter
         copyright={config.copyright}
-        footerLinks={config.footerLinks}
-        legalContent={config.legalContent}
       />
     </div>
   );
