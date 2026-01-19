@@ -29,12 +29,9 @@
 | `npm run clean:wrangler` | Wranglerキャッシュクリア | `.wrangler`フォルダ削除とD1マイグレーション再適用 |
 | `npm test` | ユニットテスト実行 | Vitestを使用（E2Eはオペレーターが実行） |
 | `npm run typecheck` | 型チェック | すべてのTypeScriptファイルを検証 |
-| `npm run lint:all` | 全リント実行 | テンプレート、CSS、Markdown、ブログメタデータを検証 |
-| `npm run lint:template` | テンプレートリント | 行数制限、ハードコード検出 |
-| `npm run lint:css-arch` | CSSアーキテクチャ検証 | スタイリング規律の遵守を確認 |
+| `npm run lint:all {servicename}` | 全リント実行 | テンプレート、CSS、Markdown、ブログメタデータを検証 |
 | `npm run lint:md` | Markdownリント | ブログ記事のMarkdownを検証・修正 |
 | `npm run generate` | コード生成 | スキャフォールドとリントを実行 |
-| `npm run coverage` | カバレッジレポート生成 | テストカバレッジを確認 |
 
 ---
 
@@ -82,12 +79,6 @@ content/
 ---
 
 ## 🎨 コードスタイルガイドライン
-
-### TypeScript厳格モード
-
-- すべての`.ts`ファイルで厳格な型定義を使用
-- `any`型の使用は禁止（特別な理由がない限り）
-- Prettierによる自動フォーマットを適用
 
 ### 3大層アーキテクチャの責務（厳守）
 
@@ -138,129 +129,9 @@ ClaudeMixでは、3層のspec構造を採用しています：
 - 階層飛越も禁止（Layer 1 → Layer 4 への直接参照など）
 - 詳細: [`docs/CSS_structure/STYLING_CHARTER.md`](docs/CSS_structure/STYLING_CHARTER.md)
 
-### ファイル行数制限
-
-- **1ファイル400行以下**: この制限を超える場合、適切に分割すること
-- リントで自動検出: `npm run lint:template`
-
 ---
 
 ## 🧪 テスト指示とリポジトリのエチケット
-
-### テスト戦略
-
-Outside-In TDD (E2E → Unit)
-
-1. **E2Eテストから開始**: `tests/e2e/`配下にPlaywrightテストを作成
-2. **層ごとに単体テスト作成**: `lib/`, `data-io/`の各ファイルに`.test.ts`を併記
-3. **カバレッジ80%以上を目標**: `npm run coverage`で確認
-
-### テストファイルの配置
-
-- **単体テスト**: 実装ファイルと同じディレクトリに`*.test.ts`として配置
-  - 例: `app/lib/blog/posts/filterPosts.ts` → `app/lib/blog/posts/filterPosts.test.ts`
-- **E2Eテスト**: `tests/e2e/`配下に配置
-  - `tests/e2e/screen/`: 画面単位のテスト
-  - `tests/e2e/section/`: セクション単位のテスト
-
-### E2Eテスト実行規範（厳守）
-
-#### テストデータの動的生成（必須）
-
-**禁止事項**:
-
-- ハードコードされたメールアドレス、ユーザーID、その他のテストデータ
-- 固定値の使用（データベース競合・テスト失敗の原因）
-
-**必須パターン**:
-
-```typescript
-// メールアドレスの動的生成
-const email = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-
-// 例
-const email = `profile-test-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-const newEmail = `new-email-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-```
-
-**理由**:
-
-- テストの再実行可能性を保証
-- データベース上の重複エラーを防止
-- 並列実行時の競合を回避
-
-#### E2Eテスト実行手順（必須）
-
-1. **開発サーバー起動**:
-
-   ```bash
-   npm run dev:wrangler
-   ```
-
-   - Wranglerでランタイム制約を反映した環境を使用（必須）
-
-2. **Playwright設定の明示的指定**:
-
-   ```bash
-   npx playwright test tests/e2e/account --config=tests/e2e/playwright.config.ts --reporter=list
-   ```
-
-   - `--config=tests/e2e/playwright.config.ts` の指定は**必須**
-   - `--reporter=list` でHTMLレポート生成を抑制（推奨）
-
-3. **テスト終了後のクリーンアップ（必須）**:
-
-   - 開発サーバーを**必ず停止**すること
-   - 停止せずに放置するとポートが占有され次回起動に失敗する
-
-#### Windows/Wrangler固有の注意事項
-
-**症状**: 以下のいずれかが発生した場合
-
-- テストが `ERR_CONNECTION_REFUSED` で全て失敗
-- モーダルやコンポーネントが表示されない
-- ナビゲーションテストが予期せず失敗
-- 開発サーバーが正常に起動しているのにテストが接続できない
-- コード変更が反映されない（stale cache）
-
-**原因**: Windows環境でのWranglerキャッシュ・プロセス問題
-
-Windowsのファイルロック機構により、`.wrangler/state/v3`フォルダ内のSQLiteデータベースやキャッシュファイルがNode.jsプロセスによってロックされ、削除できない状態になる。
-
-**解決策**: **段階的エスカレーション**
-
-1. **第1段階: キャッシュクリーンアップスクリプト実行（推奨）**
-
-   ```bash
-   npm run dev:wrangler:clean
-   ```
-
-   または
-
-   ```bash
-   npm run clean:wrangler
-   npm run dev:wrangler
-   ```
-
-   このスクリプトは以下を自動実行します：
-   - `.wrangler/state/v3`フォルダの削除を試行
-   - 削除失敗時、自動的にNode.jsプロセスを停止
-   - D1マイグレーションの再適用
-
-2. **第2段階: PC再起動（最終手段）**
-
-   上記スクリプトで解決しない場合のみ、PC再起動を実行
-
-**技術的背景**:
-
-- **Windowsのファイルロック**: プロセスがファイルを開いている間は削除不可（Unixとは異なる設計）
-- **SQLite接続の永続化**: D1データベース（SQLite）の接続が適切にクローズされない場合がある
-- **Wranglerプロセスの残存**: 開発サーバー停止後もバックグラウンドプロセスが残る場合がある
-
-**実績**:
-
-- Navigation、FlashMessage、Modal表示問題は全てキャッシュクリーンアップで解決
-- サブスクリプションE2Eテストのキャンセル機能不具合もキャッシュクリーンアップで解決
 
 ### コミット前の必須チェック
 
@@ -341,41 +212,6 @@ npm run dev:wrangler
 2. **ハイドレーションエラーに注意**:
    - サーバーとクライアントでレンダリング結果が異なる場合にエラー
    - `useEffect`での条件分岐に注意
-
-### ビルド時の注意点
-
-1. **`app/specs/`は自動生成される**:
-   - 手動編集禁止
-   - 元データは`content/{section}/{section}-spec.yaml`（例: `content/blog/blog-spec.yaml`）
-
-2. **メモリ不足の可能性**:
-   - 開発サーバーは`--max-old-space-size=4096`で起動
-   - ビルド時にメモリエラーが出る場合、Node.jsのヒープサイズを増やす
-
-### リントエラーの対処
-
-- **`npm run lint:css-arch`でエラー**: `tests/lint/css-arch-layer-report.md`の内容に従って修正
-- **`npm run lint:template`でエラー**: 行数制限超過またはハードコード検出。ファイルを分割するか、`{section}-spec.yaml`に定義を移行
-- **Markdownエラー**: `markdownlint <path> --fix`を実行して自動修正し、残ったエラーを手動で解消すること
-
----
-
-## 🧠 知識集積層の活用
-
-開発プロセスで得られた暗黙知を形式知化し、将来の意思決定を支援します：
-
-| ディレクトリ | 目的 | 記録内容 |
-| :--- | :--- | :--- |
-| `docs/thinking/` | 設計判断や思考過程を外部化 | 迷った点、却下した案、判断理由などを短文で記録 |
-| `_docs/features/` | 新機能の追加・改修の目的と背景を記録 | 実装目的、画面構成、データ構造、リスク、完了条件などを簡潔にまとめる |
-| `docs/deleted/` | 削除・廃止した機能やファイルの履歴を残す | 削除理由、影響範囲、代替手段、再発防止策を記録 |
-
-**記録タイミング**:
-
-- 重要な設計判断を行ったとき
-- 新機能を追加するとき
-- コードを削除するとき
-- 予期しない問題に遭遇したとき
 
 ---
 
