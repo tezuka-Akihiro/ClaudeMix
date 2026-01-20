@@ -63,7 +63,7 @@ describe('getMangaAssets - Side Effects Layer', () => {
 
       // Assert
       result.forEach(asset => {
-        expect(asset.path).toMatch(/^\/content\/blog\/landing\/engineer\/manga\/.+\.(webp|png|jpg|jpeg)$/);
+        expect(asset.path).toMatch(/^\/images\/blog\/landing\/engineer\/manga\/.+\.(webp|png|jpg|jpeg)$/);
       });
     });
 

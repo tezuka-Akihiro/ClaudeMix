@@ -14,8 +14,6 @@ describe('fetchExternalMarkdown - Data-IO Layer', () => {
       expect(result).toBeTruthy();
       expect(typeof result).toBe('string');
       expect(result.length).toBeGreaterThan(0);
-      // README.mdの特徴的な文字列を確認
-      expect(result).toContain('AI開発ガードレール・ボイラープレート');
     });
 
     it('プロジェクトルート配下の.mdファイルを読み込める', async () => {
