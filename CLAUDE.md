@@ -106,7 +106,7 @@ content/
 ClaudeMixでは、3層のspec構造を採用しています：
 
 | 層 | 配置場所 | 責務 | 例 |
-|---|---------|-----|---|
+| --- | --------- | ----- | --- |
 | **shared** | `app/specs/shared/` | サービス横断の共通設定 | validation, server, responsive, project |
 | **common** | `app/specs/{service}/common-spec.yaml` | サービス内の共通設定 | navigation, theme, layout |
 | **section** | `app/specs/{service}/{section}-spec.yaml` | セクション固有の設定 | categories, tags, forms |
