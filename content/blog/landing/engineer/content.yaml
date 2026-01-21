@@ -13,14 +13,8 @@ description: |
 cta_button_text: "今すぐ始める"
 
 cta_links:
-  - label: "ドキュメント"
+  - label: "記事を見に行く"
     url: "/blog"
-    aria_label: "ドキュメントページへ移動"
-  - label: "GitHub"
-    url: "https://github.com/Tezuka-Akihiro/ClaudeMix"
-    aria_label: "GitHubリポジトリへ移動"
-  - label: "デモ"
-    url: "/blog/landing/engineer"
-    aria_label: "デモページへ移動"
+    aria_label: "記事を見に行く"
 
 manga_panel_count: 8
