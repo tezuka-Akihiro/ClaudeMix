@@ -1,8 +1,9 @@
 /**
- * E2Eテスト用 spec.yaml ローダー
+ * テスト用 spec.yaml ローダー
  *
- * spec.yamlからテストデータを動的に読み込むことで、
- * テストデータの一元管理を実現します。
+ * {section}-spec.yamlから定数を動的に読み込むことで、SsoTを実現します。
+ * テストデータは基本的に使用せず、どうしても必要な場合はスクリプトにハードコードしてください。
+ * {section}-spec.yaml にテストデータを追加することは避けてください。
  */
 
 import { readFile, readdir } from 'fs/promises';
