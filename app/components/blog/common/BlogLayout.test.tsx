@@ -15,7 +15,7 @@ const mockConfig = {
   footerLinks: [
     { label: '利用規約', href: '/blog/terms', isModal: false },
     { label: 'プライバシーポリシー', href: '/blog/privacy', isModal: false },
-    { label: '特定商取引法に基づく表記', isModal: true },
+    { label: '特商法', isModal: true },
   ],
   legalContent: '<p>特定商取引法の内容</p>',
 };

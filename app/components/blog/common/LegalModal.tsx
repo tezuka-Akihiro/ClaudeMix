@@ -103,7 +103,7 @@ export default function LegalModal({ isOpen, onClose, content }: LegalModalProps
       >
         <div className="legal-modal__header legal-modal__header-structure">
           <h2 id="legal-modal-title" className="legal-modal__title">
-            特定商取引法に基づく表記
+            特商法
           </h2>
           <button
             type="button"

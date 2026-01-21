@@ -170,7 +170,7 @@
   .blog-footer__link {
     color: var(--color-interactive-primary);
     text-decoration: none;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     font-weight: var(--font-weight-normal);
     cursor: pointer;
     transition: color var(--transition-duration-fast) var(--transition-timing-function-default);

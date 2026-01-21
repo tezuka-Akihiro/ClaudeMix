@@ -78,7 +78,7 @@ footer:
     - label: "プライバシーポリシー"
       href: "/blog/privacy"
       is_modal: false
-    - label: "特定商取引法に基づく表記"
+    - label: "特商法"
       is_modal: true
 
   # 特定商取引法の内容（モーダル表示用）

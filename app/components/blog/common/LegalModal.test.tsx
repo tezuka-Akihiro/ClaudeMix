@@ -4,7 +4,7 @@ import LegalModal from '~/components/blog/common/LegalModal';
 
 describe('LegalModal', () => {
   const mockOnClose = vi.fn();
-  const testContent = '<p>特定商取引法に基づく表記の内容</p>';
+  const testContent = '<p>特商法の内容</p>';
 
   beforeEach(() => {
     mockOnClose.mockClear();
@@ -34,7 +34,7 @@ describe('LegalModal', () => {
       render(<LegalModal isOpen={true} onClose={mockOnClose} content={testContent} />);
 
       // Assert
-      const title = screen.getByText('特定商取引法に基づく表記');
+      const title = screen.getByText('特商法');
       expect(title).toBeInTheDocument();
     });
 
@@ -43,7 +43,7 @@ describe('LegalModal', () => {
       render(<LegalModal isOpen={true} onClose={mockOnClose} content={testContent} />);
 
       // Assert
-      const content = screen.getByText('特定商取引法に基づく表記の内容');
+      const content = screen.getByText('特商法の内容');
       expect(content).toBeInTheDocument();
     });
 
@@ -86,7 +86,7 @@ describe('LegalModal', () => {
     it('should not call onClose when modal content is clicked', () => {
       // Arrange
       render(<LegalModal isOpen={true} onClose={mockOnClose} content={testContent} />);
-      const modalContent = screen.getByText('特定商取引法に基づく表記');
+      const modalContent = screen.getByText('特商法');
 
       // Act
       fireEvent.click(modalContent);
