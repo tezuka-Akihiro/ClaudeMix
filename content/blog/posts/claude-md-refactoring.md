@@ -3,7 +3,7 @@ slug: "claude-md-refactoring"
 title: "CLAUDE.md最適化：公式ベストプラクティスでコンテキスト負荷を削減"
 description: "CLAUDE.mdが毎回の会話で不要な情報をロードし、コンテキストを圧迫していた問題を、Anthropic公式ベストプラクティスに準拠した構成への全面リファクタリングで解決。WHAT/WHY/HOWの3要素への集約と、詳細ドキュメントへのポインタ化により、Claude Codeとの協調開発効率を最大化。"
 author: "ClaudeMix Team"
-publishedAt: "2025-12-22"
+publishedAt: "2026-01-22"
 category: "Claude Best Practices"
 tags: ["CLAUDE.md", "architecture"]
 freeContentHeading: "具体的なタスク"
