@@ -5,7 +5,7 @@ author: "ClaudeMix Team"
 publishedAt: "2025-12-28"
 slug: "e2e-test-wrangler-windows-token-waste"
 category: "Claude Best Practices"
-tags: ["Playwright", "troubleshooting", "testing", "Prompts"]
+tags: ["Playwright", "troubleshooting", "testing"]
 freeContentHeading: "根本原因の特定"
 ---
 

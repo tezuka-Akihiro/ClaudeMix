@@ -4,7 +4,7 @@ title: "AIと育てる型定義：シリーズ総集編 〜生きた仕様書へ
 publishedAt: "2025-11-30"
 summary: "全5回にわたるAI協調リファクタリングの旅を総括。散らばった型定義が、いかにしてプロジェクトの『生きた仕様書』へと昇華したのか。その全プロセスと、AIを設計パートナーとして活用する新たな開発スタイルを解説します。"
 author: "ClaudeMix Team"
-tags: ["refactoring", "architecture", "TypeScript", "Projects"]
+tags: ["refactoring", "architecture", "TypeScript", "CLAUDE.md"]
 category: "Claude Best Practices"
 description: "全5回にわたるAI協調リファクタリングの旅を総括。散らばった型定義が、いかにしてプロジェクトの『生きた仕様書』へと昇華したのか。その全プロセスと、AIを設計パートナーとして活用する新たな開発スタイルを解説します。"
 freeContentHeading: "AIが陥る場当たり的リファクタリングの罠"

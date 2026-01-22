@@ -5,7 +5,7 @@ description: "ブログ記事のメタデータ品質を自動保証するリン
 author: "ClaudeMix Team"
 publishedAt: "2025-12-09"
 category: "Claude Best Practices"
-tags: ["architecture", "testing", "Vite", "Projects"]
+tags: ["architecture", "testing", "Vite", "CLAUDE.md"]
 freeContentHeading: "具体的なタスク"
 ---
 

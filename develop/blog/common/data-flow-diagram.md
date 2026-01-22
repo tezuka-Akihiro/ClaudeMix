@@ -140,17 +140,17 @@ graph TD
 
 ```typescript
 interface CommonData {
-  blogTitle: string        // "ClaudeMix Blog"
-  menuItems: MenuItem[]    // メニュー項目リスト
-  copyright: string        // "© 2025 ClaudeMix"
-  footerLinks: FooterLink[] // フッターリンク（利用規約、プライバシーポリシー、特商法）
-  legalContent: string      // 特定商取引法の内容（モーダル表示用）
+  blogTitle: string
+  menuItems: MenuItem[]
+  copyright: string
+  footerLinks: FooterLink[]
+  legalContent: string
 }
 
 interface FooterLink {
-  label: string            // "利用規約", "プライバシーポリシー", "特定商取引法に基づく表記"
-  href?: string            // "/blog/terms", "/blog/privacy" (モーダルの場合はundefined)
-  isModal: boolean         // trueの場合、モーダル表示
+  label: string
+  href?: string
+  isModal: boolean
 }
 ```
 
@@ -198,9 +198,9 @@ graph LR
 
 ```typescript
 interface PostMetadata {
-  title: string        // 記事タイトル
-  description: string  // 記事の説明
-  author: string       // 著者名
+  title: string
+  description: string
+  author: string
 }
 ```
 

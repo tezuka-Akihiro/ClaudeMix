@@ -1,543 +1,108 @@
 ---
 slug: "best-practices"
-title: "claude 公式まとめ"
-description: "Claudeを効果的に活用するための公式ベストプラクティス集。Skills, Prompts, Projects, MCPの4本柱を軸に、具体的な実装パターンや推奨技術階層を解説します。"
+title: "Claude Code 公式ベストプラクティス：5つのレイヤーで構築する最強のAIパートナー"
+description: "Claude Codeを使いこなすための最新公式ベストプラクティス。CLAUDE.md, Rules, Skills, Subagents, MCPsの5つのレイヤーを正しく使い分け、コンテキスト効率と自律性を最大化する構築手法を解説します。"
 author: "ClaudeMix Team"
-publishedAt: "2025-11-16"
+publishedAt: "2026-01-21"
 category: "Claude Best Practices"
-tags: ["Skills", "Prompts", "Projects", "MCP"]
----
-**統合ソース**: Skills, Prompts, Projects, MCP公式ガイド
-
-## 1. 全体像
-
-### Claude エコシステムの4本柱
-
-```mermaid
-graph TD
-    subgraph Claude AI Application
-        direction TB
-        A[Skills<br/>専門知識] --> D[MCP<br/>外部統合]
-        B[Prompts<br/>指示形式] --> D
-        C[Projects<br/>文脈共有] --> D
-    end
-
-```
-
-### 各コンポーネントの役割
-
-| コンポーネント | 役割 | 実装形式 | 起動方法 |
-| :--- | :--- | :--- | :--- |
-| **Skills** | 専門知識のパッケージ化 | `.claude/skills/*/SKILL.md` | モデル起動（自動） |
-| **Prompts** | 指示テンプレート | `.claude/commands/*.md` | ユーザー起動（`/command`） |
-| **Projects** | プロジェクト文脈 | `.claude/CLAUDE.md` | 自動読み込み |
-| **MCP** | 外部ツール統合 | `.claude/mcp.json` | API呼び出し |
-
+tags: ["CLAUDE.md", "Rules", "Skills", "Subagents", "MCP"]
 ---
 
-## 2. Skills
-
-### 核心原則
-
-✅ **1 Skill = 1 機能** （焦点化）
-✅ **descriptionが命** （発見性）
-✅ **モデル起動型** （自動適用）
-
-### 実装パターン
-
-```yaml
----
-name: requirement-clarifier
-description: |
-  Clarifies ambiguous user requirements through structured questioning.
-  Use when: user provides vague specifications, unclear feature requests,
-  or when requirements lack concrete examples.
-allowed-tools: Read, Grep
----
-
-# Requirement Clarification Expert
-
-## When to Use
-- User request lacks specific details
-- Multiple interpretations possible
-- Edge cases unclear
-
-## Process
-1. Identify ambiguous points
-2. Ask targeted questions using Given-When-Then format
-3. Request concrete examples
-4. Confirm understanding
-
-## Example Output
-<clarified_requirements>
-  <feature>User authentication</feature>
-  <specific_requirements>
-    <requirement>Support email/password login</requirement>
-    <requirement>Include "Remember me" functionality</requirement>
-    <requirement>Password reset via email</requirement>
-  </specific_requirements>
-  <out_of_scope>
-    <item>Social login (Google, Facebook)</item>
-    <item>Two-factor authentication</item>
-  </out_of_scope>
-</clarified_requirements>
-```
-
-### ベストプラクティス
-
-1. **具体的なキーワードを含める**: "PDF extraction", "authentication", "data validation"
-2. **使用タイミングを明記**: "Use when...", "Activate if..."
-3. **ツール制限**: セキュリティ重視の場合は`allowed-tools`を指定
-4. **チームテスト**: 実際のプロジェクトで検証
-
----
-
-## 3. Prompts
-
-### 推奨技術階層（公式順序）
-
-1. ✅ **明確性と直接性** ← 最優先
-2. ✅ **マルチショット例示**
-3. ✅ **思考の連鎖（CoT）**
-4. ✅ **XMLタグ活用**
-5. ✅ **システムプロンプト**
-
-### 技術別実装例
-
-#### 明確性と直接性
-
-```markdown
-# .claude/commands/write-design-doc.md
-
-あなたは要件定義の専門家です。以下の形式で設計書を作成してください:
-
-## 必須項目
-1. **機能の目的**: 1文で明確に記述
-2. **入出力定義**: TypeScript型定義と具体例
-3. **制約事項**: 技術的制約、ビジネス制約
-4. **スコープ外機能**: 明示的に実装しない機能をリスト化
-
-## 出力形式
-<requirements>
-  <overview>[1文の要約]</overview>
-  <input_output>
-    <input>[TypeScript型定義]</input>
-    <output>[TypeScript型定義]</output>
-  </input_output>
-  <constraints>
-    <constraint>[制約1]</constraint>
-  </constraints>
-  <out_of_scope>
-    <item>[実装しない機能1]</item>
-  </out_of_scope>
-</requirements>
-```
-
-#### マルチショット例示
-
-```markdown
-# .claude/commands/example-driven-implementation.md
-
-以下の形式でコードを実装してください:
+## 1. 5つのレイヤーの全体構造（関わり合いの俯瞰）
 
-## 例1: 単純な純粋関数
-入力: `formatDate("2025-01-18")`
-期待出力: `"2025年1月18日"`
+Claude Codeのカスタマイズは、AIの「脳（内部レイヤー）」と「手（外部レイヤー）」を分離して設計することで、AIの認知リソース（スタミナ）を最適化し、精度の高い出力を維持する**Context Engineering（コンテキスト工学）**の営みです。
 
-実装:
-\`\`\`typescript
-export function formatDate(isoDate: string): string {
-  const date = new Date(isoDate);
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-}
-\`\`\`
+| レイヤー | 分類 | 役割 (Role) | 関わり合いの性質 |
+| : | : | : | : |
+| **CLAUDE.md** | 内部 | **マスター設定** | 全てのレイヤーへのリンクを持つ「ハブ」 |
+| **Rules** | 内部 | **ドメイン知識** | 特定の作業時のみ呼び出される「専門知識」 |
+| **Skills** | 内部 | **作業手順** | 人とAIが協調する「ワークフロー」 |
+| **Subagents** | 内部 | **自律実行** | メインコンテキストを汚さない「隔離作業員」 |
+| **MCPs** | 外部 | **外部接続** | コードベース外から情報を供給する「手」 |
 
-## 例2: エラーハンドリング付き
-入力: `formatDate("invalid")`
-期待出力: Error thrown
+## 2. 各レイヤーの詳細な関わり合い
 
-実装:
-\`\`\`typescript
-export function formatDate(isoDate: string): string {
-  const date = new Date(isoDate);
-  if (isNaN(date.getTime())) {
-    throw new Error('Invalid date format');
-  }
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-}
-\`\`\`
+### ① CLAUDE.md：全レイヤーの「インデックス」
 
-## あなたのタスク
-$ARGUMENTS
-```
+CLAUDE.mdはセッション開始時に必ず読み込まれる唯一のファイルです。
 
-#### 思考の連鎖（CoT）
+- **ハブ機能**: 300行以内で「WHAT/WHY/HOW」を記述し、詳細はRulesやSkillsへポインタ（参照）を飛ばす役割を担います。
+- **相互作用**: Claudeが最初にCLAUDE.mdを読むことで、「このプロジェクトにはどんなRulesがあり、どのSubagentを使うべきか」という全体戦略を立てられるようになります。
 
-```markdown
-# .claude/commands/tdd-cycle.md
+### ② Rules：コンテキストの「動的フィルタ」
 
-TDDサイクルを実行してください。各ステップで思考プロセスを示してください:
+`.claude/rules/` に配置され、パスベース（YAMLフロントマター）で発動します。
 
-## Step 1: Red（失敗するテストを書く）
-思考プロセス:
-- 期待される動作は?
-- どのエッジケースをテストすべきか?
-- テストの構造は?
+- **相互作用の最適化**: 例えば「DBの命名規則」というRulesは、SQLファイルを触る時だけ読み込まれます。
+- **利点**: 無関係な知識（CSSの知識など）が混ざるのを防ぎ、AIの注意力を「今やるべきこと」に集中させます。
 
-テストコード:
-[生成されるテスト]
+### ③ Skills：対話型「ワークフロー」
 
-## Step 2: Green（最小限の実装）
-思考プロセス:
-- テストを通す最小限のコードは?
-- 過度な実装をしていないか?
+ユーザーが `/` コマンドで起動する、反復可能なマルチステップの手順です。
 
-実装コード:
-[生成される実装]
+- **人との関わり**: アーキテクチャの決定など、実行途中で「ユーザーの承認や判断」が必要な場合に最適です。
+- **Rulesとの連携**: Skillの実行プロセスの中で、特定のRulesを参照して品質を担保させることができます。
 
-## Step 3: Refactor（リファクタリング）
-思考プロセス:
-- コードの重複は?
-- より明確な命名は?
-- 抽象化の余地は?
+### ④ Subagents：コンテキストの「隔離・節約」
 
-リファクタ後のコード:
-[改善されたコード]
-```
+Claudeが自動で、あるいは指示により起動する独立した専門アシスタントです。
 
----
+- **相互作用の隔離**: 大規模な検索やリファクタリングなど、大量のログが出る作業を「別ウィンドウ（コンテキスト）」で実行させます。
+- **利点**: 作業完了後に「結果だけ」をメインセッションに持ち帰るため、メインエージェントの記憶（コンテキスト）が汚れるのを防ぎます。
 
-## 4. Projects
-
-### CLAUDE.md の黄金律
-
-✅ **頻繁に使用する情報のみ**
-✅ **反復的に改善**
-✅ **チームでレビュー**
+### ⑤ MCPs：外部情報の「供給源」
 
-### 理想的な構成
-
-```markdown
-# Project Name
+GitHub、Slack、データベースなどの外部ツールへの接続口です。
 
-## プロジェクト概要
-[プロジェクトの目的、対象ユーザー、価値提案]
+- **情報の橋渡し**: MCPを通じて取得した外部データ（例：Sentryのエラーログ）を元に、Rulesに従ってSubagentsが修正を行う、という高度な連携が可能です。
 
-## 共通コマンド
-- `npm run dev`: 開発サーバー起動（ポート3000）
-- `npm test`: 全テスト実行
-- `npm run lint`: リント実行
+## 3. 「防衛拠点」構築のための決定フロー
 
-## ディレクトリ構造
+どのレイヤーに定義すべきか迷った際は、以下の問いに沿って配置を決定します。
 
-```bash
-app/
-├── routes/          # Remixルート
-├── components/      # UIコンポーネント
-├── lib/             # 純粋ロジック層
-└── data-io/         # 副作用層
-```
-
-## コードスタイル
-
-- TypeScript厳格モード
-- Prettier自動フォーマット
-- 3層分離アーキテクチャ遵守
-
-## テストポリシー
-
-- E2EファースEnd（Outside-In TDD）
-- 各層ごとに単体テスト
-- カバレッジ80%以上
-
-## 注意事項
-
-- Remixの`loader`/`action`はサーバー専用（`.server.ts`推奨）
-- クライアント側でのファイルシステムアクセス不可
-- 環境変数は`.env`で管理（gitignore必須）
-
-## 禁止事項
-
-- `any`型の使用（型安全性の徹底）
-- 直接的なDOM操作（Reactの原則に反する）
-- 層の責務を越える実装（3層分離違反）
-
-### コンテキスト管理
-
-```bash
-# タスク完了ごとに実行
-/clear
-
-# 新しいタスク開始
-# → 無関係な過去の文脈をクリア
-```
-
----
-
-## 5. MCP
-
-### アーキテクチャ理解
-
-```text
-Host (Claude Code)
-  ├─ Client 1 ←→ Server 1 (lint-checker)
-  ├─ Client 2 ←→ Server 2 (test-runner)
-  └─ Client 3 ←→ Server 3 (coverage-checker)
-```
-
-### 設定例
-
-`.claude/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "lint-checker": {
-      "command": "node",
-      "args": ["scripts/lint-template/engine.js"],
-      "description": "コーディング規律チェック"
-    },
-    "test-runner": {
-      "command": "npm",
-      "args": ["test", "--", "--run"],
-      "description": "テスト実行"
-    },
-    "coverage-checker": {
-      "command": "npm",
-      "args": ["run", "test:coverage"],
-      "description": "カバレッジ検証"
-    }
-  }
-}
-```
-
-### 実装ベストプラクティス
-
-1. **最小権限**: サーバーには必要最小限の権限のみ
-2. **エラーハンドリング**: 適切なエラー処理と復旧
-3. **明確な説明**: `description`で用途を明確に
-
----
-
-## 6. 統合ワークフロー
-
-### 典型的な開発フロー
-
-```text
-1. [Projects] CLAUDE.mdでプロジェクト文脈を共有
-   ↓
-2. [Skills] requirement-clarifierが要件を明確化
-   ↓
-3. [Prompts] /write-design-docで設計書作成
-   ↓
-4. [Skills] remix-design-workflow-expertが3層分離を適用
-   ↓
-5. [Prompts] /tdd-cycleでテスト駆動開発
-   ↓
-6. [Skills] outside-in-tdd-practitionerがE2Eファースト適用
-   ↓
-7. [MCP] lint-checker, test-runnerで品質検証
-   ↓
-8. [Prompts] /clear で文脈クリア、次のタスクへ
-```
-
-### 品質保証フロー
-
-```text
-実装完了
-  ↓
-[MCP] lint-checker起動
-  ├─ 合格 → 次へ
-  └─ 不合格 → [Skills] code-reviewerが自動修正
-       ↓
-[MCP] test-runner起動
-  ├─ 合格 → 次へ
-  └─ 不合格 → [Skills] test-fixerが修正
-       ↓
-[MCP] coverage-checker起動
-  ├─ 80%以上 → ✅ 完了
-  └─ 80%未満 → [Skills] test-writerが追加テスト作成
-```
-
----
-
-## 7. ClaudeMix適用戦略
-
-### Layer 1: 公式準拠の実装
-
-#### Skills実装
-
-```text
-.claude/skills/layer1-official/
-├── requirements-clarification-expert.md
-├── prompt-engineering-expert.md
-├── context-manager.md
-├── xml-structuring-specialist.md
-└── tool-integration-architect.md
-```
-
-**各Skillの役割**:
-
-- **requirements-clarification-expert**: 曖昧な要求を明確化（Prompts技術1: 明確性）
-- **prompt-engineering-expert**: 効果的なプロンプト作成支援（Prompts技術2: 例示）
-- **context-manager**: 段階的情報開示（Prompts技術8: 長文コンテキスト）
-- **xml-structuring-specialist**: XMLタグによる構造化（Prompts技術4）
-- **tool-integration-architect**: MCP統合設計
-
-#### Prompts実装
-
-```text
-.claude/commands/layer1-official/
-├── structured-task.md                # XMLタグ活用
-├── example-driven-implementation.md  # マルチショット例示
-├── write-design-doc.md               # 明確性と直接性
-├── tdd-cycle.md                      # 思考の連鎖（CoT）
-└── role-based-agent.md               # システムプロンプト
-```
-
-#### Projects設定
-
-`.claude/CLAUDE.md`:
-
-```markdown
-# ClaudeMix - Claude Official Best Practices Implementation
-
-## Layer 1: 公式ベストプラクティス
-
-### プロジェクト原則
-1. プロンプトエンジニアリング優先（ファインチューニング前）
-2. 明確性と具体性の徹底
-3. 例示による学習促進
-4. 段階的な情報開示
-
-### 開発プロセス
-1. Explore（調査）: コードを書かない
-2. Plan（計画）: 明確な計画を立てる
-3. Code（実装）: TDDサイクルで実装
-4. Commit（コミット）: 品質チェック後にコミット
-
-[以下、プロジェクト固有の詳細]
-```
-
-#### MCP設定
-
-`.claude/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "lint-mcp": {
-      "command": "node",
-      "args": ["scripts/lint-template/engine.js"],
-      "description": "Layer 1: コーディング規律チェック（公式推奨）"
-    },
-    "test-mcp": {
-      "command": "npm",
-      "args": ["test"],
-      "description": "Layer 1: テスト自動実行（公式推奨）"
-    }
-  }
-}
-```
-
-### Layer 2: Remix特化の実装
-
-#### Layer 2: Skills実装
-
-```text
-.claude/skills/layer2-remix-specific/
-├── service-section-pattern-expert.md
-├── remix-design-workflow-expert.md
-├── remix-3-layer-architect.md
-├── css-5-layer-specialist.md
-├── outside-in-tdd-practitioner.md
-└── mvp-scope-guardian.md
-```
-
-**Layer 1との統合**:
-
-- Layer 1の`requirements-clarification-expert`が要件を明確化
-- Layer 2の`service-section-pattern-expert`が{service}/{section}に落とし込み
-- Layer 1の`xml-structuring-specialist`で構造化
-- Layer 2の`remix-design-workflow-expert`が3層分離適用
-
-#### Layer 2: Prompts実装
-
-```text
-.claude/commands/layer2-remix-specific/
-├── run-design-workflow.md
-├── design-section.md
-├── generate-3-layer-route.md
-├── generate-5-layer-css.md
-├── verify-test-coverage.md
-└── full-quality-check.md
-```
-
-#### CLAUDE.md拡張
-
-```markdown
-# ClaudeMix
-
-## Layer 1: 公式ベストプラクティス
-[前述]
-
-## Layer 2: Remix特化設計思想
-
-### {service}/{section}パターン
-- 1 service = 1画面
-- 1 section = 1機能
-- 未定義セクションは実装禁止
-
-### 定義済みサービス
-#### Service: blog
-- セクション: posts, post-detail
-- 禁止: sort, filter, search（未要求）
-
-### 3層分離アーキテクチャ
-- UI層: routes, components
-- Logic層: lib（純粋関数のみ）
-- Data-IO層: data-io（副作用のみ）
-
-### Outside-In TDD
-1. E2Eテスト（失敗）
-2. UI層実装+テスト
-3. Logic層実装+テスト
-4. Data-IO層実装+テスト
-5. E2Eテスト（成功）
-```
-
----
-
-## 8. まとめ
-
-### 4本柱の連携
-
-| 要素 | 目的 | Layer 1適用 | Layer 2適用 |
-| :--- | :--- | :--- | :--- |
-| **Skills** | 専門知識 | 公式推奨のプロンプト技術 | Remix特化アーキテクチャ |
-| **Prompts** | 指示形式 | 明確性・例示・CoT | 設計フロー・TDD |
-| **Projects** | 文脈共有 | プロジェクト背景・原則 | {service}/{section}定義 |
-| **MCP** | 外部統合 | 品質チェック自動化 | 層別テスト検証 |
-
-### 移行の優先順位
-
-1. **Phase 1**: Layer 1（公式準拠）実装 → 普遍的価値
-2. **Phase 2**: Layer 2（Remix特化）追加 → 独自価値
-3. **Phase 3**: 統合テスト・ドキュメント整備
-
-### 期待される効果
-
-✅ **理解に基づく協調**: AIが「なぜ」を理解して実行
-✅ **一貫性の自動保持**: Skillsによる品質担保
-✅ **柔軟性の獲得**: プロジェクト特性への適応
-✅ **開発効率の向上**: 自動化とベストプラクティスの統合
-
----
-
-## 9. 参考リンク
-
-- **Skills**: <https://code.claude.com/docs/en/skills>
-- **Prompts**: <https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview>
-- **Projects**: <https://www.anthropic.com/engineering/claude-code-best-practices>
-- **MCP**: <https://docs.claude.com/en/docs/mcp>
-- **GitHub (MCP)**: <https://github.com/modelcontextprotocol>
+1. **「常に守るべき共通の地図か？」**
+   → `CLAUDE.md` (プロジェクト概要、コアファイル構成)
+2. **「特定のファイルに関わる深い専門知識か？」**
+   → `Rules` (デザインシステム、セキュリティ要件、DBパターン)
+3. **「人がトリガーする繰り返し作業か？」**
+   → `Skills` (新規ページ作成、デプロイチェック)
+4. **「自動で任せたい重い自律タスクか？」**
+   → `Subagents` (セキュリティ監査、大規模リファクタリング)
+5. **「コードベース外（GitHub/Slack等）に触れるか？」**
+   → `MCPs` (Issue管理、監視データ取得、通知)
+
+## 4. 段階的な構築アプローチ (Strategy)
+
+いきなり全てを作るのではなく、以下の順で「製造ライン」を整備します。
+
+1. **Step 1**: `CLAUDE.md` で地図を作り、AIに「今どこにいるか」を教える。
+2. **Step 2**: 重要なドメイン知識（優作さんの延命術など）を `Rules` に分離し、AIの脳を整理する。
+3. **Step 3**: 週に数回やるルーチンを `Skills` にしてスラッシュコマンド化する。
+4. **Step 4**: 重い作業が発生したら `Subagents` に切り出し、メインのコンテキストを清潔に保つ。
+
+## 5 📘 Claude Code 5つのレイヤー活用ガイド
+
+- [**Project Master (CLAUDE.md)**](/blog/claudemd-guide)
+  **役割：プロジェクトの地図と思想**
+  セッション開始時に必ず読み込まれる「脳」の基盤。WHY（なぜやるか）を定義し、AIの判断軸を固定します。
+
+- [**Domain Rules (.claude/rules)**](/blog/rules-guide)
+  **役割：専門知識の動的フィルタリング**
+  特定のディレクトリやファイル操作時のみ発動する「法律」。無関係な知識でコンテキストを汚さず、精度を最大化します。
+
+- [**Agent Skills (.claude/skills)**](/blog/skills-guide)
+  **役割：対話型ワークフロー**
+  人間がトリガーして開始する「反復手順」。アーキテクチャの決定など、人とAIが対話しながら進める共同作業を定式化します。
+
+- [**Sub-agents (Autonomous Task)**](/blog/subagents-guide)
+  **役割：自律型の隔離作業員**
+  メインの会話（コンテキスト）から切り離された「別動隊」。重いリファクタリングや調査を任せ、AIのスタミナ切れを防ぎます。
+
+- [**MCP Connections (External Tools)**](/blog/mcp-guide)
+  **役割：外部世界への拡張（手）**
+  GitHubやDB、Slackなど、コードベースの外側にある情報を供給。他のレイヤーと連携し、真の自律稼働を実現します。
+
+**参照元**:
+
+- [1] izanami.dev - [CLAUDE.md や AGENTS.md のベストプラクティス](https://izanami.dev/post/47b08b5a-6e1c-4fb0-8342-06b8e627450a)
+- [2] izanami.dev - [Claude Code 5つのレイヤー使い分け](https://izanami.dev/post/47deb6b9-0965-41e7-b128-12f5937e8748)

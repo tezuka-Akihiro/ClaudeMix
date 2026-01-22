@@ -2,10 +2,10 @@
 slug: "skills-guide"
 title: "claude skills 公式まとめ"
 author: "ClaudeMix Team"
-publishedAt: "2025-11-16"
+publishedAt: "2026-01-21"
 category: "Claude Best Practices"
-description: "Claudeの機能を拡張するモジュール「Skills」の公式ガイドを要約。Skillsの構造、ベストプラクティス、そしてClaudeが文脈に応じて専門知識を自動的に活用する仕組みを解説します。"
-tags: ["Skills", "architecture"]
+description: "Claude Codeの機能を拡張する「Skills」の公式ガイド。文脈に応じて自動起動するモジュール化されたパッケージの作成方法、SKILL.mdの構造、発見性を高める記述テクニック、そしてチームでの共有・運用ベストプラクティスを網羅的に解説します。"
+tags: ["Skills"]
 ---
 **ソース**: <https://code.claude.com/docs/en/skills>
 
@@ -18,6 +18,7 @@ Agent Skills は**Claudeの機能を拡張するモジュール化されたパ�
 - **モデル起動型**: ユーザーが明示的に呼び出すのではなく、Claudeが文脈に基づいて自動判断
 - **自動発見**: 3つのソース（個人用・プロジェクト・プラグイン）から自動検出
 - **プログレッシブ開示**: 必要な場合のみ補助ファイルを読み込む段階的アプローチ
+- **Slash Commandの統合**: 従来のカスタムスラッシュコマンド（`.claude/commands/`）はSkillsに統合されました。Skillsはコマンドの上位互換として機能します。
 
 ## 2. Skills の構造
 
@@ -38,6 +39,7 @@ my-skill/
 name: lowercase-name
 description: Skillの機能と使用時機を説明
 allowed-tools: (オプション) 許可するツール指定
+disable-model-invocation: (オプション) 自動実行の無効化
 ---
 
 # Skill名
@@ -84,6 +86,21 @@ allowed-tools: Read, Grep, Glob
 - 指定時、権限確認が不要になる
 - 読み取り専用やセキュリティ重視の場合に有効
 
+#### その他の主要なフィールド
+
+| フィールド | 説明 |
+| :--- | :--- |
+| `disable-model-invocation` | `true`の場合、Claudeによる自動実行を禁止（手動実行専用にする）。デプロイなど副作用のある操作に推奨。 |
+| `user-invocable` | `false`の場合、ユーザーによる`/`メニューからの実行を隠す（背景知識用）。 |
+| `context` | `fork`を指定すると、サブエージェントとして独立したコンテキストで実行。 |
+| `agent` | `context: fork`時のエージェントタイプ指定（`Explore`, `Plan`など）。 |
+
+#### 変数と動的コンテキスト
+
+- **`$ARGUMENTS`**: Skill呼び出し時の引数が展開されます。
+- **`${CLAUDE_SESSION_ID}`**: 現在のセッションID。ログ出力などに利用可能。
+- **`!command`**: バッククォートで囲んだコマンド（例: `!gh pr diff`）を実行し、その出力をプロンプトに埋め込みます。Claudeに見せる前にデータを動的に取得する場合に強力です。
+
 ## 3. Skillsの配置場所
 
 | 種類 | パス | 用途 | 共有方法 |
@@ -93,6 +110,8 @@ allowed-tools: Read, Grep, Glob
 | プラグイン | プラグイン内 | 配布可能 | プラグイン配布 |
 
 **推奨**: プロジェクトSkillsをgitで管理 → チームメンバーがpullで自動利用可能
+
+**ネストされたディレクトリ**: モノレポ構成などでは、サブディレクトリ内の `.claude/skills/` も自動的に検出されます（例: `packages/frontend/.claude/skills/`）。
 
 ## 4. Skillsの発見・実行メカニズム
 
@@ -214,6 +233,9 @@ When a user provides unclear requirements, guide them through structured clarifi
 2. Concrete examples
 3. Edge case identification
 ```
+
+具体的なプロンプトの書き込み方（XMLタグや思考の連鎖の組み込み）については、プロンプトガイドを参照
+[**prompts**](/blog/prompts-guide)
 
 ## 9. 参考リンク
 

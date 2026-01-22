@@ -5,7 +5,7 @@ author: "ClaudeMix Team"
 publishedAt: "2025-12-28"
 slug: "e2e-test-wait-for-timeout-banned"
 category: "Claude Best Practices"
-tags: ["Playwright", "testing", "troubleshooting", "Prompts"]
+tags: ["Playwright", "testing", "troubleshooting"]
 freeContentHeading: "塵も積もれば ― 待機時間の累積的害悪"
 ---
 

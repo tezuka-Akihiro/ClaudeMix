@@ -5,7 +5,7 @@ author: "ClaudeMix Team"
 publishedAt: "2025-12-28"
 slug: "ai-remix-react-history-ssr"
 category: "Claude Best Practices"
-tags: ["React", "SSR", "troubleshooting", "Prompts"]
+tags: ["React", "SSR", "troubleshooting"]
 freeContentHeading: "第3層：構造的な解剖 ― ハイドレーションという名の「アイデンティティ不安」"
 ---
 

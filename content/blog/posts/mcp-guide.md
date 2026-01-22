@@ -4,289 +4,143 @@ title: "AI開発の未来を変える「MCP」とは？ Claudeと開発ツール
 author: "ClaudeMix Team"
 publishedAt: "2025-11-16"
 category: "Claude Best Practices"
-description: "AIとの開発、まだ手作業で消耗していませんか？本記事では、AIが自律的に開発ツールを操作する未来を実現する「Model Context Protocol (MCP)」を徹底解説。ClaudeMixでの具体的な活用事例も紹介します。"
-tags: ["MCP", "architecture"]
+description: "Claudeと外部ツールを連携させる標準プロトコル「MCP (Model Context Protocol)」の完全ガイド。GitHubやDBとの接続方法、HTTP/Stdioサーバーの使い分け、Tool Searchによるコンテキスト最適化など、AIをチームの一員として機能させるための実装手法を解説します。"
+tags: ["MCP"]
 ---
+
 ## 📝 概要
 
-「このファイルの内容を教えて」「このテストを実行して結果を教えて」
+AIとの開発は「指示」から「協調」のフェーズへ。
+**Model Context Protocol (MCP)** は、Claudeがあなたの開発環境（ファイル、DB、外部API）と直接対話するための標準プロトコルです。
 
-AI、特にClaudeを使った開発で、このようなやり取りを繰り返していませんか？ もしAIが、あなたの代わりに自律的にファイルを参照し、テストを実行し、その結果を解釈してくれたら、開発体験は劇的に変わるはずです。
+これまでの「コピペによるコンテキスト注入」は不要です。MCPを導入することで、Claudeは自律的にIssueを読み、DBスキーマを確認し、プルリクエストを作成する「チームメンバー」へと進化します。
 
-この記事では、そんな未来を実現するための鍵となる技術、**Model Context Protocol (MCP)** について、社内向けにまとめたドキュメントを元に、分かりやすく解説します。
+### 本ガイドで得られる知識
 
-### この記事を読むと何がわかるか
-
-- AI開発における「コンテキスト共有」の課題
-- MCPが「AIのUSB-Cポート」と呼ばれる理由
-- MCPの基本的な仕組みとアーキテクチャ
-- 私たちのプロジェクト「ClaudeMix」で、MCPを使って開発ワークフローを自動化している具体的な方法
-
-### ターゲット読者
-
-- Claudeを使った開発の効率をさらに高めたいエンジニア
-- AIに開発プロセスの一部を自律的に任せたいと考えているテックリード
-- AIアプリケーションと外部ツールの連携に興味がある開発者
+- **最新の接続方式**: HTTP / Stdio サーバーの使い分け
+- **新機能**: Tool Searchによるコンテキストの最適化
+- **実戦フロー**: GitHub、PostgreSQL、Sentryとの高度な連携
+- **セキュリティ**: スコープ管理（Local / Project / User）による安全な運用
 
 ---
 
-## 1. MCPとは何か？ なぜ必要なのか？
+## 1. MCPのアーキテクチャ：AIの「手」を標準化する
 
-MCP（Model Context Protocol）（※）は、**AIアプリケーションが外部のデータソースやツールと文脈（コンテキスト）を共有するための、標準化されたオープンプロトコル（※）**です。
-
-> ※ **MCP (Model Context Protocol)**: AIが外部ツールやデータと連携するための標準的な通信ルール。
-> ※ **プロトコル**: コンピュータ同士が通信するときの約束事のこと（例: HTTPはWebの通信ルール）。
-
-### アナロジー
-
-#### MCPはAIアプリケーションのUSB-Cポートのようなもの
-
-- USB-C: デバイスと周辺機器を標準的な方法で接続
-- MCP: AIモデルと異なるデータソース/ツールを標準的な方法で接続
-
-これまでのAIとのやり取りは、人間が手動で情報をコピー＆ペーストし、AIにコンテキストを「注入」する必要がありました。MCPは、このプロセスを自動化し、AIが自ら外部の世界（ファイルシステム、データベース、APIなど）と対話するための「標準語」を提供するのです。
-
----
-
-## 2. MCPの仕組み：クライアント・ホスト・サーバーモデル（※）
-
-> ※ **クライアント・サーバーモデル**: サービスを提供する側（サーバー）と、利用する側（クライアント）に役割を分ける仕組み。
-
-```text
-┌─────────────────────┐
-│   MCP Host          │ ← AIアプリケーション（Claude Code（※）, Claude Desktop等）
-│   ┌───────────┐     │
-│   │ Client 1  │─────┼─→ MCP Server 1 (Google Drive)
-│   ├───────────┤     │
-│   │ Client 2  │─────┼─→ MCP Server 2 (Slack)
-│   ├───────────┤     │
-│   │ Client 3  │─────┼─→ MCP Server 3 (GitHub)
-│   └───────────┘     │
-└─────────────────────┘
-```
-
-> ※ **Claude Code**: Claudeを使った開発支援ツール。コードを読んだり、ファイルを操作したりできる。
+MCPは、AIアプリケーション（Host）と外部データ（Server）を繋ぐUSB-Cポートのような役割を果たします。
 
 ### 主要コンポーネント
 
-| コンポーネント | 役割 | 数 |
-| :--- | :--- | :--- |
-| **MCP Host** | AIアプリケーション本体、複数クライアントを調整・管理 | 1個 |
-| **MCP Client** | 各サーバーとの接続を維持、文脈を取得 | 複数（サーバー数に応じて） |
-| **MCP Server** | 外部データソース/ツールへのアクセスを提供 | 複数 |
+- **MCP Host**: Claude CodeやClaude Desktop。複数のクライアントを統制。
+- **MCP Server**: Google Drive, GitHub, Slack, または自作のツール。
+- **リソースとツール**: AIが「読めるデータ（Resources）」と「実行できる機能（Tools）」。
 
-### 接続モデル
+---
 
-**1対1の専用接続**: 各MCPクライアントは、対応する1つのMCPサーバーとの専用接続を維持
+## 2. Claude Code へのサーバー追加（最新コマンド）
 
-## 3. プロトコル層
+現在、主に3つのトランスポート方式がサポートされています。
 
-### データ層
+### ① HTTPサーバー（推奨・クラウド連携用）
 
-**定義**: JSON-RPC（※）ベースのクライアント・サーバー通信プロトコル
-
-> ※ **JSON-RPC**: JSON形式でデータをやり取りする通信方式。シンプルで広く使われている。
-
-**含まれる要素**:
-
-- ライフサイクル管理
-- コアプリミティブ:
-  - **Tools**: 実行可能な機能
-  - **Resources**: アクセス可能なデータ
-  - **Prompts**: テンプレート化された指示
-  - **Notifications**: イベント通知
-
-### トランスポート層
-
-**定義**: データ交換を可能にする通信メカニズムとチャネル
-
-**含まれる要素**:
-
-- トランスポート固有の接続確立
-- メッセージフレーミング
-- 認証
-
-## 4. Anthropic製品での統合
-
-| 製品 | 統合方法 | 用途 |
-| :--- | :--- | :--- |
-| **Messages API** | APIコネクター経由 | プログラマティックなMCPサーバー接続 |
-| **Claude Code** | サーバー追加 or Claude Code自体をサーバー化 | 開発ツール統合 |
-| **Claude.ai** | チームでMCPコネクター有効化 | エンタープライズ機能拡張 |
-| **Claude Desktop** | ローカルMCPサーバー統合 | デスクトップアプリ拡張 |
-
-## 5. 事前構築済みサーバー
-
-Anthropicが提供する主要なエンタープライズシステム用サーバー:
-
-- **Google Drive**: ドキュメントアクセス
-- **Slack**: メッセージ履歴、チャンネル情報
-- **GitHub**: リポジトリ、Issue、PR
-- **Git**: ローカルリポジトリ操作
-- **Postgres**: データベースクエリ
-- **Puppeteer**: Webスクレイピング、自動化
-
-## 6. SDK と仕様
-
-### 提供されるSDK
-
-- **Python**
-- **TypeScript**
-- **C#**
-- **Java**
-
-### 公開リソース
-
-- **GitHub**: <https://github.com/modelcontextprotocol>
-- **仕様**: <https://spec.modelcontextprotocol.io>
-- **公式サイト**: <https://modelcontextprotocol.io>
-
-## 7. Claude Code での MCP 使用
-
-### サーバーの追加方法
+リモートサービスとの接続に最適です。
 
 ```bash
-# MCPサーバーを追加
-claude mcp add <server-name>
+# 基本構文
+claude mcp add --transport http <名前> <URL>
 
-# 利用可能なサーバー一覧
+# 実例：Notionとの連携
+claude mcp add --transport http notion [https://mcp.notion.com/mcp](https://mcp.notion.com/mcp)
+
+```
+
+### ② Stdioサーバー（ローカルツール用）
+
+自身のPC上のスクリプトやバイナリを実行します。
+
+```bash
+# 実例：Airtableサーバー（APIキーを環境変数で渡す）
+claude mcp add --transport stdio --env AIRTABLE_API_KEY=YOUR_KEY airtable -- npx -y airtable-mcp-server
+
+```
+
+### ③ Windowsユーザー向けの注意
+
+WSL以外で`npx`を使用する場合、`cmd /c`ラッパーが必要です。
+
+```bash
+claude mcp add --transport stdio my-server -- cmd /c npx -y @some/package
+
+```
+
+---
+
+## 3. インストールスコープの使い分け
+
+設定の保存場所を適切に選ぶことで、セキュリティと共有のバランスを取ります。
+
+| スコープ | 保存先 | 用途 |
+| --- | --- | --- |
+| **local** (既定) | `~/.claude.json` | 現在のプロジェクトのみで有効な個人設定。 |
+| **project** | `.mcp.json` | **gitで共有可能**。チーム全員で同じツール（テスト実行機等）を共有。 |
+| **user** | `~/.claude.json` | 全プロジェクトで共通して使う個人用ツール（GitHub連携等）。 |
+
+---
+
+## 4. 2026年の新機能：MCP Tool Search
+
+大量のMCPサーバーを接続すると、ツールの説明だけでAIの記憶（コンテキスト）が埋まってしまいます。これを解決するのが **Tool Search** です。
+
+- **自動最適化**: ツール定義がコンテキストの10%を超えると、Claudeは必要なツールのみをオンデマンドで検索・ロードします。
+- **設定**: `ENABLE_TOOL_SEARCH=auto`（デフォルト）で動作。大量のツールを抱えても、AIの推論精度が落ちません。
+
+---
+
+## 5. 実戦活用シナリオ
+
+### シナリオA：Issueから実装・PR作成まで
+
+1. **GitHub連携**: `claude mcp add --transport http github https://api.githubcopilot.com/mcp/`
+2. **指示**: 「Issue #123の内容を分析して、必要な修正を行い、PRを作成して」
+3. **挙動**: ClaudeがIssueを読み、ローカルコードを修正し、`gh`ツールでPRを出します。
+
+### シナリオB：本番エラーの自動デバッグ
+
+1. **Sentry連携**: Sentry MCPを接続。
+2. **指示**: 「過去24時間で最も発生しているエラーのスタックトレースを確認し、修正案を提示して」
+3. **挙動**: ClaudeがSentryからログを取得し、該当コードを特定して修正計画を立てます。
+
+---
+
+## 6. 管理・メンテナンス
+
+設定したサーバーの状態確認や削除は以下のコマンドで行います。
+
+```bash
+# 接続中のサーバー一覧とステータス表示
 claude mcp list
+
+# 特定サーバーの詳細確認
+claude mcp get github
+
+# サーバーの削除
+claude mcp remove github
+
+# (Claude Code起動中) 認証や再接続の対話メニュー
+/mcp
+
 ```
 
-### 設定ファイル
+---
 
-`.claude/mcp.json`:
+## 7. 開発者のためのベストプラクティス
 
-```json
-{
-  "mcpServers": {
-    "test-runner": {
-      "command": "npm",
-      "args": ["test"],
-      "description": "Layer 1: テスト実行の自動化（公式推奨）"
-    },
-    "coverage-checker": {
-      "command": "npm",
-      "args": ["run", "test:coverage"],
-      "description": "Layer 2: 層ごとのカバレッジ検証"
-    }
-  }
-}
-```
+1. **最小権限**: MCPサーバーには必要最小限のAPIスコープのみ付与してください。
+2. **計画優先**: ツールを動かす前に必ず `「まず計画を立てて」` と伝え、無駄なAPIコールを防ぎます。
+3. **.mcp.json の活用**: チーム開発ではプロジェクトスコープを使用し、リントやテストの自動実行環境をコードと共に管理しましょう。
 
-### Claude Code自体をMCPサーバーとして使用
+---
 
-他のAIアプリケーションからClaude Codeの機能を利用可能
+**参照元**:
 
-## 8. セキュリティモデル
-
-### 基本原則
-
-- **ローカル優先**: Claude Desktopではローカルサーバーをサポート
-- **明示的な許可**: サーバーへのアクセスはユーザーが明示的に許可
-- **サンドボックス化**: 各サーバーは独立した環境で実行
-
-### ベストプラクティス
-
-1. **最小権限の原則**: サーバーには必要最小限の権限のみ付与
-2. **認証の実装**: トランスポート層での適切な認証
-3. **データ検証**: サーバーから受信したデータの検証
-4. **エラーハンドリング**: 適切なエラー処理と復旧メカニズム
-
-## 9. MCP サーバーの実装（概要）
-
-### 基本構造
-
-```python
-# Python SDK example
-from mcp import Server, Tool, Resource
-
-server = Server("my-server")
-
-@server.tool()
-def my_tool(arg: str) -> str:
-    """ツールの説明"""
-    return f"Result: {arg}"
-
-@server.resource("data://mydata")
-def my_resource() -> dict:
-    """リソースの提供"""
-    return {"data": "value"}
-
-if __name__ == "__main__":
-    server.run()
-```
-
-### 実装ステップ
-
-1. **サーバー定義**: サーバーの名前と説明を設定
-2. **Tools実装**: 実行可能な機能を定義
-3. **Resources実装**: アクセス可能なデータを定義
-4. **Prompts実装**: テンプレート化された指示を定義（オプション）
-5. **トランスポート設定**: 通信方法を設定
-6. **テスト**: ローカル環境でテスト
-
-## 10. Layer 1（公式準拠）への適用
-
-### ClaudeMix での活用
-
-#### 品質チェックツールの統合
-
-`.claude/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "lint-checker": {
-      "command": "node",
-      "args": ["scripts/lint-template/engine.js"],
-      "description": "コーディング規律の強制"
-    },
-    "test-runner": {
-      "command": "npm",
-      "args": ["test"],
-      "description": "テスト実行の自動化"
-    },
-    "coverage-checker": {
-      "command": "npm",
-      "args": ["run", "test:coverage"],
-      "description": "カバレッジ検証"
-    },
-    "css-arch-checker": {
-      "command": "npm",
-      "args": ["run", "lint:css-arch"],
-      "description": "CSSアーキテクチャ検証"
-    }
-  }
-}
-```
-
-#### 自動実行フロー
-
-```text
-1. ユーザー: 「実装完了しました」
-2. Claude: MCPサーバー「lint-checker」を起動
-   → リント結果を取得
-3. Claude: 問題があれば自動修正
-4. Claude: MCPサーバー「test-runner」を起動
-   → テスト結果を取得
-5. Claude: テストが失敗していれば修正
-6. Claude: MCPサーバー「coverage-checker」を起動
-   → カバレッジレポートを分析
-7. Claude: 「全てのチェックに合格しました」
-```
-
-### メリット
-
-- **自動化**: 手動でのコマンド実行が不要
-- **一貫性**: 常に同じチェックプロセスを実行
-- **効率性**: Claudeが結果を解釈し、即座に対応
-
-### 参考リンク
-
-- **MCP Documentation**: <https://docs.claude.com/en/docs/mcp>
-- **Official Announcement**: <https://www.anthropic.com/news/model-context-protocol>
-- **GitHub Repository**: <https://github.com/modelcontextprotocol>
-- **Specification**: <https://spec.modelcontextprotocol.io>
-- **Architecture Overview**: <https://modelcontextprotocol.io/docs/learn/architecture>
-- **Claude Code MCP Integration**: <https://docs.anthropic.com/en/docs/claude-code/mcp>
+- [Anthropic公式: Connect Claude Code to tools via MCP](https://docs.anthropic.com/en/docs/claude-code/mcp)
+- [Model Context Protocol 公式サイト](https://modelcontextprotocol.io/)

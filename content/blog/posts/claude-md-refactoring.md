@@ -1,11 +1,11 @@
 ---
 slug: "claude-md-refactoring"
 title: "CLAUDE.md最適化：公式ベストプラクティスでコンテキスト負荷を削減"
-description: "CLAUDE.mdが毎回の会話で不要な情報をロードし、コンテキストを圧迫していた問題を、Anthropic公式ベストプラクティスに準拠した構成への全面リファクタリングで解決。スラッシュコマンド化と{section}-spec.yaml形式への統一により、Claude Codeとの協調開発効率を最大化。"
+description: "CLAUDE.mdが毎回の会話で不要な情報をロードし、コンテキストを圧迫していた問題を、Anthropic公式ベストプラクティスに準拠した構成への全面リファクタリングで解決。WHAT/WHY/HOWの3要素への集約と、詳細ドキュメントへのポインタ化により、Claude Codeとの協調開発効率を最大化。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-22"
 category: "Claude Best Practices"
-tags: ["Projects", "Prompts", "architecture"]
+tags: ["CLAUDE.md", "architecture"]
 freeContentHeading: "具体的なタスク"
 ---
 
@@ -38,7 +38,7 @@ Claude Code Projectsを使い始め、`CLAUDE.md`でプロジェクトの文脈�
 ✅ この記事を読めば、Claude Codeとの協調開発効率を最大化し、コンテキストを「毎回参照すべき情報」に集中できる明るい未来があります。
 
 ✅ 具体的には、Anthropic公式が推奨する5項目（共通コマンド、コアファイル、テスト指示、開発環境セットアップ、プロジェクト固有の警告）でCLAUDE.mdを最適化し、フロー特化の指示をスラッシュコマンドに分離する**設計図**を手に入れられます。
-
+✅ 具体的には、Anthropic公式が推奨する「WHAT/WHY/HOW」の3要素でCLAUDE.mdを再構築し、詳細なルールを外部ドキュメントへの参照（ポインタ）に切り出す**設計図**を手に入れられます。
 ✅ この方法は、ClaudeMixプロジェクトで実証済みで、約1,600トークンのコンテキスト削減を実現し、AIがプロジェクト固有の常識により集中できるようになりました。
 
 ✅ この情報は、公式ベストプラクティスを実プロジェクトに適用した**実践知**であり、巷の情報では決して得られない具体的な改善プロセスです。
@@ -67,11 +67,11 @@ CLAUDE.mdを読み直したところ、「毎回の回答時に参照される�
 
 ### Current: 全面リファクタリング
 
-公式ベストプラクティスを参照し、以下の変更を実施しました：
+[CLAUDE.mdガイド](/blog/claudemd-guide)を参照し、以下の変更を実施しました：
 
-1. **フロー関連指示の分離**: 特定フロー実行時のみ必要な指示をスラッシュコマンドに移行
-2. **公式推奨項目の実装**: 共通コマンド、コアファイル構造、テスト指示、セットアップ詳細、プロジェクト固有の警告を追加
-3. **設定ファイルの統一**: 放置されていた命名規則の不統一を解消
+1. **3要素への集約**: 記事全体を「WHAT（プロジェクト概要）」「WHY（設計思想）」「HOW（検証コマンド）」の3要素に再構築。
+2. **情報のポインタ化**: 詳細なルールやアーキテクチャ定義を `@docs/` 配下の別ファイルに分離し、`CLAUDE.md` からは参照のみを行うように変更。
+3. **コンテキストの軽量化**: 必須情報のみを残し、AIの「認知リソース」を確保。
 
 この結果、約1,600トークンのコンテキスト削減を実現し、AIがプロジェクト固有の常識により集中できるようになりました。
 
@@ -89,42 +89,41 @@ CLAUDE.mdを読み直したところ、「毎回の回答時に参照される�
 
 #### 1. 公式推奨の「具体性」を徹底
 
-Anthropic公式が推奨するCLAUDE.mdは、「共通bashコマンドとその目的」のような実践的な項目を含んでいます。
-単にコマンド名を列挙するのではなく、**目的と備考を明記する表形式**を採用しました。
+Anthropic公式が推奨するCLAUDE.mdは、単なるルール集ではなく「コンテキストの地図」です。
+プロジェクトの構造（Structure）や技術スタック（Stack）を明確に定義し、AIが迷子にならないための**WHAT（地図）**を提供しました。
 
-この形式により、Claudeが「なぜこのコマンドを使うべきか」を理解し、自律的に正しい選択ができるようになりました。
+この形式により、Claudeが「今どのような環境で作業しているか」を即座に理解できるようになりました。
 
-#### 2. スラッシュコマンドへの分離基準を明確化
+#### 2. 詳細情報のポインタ化
 
-「毎回参照されるべき内容か？」という基準で、以下のように分類しました：
+「すべてのルールを1つのファイルに詰め込まない」という原則に従い、詳細なドキュメントへの参照（ポインタ）を活用しました。
 
-- **CLAUDE.mdに残す**: プロジェクト固有の「常識」（アーキテクチャルール、設定管理の原則、スタイル規則など）
-- **スラッシュコマンドに移行**: 特定のフロー実行時のみ必要な指示（ステップ指定、進捗ファイル更新など）
+- **CLAUDE.md**: アーキテクチャの核心（3層分離など）や、ドキュメントへのリンク一覧。
+- **外部ドキュメント**: コーディング規約、スタイルガイド、YAML参照ガイドなど。
 
-この分離により、コンテキストの「信号対雑音比」が大幅に向上しました。
+この分離により、コンテキストの「信号対雑音比」が大幅に向上し、AIが必要な時だけ詳細情報を参照する動きが可能になりました。
 
 ### ぶつかった壁
 
-#### 1. 公式推奨との「言葉の温度差」
+#### 1. 「思想（WHY）」の言語化
 
-公式ドキュメントは「共通bashコマンドを含めよ」と推奨していますが、ClaudeMixには独自のコマンド実行ルールがありました。
-この「プロジェクト固有の制約」を、どう公式推奨の形式に落とし込むかに悩みました。
+単に「こうしろ」と命じるのではなく、「なぜそうするのか」という設計思想をAIに理解させる必要がありました。
+「3層アーキテクチャ」や「SSoT」といった概念を、簡潔かつ強力な言葉で定義することに苦労しました。
 
-#### 2. 「フロー関連指示」の切り分け
+#### 2. 参照先の整備
 
-既存のCLAUDE.mdには、「一般的な指針」と「フロー特化の指示」が混在していました。
-どこまでをCLAUDE.mdに残し、どこからをスラッシュコマンドに移行すべきかの判断基準を見出すのに苦労しました。
+`CLAUDE.md` をシンプルにするためには、参照先となるドキュメント（`@docs/`）が整備されている必要があります。
+既存の散らばった情報を体系的なドキュメントとして再整理する作業が必要でした。
 
 ### 解決方法
 
-#### 1. 「備考」欄でプロジェクト固有の制約を明示
+#### 1. Design Philosophy (WHY) セクションの新設
 
-公式推奨の表形式を採用しつつ、「備考」欄にClaudeMix固有のルールを記載することで、公式形式とプロジェクト制約の両立を実現しました。
+「Design Philosophy」セクションを設け、アーキテクチャの意図や禁止事項（ハードコーディング禁止など）を明文化しました。これにより、AIの判断軸を固定しました。
 
-#### 2. 「フロー骨格」への参照があるかで判断
+#### 2. Detailed Documentation セクションでの集約
 
-特定のフロー定義書への参照が含まれている記述は、「フロー実行時のみ必要」であると判断し、スラッシュコマンドに移行しました。
-この基準により、一貫した分離判断が可能になりました。
+詳細なルールへのリンクを「Detailed Documentation」セクションに集約しました。AIは必要に応じてこれらのファイルを読みに行きます。
 
 ## コード抜粋
 
@@ -145,40 +144,47 @@ Anthropic公式が推奨するCLAUDE.mdは、「共通bashコマンドとその�
 - 特定のフロー実行時のみ必要な詳細指示が含まれている
 - 毎回の会話でロードされ、コンテキストを圧迫
 
-### 変更後：スラッシュコマンド（.claude/commands/tdd-flow.md）
-
-```markdown
-# 開発フロー実行
-
-あなたは、新規機能開発や改修の開発フローを実行します。以下の規範に従い、自律的にタスクを完了してください。
-
-## 🥇 最上位行動原則（マスター・ルール）
-
-- **唯一の規範**: 開発フローは以下の2層で定義されています。
-  - **Lv1: フロー骨格** (開発フロー簡略図)
-  - **Lv2: フロー詳細** (各フロー定義書)
-- **自律性の原則**: オペレーター（人間）からの指示は、フローのステップ指定のみです。
-```
-
-**改善点**:
-
-- フロー実行時のみ必要な指示を分離
-- スラッシュコマンドで必要時のみロード
-- 約1,600トークンのコンテキスト削減
-
 ### 変更後のCLAUDE.md（公式推奨形式）
 
 ```markdown
-## 🔧 共通bashコマンドとその目的
+# ClaudeMix Project Context
 
-開発時に頻繁に使用するコマンド一覧：
+## Project Overview (WHAT)
 
-| コマンド | 目的 | 備考 |
-|:---|:---|:---|
-| `npm run dev:wrangler` | 開発サーバー起動 | Wranglerでランタイム制約を反映した開発環境を起動（必須） |
-| `npm test` | ユニットテスト実行 | Vitestを使用（E2Eはオペレーターが実行） |
-| `npm run typecheck` | 型チェック | すべてのTypeScriptファイルを検証 |
-| `npm run lint:all` | 全リント実行 | テンプレート、CSS、ブログメタデータを検証 |
+- **Concept**: Remix MVP Boilerplate optimized for Claude-driven development.
+- **Stack**: Remix, TypeScript, Tailwind CSS, Cloudflare Pages (Workers, D1, KV).
+- **Structure**:
+  - `app/routes/` - **UI Layer**: Routing, Loaders/Actions.
+  - `app/components/` - **UI Layer**: Visual components.
+  - `app/lib/` - **Pure Logic Layer**: Business logic, pure functions (No side effects).
+  - `app/data-io/` - **Side Effects Layer**: DB access, API calls.
+  - `content/{section}/` - **SSoT**: YAML specs for literals and configurations.
+  - `app/specs/` - **Shared Specs**: Project-wide definitions and shared constants.
+
+## Design Philosophy (WHY)
+
+- **3-Layer Architecture**: Strict separation to ensure testability and maintainability.
+  - UI depends on Data-IO.
+  - Data-IO depends on Lib.
+  - Lib is independent (Pure).
+- **Single Source of Truth (SSoT)**: All literal values/configs must be in `*-spec.yaml`. Hardcoding is prohibited.
+- **Styling**: Use Tailwind utility classes only. No custom CSS files or global styles.
+
+## Verification Commands (HOW)
+
+- `npm run dev:wrangler` - Start dev server with Cloudflare runtime constraints.
+- `npm run typecheck` - Run TypeScript validation.
+- `npm run lint:all` - Run all linters (Template, CSS, Markdown, Blog Metadata).
+- `npm test` - Run unit tests (Vitest).
+- `npm run generate` - Generate code using scaffolds (Structure Assurance).
+
+## Detailed Documentation
+
+- Architecture Rules: @docs/boilerplate_architecture/ARCHITECTURE_MANIFESTO2.md
+- Styling Charter: @docs/CSS_structure/STYLING_CHARTER.md
+- Spec/Yaml Guide: @docs/boilerplate_architecture/YAML_REFERENCE_GUIDE.md
+- Common vs Shared: @docs/boilerplate_architecture/COMMON_VS_SHARED.md
+- Project Definition: @app/specs/shared/project-spec.yaml
 ```
 
 **改善点**:
@@ -189,20 +195,20 @@ Anthropic公式が推奨するCLAUDE.mdは、「共通bashコマンドとその�
 
 ## 今回の学びと感想
 
-### 学び1: 「公式推奨」は「具体的なユースケース」を含む
+### 学び1: Prompt EngineeringからContext Engineeringへの転換
 
-Anthropic公式のベストプラクティスは、単なる「何を書くべきか」のリストではなく、「開発時に頻繁に使用するコマンド一覧」のような**実践的なユースケース**を含んでいました。
-この「具体性」が、AIが自律的に判断できる鍵だと実感しました。
+これまでは「どう指示するか（Prompt）」に注力していましたが、今回のリファクタリングで「何を記憶させるか（Context）」の設計こそが重要だと痛感しました。
+`CLAUDE.md` を単なるルール集ではなく、プロジェクトの「地図（WHAT）」と「思想（WHY）」を伝えるための**情報資産**として再定義することで、AIの自律性が格段に向上しました。
 
-### 学び2: スラッシュコマンドの「適用基準」を明確にする重要性
+### 学び2: 「ポインタ化」によるコンテキスト汚染の防止
 
-「何をスラッシュコマンドに移行すべきか」の基準（「毎回参照されるべき内容か？」）を明確にすることで、判断に迷わず一貫した設計ができました。
-この基準は、他のプロジェクトにも適用できる汎用的な指針だと考えています。
+すべての情報を `CLAUDE.md` に詰め込むと、重要な指示ほど無視される「Brevity Bias」が発生します。
+詳細なルールを `Rules` や `Skills` に切り出し、`CLAUDE.md` からは参照（ポインタ）のみを残す**段階的開示（Progressive Disclosure）**の手法は、AIの「認知リソース」を守るための必須テクニックでした。
 
 ## 感想
 
-CLAUDE.mdの最適化は、単なる「ドキュメント整理」ではなく、**AIとの協調開発の効率を左右する重要な設計判断**だと実感しました。
-Anthropic公式のベストプラクティスを「そのまま適用」するのではなく、プロジェクト固有の制約（「npm run dev:wranglerが必須」など）を「備考」欄で明示する工夫により、公式形式とプロジェクトルールの両立を実現できました。
+CLAUDE.mdの最適化は、単なるドキュメント整理ではなく、**AIという「新しいチームメンバー」のためのオンボーディング資料作成**そのものでした。
+人間用のドキュメントと同じく、「要約（CLAUDE.md）」と「詳細（外部ドキュメント）」を分けることで、AIも人間も迷わずにプロジェクトの全体像を把握できるようになったのが最大の収穫です。
 
 同じような課題で悩んだ方はいませんか？
 もっと良い最適化方法があれば教えてください！
