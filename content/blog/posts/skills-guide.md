@@ -86,20 +86,91 @@ allowed-tools: Read, Grep, Glob
 - 指定時、権限確認が不要になる
 - 読み取り専用やセキュリティ重視の場合に有効
 
-#### その他の主要なフィールド
+#### 完全なフロントマターフィールドリファレンス
 
-| フィールド | 説明 |
-| :--- | :--- |
-| `disable-model-invocation` | `true`の場合、Claudeによる自動実行を禁止（手動実行専用にする）。デプロイなど副作用のある操作に推奨。 |
-| `user-invocable` | `false`の場合、ユーザーによる`/`メニューからの実行を隠す（背景知識用）。 |
-| `context` | `fork`を指定すると、サブエージェントとして独立したコンテキストで実行。 |
-| `agent` | `context: fork`時のエージェントタイプ指定（`Explore`, `Plan`など）。 |
+| フィールド | 型 | デフォルト | 説明 |
+| :--- | :--- | :--- | :--- |
+| `name` | string | ディレクトリ名 | スキルの表示名（小文字、英数字、ハイフン、最大64文字） |
+| `description` | string | Markdownの最初の段落 | スキルの機能説明。Claudeがいつ使用するかを判断する重要な情報 |
+| `argument-hint` | string | なし | オートコンプリート時のヒント（例: `[issue-number]`, `[filename] [format]`） |
+| `disable-model-invocation` | boolean | `false` | `true`の場合、Claudeによる自動実行を禁止（手動実行専用） |
+| `user-invocable` | boolean | `true` | `false`の場合、`/`メニューから隠す（背景知識用） |
+| `allowed-tools` | string | 全ツール | カンマ区切りのツールリスト。指定すると権限確認不要 |
+| `model` | string | デフォルトモデル | スキル実行時に使用するモデル |
+| `context` | string | `inline` | `inline`（デフォルト）または`fork`（独立したサブエージェントで実行） |
+| `agent` | string | `general-purpose` | `context: fork`時のサブエージェントタイプ |
+| `hooks` | object | なし | スキルのライフサイクルに紐づくフック |
 
 #### 変数と動的コンテキスト
 
-- **`$ARGUMENTS`**: Skill呼び出し時の引数が展開されます。
-- **`${CLAUDE_SESSION_ID}`**: 現在のセッションID。ログ出力などに利用可能。
-- **`!command`**: バッククォートで囲んだコマンド（例: `!gh pr diff`）を実行し、その出力をプロンプトに埋め込みます。Claudeに見せる前にデータを動的に取得する場合に強力です。
+Skills内で使用できる3つの動的な置換機能:
+
+##### A. `$ARGUMENTS` - 引数の展開
+
+ユーザーまたはClaudeが提供した引数をプレースホルダーとして埋め込みます。
+
+```yaml
+---
+name: fix-issue
+description: Fix a GitHub issue
+disable-model-invocation: true
+---
+
+Fix GitHub issue $ARGUMENTS following our coding standards.
+
+1. Read the issue description
+2. Implement the fix
+3. Write tests
+```
+
+**使用例**: `/fix-issue 123` → Claudeは「Fix GitHub issue 123...」を受け取ります。
+
+`$ARGUMENTS`がコンテンツに含まれていない場合、引数は `ARGUMENTS: <value>` として末尾に追加されます。
+
+##### B. `${CLAUDE_SESSION_ID}` - セッションIDの取得
+
+現在のセッションIDをログ記録や相関分析に使用できます。
+
+```yaml
+---
+name: session-logger
+description: Log activity for this session
+---
+
+Log the following to logs/${CLAUDE_SESSION_ID}.log:
+
+$ARGUMENTS
+```
+
+##### C. `` !`command` `` - コマンド実行
+
+スキルコンテンツがClaudeに送られる**前に**シェルコマンドを実行し、その出力をプレースホルダーに埋め込みます（前処理、Claudeによる実行ではありません）。
+
+```yaml
+---
+name: pr-summary
+description: Summarize changes in a pull request
+context: fork
+agent: Explore
+allowed-tools: Bash(gh:*)
+---
+
+## Pull request context
+- PR diff: !`gh pr diff`
+- PR comments: !`gh pr view --comments`
+- Changed files: !`gh pr diff --name-only`
+
+## Your task
+Summarize this pull request...
+```
+
+**実行フロー**:
+
+1. 各 `` !`command` `` が即座に実行される（Claudeが見る前）
+2. 出力がプレースホルダーを置換
+3. Claudeは実際のデータが埋め込まれた完全なプロンプトを受け取る
+
+**ヒント**: スキルコンテンツのどこかに「ultrathink」を含めると、拡張思考モードが有効化されます。
 
 ## 3. Skillsの配置場所
 
@@ -130,11 +201,90 @@ Claudeは以下の3つのソースからSkillsを自動発見:
 3. 合致すれば自動的にSkillを起動
 4. 必要に応じて補助ファイルを段階的に読み込み
 
-### プログレッシブ開示
+### プログレッシブ開示（Progressive Disclosure）
 
-- 初期: SKILL.mdのみ読み込み
-- 必要時: reference.md、scripts、templatesを順次読み込み
-- **利点**: コンテキストの効率的使用
+Skillsは3段階のレベルで段階的にコンテンツを読み込みます。これにより、関連するコンテンツのみがコンテキストウィンドウを占有します。
+
+#### レベル1: メタデータ（常に読み込まれる）
+
+**コンテンツタイプ**: 指示
+
+YAMLフロントマターの発見情報がClaudeの起動時にシステムプロンプトに含まれます。
+
+```yaml
+---
+name: pdf-processing
+description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files.
+---
+```
+
+**トークンコスト**: スキルあたり約100トークン
+
+この軽量なアプローチにより、多数のスキルをインストールしてもコンテキストペナルティがありません。
+
+#### レベル2: 指示（トリガー時に読み込まれる）
+
+**コンテンツタイプ**: 指示
+
+SKILL.mdの本文には、ワークフロー、ベストプラクティス、ガイダンスが含まれます。
+
+````markdown
+# PDF Processing
+
+## Quick start
+
+Use pdfplumber to extract text from PDFs:
+
+```python
+import pdfplumber
+
+with pdfplumber.open("document.pdf") as pdf:
+    text = pdf.pages[0].extract_text()
+```
+
+For advanced form filling, see [FORMS.md](FORMS.md).
+````
+
+Skillのdescriptionにマッチするリクエストがあると、ClaudeはbashでSKILL.mdをファイルシステムから読み取ります。この時点でコンテンツがコンテキストウィンドウに入ります。
+
+**トークンコスト**: 5,000トークン未満
+
+#### レベル3以上: リソースとコード（必要に応じて読み込まれる）
+
+**コンテンツタイプ**: 指示、コード、リソース
+
+Skillsは追加の資料をバンドルできます:
+
+```text
+pdf-skill/
+├── SKILL.md (メイン指示)
+├── FORMS.md (フォーム記入ガイド)
+├── REFERENCE.md (詳細なAPIリファレンス)
+└── scripts/
+    └── fill_form.py (ユーティリティスクリプト)
+```
+
+- **指示**: 追加のMarkdownファイル（FORMS.md、REFERENCE.md）
+- **コード**: 実行可能スクリプト（fill_form.py、validate.py）をClaudeがbashで実行
+- **リソース**: データベーススキーマ、APIドキュメント、テンプレート、サンプル
+
+Claudeはこれらのファイルを参照時のみアクセスします。ファイルシステムモデルにより、各コンテンツタイプに異なる強みがあります：
+
+- 指示: 柔軟なガイダンス
+- コード: 信頼性の高い操作（コンテキストを消費しない）
+- リソース: 事実の参照
+
+**トークンコスト**: 実質的に無制限（アクセスされたコンテンツのみカウント）
+
+#### プログレッシブ開示の利点
+
+| レベル | 読み込みタイミング | トークンコスト | コンテンツ |
+| :--- | :--- | :--- | :--- |
+| **レベル1: メタデータ** | 常時（起動時） | スキルあたり約100トークン | YAMLフロントマターの`name`と`description` |
+| **レベル2: 指示** | スキルトリガー時 | 5,000トークン未満 | SKILL.md本文の指示とガイダンス |
+| **レベル3以上: リソース** | 必要に応じて | 実質的に無制限 | bashで実行されるバンドルファイル（コンテキストに読み込まれない） |
+
+この段階的な開示により、任意の時点で関連するコンテンツのみがコンテキストウィンドウを占有します。
 
 ## 5. ベストプラクティス
 

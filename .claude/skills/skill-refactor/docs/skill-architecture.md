@@ -105,6 +105,29 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 ```
 
+### 典型的な allowed-tools パターン
+
+| スキルタイプ | allowed-tools | 理由 |
+| :--- | :--- | :--- |
+| 読み取り専用調査 | Read, Grep, Glob | 安全性重視。コードベース探索のみ |
+| コード生成 | Read, Write, Glob, Grep | ファイル作成が必要 |
+| コード修正 | Read, Edit, Glob, Grep | 既存ファイル編集が必要 |
+| 実行・検証 | Read, Bash, Glob | シェル実行が必要（テスト、ビルド等） |
+| scripts付きスキル | Read, Write, Edit, Glob, Grep, Bash | scripts/の実行とファイル操作 |
+| フルアクセス | 指定なし（全ツール） | 全ツール使用可能。慎重に使用 |
+
+**ツールスコープ制限**:
+
+特定のコマンドプレフィックスのみを許可する場合、スコープ構文を使用できます。
+
+```yaml
+---
+allowed-tools: Bash(gh:*)
+---
+```
+
+この例では、`gh` CLI（GitHub CLI）コマンドのみが許可されます。
+
 ## 適用判断
 
 ### 3層で十分なケース

@@ -22,11 +22,13 @@ tags: ["Subagent"]
 
 Claude Codeには、最初から「特定の役割」を与えられた専門員が配備されています。
 
-| エージェント | モデル | 主な役割 | 特徴 |
-| --- | --- | --- | --- |
-| **Explore** | Haiku | コード探索・分析 | **読み取り専用**。高速に codebase を把握する。 |
-| **Plan** | Inherit | 計画策定前の調査 | `plan mode` 時の調査専用。無限ループ防止設計。 |
-| **General** | Inherit | 複雑な多段タスク | 全ツール使用可能。探索から実装まで一気通貫。 |
+| エージェント | デフォルトツール | 主な役割 | 特徴 |
+| :--- | :--- | :--- | :--- |
+| **Explore** | Read, Grep, Glob | コード探索・分析 | **読み取り専用**。高速に codebase を把握する。 |
+| **Plan** | Read, Grep, Glob | 計画策定前の調査 | `plan mode` 時の調査専用。無限ループ防止設計。 |
+| **general-purpose** | 全ツール | 複雑な多段タスク | 全ツール使用可能。探索から実装まで一気通貫。デフォルトの選択肢。 |
+
+**注**: モデルは親エージェントから継承されます。`model`フィールドで明示的に指定しない限り、メインコンテキストと同じモデルが使用されます。
 
 ## 3. カスタムサブエージェントの構築（SKILLとの統合）
 
@@ -59,7 +61,78 @@ permissionMode: default
 
 ```
 
-## 4. 2026年の高度な統制技術
+## 4. Skillsとの統合
+
+### Skills の `context: fork` による独立実行
+
+Skillsの `context` フィールドを `fork` に設定することで、特定のスキルをサブエージェント（独立したコンテキスト）として実行できます。
+
+```yaml
+---
+name: deep-research
+description: Research a topic thoroughly in isolated context
+context: fork
+agent: Explore
+allowed-tools: Read, Grep, Glob
+---
+
+Research $ARGUMENTS thoroughly:
+
+1. Find relevant files using Glob and Grep
+2. Read and analyze the code
+3. Summarize findings with specific file references
+```
+
+### context: inline vs fork の使い分け
+
+| context値 | 実行方法 | 適用場面 | 特徴 |
+| :--- | :--- | :--- | :--- |
+| `inline` | 現在の会話コンテキスト内で実行 | ガイドライン、パターン、参考資料 | 会話履歴にアクセス可能 |
+| `fork` | 独立したサブエージェントで実行 | 自己完結型タスク、大規模調査 | 会話履歴なし、明示的な指示が必要 |
+
+**重要な違い**: `inline` は知識やガイドラインの提供に使用し、`fork` は自己完結型のタスクに使用します。
+
+### agent フィールドによる専門化
+
+`context: fork` 時に `agent` フィールドでサブエージェントのタイプを指定できます。
+
+**読み取り専用の調査スキル**:
+
+```yaml
+---
+name: analyze-codebase
+context: fork
+agent: Explore
+allowed-tools: Grep, Read, Glob
+---
+
+Analyze the codebase structure and identify:
+
+1. Main entry points
+2. Key dependencies
+3. Potential bottlenecks
+```
+
+**フル機能のスキル**:
+
+```yaml
+---
+name: implement-feature
+context: fork
+agent: general-purpose
+---
+
+Implement the feature: $ARGUMENTS
+
+1. Design the solution
+2. Write the code
+3. Add tests
+4. Update documentation
+```
+
+`agent` を省略した場合、デフォルトで `general-purpose` が使用されます。
+
+## 5. 2026年の高度な統制技術
 
 ### ① Hookによる「動的検問」
 
@@ -75,7 +148,6 @@ permissionMode: default
 skills:
   - remix-best-practices
   - architectural-boundary
-
 ```
 
 これにより、エージェントは起動した瞬間に「プロジェクトの掟」を理解した状態で作業を開始します。
@@ -86,7 +158,7 @@ skills:
 
 * **注意**: バックグラウンド時はユーザーへの確認ができないため、権限外の操作は自動拒否されます。
 
-## 5. 戦略的使い分け：Main vs Subagent
+## 6. 戦略的使い分け：Main vs Subagent
 
 「最大の努力で最小の結果（死なないこと）」を達成するための基準です。
 

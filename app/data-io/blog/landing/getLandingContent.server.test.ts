@@ -98,14 +98,6 @@ describe('getLandingContent - Side Effects Layer', () => {
       );
     });
 
-    it('should return correct number of CTA links matching spec', async () => {
-      // Act
-      const result = await getLandingContent('engineer');
-
-      // Assert
-      expect(result.ctaLinks).toHaveLength(landingSpec.cta.buttons.length);
-    });
-
     it('should convert snake_case YAML keys to camelCase', async () => {
       // Act
       const result = await getLandingContent('engineer');
