@@ -34,5 +34,4 @@
 - Architecture Rules: @docs/boilerplate_architecture/ARCHITECTURE_MANIFESTO2.md
 - Styling Charter: @docs/CSS_structure/STYLING_CHARTER.md
 - Spec/Yaml Guide: @docs/boilerplate_architecture/YAML_REFERENCE_GUIDE.md
-- Common vs Shared: @docs/boilerplate_architecture/COMMON_VS_SHARED.md
 - Project Definition: @app/specs/shared/project-spec.yaml

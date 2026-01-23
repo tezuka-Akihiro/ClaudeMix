@@ -219,6 +219,130 @@ scripts/ 追加前に、以下の代替手段で十分か確認する。
 
 **結論**: 画像生成は外部ツール連携のため要検討
 
+## context フィールドの判断基準
+
+スキルの実行コンテキストを決定する。
+
+### 基本概念
+
+| context値 | 実行方法 | 会話履歴へのアクセス | 用途 |
+| :--- | :--- | :--- | :--- |
+| `inline` | 現在の会話内で実行 | あり | ガイドライン、参考資料、対話型タスク |
+| `fork` | 独立したサブエージェントで実行 | なし | 自己完結型の大規模タスク |
+
+### 判断フロー
+
+```text
+スキルの性質を判断
+  ↓
+Q1: ガイドライン/参考資料か、タスク実行か？
+  ├─ ガイドライン/参考資料 → context: inline (明示不要)
+  └─ タスク実行 → Q2へ
+      ↓
+Q2: ユーザーとの対話が必要か？
+  ├─ YES（確認、選択、段階的承認が必要） → context: inline
+  └─ NO → Q3へ
+      ↓
+Q3: メインコンテキストを汚染する大量出力か？
+  ├─ YES（大規模調査、ログ解析等） → context: fork
+  └─ NO → context: inline
+```
+
+### inline が適切なケース（ClaudeMixの全スキル）
+
+| 判断基準 | 説明 | 該当スキル例 |
+| :--- | :--- | :--- |
+| **フェーズごとの確認** | ユーザーの承認を得て次フェーズに進む | feature-revision, lp-manga, blog-planner |
+| **対話型タスク** | AskUserQuestionで選択肢を提示 | architecture-guardian, generator-operator |
+| **段階的な編集** | ユーザーがファイルを確認・編集してから次へ | lp-manga, skill-refactor |
+| **ガイドライン提供** | 参考情報を会話内に展開 | architecture-guardian |
+
+### fork が適切なケース（ClaudeMixでは未使用）
+
+| 判断基準 | 説明 | 想定例 |
+| :--- | :--- | :--- |
+| **大規模調査** | 数百ファイルを横断的に調査 | 「プロジェクト全体の依存関係を可視化」 |
+| **独立したレポート生成** | メインコンテキストに影響しない単独タスク | 「先月のコミット統計をレポート化」 |
+| **隔離実行** | メインの会話履歴を参照する必要がない | 「指定ディレクトリのみでセキュリティ監査」 |
+
+### ClaudeMixプロジェクトの方針
+
+**すべてのスキルで `context: inline` を採用**
+
+**理由**:
+
+1. **フェーズ駆動型ワークフロー**: 全スキルが段階的確認を重視
+2. **対話の重要性**: AskUserQuestionによる選択肢提示が頻繁
+3. **編集の柔軟性**: ユーザーが途中で成果物を確認・修正できることが重要
+4. **大規模調査の不要性**: プロジェクト規模が管理可能で、独立調査の必要がない
+
+### 実装上の注意
+
+**デフォルトは inline**:
+
+```yaml
+---
+name: my-skill
+description: ...
+# context: inline ← 明示不要（デフォルト）
+---
+```
+
+**fork を使う場合のみ明示**:
+
+```yaml
+---
+name: deep-research
+description: Research codebase thoroughly
+context: fork
+agent: Explore  # Explore, Plan, general-purpose から選択
+---
+```
+
+## agent フィールドの判断基準（context: fork 時のみ）
+
+**重要**: ClaudeMixプロジェクトでは現在使用していない（全スキルがinlineのため）。
+
+| agent値 | デフォルトツール | 用途 |
+| :--- | :--- | :--- |
+| `Explore` | Read, Grep, Glob | 読み取り専用の大規模調査 |
+| `Plan` | Read, Grep, Glob | 計画策定のための調査 |
+| `general-purpose` | 全ツール | 汎用タスク（デフォルト） |
+
+**カスタムエージェント**（`.claude/agents/`で定義）も指定可能だが、ClaudeMixでは不要と判断。
+
+## ClaudeMixスキルの分類（全10スキル）
+
+### ガイドライン提供型（1スキル）
+
+| スキル名 | context | 用途 |
+| :--- | :--- | :--- |
+| architecture-guardian | inline | プロジェクト設計思想の参照、違反検出 |
+
+### 対話型タスク実行（9スキル）
+
+| スキル名 | context | フェーズ確認 | AskUserQuestion | 理由 |
+| :--- | :--- | :--- | :--- | :--- |
+| blog-planner | inline | ✅ 5段階 | ✅ | ステップごとの承認が必須 |
+| blog-paywall-refactorer | inline | ✅ 5段階 | - | リファクタリング結果の確認が必要 |
+| debugger | inline | ✅ 3段階 | ✅ | 修正案の選択が必要 |
+| feature-revision | inline | ✅ 3フェーズ | ✅ | 各フェーズでユーザー確認必須 |
+| generator-maintainer | inline | ✅ 検証フロー | - | テンプレート追加の確認が必要 |
+| generator-operator | inline | - | ✅ | パラメータ不足時の確認が必要 |
+| lp-manga | inline | ✅ 4フェーズ | ✅ | キャラクター.md等の編集を前提 |
+| test-e2e-account | inline | - | - | エラー時のトラブルシュート対話 |
+| skill-refactor | inline | ✅ 3フェーズ | ✅ | 分析→計画→実行の段階的確認 |
+
+### 分類の示唆
+
+**ClaudeMixでは以下の特性により、すべてのスキルでinlineが最適**:
+
+- **90%のスキル**がフェーズごとの確認機能を持つ
+- **70%のスキル**がAskUserQuestionで選択肢を提示
+- **対話なしの完全自動実行スキルが存在しない**
+
+この設計により、AIとユーザーの協調作業が円滑に進む。
+
 ## チェック項目
 
 | # | チェック項目 | 判定 |
@@ -227,3 +351,5 @@ scripts/ 追加前に、以下の代替手段で十分か確認する。
 | 2 | scripts/ の追加が妥当か（必要性の判断） | [ ] |
 | 3 | scripts/ がある場合、allowed-tools に Bash があるか | [ ] |
 | 4 | 各層の責務が守られているか | [ ] |
+| 5 | context フィールドの設定が適切か（inline/fork判断） | [ ] |
+| 6 | context: fork の場合、agent フィールドが指定されているか | [ ] |
