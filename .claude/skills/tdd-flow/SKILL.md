@@ -46,11 +46,11 @@ Phase 5: Implementation
 
 | Phase | 絵文字 | 成果物 | prompts |
 | :--- | :--- | :--- | :--- |
-| **Phase 1: High-Level Design** | ▶️🗾 | REQUIREMENTS_ANALYSIS_PIPE.md<br>GUIDING_PRINCIPLES.md | `prompts/01-high-level-design.md` |
-| **Phase 2: Low-Level Design** | 📚️🖼️ | func-spec.md<br>uiux-spec.md | `prompts/02-low-level-design.md` |
-| **Phase 3: Design Artifacts** | 📋️🗂️🧬 | section-spec.yaml<br>file-list.md<br>data-flow-diagram.md | `prompts/03-design-artifacts.md` |
-| **Phase 4: Implementation Prep** | 🎭⛏️ | MOCK_POLICY.md<br>TDD_WORK_FLOW.md | `prompts/04-implementation-prep.md` |
-| **Phase 5.1: E2Eテスト作成** | 👁️ | E2E Screen Test<br>E2E Section Test | `prompts/05-01-e2e-tests.md` |
+| **Phase 1: High-Level Design** | ▶️🗾 | REQUIREMENTS_ANALYSIS_PIPE.md, GUIDING_PRINCIPLES.md | `prompts/01-high-level-design.md` |
+| **Phase 2: Low-Level Design** | 📚️🖼️ | func-spec.md, uiux-spec.md | `prompts/02-low-level-design.md` |
+| **Phase 3: Design Artifacts** | 📋️🗂️🧬 | section-spec.yaml, file-list.md, data-flow-diagram.md | `prompts/03-design-artifacts.md` |
+| **Phase 4: Implementation Prep** | 🎭⛏️ | MOCK_POLICY.md, TDD_WORK_FLOW.md | `prompts/04-implementation-prep.md` |
+| **Phase 5.1: E2Eテスト作成** | 👁️ | E2E Screen Test, E2E Section Test | `prompts/05-01-e2e-tests.md` |
 | **Phase 5.2: CSS実装** | 🎨 | Layer 2/3/4 CSS | `prompts/05-02-css.md` |
 | **Phase 5.3: TDD実装ループ** | 🪨🚧 | Routes/Components/Logic/Data-IO | `prompts/05-03-tdd-loop.md` |
 
@@ -78,7 +78,7 @@ Phase 5: Implementation
 
 Phase 1〜4では、各設計書のテンプレート生成時に `generator-operator` スキルを呼び出します。
 
-```
+```text
 # 例: func-spec.md生成
 `generator-operator`スキルを使用してfunc-spec.mdを生成します。
 パラメータ: service=blog, section=posts

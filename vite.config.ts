@@ -16,7 +16,6 @@ export default defineConfig({
         v3_throwAbortReason: true,
       },
       serverModuleFormat: "esm",
-      serverDependenciesToBundle: "all",
     }),
     tsconfigPaths(),
   ],
@@ -93,5 +92,6 @@ export default defineConfig({
     resolve: {
       externalConditions: ["workerd", "worker"],
     },
+    noExternal: true,  // Bundle all dependencies for Cloudflare Workers
   },
 });
