@@ -114,12 +114,12 @@ Phase 1〜4では、各設計書のテンプレート生成時に `generator-ope
 
 | ドキュメント | 役割 |
 | :--- | :--- |
-| `docs/boilerplate_architecture/開発フロー簡略図.md` | フロー全体像 |
-| `docs/boilerplate_architecture/ARCHITECTURE_MANIFESTO2.md` | 3大層アーキテクチャの詳細 |
 | `docs/boilerplate_architecture/DESIGN_BLUEPRINT_FLOW.md` | 設計書生成フローの詳細 |
-| `docs/boilerplate_architecture/E2E_TEST_CRITERIA.md` | E2Eテストの基準 |
-| `docs/boilerplate_architecture/ユニットテストの最低基準.md` | ユニットテストの基準 |
-| `docs/CSS_structure/STYLING_CHARTER.md` | スタイリング憲章 |
+
+**Note**: 以下のルールは `.claude/rules/` で自動的に適用されます：
+- アーキテクチャルール（architecture/）
+- スタイリングルール（styling/）
+- テスト基準（testing/）
 
 ## 連携スキル
 

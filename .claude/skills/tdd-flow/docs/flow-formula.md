@@ -91,6 +91,5 @@
 
 ## 📚 参照ドキュメント
 
-- `docs/boilerplate_architecture/開発フロー簡略図.md`: フロー全体像（元ドキュメント）
 - `docs/boilerplate_architecture/DESIGN_BLUEPRINT_FLOW.md`: 設計書生成フローの詳細
 - `prompts/*.md`: 各フェーズの具体的な実行手順

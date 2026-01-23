@@ -73,7 +73,7 @@ Phase 1: Schema Generation → prompts/01-generate.md
 
 ## 関連ドキュメント
 
-- [Valibot + Conform Guide](../../../docs/boilerplate_architecture/VALIBOT_CONFORM_GUIDE.md)
 - [Migration Guide](../../../docs/boilerplate_architecture/VALIBOT_CONFORM_MIGRATION_GUIDE.md)
-- [Development Flow](../../../docs/boilerplate_architecture/開発フロー簡略図.md)
 - [Skills Guide](../../../content/blog/posts/skills-guide.md)
+
+**Note**: Valibot/Conform の詳細ルールは `.claude/rules/validation/valibot-conform-flow.md` で自動的に適用されます。

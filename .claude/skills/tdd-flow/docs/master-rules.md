@@ -8,7 +8,7 @@
 
 ### Lv1: フロー骨格
 
-**定義場所**: `docs/flow-formula.md`（元: `docs/boilerplate_architecture/開発フロー簡略図.md`）
+**定義場所**: `docs/flow-formula.md`
 
 **内容**: 絵文字数式による開発の全体構造。テンプレート生成対象ファイルと生成順序を定義。
 
@@ -16,7 +16,7 @@
 
 ### Lv2: フロー詳細
 
-**定義場所**: `prompts/*.md`（元: `docs/boilerplate_architecture/` 配下の各フロー定義書）
+**定義場所**: `prompts/*.md`
 
 **内容**: 各フェーズの具体的な手順、中間成果物、検証方法を定義。
 
