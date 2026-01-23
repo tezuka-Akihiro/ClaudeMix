@@ -1,0 +1,47 @@
+/**
+ * {{SECTION_NAME}} Schema Layer (Valibot)
+ *
+ * このファイルは`app/specs/{{SERVICE}}/{{SECTION}}-spec.yaml`から生成されます。
+ * 手動編集は推奨されません。変更が必要な場合はSpec層を更新してください。
+ *
+ * 責務:
+ * - サーバーサイドバリデーションの物理的な検問所
+ * - Spec層の制約をValibotスキーマとして実装
+ * - 型安全性を提供（InferOutput）
+ *
+ * 重要: `.server.ts`拡張子により、クライアントバンドルから除外されます。
+ */
+
+import * as v from 'valibot';
+
+// TODO: Spec読み込みユーティリティの実装
+// import { getSpec } from '~/utils/spec-loader.server';
+// import type { {{SPEC_TYPE}} } from '~/specs/{{SERVICE}}/{{SECTION}}-spec';
+// import type { ValidationSpec } from '~/specs/shared/validation-spec';
+
+// 一時的なハードコード（Spec読み込みユーティリティ実装後に削除）
+const spec = {{SPEC_JSON}};
+const validationSpec = {{VALIDATION_SPEC_JSON}};
+
+// ==========================================
+// 共通バリデーション（再利用可能）
+// ==========================================
+
+{{COMMON_SCHEMAS}}
+
+// ==========================================
+// Form Schemas
+// ==========================================
+
+{{FORM_SCHEMAS}}
+
+// ==========================================
+// 型抽出（InferOutput）
+// ==========================================
+
+/**
+ * 型は手書きせず、Valibotの InferOutput から自動抽出します。
+ * これにより、スキーマと型の乖離をゼロにします。
+ */
+
+{{TYPE_EXPORTS}}

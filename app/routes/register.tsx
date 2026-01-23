@@ -9,6 +9,8 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { Form, Link, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
+import { getFormProps, getInputProps, useForm } from '@conform-to/react';
+import { parseWithValibot } from '@conform-to/valibot';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
@@ -32,6 +34,9 @@ import { validateEmail } from '~/lib/account/authentication/validateEmail';
 import { validatePasswordDetailed } from '~/lib/account/authentication/validatePassword';
 import { createSessionData } from '~/lib/account/common/createSessionData';
 
+// Schema layer (Valibot)
+import { RegisterSchema } from '~/schemas/account/authentication-schema.server';
+
 export const meta: MetaFunction = () => {
   return [
     { title: '会員登録 - ClaudeMix' },
@@ -41,11 +46,7 @@ export const meta: MetaFunction = () => {
 
 interface ActionData {
   error?: string;
-  fieldErrors?: {
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-  };
+  lastResult?: any; // Conform submission result
 }
 
 interface LoaderData {
@@ -120,40 +121,24 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
 
   const formData = await request.formData();
-  const email = formData.get('email');
-  const password = formData.get('password');
-  const confirmPassword = formData.get('confirmPassword');
 
-  const fieldErrors: ActionData['fieldErrors'] = {};
+  // Conform + Valibot: Parse and validate form data
+  const submission = parseWithValibot(formData, {
+    schema: RegisterSchema,
+  });
 
-  // Validate inputs
-  if (typeof email !== 'string' || !email) {
-    fieldErrors.email = spec.validation.email.error_messages.required;
-  } else if (!validateEmail(email)) {
-    fieldErrors.email = spec.validation.email.error_messages.invalid_format;
+  // Validation failed: return errors
+  if (submission.status !== 'success') {
+    return json<ActionData>(
+      { lastResult: submission.reply() },
+      { status: 400 }
+    );
   }
 
-  if (typeof password !== 'string' || !password) {
-    fieldErrors.password = spec.validation.password.error_messages.required;
-  } else {
-    const passwordValidation = validatePasswordDetailed(password);
-    if (!passwordValidation.isValid && passwordValidation.error) {
-      fieldErrors.password = spec.validation.password.error_messages[passwordValidation.error];
-    }
-  }
+  // Type-safe data extraction
+  const { email, password } = submission.value;
 
-  if (typeof confirmPassword !== 'string' || !confirmPassword) {
-    fieldErrors.confirmPassword = spec.validation.password_confirm.error_messages.required;
-  } else if (password !== confirmPassword) {
-    fieldErrors.confirmPassword = spec.validation.password_confirm.error_messages.mismatch;
-  }
-
-  // Return errors if validation failed
-  if (Object.keys(fieldErrors).length > 0) {
-    return json<ActionData>({ fieldErrors }, { status: 400 });
-  }
-
-  // Sanitize email
+  // Sanitize email (pure logic layer)
   const sanitizedEmail = sanitizeEmail(email);
 
   // Check if user already exists
@@ -166,7 +151,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   // Hash password
-  const passwordHash = await hashPassword(password as string);
+  const passwordHash = await hashPassword(password);
 
   // Create user
   const userCreated = await createUser(sanitizedEmail, passwordHash, context as any);
@@ -214,6 +199,16 @@ export default function Register() {
   const isSubmitting = navigation.state === 'submitting';
   const { uiSpec } = loaderData;
 
+  // Conform: Form state management
+  const [form, fields] = useForm({
+    lastResult: actionData?.lastResult,
+    onValidate({ formData }) {
+      return parseWithValibot(formData, { schema: RegisterSchema });
+    },
+    shouldValidate: 'onBlur',
+    shouldRevalidate: 'onInput',
+  });
+
   return (
     <main className="auth-container auth-container-structure" data-testid="register-page">
       <div className="auth-card auth-card-structure">
@@ -226,65 +221,48 @@ export default function Register() {
           </div>
         )}
 
-        <Form method="post" className="auth-form-structure">
+        <Form method="post" className="auth-form-structure" {...getFormProps(form)}>
           <div className="form-field-structure">
-            <label htmlFor="email">{uiSpec.fields.email.label}</label>
+            <label htmlFor={fields.email.id}>{uiSpec.fields.email.label}</label>
             <input
+              {...getInputProps(fields.email, { type: 'email' })}
               className="form-field__input"
-              id="email"
-              name="email"
-              type="email"
               autoComplete="email"
-              required
-              aria-invalid={actionData?.fieldErrors?.email ? true : undefined}
-              aria-describedby={actionData?.fieldErrors?.email ? 'email-error' : undefined}
               data-testid="email-input"
             />
-            {actionData?.fieldErrors?.email && (
-              <span id="email-error" className="error-message-structure" role="alert" data-testid="error-message">
-                {actionData.fieldErrors.email}
+            {fields.email.errors && (
+              <span id={fields.email.errorId} className="error-message-structure" role="alert" data-testid="error-message">
+                {fields.email.errors}
               </span>
             )}
           </div>
 
           <div className="form-field-structure">
-            <label htmlFor="password">{uiSpec.fields.password.label}</label>
+            <label htmlFor={fields.password.id}>{uiSpec.fields.password.label}</label>
             <input
+              {...getInputProps(fields.password, { type: 'password' })}
               className="form-field__input"
-              id="password"
-              name="password"
-              type="password"
               autoComplete="new-password"
-              required
-              aria-invalid={actionData?.fieldErrors?.password ? true : undefined}
-              aria-describedby={actionData?.fieldErrors?.password ? 'password-error' : undefined}
               data-testid="password-input"
             />
-            {actionData?.fieldErrors?.password && (
-              <span id="password-error" className="error-message-structure" role="alert" data-testid="error-message">
-                {actionData.fieldErrors.password}
+            {fields.password.errors && (
+              <span id={fields.password.errorId} className="error-message-structure" role="alert" data-testid="error-message">
+                {fields.password.errors}
               </span>
             )}
           </div>
 
           <div className="form-field-structure">
-            <label htmlFor="confirmPassword">{uiSpec.fields.confirmPassword.label}</label>
+            <label htmlFor={fields.passwordConfirm.id}>{uiSpec.fields.confirmPassword.label}</label>
             <input
+              {...getInputProps(fields.passwordConfirm, { type: 'password' })}
               className="form-field__input"
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
               autoComplete="new-password"
-              required
-              aria-invalid={actionData?.fieldErrors?.confirmPassword ? true : undefined}
-              aria-describedby={
-                actionData?.fieldErrors?.confirmPassword ? 'confirmPassword-error' : undefined
-              }
               data-testid="confirm-password-input"
             />
-            {actionData?.fieldErrors?.confirmPassword && (
-              <span id="confirmPassword-error" className="error-message-structure" role="alert" data-testid="error-message">
-                {actionData.fieldErrors.confirmPassword}
+            {fields.passwordConfirm.errors && (
+              <span id={fields.passwordConfirm.errorId} className="error-message-structure" role="alert" data-testid="error-message">
+                {fields.passwordConfirm.errors}
               </span>
             )}
           </div>

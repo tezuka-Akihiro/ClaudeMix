@@ -9,6 +9,8 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParams } from '@remix-run/react';
+import { getFormProps, getInputProps, useForm } from '@conform-to/react';
+import { parseWithValibot } from '@conform-to/valibot';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
@@ -44,6 +46,9 @@ import { validateEmail } from '~/lib/account/authentication/validateEmail';
 import { validatePasswordDetailed } from '~/lib/account/authentication/validatePassword';
 import { createSessionData } from '~/lib/account/common/createSessionData';
 
+// Schema layer (Valibot)
+import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+
 export const meta: MetaFunction = () => {
   return [
     { title: 'ログイン - ClaudeMix' },
@@ -53,10 +58,7 @@ export const meta: MetaFunction = () => {
 
 interface ActionData {
   error?: string;
-  fieldErrors?: {
-    email?: string;
-    password?: string;
-  };
+  lastResult?: any; // Conform submission result
 }
 
 interface LoaderData {
@@ -151,34 +153,25 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
 
   const formData = await request.formData();
-  const email = formData.get('email');
-  const password = formData.get('password');
   const redirectUrl = formData.get('redirectUrl') || spec.server_io.action.default_redirect;
 
-  const fieldErrors: ActionData['fieldErrors'] = {};
+  // Conform + Valibot: Parse and validate form data
+  const submission = parseWithValibot(formData, {
+    schema: LoginSchema,
+  });
 
-  // Validate inputs
-  if (typeof email !== 'string' || !email) {
-    fieldErrors.email = spec.validation.email.error_messages.required;
-  } else if (!validateEmail(email)) {
-    fieldErrors.email = spec.validation.email.error_messages.invalid_format;
+  // Validation failed: return errors
+  if (submission.status !== 'success') {
+    return json<ActionData>(
+      { lastResult: submission.reply() },
+      { status: 400 }
+    );
   }
 
-  if (typeof password !== 'string' || !password) {
-    fieldErrors.password = spec.validation.password.error_messages.required;
-  } else {
-    const passwordValidation = validatePasswordDetailed(password);
-    if (!passwordValidation.isValid && passwordValidation.error) {
-      fieldErrors.password = spec.validation.password.error_messages[passwordValidation.error];
-    }
-  }
+  // Type-safe data extraction
+  const { email, password } = submission.value;
 
-  // Return errors if validation failed
-  if (Object.keys(fieldErrors).length > 0) {
-    return json<ActionData>({ fieldErrors }, { status: 400 });
-  }
-
-  // Sanitize email
+  // Sanitize email (pure logic layer)
   const sanitizedEmail = sanitizeEmail(email);
 
   // Get user by email (cast to DatabaseUser to access passwordHash)
@@ -191,7 +184,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   // Verify password
-  const isPasswordValid = await verifyPassword(password as string, user.passwordHash);
+  const isPasswordValid = await verifyPassword(password, user.passwordHash);
   if (!isPasswordValid) {
     return json<ActionData>(
       { error: spec.error_messages.authentication.invalid_credentials },
@@ -222,6 +215,16 @@ export default function Login() {
   const redirectUrl = searchParams.get('redirect-url') || '/account';
   const { uiSpec } = loaderData;
 
+  // Conform: Form state management
+  const [form, fields] = useForm({
+    lastResult: actionData?.lastResult,
+    onValidate({ formData }) {
+      return parseWithValibot(formData, { schema: LoginSchema });
+    },
+    shouldValidate: 'onBlur',
+    shouldRevalidate: 'onInput',
+  });
+
   return (
     <main className="auth-container auth-container-structure" data-testid="login-page">
       <div className="auth-card auth-card-structure">
@@ -243,47 +246,37 @@ export default function Login() {
           </div>
         )}
 
-        <Form method="post" className="auth-form-structure">
+        <Form method="post" className="auth-form-structure" {...getFormProps(form)}>
           <input type="hidden" name="redirectUrl" value={redirectUrl} />
 
           <div className="form-field-structure">
-            <label htmlFor="email">{uiSpec.fields.email.label}</label>
+            <label htmlFor={fields.email.id}>{uiSpec.fields.email.label}</label>
             <input
+              {...getInputProps(fields.email, { type: 'email' })}
               className="form-field__input"
-              id="email"
-              name="email"
-              type="email"
               placeholder={uiSpec.fields.email.placeholder}
               autoComplete="email"
-              required
-              aria-invalid={actionData?.fieldErrors?.email ? true : undefined}
-              aria-describedby={actionData?.fieldErrors?.email ? 'email-error' : undefined}
               data-testid="email-input"
             />
-            {actionData?.fieldErrors?.email && (
-              <span id="email-error" className="error-message-structure" role="alert" data-testid="error-message">
-                {actionData.fieldErrors.email}
+            {fields.email.errors && (
+              <span id={fields.email.errorId} className="error-message-structure" role="alert" data-testid="error-message">
+                {fields.email.errors}
               </span>
             )}
           </div>
 
           <div className="form-field-structure">
-            <label htmlFor="password">{uiSpec.fields.password.label}</label>
+            <label htmlFor={fields.password.id}>{uiSpec.fields.password.label}</label>
             <input
+              {...getInputProps(fields.password, { type: 'password' })}
               className="form-field__input"
-              id="password"
-              name="password"
-              type="password"
               placeholder={uiSpec.fields.password.placeholder}
               autoComplete="current-password"
-              required
-              aria-invalid={actionData?.fieldErrors?.password ? true : undefined}
-              aria-describedby={actionData?.fieldErrors?.password ? 'password-error' : undefined}
               data-testid="password-input"
             />
-            {actionData?.fieldErrors?.password && (
-              <span id="password-error" className="error-message-structure" role="alert" data-testid="error-message">
-                {actionData.fieldErrors.password}
+            {fields.password.errors && (
+              <span id={fields.password.errorId} className="error-message-structure" role="alert" data-testid="error-message">
+                {fields.password.errors}
               </span>
             )}
           </div>

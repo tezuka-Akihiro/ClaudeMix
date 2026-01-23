@@ -9,6 +9,8 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { Form, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
+import { getFormProps, getInputProps, useForm } from '@conform-to/react';
+import { parseWithValibot } from '@conform-to/valibot';
 
 // Spec loader
 import { loadSpec } from '~/spec-loader/specLoader.server';
@@ -21,6 +23,9 @@ import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.
 // Pure logic layer
 import { sanitizeEmail } from '~/lib/account/authentication/sanitizeEmail';
 import { validateEmail } from '~/lib/account/authentication/validateEmail';
+
+// Schema layer (Valibot)
+import { ForgotPasswordSchema } from '~/schemas/account/authentication-schema.server';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
@@ -37,9 +42,7 @@ export const meta: MetaFunction = () => {
 interface ActionData {
   success?: string;
   error?: string;
-  fieldErrors?: {
-    email?: string;
-  };
+  lastResult?: any; // Conform submission result
 }
 
 interface LoaderData {
@@ -92,21 +95,24 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
 
   const formData = await request.formData();
-  const email = formData.get('email');
 
-  const fieldErrors: ActionData['fieldErrors'] = {};
+  // Conform + Valibot: Parse and validate form data
+  const submission = parseWithValibot(formData, {
+    schema: ForgotPasswordSchema,
+  });
 
-  // Validation
-  if (typeof email !== 'string' || !email) {
-    fieldErrors.email = spec.validation.email.error_messages.required;
-  } else if (!validateEmail(email)) {
-    fieldErrors.email = spec.validation.email.error_messages.invalid_format;
+  // Validation failed: return errors
+  if (submission.status !== 'success') {
+    return json<ActionData>(
+      { lastResult: submission.reply() },
+      { status: 400 }
+    );
   }
 
-  if (Object.keys(fieldErrors).length > 0) {
-    return json<ActionData>({ fieldErrors }, { status: 400 });
-  }
+  // Type-safe data extraction
+  const { email } = submission.value;
 
+  // Sanitize email (pure logic layer)
   const sanitizedEmail = sanitizeEmail(email);
 
   // Check if user exists
@@ -147,6 +153,16 @@ export default function ForgotPassword() {
   const isSubmitting = navigation.state === 'submitting';
   const { uiSpec } = loaderData;
 
+  // Conform: Form state management
+  const [form, fields] = useForm({
+    lastResult: actionData?.lastResult,
+    onValidate({ formData }) {
+      return parseWithValibot(formData, { schema: ForgotPasswordSchema });
+    },
+    shouldValidate: 'onBlur',
+    shouldRevalidate: 'onInput',
+  });
+
   return (
     <main className="auth-container auth-container-structure">
       <div className="auth-card auth-card-structure">
@@ -173,24 +189,19 @@ export default function ForgotPassword() {
           </div>
         )}
 
-        <Form method="post" className="auth-form-structure">
+        <Form method="post" className="auth-form-structure" {...getFormProps(form)}>
           <div className="form-field-structure">
-            <label htmlFor="email" className="form-field__label">
+            <label htmlFor={fields.email.id} className="form-field__label">
               {uiSpec.field.label}
             </label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
+              {...getInputProps(fields.email, { type: 'email' })}
               className="form-field__input"
-              aria-invalid={actionData?.fieldErrors?.email ? true : undefined}
-              aria-describedby={actionData?.fieldErrors?.email ? 'email-error' : undefined}
-              required
+              autoComplete="email"
               data-testid="email-input"
             />
-            {actionData?.fieldErrors?.email && (
-              <span id="email-error" className="form-field__error" role="alert">{actionData.fieldErrors.email}</span>
+            {fields.email.errors && (
+              <span id={fields.email.errorId} className="form-field__error" role="alert">{fields.email.errors}</span>
             )}
           </div>
 
