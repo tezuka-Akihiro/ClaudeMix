@@ -92,6 +92,7 @@ export default defineConfig({
     resolve: {
       externalConditions: ["workerd", "worker"],
     },
-    noExternal: true,  // Bundle all dependencies for Cloudflare Workers
+    external: ["workers-og"],  // Exclude workers-og due to WASM
+    noExternal: true,  // Bundle all other dependencies for Cloudflare Workers
   },
 });
