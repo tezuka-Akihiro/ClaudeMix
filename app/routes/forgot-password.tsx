@@ -25,7 +25,7 @@ import { sanitizeEmail } from '~/lib/account/authentication/sanitizeEmail';
 import { validateEmail } from '~/lib/account/authentication/validateEmail';
 
 // Schema layer (Valibot)
-import { ForgotPasswordSchema } from '~/schemas/account/authentication-schema.server';
+import { ForgotPasswordSchema } from '~/schemas/account/authentication-schema';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
