@@ -5,7 +5,7 @@ author: "ClaudeMix Team"
 publishedAt: "2026-01-21"
 category: "Claude Best Practices"
 description: "Claude CodeのSkill作成におけるプロンプトエンジニアリングの公式ベストプラクティス。発見性を高めるメタデータ、思考を統制するXML構造、動的コンテキストの活用法など、AIの能力を最大限に引き出す実装テクニックを解説します。"
-tags: ["skills"]
+tags: ["Skills"]
 ---
 
 ## 1. プロンプトエンジニアリングの再定義

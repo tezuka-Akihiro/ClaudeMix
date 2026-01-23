@@ -94,7 +94,7 @@ export function getMetadataRules() {
             severity: config.severity || this.severity,
             file: filePath,
             rule: this.name,
-            suggestion: `許可されたタグは spec.yaml の tags を参照してください`
+            suggestion: `許可されたタグは app/specs/blog/posts-spec.yaml の tags を参照してください`
           });
         }
 

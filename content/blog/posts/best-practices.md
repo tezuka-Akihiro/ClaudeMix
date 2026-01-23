@@ -5,7 +5,7 @@ description: "Claude Codeを使いこなすための最新公式ベストプラ�
 author: "ClaudeMix Team"
 publishedAt: "2026-01-21"
 category: "Claude Best Practices"
-tags: ["CLAUDE.md", "Rules", "Skills", "Subagents", "MCP"]
+tags: ["CLAUDE.md", "rules", "Skills", "Subagent", "MCP"]
 ---
 
 ## 1. 5つのレイヤーの全体構造（関わり合いの俯瞰）
