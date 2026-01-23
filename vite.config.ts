@@ -93,5 +93,6 @@ export default defineConfig({
       externalConditions: ["workerd", "worker"],
     },
     external: ["workers-og"],
+    noExternal: ["@conform-to/react", "@conform-to/valibot"],
   },
 });
