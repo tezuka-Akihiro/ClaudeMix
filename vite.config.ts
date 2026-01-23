@@ -16,6 +16,7 @@ export default defineConfig({
         v3_throwAbortReason: true,
       },
       serverModuleFormat: "esm",
+      serverDependenciesToBundle: "all",
     }),
     tsconfigPaths(),
   ],
@@ -92,7 +93,5 @@ export default defineConfig({
     resolve: {
       externalConditions: ["workerd", "worker"],
     },
-    external: ["workers-og"],
-    noExternal: ["@conform-to/react", "@conform-to/valibot"],
   },
 });
