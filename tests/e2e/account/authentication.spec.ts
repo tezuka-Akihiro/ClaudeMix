@@ -29,7 +29,7 @@ async function registerUser(page: Page, email: string, password = 'Password123')
   await page.goto('/register');
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
-  await page.fill('input[name="confirmPassword"]', password);
+  await page.fill('input[name="passwordConfirm"]', password);
   await page.click('button[type="submit"]');
   await expect(page).toHaveURL('/account');
 }
@@ -57,7 +57,7 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(passwordInput).toBeVisible();
       await expect(passwordInput).toHaveAttribute('type', 'password');
 
-      const confirmPasswordInput = page.locator('input[name="confirmPassword"]');
+      const confirmPasswordInput = page.locator('input[name="passwordConfirm"]');
       await expect(confirmPasswordInput).toBeVisible();
       await expect(confirmPasswordInput).toHaveAttribute('type', 'password');
 
@@ -75,7 +75,7 @@ test.describe('Account Authentication - Happy Path', () => {
       const email = generateUniqueEmail('newuser');
       await page.fill('input[name="email"]', email);
       await page.fill('input[name="password"]', 'Password123');
-      await page.fill('input[name="confirmPassword"]', 'Password123');
+      await page.fill('input[name="passwordConfirm"]', 'Password123');
 
       // Submit form
       await page.click('button[type="submit"]');
@@ -96,7 +96,7 @@ test.describe('Account Authentication - Happy Path', () => {
       const email = generateUniqueEmail('mismatch');
       await page.fill('input[name="email"]', email);
       await page.fill('input[name="password"]', 'Password123');
-      await page.fill('input[name="confirmPassword"]', 'DifferentPassword123');
+      await page.fill('input[name="passwordConfirm"]', 'DifferentPassword123');
 
       // Submit form
       await page.click('button[type="submit"]');

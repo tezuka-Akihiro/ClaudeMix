@@ -26,7 +26,7 @@ async function createAuthenticatedUser(page: Page, prefix: string) {
   await page.goto('/register');
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
-  await page.fill('input[name="confirmPassword"]', password);
+  await page.fill('input[name="passwordConfirm"]', password);
   await page.click('button[type="submit"]');
   await expect(page).toHaveURL('/account');
   return { email, password };
