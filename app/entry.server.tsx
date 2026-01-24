@@ -1,7 +1,8 @@
 import type { AppLoadContext, EntryContext } from "@remix-run/cloudflare";
 import { RemixServer } from "@remix-run/react";
 import { isbot } from "isbot";
-import { renderToReadableStream } from "react-dom/server";
+// Edge Runtime (Cloudflare Pages) requires the browser version for Web Streams API support
+import { renderToReadableStream } from "react-dom/server.browser";
 
 const ABORT_DELAY = 5_000;
 
