@@ -1,8 +1,8 @@
 // blog.landing.$target - Route: ランディングページ
 // ターゲット別のランディングページを表示
 
-import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/cloudflare";
+import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { getLandingContent } from "~/data-io/blog/landing/getLandingContent.server";
 import { getMangaAssets } from "~/data-io/blog/landing/getMangaAssets.server";
@@ -51,7 +51,7 @@ export interface LandingLoaderData {
   legalContent: string;
 }
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, context }: LoaderFunctionArgs) {
   // landing-spec.yaml を読み込み
   const landingSpec = loadSpec<BlogLandingSpec>('blog/landing');
 
@@ -61,6 +61,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
     landingSpec.targets.supported,
     landingSpec.targets.default
   );
+
+  // Cloudflare環境変数を取得
+  const env = (context as any).env;
 
   try {
     // コンテンツとアセットを並列取得
@@ -78,7 +81,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
     // 環境変数から特定商取引法の内容を取得（本番環境用）
     // 設定されていない場合は spec.yaml のプレースホルダーを使用（開発環境用）
-    const legalContent = process.env.LEGAL_CONTENT || landingSpec.footer.legal_content;
+    const legalContent = env?.LEGAL_CONTENT || landingSpec.footer.legal_content;
 
     return json<LandingLoaderData>({
       content,
