@@ -63,7 +63,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
   );
 
   // Cloudflare環境変数を取得
-  const env = (context as any).env;
+  // Cloudflare Pagesでは context.cloudflare.env を使用
+  const env = (context as any).cloudflare?.env || (context as any).env;
 
   try {
     // コンテンツとアセットを並列取得
@@ -92,6 +93,9 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
       legalContent,
     });
   } catch (error) {
+    // エラー内容をログ出力
+    console.error('[Landing Loader Error]', error);
+
     // コンテンツファイルが存在しない場合は404
     if (error instanceof Error && error.message.includes('not found')) {
       throw new Response("Landing page not found", { status: 404 });
