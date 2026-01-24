@@ -106,7 +106,9 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   let userEmail: string | null = null;
 
   try {
-    const kv = (context as any).env.SESSION_KV;
+    // Cloudflare Pagesでは context.cloudflare.env を使用
+    const env = (context as any).cloudflare?.env || (context as any).env;
+    const kv = env.SESSION_KV;
     const listResult = await kv.list({ prefix: 'reset-token:' });
 
     for (const key of listResult.keys) {

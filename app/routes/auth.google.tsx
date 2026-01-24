@@ -14,11 +14,12 @@ import { generateGoogleAuthUrl } from '~/lib/account/authentication/generateGoog
  * Loader: Redirect to Google OAuth authorization page
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
-  const env = (context as any).env;
+  // Cloudflare Pagesでは context.cloudflare.env を使用
+  const env = (context as any).cloudflare?.env || (context as any).env;
 
   // Get OAuth configuration from environment variables
-  const clientId = env.GOOGLE_CLIENT_ID;
-  const redirectUri = env.GOOGLE_REDIRECT_URI || 'http://localhost:8788/auth/callback/google';
+  const clientId = env?.GOOGLE_CLIENT_ID;
+  const redirectUri = env?.GOOGLE_REDIRECT_URI || 'http://localhost:8788/auth/callback/google';
 
   if (!clientId) {
     console.error('GOOGLE_CLIENT_ID not configured');

@@ -19,7 +19,8 @@ import { createSessionData } from '~/lib/account/common/createSessionData';
  * Loader: Handle Google OAuth callback
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
-  const env = (context as any).env;
+  // Cloudflare Pagesでは context.cloudflare.env を使用
+  const env = (context as any).cloudflare?.env || (context as any).env;
   const url = new URL(request.url);
 
   // Extract OAuth response parameters
@@ -44,9 +45,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   // if (state !== storedState) return redirect('/login?error=csrf-detected');
 
   // Get OAuth configuration
-  const clientId = env.GOOGLE_CLIENT_ID;
-  const clientSecret = env.GOOGLE_CLIENT_SECRET;
-  const redirectUri = env.GOOGLE_REDIRECT_URI || 'http://localhost:8788/auth/callback/google';
+  const clientId = env?.GOOGLE_CLIENT_ID;
+  const clientSecret = env?.GOOGLE_CLIENT_SECRET;
+  const redirectUri = env?.GOOGLE_REDIRECT_URI || 'http://localhost:8788/auth/callback/google';
 
   if (!clientId || !clientSecret) {
     console.error('Google OAuth not configured');
