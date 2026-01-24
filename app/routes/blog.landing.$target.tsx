@@ -52,19 +52,6 @@ export interface LandingLoaderData {
 }
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
-  // ===== デバッグ: context構造を確認 =====
-  console.log('[DEBUG] context keys:', Object.keys(context || {}));
-  console.log('[DEBUG] context.cloudflare exists:', !!(context as any).cloudflare);
-  console.log('[DEBUG] context.env exists:', !!(context as any).env);
-
-  if ((context as any).cloudflare?.env) {
-    console.log('[DEBUG] cloudflare.env keys:', Object.keys((context as any).cloudflare.env));
-  }
-  if ((context as any).env) {
-    console.log('[DEBUG] env keys:', Object.keys((context as any).env));
-  }
-  // ======================================
-
   // landing-spec.yaml を読み込み
   const landingSpec = loadSpec<BlogLandingSpec>('blog/landing');
 
@@ -75,14 +62,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
     landingSpec.targets.default
   );
 
-  // Cloudflare環境変数を取得
-  // Cloudflare Pagesでは context.cloudflare.env を使用
-  const env = (context as any).cloudflare?.env || (context as any).env;
-
-  console.log('[DEBUG] LEGAL_CONTENT exists:', !!env?.LEGAL_CONTENT);
-  console.log('[DEBUG] LEGAL_CONTENT type:', typeof env?.LEGAL_CONTENT);
-  console.log('[DEBUG] LEGAL_CONTENT length:', env?.LEGAL_CONTENT?.length || 0);
-  console.log('[DEBUG] LEGAL_CONTENT preview:', env?.LEGAL_CONTENT?.substring(0, 200) || '(empty)');
+  // Cloudflare環境変数を取得（context.env を使用）
+  const env = (context as any).env;
 
   try {
     // コンテンツとアセットを並列取得
