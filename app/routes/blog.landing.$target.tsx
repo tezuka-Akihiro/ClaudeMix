@@ -81,6 +81,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
   console.log('[DEBUG] LEGAL_CONTENT exists:', !!env?.LEGAL_CONTENT);
   console.log('[DEBUG] LEGAL_CONTENT type:', typeof env?.LEGAL_CONTENT);
+  console.log('[DEBUG] LEGAL_CONTENT length:', env?.LEGAL_CONTENT?.length || 0);
+  console.log('[DEBUG] LEGAL_CONTENT preview:', env?.LEGAL_CONTENT?.substring(0, 200) || '(empty)');
 
   try {
     // コンテンツとアセットを並列取得
