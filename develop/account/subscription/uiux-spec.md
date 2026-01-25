@@ -137,83 +137,45 @@ AccountLayout
 
 ---
 
-### 2. SubscriptionStatus
+### 2. SubscriptionStatusCard
 
-**ファイルパス**: `app/components/account/subscription/SubscriptionStatus.tsx`
+**ファイルパス**: `app/components/account/subscription/SubscriptionStatusCard.tsx`
 
-**責務**: 現在のサブスクリプション情報を表示し、管理アクションへのアクセスを提供
+**責務**: サブスクリプション操作ボタン（キャンセル等）の表示
 
 **Props定義**（抽象要件）:
 
-- サブスクリプション情報（プラン名、契約状態、契約開始日、次回請求日、月額料金）
+- サブスクリプション状態（active/inactive）
 - キャンセルアクション関数
 
 **UI構造**:
 
 ```
-<div data-testid="subscription-status">
-  <h2>契約状況</h2>
-
-  <div class="status-card">
-    <div class="status-header">
-      <h3>3ヶ月プラン</h3>
-      <Badge variant="success" data-testid="status-badge">
-        アクティブ
-      </Badge>
-    </div>
-
-    <dl class="status-details">
-      <dt>契約開始日</dt>
-      <dd>2025年12月1日</dd>
-
-      <dt>次回請求日</dt>
-      <dd>2026年3月1日</dd>
-
-      <dt>月額料金</dt>
-      <dd>¥933 / 月</dd>
-    </dl>
-
-    <div class="status-actions">
-      <Button
-        variant="danger"
-        data-testid="cancel-subscription-button"
-        onClick={handleCancelClick}
-      >
-        サブスクリプションをキャンセル
-      </Button>
-    </div>
+<div data-testid="subscription-status-card">
+  <div class="subscription-button-group subscription-button-group-structure">
+    <!-- activeの場合のみキャンセルボタンを表示 -->
+    <Button
+      variant="secondary"
+      data-testid="cancel-button"
+      onClick={onCancel}
+    >
+      キャンセル
+    </Button>
   </div>
 </div>
 ```
 
-**状態別の表示バリエーション**:
+**表示条件**:
 
-| 契約状態 | バッジカラー | 表示内容 |
-|:---|:---|:---|
-| active | success（緑） | 次回請求日を表示、キャンセルボタンあり |
-| pending（反映待ち） | info（青） | **「決済完了を確認中...」メッセージ、ローディングスピナー表示** |
-| canceled | secondary（灰） | キャンセル日を表示、「期間終了まで利用可能」メッセージ |
-| past_due | warning（黄） | 「支払いに問題があります」メッセージ、請求更新リンク |
-| trialing | info（青） | トライアル終了日を表示 |
-
-**注**: `pending`状態は、`?success=true`パラメータがある場合に表示され、Webhookによるステータス反映待ちを示します。
+| 契約状態 | 表示内容 |
+|:---|:---|
+| active | キャンセルボタンを表示 |
+| inactive | 何も表示しない |
 
 **インタラクション**:
 
-1. ユーザーが「サブスクリプションをキャンセル」ボタンをクリック
+1. ユーザーが「キャンセル」ボタンをクリック
 2. 共通Modal（`app/components/account/common/Modal.tsx`）を使用してキャンセル確認UIを表示
-
-**レスポンシブ対応**:
-
-- **Desktop**: カード幅600px固定
-- **Tablet**: カード幅100%（padding適用）
-- **Mobile**: カード幅100%（padding適用）、フォントサイズ調整
-
-**アクセシビリティ**:
-
-- 契約状態バッジにaria-labelで状態を明示（「契約状態: アクティブ」）
-- 契約情報は定義リスト（dl/dt/dd）で構造化
-- キャンセルボタンにaria-describedbyで警告メッセージを関連付け
 
 ---
 
