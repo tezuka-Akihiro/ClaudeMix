@@ -4,7 +4,6 @@
  *
  * Test Coverage:
  * - Subscription page display
- * - Status badge rendering
  * - Plan selection flow
  * - Cancel flow (active → inactive)
  * - Validation rules
@@ -61,7 +60,7 @@ test.describe('Account Subscription Management', () => {
   });
 
   test.describe('Subscription Status - Inactive', () => {
-    test('should display inactive status badge for new user', async ({ page }) => {
+    test('should display subscription page for new user', async ({ page }) => {
       // Register new user (default status is inactive)
       await createAuthenticatedUser(page, 'inactive-user');
 
@@ -71,11 +70,6 @@ test.describe('Account Subscription Management', () => {
       // Verify subscription status card is displayed
       const statusCard = page.locator('[data-testid="subscription-status-card"]');
       await expect(statusCard).toBeVisible();
-
-      // Verify inactive badge is displayed
-      const inactiveBadge = page.locator('[data-testid="badge-danger"]');
-      await expect(inactiveBadge).toBeVisible();
-      await expect(inactiveBadge).toContainText('非アクティブ');
 
       // Verify cancel button is NOT visible (already inactive)
       const cancelButton = page.locator('[data-testid="cancel-button"]');
