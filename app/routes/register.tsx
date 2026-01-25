@@ -35,7 +35,7 @@ import { validatePasswordDetailed } from '~/lib/account/authentication/validateP
 import { createSessionData } from '~/lib/account/common/createSessionData';
 
 // Schema layer (Valibot)
-import { RegisterSchema } from '~/schemas/account/authentication-schema';
+import { RegisterSchema } from '~/specs/account/authentication-schema.server';
 
 export const meta: MetaFunction = () => {
   return [

@@ -203,7 +203,7 @@ export const RegisterSchema = v.object({
 
 ```typescript
 import { parseWithValibot } from '@conform-to/valibot';
-import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+import { LoginSchema } from '~/specs/account/authentication-schema.server';
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -265,7 +265,7 @@ export async function action({ request }: ActionFunctionArgs) {
 ```typescript
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithValibot } from '@conform-to/valibot';
-import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+import { LoginSchema } from '~/specs/account/authentication-schema.server';
 
 export default function Login() {
   const actionData = useActionData<typeof action>();

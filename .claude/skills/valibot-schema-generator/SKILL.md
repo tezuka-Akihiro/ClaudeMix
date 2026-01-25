@@ -39,7 +39,7 @@ Phase 1: Schema Generation → prompts/01-generate.md
 
 ## 成果物
 
-- `app/schemas/{service}/{section}-schema.server.ts` - 型安全なValibotスキーマ
+- `app/specs/{service}/{section}-schema.server.ts` - 型安全なValibotスキーマ
 - Console log: "✅ Schema generated: {path}"
 
 ## 参照ドキュメント

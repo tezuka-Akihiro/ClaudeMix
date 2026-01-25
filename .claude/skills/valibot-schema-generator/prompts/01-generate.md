@@ -147,7 +147,7 @@ export type {FormName}FormData = v.InferOutput<typeof {FormName}Schema>;
 
 ### Step 6: 検証チェックリスト
 
-- [ ] ファイル名: `app/schemas/{service}/{section}-schema.server.ts`
+- [ ] ファイル名: `app/specs/{service}/{section}-schema.server.ts`
 - [ ] 拡張子: `.server.ts` （必須）
 - [ ] 全フォームに対応するスキーマが存在する
 - [ ] 全スキーマに InferOutput 型がエクスポートされている
@@ -188,7 +188,7 @@ import * as v from 'valibot';
 ```xml
 <generation_report>
   <status>success</status>
-  <output_file>app/schemas/{service}/{section}-schema.server.ts</output_file>
+  <output_file>app/specs/{service}/{section}-schema.server.ts</output_file>
   <specs_read>
     <spec>app/specs/{service}/{section}-spec.yaml</spec>
     <spec>app/specs/shared/validation-spec.yaml</spec>
