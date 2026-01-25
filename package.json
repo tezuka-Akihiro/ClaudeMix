@@ -29,7 +29,22 @@
     "lint:template": "node scripts/lint-template/engine.js",
     "lint:css-arch": "node scripts/lint-css-arch/engine.js",
     "lint:all": "bash scripts/lint-all.sh",
-    "setup:db": "bash scripts/setup-db.sh"
+    "setup:db": "bash scripts/setup-db.sh",
+    "depcheck": "depcheck"
+  },
+  "depcheck": {
+    "ignores": [
+      "@fontsource/noto-sans-jp",
+      "@vitest/coverage-v8",
+      "autoprefixer",
+      "cross-env",
+      "~",
+      "https"
+    ]
+  },
+  "overrides": {
+    "estree-util-value-to-estree": "^3.3.3",
+    "tar": "^7.6.0"
   },
   "author": "",
   "license": "ISC",
