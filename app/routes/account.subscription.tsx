@@ -22,7 +22,7 @@ const PLANS = {
   standard: {
     id: 'standard',
     name: 'スタンダード',
-    description: '気軽な入り口。お試し層の獲得。',
+    description: '気軽な入り口。',
     price: 980,
     currency: 'JPY',
     interval: 'month' as const,
