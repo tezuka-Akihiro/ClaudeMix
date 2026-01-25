@@ -12,8 +12,12 @@ interface TableOfContentsProps {
  * 見出し一覧をアンカーリンク付きリストとして表示
  */
 export function TableOfContents({ headings }: TableOfContentsProps) {
+  // 目次は h2（##）のみを対象とする
+  // h3/h4 はペイウォール区切り指定用であり、目次には含めない
+  const tocHeadings = headings.filter((h) => h.level === 2);
+
   // 見出しがない場合は表示しない
-  if (headings.length === 0) {
+  if (tocHeadings.length === 0) {
     return null;
   }
 
@@ -44,7 +48,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       aria-label="目次"
     >
       <ul className="table-of-contents__list">
-        {headings.map((heading, index) => (
+        {tocHeadings.map((heading, index) => (
           <li
             key={`${heading.id}-${index}`}
             data-testid="toc-item"
