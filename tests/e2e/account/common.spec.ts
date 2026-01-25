@@ -221,18 +221,13 @@ test.describe('Common Components', () => {
       await expect(dangerBadge).toHaveClass(/badge-danger/);
       await expect(dangerBadge).toHaveText('非アクティブ');
 
-      // Upgrade to trial status
-      const upgradeButton = page.locator('[data-testid="upgrade-button"]');
-      await upgradeButton.click();
+      // Verify plan selector is visible for inactive users
+      const planSelector = page.locator('[data-testid="plan-selector"]');
+      await expect(planSelector).toBeVisible();
 
-      // Wait for page to reload after upgrade
-      await page.waitForLoadState('networkidle');
-
-      // Verify warning badge (trial status)
-      const warningBadge = page.locator('[data-testid="badge-warning"]');
-      await expect(warningBadge).toBeVisible();
-      await expect(warningBadge).toHaveClass(/badge-warning/);
-      await expect(warningBadge).toHaveText('トライアル');
+      // Verify purchase button is available
+      const purchaseButton = page.locator('[data-testid="subscribe-membership"]');
+      await expect(purchaseButton).toBeVisible();
     });
   });
 });

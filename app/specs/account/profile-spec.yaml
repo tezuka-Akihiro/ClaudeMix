@@ -132,7 +132,6 @@ profile_display:
           values:
             active: "アクティブ"
             inactive: "未契約"
-            trial: "トライアル期間"
         created_at:
           label: "登録日"
         updated_at:

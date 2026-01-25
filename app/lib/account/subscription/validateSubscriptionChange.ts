@@ -6,7 +6,7 @@
  * @responsibility ビジネスルール検証
  */
 
-export type SubscriptionStatus = 'active' | 'inactive' | 'trial';
+export type SubscriptionStatus = 'active' | 'inactive';
 
 export interface SubscriptionChangeRequest {
   currentStatus: SubscriptionStatus;
@@ -23,8 +23,8 @@ export interface ValidationResult {
  *
  * Business rules:
  * - Cannot change to same status
- * - Cannot go from inactive to active directly (must go through trial or payment)
- * - Can always cancel (active/trial → inactive)
+ * - Cannot go from inactive to active directly (must go through payment)
+ * - Can always cancel (active → inactive)
  *
  * @param request - Subscription change request
  * @returns Validation result
@@ -46,7 +46,7 @@ export function validateSubscriptionChange(
   if (currentStatus === 'inactive' && newStatus === 'active') {
     return {
       valid: false,
-      error: 'トライアルまたは支払いが必要です',
+      error: '支払いが必要です',
     };
   }
 

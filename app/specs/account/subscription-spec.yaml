@@ -449,11 +449,6 @@ future_features:
     enabled: false
     description: "クーポン適用機能"
 
-  trial:
-    enabled: false
-    description: "トライアル期間対応"
-    default_trial_days: 7
-
   multiple_payment_methods:
     enabled: false
     description: "複数支払い方法の管理"

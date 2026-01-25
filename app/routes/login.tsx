@@ -35,7 +35,7 @@ interface DatabaseUser {
   id: string;
   email: string;
   passwordHash: string;
-  subscriptionStatus: 'active' | 'inactive' | 'trial';
+  subscriptionStatus: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }

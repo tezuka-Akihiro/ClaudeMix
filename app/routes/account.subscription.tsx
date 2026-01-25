@@ -19,32 +19,21 @@ import { getUserById } from '~/data-io/account/common/getUserById.server';
 
 // Plan definitions (from subscription-spec.yaml)
 const PLANS = {
-  standard: {
-    id: 'standard',
-    name: 'スタンダード',
-    description: '気軽な入り口。',
-    price: 980,
+  membership: {
+    id: 'membership',
+    name: 'メンバーシッププラン',
+    description: '日常であった出来事を不定期で発信します。',
+    price: 500,
     currency: 'JPY',
     interval: 'month' as const,
     intervalCount: 1,
-    stripePriceId: process.env.STRIPE_PRICE_STANDARD || 'price_standard_placeholder',
-    features: ['全記事閲覧', '広告非表示'],
-    discountRate: 0,
-    enabled: true,
-  },
-  supporter: {
-    id: 'supporter',
-    name: 'サポーター',
-    description: 'コア層向け。2ヶ月分を割引。',
-    price: 9800,
-    originalPrice: 11760,
-    currency: 'JPY',
-    interval: 'year' as const,
-    intervalCount: 1,
-    stripePriceId: process.env.STRIPE_PRICE_SUPPORTER || 'price_supporter_placeholder',
-    features: ['全記事閲覧', '広告非表示', '2ヶ月分お得'],
-    discountRate: 17,
-    badge: 'おすすめ',
+    stripePriceId: process.env.STRIPE_PRICE_MEMBERSHIP || 'price_membership_placeholder',
+    features: [
+      'メンバー限定の記事',
+      'メンバー限定の掲示板',
+      'メンバー限定の会員証',
+      '活動期間に応じたバッジ',
+    ],
     enabled: true,
   },
 } as const;
@@ -128,7 +117,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   // Handle subscription status changes (upgrade/cancel)
-  const newStatus = formData.get('newStatus') as 'active' | 'inactive' | 'trial';
+  const newStatus = formData.get('newStatus') as 'active' | 'inactive';
   const currentStatus = user.subscriptionStatus;
 
   // Validate subscription change
@@ -164,13 +153,6 @@ export default function AccountSubscription() {
   const { user } = parentData;
   const isActive = user.subscriptionStatus === 'active';
 
-  const handleUpgrade = () => {
-    fetcher.submit(
-      { intent: 'upgrade', newStatus: 'trial' },
-      { method: 'post' }
-    );
-  };
-
   const handleCancel = () => {
     fetcher.submit(
       { intent: 'cancel', newStatus: 'inactive' },
@@ -201,13 +183,12 @@ export default function AccountSubscription() {
 
       <SubscriptionStatusCard
         status={user.subscriptionStatus}
-        onUpgrade={handleUpgrade}
         onCancel={handleCancel}
       />
 
       {/* Plan Selection Section (show only for inactive users) */}
       {!isActive && (
-        <div className="profile-section profile-section-structure" data-testid="plan-selector">
+        <div data-testid="plan-selector">
           <h2 className="profile-section__title">プランを選択</h2>
           <div className="plan-grid">
             {plans.map((plan) => (
@@ -216,22 +197,14 @@ export default function AccountSubscription() {
                 className="plan-card"
                 data-testid={`plan-card-${plan.id}`}
               >
-                {plan.badge && (
-                  <span className="plan-badge">{plan.badge}</span>
-                )}
                 <h3 className="plan-name">{plan.name}</h3>
-                <p className="plan-description">{plan.description}</p>
                 <div className="plan-price">
                   <span className="plan-price__amount">¥{plan.price.toLocaleString()}</span>
                   <span className="plan-price__interval">
                     /{plan.interval === 'month' ? '月' : '年'}
                   </span>
                 </div>
-                {plan.originalPrice && (
-                  <p className="plan-original-price">
-                    通常 ¥{plan.originalPrice.toLocaleString()}
-                  </p>
-                )}
+                <p className="plan-description">{plan.description}</p>
                 <ul className="plan-features">
                   {plan.features.map((feature, index) => (
                     <li key={index}>{feature}</li>
@@ -244,7 +217,7 @@ export default function AccountSubscription() {
                   disabled={fetcher.state !== 'idle'}
                   data-testid={`subscribe-${plan.id}`}
                 >
-                  {fetcher.state !== 'idle' ? '処理中...' : '購読する'}
+                  {fetcher.state !== 'idle' ? '処理中...' : '購入'}
                 </button>
               </div>
             ))}

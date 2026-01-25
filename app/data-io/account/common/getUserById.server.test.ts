@@ -64,7 +64,6 @@ describe('getUserById.server', () => {
       const testCases: Array<User['subscriptionStatus']> = [
         'active',
         'inactive',
-        'trial',
       ];
 
       for (const status of testCases) {

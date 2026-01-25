@@ -19,7 +19,7 @@ export interface User {
   email: string;
   oauthProvider: string | null;
   oauthId: string | null;
-  subscriptionStatus: 'active' | 'inactive' | 'trial';
+  subscriptionStatus: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }

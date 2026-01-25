@@ -25,7 +25,7 @@ interface CloudflareLoadContext {
  */
 export async function updateUserSubscriptionStatus(
   userId: string,
-  subscriptionStatus: 'active' | 'inactive' | 'trial',
+  subscriptionStatus: 'active' | 'inactive',
   context: CloudflareLoadContext
 ): Promise<boolean> {
   try {
