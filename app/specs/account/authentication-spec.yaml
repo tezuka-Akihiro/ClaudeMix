@@ -242,7 +242,7 @@ database:
         type: "TEXT"
         constraints: "NOT NULL"
         default: "'inactive'"
-        description: "サブスクリプション状態: 'active', 'inactive', 'trial'"
+        description: "サブスクリプション状態: 'active', 'inactive'"
       created_at:
         type: "TEXT"
         constraints: "NOT NULL"

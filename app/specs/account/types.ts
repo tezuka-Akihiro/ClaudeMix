@@ -6,7 +6,7 @@
 export interface User {
   id: string;
   email: string;
-  subscriptionStatus: 'active' | 'inactive' | 'trial';
+  subscriptionStatus: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }
@@ -821,7 +821,6 @@ export interface AccountProfileSpec {
             values: {
               active: string;
               inactive: string;
-              trial: string;
             };
           };
           created_at: {
@@ -1538,11 +1537,6 @@ export interface AccountSubscriptionSpec {
     coupon: {
       enabled: boolean;
       description: string;
-    };
-    trial: {
-      enabled: boolean;
-      description: string;
-      default_trial_days: number;
     };
     multiple_payment_methods: {
       enabled: boolean;

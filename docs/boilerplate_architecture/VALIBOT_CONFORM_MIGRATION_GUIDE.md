@@ -58,12 +58,12 @@ validation:
 
 #### 1.2 Schema ファイルの作成
 
-`app/schemas/{service}/{section}-schema.server.ts` を作成します。
+`app/specs/{service}/{section}-schema.server.ts` を作成します。
 
 **重要**: 必ず `.server.ts` 拡張子を使用してください（Tree-shaking）。
 
 ```typescript
-// app/schemas/account/authentication-schema.server.ts
+// app/specs/account/authentication-schema.server.ts
 import * as v from 'valibot';
 
 // 共通バリデーション
@@ -103,7 +103,7 @@ import { Form, useActionData } from '@remix-run/react';
 import { Form, useActionData } from '@remix-run/react';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithValibot } from '@conform-to/valibot';
-import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+import { LoginSchema } from '~/specs/account/authentication-schema.server';
 ```
 
 #### 2.2 ActionData型の更新
@@ -351,7 +351,7 @@ v.string('メールアドレスを入力してください')
 ```typescript
 // ❌ 禁止（クライアントバンドルに含まれる）
 // app/components/LoginForm.tsx
-import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+import { LoginSchema } from '~/specs/account/authentication-schema.server';
 ```
 
 ❌ **useState でフォーム状態を管理**
@@ -420,7 +420,7 @@ const [form, fields] = useForm({
 
 ### Schema層
 
-- [ ] `app/schemas/{service}/{section}-schema.server.ts` を作成
+- [ ] `app/specs/{service}/{section}-schema.server.ts` を作成
 - [ ] `.server.ts` 拡張子を使用
 - [ ] 共通バリデーション（EmailSchema等）を定義
 - [ ] フォーム固有スキーマを定義

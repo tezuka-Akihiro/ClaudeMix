@@ -22,7 +22,7 @@ const yaml = require('js-yaml');
 
 const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 const SPECS_DIR = path.join(PROJECT_ROOT, 'app/specs');
-const SCHEMAS_DIR = path.join(PROJECT_ROOT, 'app/schemas');
+const SCHEMAS_DIR = path.join(PROJECT_ROOT, 'app/specs');
 const TEMPLATE_PATH = path.join(__dirname, '../templates/schema.server.ts.template');
 
 // ==========================================

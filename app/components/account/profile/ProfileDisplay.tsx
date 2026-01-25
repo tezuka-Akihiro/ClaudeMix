@@ -19,7 +19,6 @@ export interface ProfileDisplaySpec {
           values: {
             active: string;
             inactive: string;
-            trial: string;
           };
         };
         created_at: { label: string };

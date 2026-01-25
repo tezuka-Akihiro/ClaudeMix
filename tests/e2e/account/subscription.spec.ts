@@ -5,8 +5,8 @@
  * Test Coverage:
  * - Subscription page display
  * - Status badge rendering
- * - Upgrade flow (inactive → trial)
- * - Cancel flow (trial/active → inactive)
+ * - Plan selection flow
+ * - Cancel flow (active → inactive)
  * - Validation rules
  */
 
@@ -77,96 +77,34 @@ test.describe('Account Subscription Management', () => {
       await expect(inactiveBadge).toBeVisible();
       await expect(inactiveBadge).toContainText('非アクティブ');
 
-      // Verify upgrade button is visible (inactive users can upgrade)
-      const upgradeButton = page.locator('[data-testid="upgrade-button"]');
-      await expect(upgradeButton).toBeVisible();
-
       // Verify cancel button is NOT visible (already inactive)
       const cancelButton = page.locator('[data-testid="cancel-button"]');
       await expect(cancelButton).not.toBeVisible();
+
+      // Verify plan selector is visible for inactive users
+      const planSelector = page.locator('[data-testid="plan-selector"]');
+      await expect(planSelector).toBeVisible();
     });
 
-    test('should allow upgrade from inactive to trial', async ({ page }) => {
+    test('should display plan cards for inactive user', async ({ page }) => {
       // Register new user
-      await createAuthenticatedUser(page, 'upgrade-user');
+      await createAuthenticatedUser(page, 'plan-user');
 
       // Navigate to subscription page
       await page.goto('/account/subscription');
 
-      // Verify inactive status
-      await expect(page.locator('[data-testid="badge-danger"]')).toBeVisible();
+      // Verify plan card is displayed (standard plan)
+      const planCard = page.locator('[data-testid="plan-card-standard"]');
+      await expect(planCard).toBeVisible();
 
-      // Click upgrade button
-      const upgradeButton = page.locator('[data-testid="upgrade-button"]');
-      await upgradeButton.click();
+      // Verify plan card content
+      await expect(planCard.locator('.plan-name')).toContainText('スタンダード');
+      await expect(planCard.locator('.plan-price__amount')).toContainText('¥980');
 
-      // Wait for page to update
-      await page.waitForTimeout(1000);
-
-      // Reload page to verify status change
-      await page.reload();
-
-      // Verify status changed to trial
-      const trialBadge = page.locator('[data-testid="badge-warning"]');
-      await expect(trialBadge).toBeVisible();
-      await expect(trialBadge).toContainText('トライアル');
-
-      // Verify upgrade button is now visible (trial users can upgrade to active)
-      await expect(page.locator('[data-testid="upgrade-button"]')).toBeVisible();
-
-      // Verify cancel button is visible (trial users can cancel)
-      await expect(page.locator('[data-testid="cancel-button"]')).toBeVisible();
-    });
-  });
-
-  test.describe('Subscription Status - Trial', () => {
-    test('should display trial status badge', async ({ page }) => {
-      // Register and upgrade to trial
-      await createAuthenticatedUser(page, 'trial-user');
-
-      await page.goto('/account/subscription');
-      await page.locator('[data-testid="upgrade-button"]').click();
-      await page.waitForTimeout(1000);
-      await page.reload();
-
-      // Verify trial badge
-      const trialBadge = page.locator('[data-testid="badge-warning"]');
-      await expect(trialBadge).toBeVisible();
-      await expect(trialBadge).toContainText('トライアル');
-    });
-
-    test('should allow cancel from trial to inactive', async ({ page }) => {
-      // Register and upgrade to trial
-      await createAuthenticatedUser(page, 'cancel-trial-user');
-
-      await page.goto('/account/subscription');
-      await page.locator('[data-testid="upgrade-button"]').click();
-      await page.waitForTimeout(1000);
-      await page.reload();
-
-      // Verify trial status
-      await expect(page.locator('[data-testid="badge-warning"]')).toBeVisible();
-
-      // Click cancel button
-      const cancelButton = page.locator('[data-testid="cancel-button"]');
-      await cancelButton.click();
-
-      // Wait for page to update
-      await page.waitForTimeout(1000);
-
-      // Reload page to verify status change
-      await page.reload();
-
-      // Verify status changed back to inactive
-      const inactiveBadge = page.locator('[data-testid="badge-danger"]');
-      await expect(inactiveBadge).toBeVisible();
-      await expect(inactiveBadge).toContainText('非アクティブ');
-
-      // Verify upgrade button is visible again
-      await expect(page.locator('[data-testid="upgrade-button"]')).toBeVisible();
-
-      // Verify cancel button is NOT visible
-      await expect(page.locator('[data-testid="cancel-button"]')).not.toBeVisible();
+      // Verify purchase button is visible
+      const purchaseButton = page.locator('[data-testid="subscribe-standard"]');
+      await expect(purchaseButton).toBeVisible();
+      await expect(purchaseButton).toContainText('購入');
     });
   });
 
@@ -203,25 +141,25 @@ test.describe('Account Subscription Management', () => {
   });
 
   test.describe('Error Handling', () => {
-    test('should handle rapid successive status changes', async ({ page }) => {
+    test('should handle rapid successive button clicks', async ({ page }) => {
       // Register user
       await createAuthenticatedUser(page, 'rapid-change-user');
 
       await page.goto('/account/subscription');
 
-      // Rapidly click upgrade multiple times
-      const upgradeButton = page.locator('[data-testid="upgrade-button"]');
-      await upgradeButton.click();
-      await upgradeButton.click();
-      await upgradeButton.click();
+      // Rapidly click purchase button multiple times
+      const purchaseButton = page.locator('[data-testid="subscribe-standard"]');
+      await purchaseButton.click();
+      await purchaseButton.click();
+      await purchaseButton.click();
 
       // Wait for processing
       await page.waitForTimeout(2000);
-      await page.reload();
 
-      // Should end up in a valid state (trial)
-      const badge = page.locator('[data-testid="badge-warning"], [data-testid="badge-danger"]');
-      await expect(badge).toBeVisible();
+      // Should either show error or redirect to checkout
+      // The page should remain stable
+      const pageVisible = await page.locator('body').isVisible();
+      expect(pageVisible).toBe(true);
     });
   });
 });

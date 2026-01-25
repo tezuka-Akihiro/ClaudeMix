@@ -10,13 +10,11 @@ import type { SubscriptionStatus } from '~/lib/account/subscription/validateSubs
 
 export interface SubscriptionStatusCardProps {
   status: SubscriptionStatus;
-  onUpgrade?: () => void;
   onCancel?: () => void;
 }
 
 export function SubscriptionStatusCard({
   status,
-  onUpgrade,
   onCancel,
 }: SubscriptionStatusCardProps) {
   const getStatusInfo = () => {
@@ -27,13 +25,6 @@ export function SubscriptionStatusCard({
           variant: 'success',
           description: 'すべての機能が利用可能です',
           testId: 'badge-success',
-        };
-      case 'trial':
-        return {
-          label: 'トライアル',
-          variant: 'warning',
-          description: 'トライアル期間中です',
-          testId: 'badge-warning',
         };
       case 'inactive':
         return {
@@ -55,7 +46,7 @@ export function SubscriptionStatusCard({
   const statusInfo = getStatusInfo();
 
   return (
-    <div className="profile-section profile-section-structure" data-testid="subscription-status-card">
+    <div data-testid="subscription-status-card">
       <h2 className="profile-section__title">現在のプラン</h2>
       <div>
         <span
@@ -68,16 +59,6 @@ export function SubscriptionStatusCard({
       </div>
 
       <div className="subscription-button-group subscription-button-group-structure">
-        {status !== 'active' && onUpgrade && (
-          <button
-            type="button"
-            onClick={onUpgrade}
-            className="btn-primary"
-            data-testid="upgrade-button"
-          >
-            アップグレード
-          </button>
-        )}
         {status !== 'inactive' && onCancel && (
           <button
             type="button"

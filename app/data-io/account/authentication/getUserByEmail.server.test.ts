@@ -56,12 +56,12 @@ describe('getUserByEmail.server', () => {
 
     it('should handle different subscription statuses', async () => {
       // Arrange
-      const email = 'trial@example.com';
+      const email = 'inactive@example.com';
       const mockUser = {
         id: 'user-456',
-        email: 'trial@example.com',
+        email: 'inactive@example.com',
         passwordHash: 'hashed-password',
-        subscriptionStatus: 'trial',
+        subscriptionStatus: 'inactive',
         createdAt: '2025-01-01T00:00:00.000Z',
         updatedAt: '2025-01-01T00:00:00.000Z',
       };
@@ -76,7 +76,7 @@ describe('getUserByEmail.server', () => {
       const result = await getUserByEmail(email, mockContext);
 
       // Assert
-      expect(result?.subscriptionStatus).toBe('trial');
+      expect(result?.subscriptionStatus).toBe('inactive');
     });
   });
 

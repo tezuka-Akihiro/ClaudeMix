@@ -1,7 +1,7 @@
 ---
 paths:
   - "app/specs/**/*-spec.yaml"
-  - "app/schemas/**/*-schema.server.ts"
+  - "app/specs/**/*-schema.server.ts"
   - "app/routes/**/*"
 ---
 
@@ -78,7 +78,7 @@ forms:
 
 ## Layer 2: Schema層 (防衛)
 
-**適用ファイル**: `app/schemas/{service}/{section}-schema.server.ts`
+**適用ファイル**: `app/specs/{service}/{section}-schema.server.ts`
 
 ### 責務
 
@@ -96,7 +96,7 @@ forms:
 ### 正しい実装例
 
 ```typescript
-// app/schemas/account/authentication-schema.server.ts
+// app/specs/account/authentication-schema.server.ts
 import * as v from 'valibot';
 import type { AuthenticationSpec } from '~/specs/account/authentication-spec';
 
@@ -158,7 +158,7 @@ export type LoginFormData = v.InferOutput<typeof LoginSchema>;
 ```typescript
 // app/routes/login.tsx
 import { parseWithValibot } from 'conform-to-valibot';
-import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+import { LoginSchema } from '~/specs/account/authentication-schema.server';
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -191,7 +191,7 @@ export async function action({ request }: ActionFunctionArgs) {
 // app/routes/login.tsx
 import { useForm, getFormProps, getInputProps } from '@conform-to/react';
 import { parseWithValibot } from 'conform-to-valibot';
-import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+import { LoginSchema } from '~/specs/account/authentication-schema.server';
 
 export default function Login() {
   const actionData = useActionData<typeof action>();
@@ -324,11 +324,11 @@ export type LoginFormData = {
 ```typescript
 // ❌ 禁止（クライアントバンドルに含まれる）
 // app/components/LoginForm.tsx
-import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+import { LoginSchema } from '~/specs/account/authentication-schema.server';
 
 // ✅ 推奨（サーバーサイドのみ）
 // app/routes/login.tsx
-import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+import { LoginSchema } from '~/specs/account/authentication-schema.server';
 ```
 
 ### エラー: "Type mismatch in form data"

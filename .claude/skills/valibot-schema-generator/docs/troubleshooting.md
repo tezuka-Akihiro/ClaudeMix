@@ -94,12 +94,12 @@ TS2307: Cannot find module 'valibot' or its corresponding type declarations.
 
 ---
 
-## エラー: "Module not found: ~/schemas/..."
+## エラー: "Module not found: ~/specs/..."
 
 ### 症状
 
 ```
-Error: Cannot find module '~/schemas/account/authentication-schema.server'
+Error: Cannot find module '~/specs/account/authentication-schema.server'
 ```
 
 ### 原因
@@ -117,7 +117,7 @@ Error: Cannot find module '~/schemas/account/authentication-schema.server'
 
 2. **ファイル名を確認**:
    ```bash
-   ls app/schemas/account/authentication-schema.server.ts
+   ls app/specs/account/authentication-schema.server.ts
    ```
 
 ---
@@ -138,21 +138,21 @@ Lighthouse scoreが低下、バンドルサイズが増加
 1. **拡張子を確認**:
    ```bash
    # 正しい
-   app/schemas/account/authentication-schema.server.ts
+   app/specs/account/authentication-schema.server.ts
 
    # 間違い
-   app/schemas/account/authentication-schema.ts
+   app/specs/account/authentication-schema.ts
    ```
 
 2. **クライアントコンポーネントでのインポート禁止**:
    ```typescript
    // ❌ 禁止（クライアントコンポーネント）
    // app/components/LoginForm.tsx
-   import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+   import { LoginSchema } from '~/specs/account/authentication-schema.server';
 
    // ✅ 正しい（サーバーサイドのみ）
    // app/routes/login.tsx (action)
-   import { LoginSchema } from '~/schemas/account/authentication-schema.server';
+   import { LoginSchema } from '~/specs/account/authentication-schema.server';
    ```
 
 ---

@@ -47,7 +47,7 @@ interface DatabaseUser {
   id: string;
   email: string;
   passwordHash: string;
-  subscriptionStatus: 'active' | 'inactive' | 'trial';
+  subscriptionStatus: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }
@@ -312,8 +312,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
     }
 
     // Check for active subscription (Phase 2)
-    if (currentUser.subscriptionStatus === 'active' || currentUser.subscriptionStatus === 'trial') {
-      console.warn(`User ${session.userId} has active subscription (${currentUser.subscriptionStatus}). Proceeding with deletion.`);
+    if (currentUser.subscriptionStatus === 'active') {
+      console.warn(`User ${session.userId} has active subscription. Proceeding with deletion.`);
       // TODO: Future implementation - Cancel Stripe subscription via API
       // await cancelStripeSubscription(currentUser.stripeCustomerId, currentUser.stripeSubscriptionId);
       // Note: Database CASCADE will automatically delete subscription records

@@ -8,8 +8,8 @@ metadata:
   feature_name: "account-subscription"
   slug: "subscription"
   created_date: "2025-12-23"
-  last_updated: "2025-12-23"
-  version: "1.0.0"
+  last_updated: "2026-01-25"
+  version: "1.1.0"
 
 # ==========================================
 # サーバー処理設定 (Loader/Action)
@@ -48,47 +48,38 @@ routes:
 # ==========================================
 plans:
   # Stripe Dashboardで作成したプランのPrice IDを設定
-  one_month:
-    id: "1month"
-    name: "1ヶ月プラン"
+  standard:
+    id: "standard"
+    name: "スタンダード"
+    description: "気軽な入り口。"
     price: 980
     currency: "JPY"
     interval: "month"
     interval_count: 1
-    stripe_price_id: "price_1month_placeholder"  # 実際のStripe Price IDに置き換え
+    stripe_price_id: "price_1StSb0FTLZPZU8HQ2LwdnWWb"
     features:
       - "全記事閲覧"
       - "広告非表示"
     discount_rate: 0
+    enabled: true
 
-  three_months:
-    id: "3months"
-    name: "3ヶ月プラン"
-    price: 2800
+  supporter:
+    id: "supporter"
+    name: "サポーター"
+    description: "コア層向け。2ヶ月分を割引。"
+    price: 9800
+    original_price: 11760  # 980 * 12 = 11,760円
     currency: "JPY"
-    interval: "month"
-    interval_count: 3
-    stripe_price_id: "price_3months_placeholder"  # 実際のStripe Price IDに置き換え
+    interval: "year"
+    interval_count: 1
+    stripe_price_id: "price_1StSb1FTLZPZU8HQPkNgiZDi"
     features:
       - "全記事閲覧"
       - "広告非表示"
-      - "5%割引"
-    discount_rate: 5
+      - "2ヶ月分お得"
+    discount_rate: 17  # (11760 - 9800) / 11760 ≈ 17%
     badge: "おすすめ"
-
-  six_months:
-    id: "6months"
-    name: "6ヶ月プラン"
-    price: 5400
-    currency: "JPY"
-    interval: "month"
-    interval_count: 6
-    stripe_price_id: "price_6months_placeholder"  # 実際のStripe Price IDに置き換え
-    features:
-      - "全記事閲覧"
-      - "広告非表示"
-      - "8%割引"
-    discount_rate: 8
+    enabled: true
 
 # ==========================================
 # サブスクリプション状態設定
@@ -182,8 +173,8 @@ ui:
   plan_selector:
     title: "プランを選択"
     grid_columns:
-      desktop: 3
-      tablet: 3
+      desktop: 2
+      tablet: 2
       mobile: 1
     card_padding: "24px"
     card_border_radius: "8px"
@@ -275,7 +266,7 @@ success_messages:
 # Stripe 設定
 # ==========================================
 stripe:
-  api_version: "2023-10-16"
+  api_version: "2024-12-18.acacia"
 
   checkout_session:
     mode: "subscription"
@@ -336,8 +327,8 @@ responsive:
   # プランカード幅
   plan_card:
     mobile: "100%"
-    tablet: "calc(33.33% - 16px)"
-    desktop: "calc(33.33% - 16px)"
+    tablet: "calc(50% - 12px)"
+    desktop: "calc(50% - 12px)"
 
   # モーダル幅
   modal:
@@ -427,12 +418,10 @@ test:
   # E2Eテスト用セレクタ
   selectors:
     plan_selector: "[data-testid='plan-selector']"
-    plan_card_1month: "[data-testid='plan-card-1month']"
-    plan_card_3months: "[data-testid='plan-card-3months']"
-    plan_card_6months: "[data-testid='plan-card-6months']"
-    subscribe_1month: "[data-testid='subscribe-1month']"
-    subscribe_3months: "[data-testid='subscribe-3months']"
-    subscribe_6months: "[data-testid='subscribe-6months']"
+    plan_card_standard: "[data-testid='plan-card-standard']"
+    plan_card_supporter: "[data-testid='plan-card-supporter']"
+    subscribe_standard: "[data-testid='subscribe-standard']"
+    subscribe_supporter: "[data-testid='subscribe-supporter']"
     subscription_status: "[data-testid='subscription-status']"
     status_badge: "[data-testid='status-badge']"
     cancel_subscription_button: "[data-testid='cancel-subscription-button']"
@@ -459,11 +448,6 @@ future_features:
   coupon:
     enabled: false
     description: "クーポン適用機能"
-
-  trial:
-    enabled: false
-    description: "トライアル期間対応"
-    default_trial_days: 7
 
   multiple_payment_methods:
     enabled: false

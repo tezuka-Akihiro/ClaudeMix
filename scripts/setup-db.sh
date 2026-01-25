@@ -35,6 +35,13 @@ else
     echo "✅ Applied $migration_count migration(s)"
 fi
 
+# Apply seed data for development
+if [ -f "migrations/seed-dev.sql" ]; then
+    echo "🌱 Applying seed data..."
+    wrangler d1 execute claudemix-dev --local --file="migrations/seed-dev.sql"
+    echo "✅ Seed data applied"
+fi
+
 echo "✅ Database setup complete!"
 echo ""
 echo "📝 Next steps:"

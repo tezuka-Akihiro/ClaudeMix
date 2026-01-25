@@ -35,7 +35,7 @@ interface DatabaseUser {
   id: string;
   email: string;
   passwordHash: string;
-  subscriptionStatus: 'active' | 'inactive' | 'trial';
+  subscriptionStatus: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }
@@ -47,7 +47,7 @@ import { validatePasswordDetailed } from '~/lib/account/authentication/validateP
 import { createSessionData } from '~/lib/account/common/createSessionData';
 
 // Schema layer (Valibot)
-import { LoginSchema } from '~/schemas/account/authentication-schema';
+import { LoginSchema } from '~/specs/account/authentication-schema';
 
 export const meta: MetaFunction = () => {
   return [

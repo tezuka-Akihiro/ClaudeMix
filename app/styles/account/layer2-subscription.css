@@ -79,6 +79,116 @@
   margin-top: var(--spacing-3);
 }
 
+/* Plan Grid */
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+/* Plan Card */
+.plan-card {
+  position: relative;
+  background-color: var(--color-bg-primary);
+  border: var(--border-width-md) solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-5);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.plan-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.plan-badge {
+  position: absolute;
+  top: calc(-1 * var(--spacing-2));
+  right: var(--spacing-3);
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.plan-name {
+  font-size: var(--font-size-heading-2);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.plan-description {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-3);
+}
+
+.plan-price {
+  margin-bottom: var(--spacing-2);
+}
+
+.plan-price__amount {
+  font-size: var(--font-size-heading-1);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.plan-price__interval {
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+}
+
+.plan-price__original {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-secondary);
+  text-decoration: line-through;
+  margin-right: var(--spacing-2);
+}
+
+.plan-card--recommended {
+  border-color: var(--color-primary);
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-4) 0;
+}
+
+.plan-features li {
+  font-size: var(--font-size-body-sm);
+  color: var(--color-text-primary);
+  padding: var(--spacing-1) 0;
+  padding-left: var(--spacing-4);
+  position: relative;
+}
+
+.plan-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-status-success);
+  font-weight: var(--font-weight-bold);
+}
+
+.plan-select-button {
+  width: 100%;
+}
+
+/* Success Message */
+.profile-success {
+  background-color: var(--color-status-success-bg);
+  color: var(--color-status-success);
+  padding: var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  border: var(--border-width-sm) solid var(--color-status-success);
+  margin-bottom: var(--spacing-4);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .subscription-container {
@@ -88,5 +198,9 @@
   .btn-primary,
   .btn-secondary {
     width: 100%;
+  }
+
+  .plan-grid {
+    grid-template-columns: 1fr;
   }
 }
