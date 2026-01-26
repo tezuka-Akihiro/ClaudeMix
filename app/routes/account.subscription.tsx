@@ -16,46 +16,53 @@ import { updateUserSubscriptionStatus } from '~/data-io/account/subscription/upd
 import { createStripeCheckoutSession } from '~/data-io/account/subscription/createStripeCheckoutSession.server';
 import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountSubscriptionSpec } from '~/specs/account/types';
 
-// Plan definitions (from subscription-spec.yaml)
-const PLANS = {
-  standard: {
-    id: 'standard',
-    name: 'スタンダード',
-    description: '気軽な入り口。',
-    price: 980,
-    currency: 'JPY',
-    interval: 'month' as const,
-    intervalCount: 1,
-    stripePriceId: 'price_1StSb0FTLZPZU8HQ2LwdnWWb',
-    features: [
-      '全記事閲覧',
-      '広告非表示',
-    ],
-    discountRate: 0,
-    badge: null,
-    enabled: true,
-  },
-  supporter: {
-    id: 'supporter',
-    name: 'サポーター',
-    description: 'コア層向け。2ヶ月分を割引。',
-    price: 9800,
-    originalPrice: 11760,
-    currency: 'JPY',
-    interval: 'year' as const,
-    intervalCount: 1,
-    stripePriceId: 'price_1StSb1FTLZPZU8HQPkNgiZDi',
-    features: [
-      '全記事閲覧',
-      '広告非表示',
-      '2ヶ月分お得',
-    ],
-    discountRate: 17,
-    badge: 'おすすめ',
-    enabled: true,
-  },
-} as const;
+// Plan型定義（specから取得したプランをUIで使用するための型）
+interface PlanForUI {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  originalPrice?: number;
+  currency: string;
+  interval: 'month' | 'year';
+  intervalCount: number;
+  stripePriceId: string;
+  features: string[];
+  discountRate: number;
+  badge?: string | null;
+  enabled: boolean;
+}
+
+/**
+ * specからプラン情報を取得してUI用に変換
+ */
+function getPlansFromSpec(): Record<string, PlanForUI> {
+  const spec = loadSpec<AccountSubscriptionSpec>('account/subscription');
+  const plans: Record<string, PlanForUI> = {};
+
+  for (const [key, plan] of Object.entries(spec.plans)) {
+    plans[key] = {
+      id: plan.id,
+      name: plan.name,
+      description: plan.description,
+      price: plan.price,
+      originalPrice: plan.original_price,
+      currency: plan.currency,
+      interval: plan.interval as 'month' | 'year',
+      intervalCount: plan.interval_count,
+      stripePriceId: plan.stripe_price_id,
+      features: plan.features,
+      discountRate: plan.discount_rate,
+      badge: plan.badge ?? null,
+      enabled: plan.enabled,
+    };
+  }
+
+  return plans;
+}
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
@@ -73,6 +80,10 @@ export const meta: MetaFunction = () => {
  * Loader: Return available plans
  */
 export async function loader({ request }: LoaderFunctionArgs) {
+  // specからプラン情報を取得
+  const PLANS = getPlansFromSpec();
+  const spec = loadSpec<AccountSubscriptionSpec>('account/subscription');
+
   // Get enabled plans
   const plans = Object.values(PLANS).filter(plan => plan.enabled);
 
@@ -80,13 +91,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const success = url.searchParams.get('success') === 'true';
 
-  return json({ plans, success });
+  return json({
+    plans,
+    success,
+    successMessage: spec.success_messages.checkout.completed,
+  });
 }
 
 /**
  * Handle subscription actions
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+  // specからプラン情報とエラーメッセージを取得
+  const PLANS = getPlansFromSpec();
+  const spec = loadSpec<AccountSubscriptionSpec>('account/subscription');
+
   // Get session
   const sessionData = await getSession(request, context as any);
   if (!sessionData) {
@@ -106,10 +125,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
   // Handle create-checkout intent
   if (intent === 'create-checkout') {
     const planId = formData.get('planId') as string;
-    const plan = PLANS[planId as keyof typeof PLANS];
+    const plan = PLANS[planId];
 
     if (!plan) {
-      return json({ error: '無効なプランが選択されています' }, { status: 400 });
+      return json({ error: spec.error_messages.checkout.invalid_plan }, { status: 400 });
     }
 
     try {
@@ -122,8 +141,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
           userEmail: user.email,
           planId: plan.id,
           stripePriceId: plan.stripePriceId,
-          successUrl: `${baseUrl}/account/subscription?success=true`,
-          cancelUrl: `${baseUrl}/account/subscription`,
+          successUrl: `${baseUrl}${spec.routes.success_redirect.path}`,
+          cancelUrl: `${baseUrl}${spec.routes.cancel_redirect.path}`,
         },
         context as any
       );
@@ -131,7 +150,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       return redirect(checkoutUrl);
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      return json({ error: 'Stripe決済画面の作成に失敗しました' }, { status: 500 });
+      return json({ error: spec.error_messages.checkout.session_creation_failed }, { status: 500 });
     }
   }
 
@@ -155,14 +174,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
     return redirect('/account/subscription');
   } catch (error) {
     console.error('Error updating subscription:', error);
-    return json({ error: 'サブスクリプションの更新に失敗しました' }, { status: 500 });
+    return json({ error: spec.error_messages.server.internal_error }, { status: 500 });
   }
 }
 
 export default function AccountSubscription() {
   // Use parent route's authentication data instead of duplicating auth logic
   const parentData = useRouteLoaderData<typeof accountLoader>('routes/account');
-  const { plans, success } = useLoaderData<typeof loader>();
+  const { plans, success, successMessage } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
 
   if (!parentData) {
@@ -192,7 +211,7 @@ export default function AccountSubscription() {
 
       {success && (
         <div className="profile-success" role="status" data-testid="subscription-success">
-          サブスクリプションの購読が完了しました。ご利用ありがとうございます。
+          {successMessage}
         </div>
       )}
 

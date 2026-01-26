@@ -16,6 +16,10 @@ import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-authentication.css';
 import '~/styles/account/layer3-authentication.css';
 
+// Spec loader
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
+
 // Data-IO layer
 import { destroySession } from '~/data-io/account/common/destroySession.server';
 import { getSession } from '~/data-io/account/common/getSession.server';
@@ -25,6 +29,9 @@ import { getSession } from '~/data-io/account/common/getSession.server';
  * This allows direct navigation to /logout via browser or test
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const redirectPath = spec.routes.logout.redirect_after;
+
   // Get current session
   const session = await getSession(request, context as any);
 
@@ -34,7 +41,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
 
   // Clear session cookie and redirect to login
-  return redirect('/login', {
+  return redirect(redirectPath, {
     headers: {
       'Set-Cookie': 'sessionId=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
     },
@@ -45,6 +52,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  * Action: Handle logout
  */
 export async function action({ request, context }: ActionFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const redirectPath = spec.routes.logout.redirect_after;
+
   // Get current session
   const session = await getSession(request, context as any);
 
@@ -54,7 +64,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   // Clear session cookie and redirect to login
-  return redirect('/login', {
+  return redirect(redirectPath, {
     headers: {
       'Set-Cookie': 'sessionId=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
     },

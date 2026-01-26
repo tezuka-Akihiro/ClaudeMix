@@ -21,6 +21,10 @@ import { deleteAllUserSessions } from '~/data-io/account/common/deleteAllUserSes
 // Pure logic layer
 import { validatePassword } from '~/lib/account/authentication/validatePassword';
 
+// Spec loader
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
+
 // CSS imports
 import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-authentication.css';
@@ -70,6 +74,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
  * Action: Handle password reset with token validation
  */
 export async function action({ request, params, context }: ActionFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
   const { token } = params;
   const formData = await request.formData();
   const newPassword = formData.get('newPassword');
@@ -77,7 +82,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 
   if (!token) {
     return json<ActionData>(
-      { error: 'トークンが無効です' },
+      { error: spec.error_messages.password_reset.token_invalid },
       { status: 400 }
     );
   }
@@ -86,15 +91,15 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 
   // Validation
   if (typeof newPassword !== 'string' || !newPassword) {
-    fieldErrors.newPassword = '新しいパスワードを入力してください';
+    fieldErrors.newPassword = spec.validation.password.error_messages.required;
   } else if (!validatePassword(newPassword)) {
-    fieldErrors.newPassword = 'パスワードは8文字以上、128文字以下で入力してください';
+    fieldErrors.newPassword = `${spec.validation.password.error_messages.too_short}、${spec.validation.password.error_messages.too_long.replace('パスワードは', '')}`;
   }
 
   if (typeof newPasswordConfirm !== 'string' || !newPasswordConfirm) {
-    fieldErrors.newPasswordConfirm = 'パスワード（確認）を入力してください';
+    fieldErrors.newPasswordConfirm = spec.validation.password_confirm.error_messages.required;
   } else if (newPassword !== newPasswordConfirm) {
-    fieldErrors.newPasswordConfirm = 'パスワードが一致しません';
+    fieldErrors.newPasswordConfirm = spec.validation.password_confirm.error_messages.mismatch;
   }
 
   if (Object.keys(fieldErrors).length > 0) {
@@ -128,14 +133,14 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   } catch (error) {
     console.error('Error validating token:', error);
     return json<ActionData>(
-      { error: 'トークンの検証に失敗しました' },
+      { error: spec.error_messages.password_reset.token_verification_failed },
       { status: 500 }
     );
   }
 
   if (!userEmail) {
     return json<ActionData>(
-      { error: 'トークンが無効または期限切れです' },
+      { error: spec.error_messages.password_reset.token_expired },
       { status: 400 }
     );
   }
@@ -144,7 +149,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   const user = await getUserByEmail(userEmail, context as any);
   if (!user) {
     return json<ActionData>(
-      { error: 'ユーザーが見つかりません' },
+      { error: spec.error_messages.password_reset.user_not_found },
       { status: 404 }
     );
   }
@@ -156,7 +161,7 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   const passwordUpdated = await updateUserPassword(user.id, newPasswordHash, context as any);
   if (!passwordUpdated) {
     return json<ActionData>(
-      { error: 'パスワードの更新に失敗しました' },
+      { error: spec.error_messages.password_reset.update_failed },
       { status: 500 }
     );
   }

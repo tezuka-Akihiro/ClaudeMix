@@ -1,7 +1,16 @@
 import { test, expect } from '@playwright/test';
+import { loadSpec } from '../../utils/loadSpec';
+import type { BlogPostsSpec } from '~/specs/blog/types';
 
-// 「起業」カテゴリでフィルタリングして未認証でアクセス可能な記事のみを表示（待機なしの解決策）
-const TARGET_URL = '/blog?category=起業';
+// specから公開カテゴリを取得（未認証でアクセス可能なカテゴリ）
+let TARGET_URL: string;
+let publicCategory: string;
+
+test.beforeAll(async () => {
+  const spec = await loadSpec<BlogPostsSpec>('blog', 'posts');
+  publicCategory = spec.access_control.public_categories[0];
+  TARGET_URL = `/blog?category=${encodeURIComponent(publicCategory)}`;
+});
 
 // ファイル全体が完了したら5秒待機（次のファイル実行前に環境を休ませる）
 test.afterAll(async () => {
@@ -49,7 +58,7 @@ test.describe.serial('E2E Section Test for blog - posts', () => {
       await expect(card.getByTestId('post-card-date')).not.toBeEmpty();
     }
 
-    // 4. 「起業」カテゴリの最初の記事カードをクリックして詳細ページへ遷移
+    // 4. 公開カテゴリの最初の記事カードをクリックして詳細ページへ遷移
     // カテゴリフィルタリングにより全ての記事が未認証でアクセス可能
     const firstPostCard = postsSection.getByTestId('post-card').first();
     await firstPostCard.click();

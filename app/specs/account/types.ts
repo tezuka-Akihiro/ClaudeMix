@@ -493,6 +493,13 @@ export interface AccountAuthenticationSpec {
       email_exists: string;
       creation_failed: string;
     };
+    password_reset: {
+      token_invalid: string;
+      token_verification_failed: string;
+      token_expired: string;
+      user_not_found: string;
+      update_failed: string;
+    };
     server: {
       timeout: string;
       internal_error: string;
@@ -1147,42 +1154,21 @@ export interface AccountSubscriptionSpec {
       title: string;
     };
   };
-  plans: {
-    one_month: {
-      id: string;
-      name: string;
-      price: number;
-      currency: string;
-      interval: string;
-      interval_count: number;
-      stripe_price_id: string;
-      features: string[];
-      discount_rate: number;
-    };
-    three_months: {
-      id: string;
-      name: string;
-      price: number;
-      currency: string;
-      interval: string;
-      interval_count: number;
-      stripe_price_id: string;
-      features: string[];
-      discount_rate: number;
-      badge: string;
-    };
-    six_months: {
-      id: string;
-      name: string;
-      price: number;
-      currency: string;
-      interval: string;
-      interval_count: number;
-      stripe_price_id: string;
-      features: string[];
-      discount_rate: number;
-    };
-  };
+  plans: Record<string, {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    original_price?: number;
+    currency: string;
+    interval: string;
+    interval_count: number;
+    stripe_price_id: string;
+    features: string[];
+    discount_rate: number;
+    badge?: string;
+    enabled: boolean;
+  }>;
   subscription_status: {
     active: {
       label: string;
