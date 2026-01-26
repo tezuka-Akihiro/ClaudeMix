@@ -34,10 +34,10 @@ const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category,
         {categoryEmoji}
       </div>
       <div className="post-card__content-structure">
-        <h2 className="post-card__title" data-testid="post-card-title">
+        <h2 className="post-card__title" data-testid="post-title">
           {title}
         </h2>
-        <p className="post-card__date" data-testid="post-card-date">
+        <p className="post-card__date" data-testid="post-date">
           {formattedDate}
         </p>
         {isLocked && (

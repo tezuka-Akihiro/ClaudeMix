@@ -4,7 +4,7 @@ description: "AIが書いた完璧なコードが動かない。useEffectのタ�
 author: "ClaudeMix Team"
 publishedAt: "2025-12-28"
 slug: "ai-remix-react-history-ssr"
-category: "記録"
+category: "ClaudeMix 記録"
 tags: ["React", "SSR", "troubleshooting"]
 freeContentHeading: "第3層：構造的な解剖 ― ハイドレーションという名の「アイデンティティ不安」"
 ---

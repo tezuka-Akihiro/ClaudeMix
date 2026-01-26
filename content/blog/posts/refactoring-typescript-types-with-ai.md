@@ -5,7 +5,7 @@ publishedAt: "2025-11-15"
 summary: "AIに任せきりで散らばったTypeScriptの型定義。そのカオスを、AIと対話しながら『分析→設計→実行』のワークフローで安全に整理していく過程を全記録。単なるコード整理に留まらない、AIとの協調開発の実践例です。"
 author: "ClaudeMix Team"
 tags: ["refactoring", "architecture"]
-category: "考察"
+category: "ClaudeMix 考察"
 description: "AIに任せきりで散らばったTypeScriptの型定義。そのカオスを、AIと対話しながら『分析→設計→実行』のワークフローで安全に整理していく過程を全記録。単なるコード整理に留まらない、AIとの協調開発の実践例です。"
 freeContentHeading: "AIが陥る型定義カオスの罠"
 ---

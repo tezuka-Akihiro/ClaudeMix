@@ -4,7 +4,7 @@ title: "Lighthouseモバイルスコア85点から100点へ - 7つの最適化�
 description: "Lighthouseモバイル測定でパフォーマンス85点、アクセシビリティ86点という結果に。メタタグの追加、見出し階層の修正、コントラスト比改善、記事表示数の最適化など、7つの施策で全カテゴリ満点を達成した実践記録です。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-18"
-category: "記録"
+category: "ClaudeMix 記録"
 tags: ["performance", "troubleshooting", "Vite"]
 freeContentHeading: "AIが陥る最適化の罠"
 ---

@@ -3,7 +3,7 @@ slug: "refactoring-typescript-types-single-source-of-truth"
 title: "AIと育てる型定義 Part 2：『唯一の真実の源』で散らばった関連型を整理する"
 author: "ClaudeMix Team"
 publishedAt: "2025-11-18"
-category: "考察"
+category: "ClaudeMix 考察"
 tags: ["refactoring", "architecture"]
 description: "AIとの協調リファクタリング第2弾。今回は、似ているようで少しずつ違う『ブログ記事』関連の型定義に挑みます。TypeScriptのUtility Typesを駆使して『唯一の真実の源』を確立し、保守性と見通しを劇的に改善するプロセスを全記録。"
 freeContentHeading: "AIが陥る型定義の依存関係の罠"

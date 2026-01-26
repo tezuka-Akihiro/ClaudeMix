@@ -3,7 +3,7 @@ slug: "mcp-guide"
 title: "AI開発の未来を変える「MCP」とは？ Claudeと開発ツールを連携させる新常識"
 author: "ClaudeMix Team"
 publishedAt: "2025-11-16"
-category: "ガイド"
+category: "ClaudeMix ガイド"
 description: "Claudeと外部ツールを連携させる標準プロトコル「MCP (Model Context Protocol)」の完全ガイド。GitHubやDBとの接続方法、HTTP/Stdioサーバーの使い分け、Tool Searchによるコンテキスト最適化など、AIをチームの一員として機能させるための実装手法を解説します。"
 tags: ["MCP"]
 ---

@@ -27,17 +27,17 @@ server_io:
 # ==========================================
 categories:
   - id: 1
-    name: "ガイド"
+    name: "ClaudeMix ガイド"
     emoji: "📖"
     description: "Claude Code公式ドキュメントの翻訳・まとめ"
     use_case: "機能を調べたいときの参照用"
   - id: 2
-    name: "記録"
+    name: "ClaudeMix 記録"
     emoji: "📝"
     description: "トラブルシュート・最適化の実践ログ"
     use_case: "同じ問題に遭遇したときの解決策"
   - id: 3
-    name: "考察"
+    name: "ClaudeMix 考察"
     emoji: "💭"
     description: "設計思想・リファクタリングから得た知見"
     use_case: "設計判断の参考にしたいとき"

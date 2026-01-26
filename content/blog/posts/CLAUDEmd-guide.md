@@ -3,7 +3,7 @@ slug: "claudemd-guide"
 title: "CLAUDE.md 公式＆最新ベストプラクティスまとめ (2026年版)"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-21"
-category: "ガイド"
+category: "ClaudeMix ガイド"
 description: "単なるルール集から『コンテキスト設計』へ。Claudeがプロジェクトの核心を理解し、疲労（コンテキスト汚染）を防ぐための最新ガイド。"
 tags: ["CLAUDE.md"]
 ---

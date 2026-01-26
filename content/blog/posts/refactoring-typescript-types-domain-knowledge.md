@@ -5,7 +5,7 @@ publishedAt: "2025-11-24"
 summary: "AIとの協調リファクタリング最終章。サイト設定、ページネーション、見出しといった、各所に散らばっていたドメイン知識を『仕様』として集約。コードベースの完成度を劇的に高めるリファクタリングの最終ステップを記録します。"
 author: "ClaudeMix Team"
 tags: ["refactoring", "architecture"]
-category: "考察"
+category: "ClaudeMix 考察"
 description: "AIとの協調リファクタリング最終章。サイト設定、ページネーション、見出しといった、各所に散らばっていたドメイン知識を『仕様』として集約。コードベースの完成度を劇的に高めるリファクタリングの最終ステップを記録します。"
 freeContentHeading: "AIが陥るドメイン知識の散在の罠"
 ---

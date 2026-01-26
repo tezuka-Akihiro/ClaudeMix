@@ -52,10 +52,10 @@ test.describe.serial('E2E Section Test for blog - posts', () => {
       const card = postCards.nth(i);
       await expect(card.getByTestId('category-emoji')).toBeVisible();
       await expect(card.getByTestId('category-emoji')).not.toBeEmpty();
-      await expect(card.getByTestId('post-card-title')).toBeVisible();
-      await expect(card.getByTestId('post-card-title')).not.toBeEmpty();
-      await expect(card.getByTestId('post-card-date')).toBeVisible();
-      await expect(card.getByTestId('post-card-date')).not.toBeEmpty();
+      await expect(card.getByTestId('post-title')).toBeVisible();
+      await expect(card.getByTestId('post-title')).not.toBeEmpty();
+      await expect(card.getByTestId('post-date')).toBeVisible();
+      await expect(card.getByTestId('post-date')).not.toBeEmpty();
     }
 
     // 4. 公開カテゴリの最初の記事カードをクリックして詳細ページへ遷移

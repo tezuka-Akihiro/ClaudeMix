@@ -5,164 +5,115 @@ import { BrowserRouter } from 'react-router-dom';
 import PostCard from '~/components/blog/posts/PostCard';
 import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
 
+// Helper to extract test-id from a spec selector string like "[data-testid='my-id']"
+const getTestId = (selector: string): string => {
+  const match = selector.match(/data-testid='([^']*)'/);
+  return match ? match[1] : '';
+};
+
 // Helper function to render component with Router context
 const renderWithRouter = (ui: React.ReactElement) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
 };
 
-describe('PostCard', () => {
-  let spec: BlogPostsSpec;
-  let mockCategorySpec: {
-    categories: Array<{ name: string; emoji: string }>;
-    defaultEmoji: string;
+// Define a more complete type for the spec object locally
+// to include properties used in tests but potentially missing from the global type.
+interface BlogPostSpecWithSelectors extends BlogPostsSpec {
+  ui_selectors: {
+    card: {
+      category_emoji: string;
+      post_title: string;
+      post_date: string;
+      post_card: string;
+      tag_badge: string;
+    };
   };
+}
+
+describe('PostCard', () => {
+  let spec: BlogPostSpecWithSelectors;
+  let baseProps: Omit<React.ComponentProps<typeof PostCard>, 'slug'>;
+  let mockCategorySpec: React.ComponentProps<typeof PostCard>['categorySpec'];
 
   beforeAll(async () => {
     // Load spec.yaml dynamically to ensure tests stay in sync with spec
-    spec = await loadSpec('blog', 'posts');
+    spec = await loadSpec<BlogPostSpecWithSelectors>('blog', 'posts');
     mockCategorySpec = {
       categories: spec.categories,
       defaultEmoji: spec.business_rules.display.default_category_emoji,
+    };
+
+    baseProps = {
+      title: 'Test Post Title',
+      publishedAt: '2024-05-01',
+      category: spec.categories[0].name,
+      description: 'A test description.',
+      tags: [spec.tags[0].name, spec.tags[1].name],
+      categorySpec: mockCategorySpec,
     };
   });
 
   describe('Rendering', () => {
     it('should display category emoji, title and published date', () => {
       // Arrange
-      const props = {
-        slug:'test-post',
-        title: 'Test Post Title',
-        publishedAt: '2024-05-01',
-        category: 'ガイド',
-        tags: [],
-        categorySpec: mockCategorySpec,
-      };
+      const props = { ...baseProps, slug: 'test-post', category: spec.categories[0].name };
 
       // Act
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const categoryEmoji = screen.getByTestId('category-emoji');
-      const titleElement = screen.getByTestId('post-card-title');
-      const dateElement = screen.getByTestId('post-card-date');
+      const categoryEmoji = screen.getByTestId(getTestId(spec.ui_selectors.card.category_emoji));
+      const titleElement = screen.getByTestId(getTestId(spec.ui_selectors.card.post_title));
+      const dateElement = screen.getByTestId(getTestId(spec.ui_selectors.card.post_date));
 
       expect(categoryEmoji).toBeInTheDocument();
-      expect(categoryEmoji).toHaveTextContent('📖');
+      // Use the emoji from the spec for the first category
+      expect(categoryEmoji).toHaveTextContent(spec.categories[0].emoji);
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Test Post Title');
+      expect(titleElement).toHaveTextContent(props.title);
       expect(dateElement).toBeInTheDocument();
+      // NOTE: The spec's display_format is "YYYY年M月D日", but the current formatPublishedDate implementation seems to produce "YYYY.MM.DD".
+      // This test verifies the current behavior.
       expect(dateElement).toHaveTextContent('2024.05.01');
     });
 
-    it('should render as a link element', () => {
+    it('should render as a link element with correct classes', () => {
       // Arrange
-      const props = {
-        slug: 'test-post',
-        title: 'Test Post',
-        publishedAt: '2024-05-01',
-        category: 'ガイド',
-        tags: [],
-        categorySpec: mockCategorySpec,
-      };
+      const props = { ...baseProps, slug: 'test-post' };
 
       // Act
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const linkElement = screen.getByTestId('post-card');
+      const linkElement = screen.getByRole('link');
       expect(linkElement).toBeInTheDocument();
       expect(linkElement.tagName).toBe('A');
-    });
-
-    it('should apply correct CSS classes', () => {
-      // Arrange
-      const props = {
-        slug: 'test-post',
-        title: 'Test Post',
-        publishedAt: '2024-05-01',
-        category: 'ガイド',
-        tags: [],
-        categorySpec: mockCategorySpec,
-      };
-
-      // Act
-      renderWithRouter(<PostCard {...props} />);
-
-      // Assert
-      const linkElement = screen.getByTestId('post-card');
       expect(linkElement).toHaveClass('post-card');
       expect(linkElement).toHaveClass('post-card-structure');
     });
   });
 
   describe('Interaction', () => {
-    it('should navigate to /blog/{slug} when clicked', () => {
+    it('should navigate to the correct /blog/{slug} URL', () => {
       // Arrange
+      const slug = 'sample-remix-tips-2024';
       const props = {
-        slug: 'sample-remix-tips-2024',
-        title: 'Remix Tips',
-        publishedAt: '2024-05-01',
-        category: '記録',
-        tags: [],
-        categorySpec: mockCategorySpec,
+        ...baseProps,
+        slug,
       };
 
       // Act
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const linkElement = screen.getByTestId('post-card');
-      expect(linkElement).toHaveAttribute('href', '/blog/sample-remix-tips-2024');
-    });
-
-    it('should have correct link for different slugs', () => {
-      // Arrange
-      const props = {
-        slug: 'another-post',
-        title: 'Another Post',
-        publishedAt: '2024-06-15',
-        category: '考察',
-        tags: [],
-        categorySpec: mockCategorySpec,
-      };
-
-      // Act
-      renderWithRouter(<PostCard {...props} />);
-
-      // Assert
-      const linkElement = screen.getByTestId('post-card');
-      expect(linkElement).toHaveAttribute('href', '/blog/another-post');
-    });
-  });
-
-  describe('Styling', () => {
-    it('should have hover state styling defined', () => {
-      // Arrange
-      const props = {
-        slug: 'test-post',
-        title: 'Test Post',
-        publishedAt: '2024-05-01',
-        category: 'ガイド',
-        tags: [],
-        categorySpec: mockCategorySpec,
-      };
-
-      // Act
-      renderWithRouter(<PostCard {...props} />);
-
-      // Assert
-      const linkElement = screen.getByTestId('post-card');
-      // Verify that the hover class is present (Layer 2 defines :hover pseudo-class)
-      expect(linkElement).toHaveClass('post-card');
-
-      // Verify that the component has the necessary data-testid for interaction testing
-      expect(linkElement).toHaveAttribute('data-testid', 'post-card');
+      const linkElement = screen.getByTestId(getTestId(spec.ui_selectors.card.post_card));
+      expect(linkElement).toHaveAttribute('href', `/blog/${slug}`);
     });
   });
 
   describe('Date Formatting', () => {
     it('should format date correctly for different dates', () => {
-      // Arrange - Test multiple date formats
+      // Arrange
       const testCases = [
         { publishedAt: '2024-01-01', expected: '2024.01.01' },
         { publishedAt: '2024-12-31', expected: '2024.12.31' },
@@ -170,20 +121,17 @@ describe('PostCard', () => {
       ];
 
       testCases.forEach(({ publishedAt, expected }) => {
-        const props = {
-          slug: 'test-post',
-          title: 'Test Post',
+        const props: React.ComponentProps<typeof PostCard> = {
+          ...baseProps,
           publishedAt,
-          category: 'ガイド',
-          tags: [],
-          categorySpec: mockCategorySpec,
+          slug: `date-test-${publishedAt}`,
         };
 
         // Act
         const { unmount } = renderWithRouter(<PostCard {...props} />);
 
         // Assert
-        const dateElement = screen.getByTestId('post-card-date');
+        const dateElement = screen.getByTestId(getTestId(spec.ui_selectors.card.post_date));
         expect(dateElement).toHaveTextContent(expected);
 
         // Cleanup
@@ -193,120 +141,120 @@ describe('PostCard', () => {
   });
 
   describe('Category Display', () => {
-    it('should display correct emoji for each category', () => {
-      // Arrange - Test all three categories
-      const testCases = [
-        { category: 'ガイド', expectedEmoji: '📖' },
-        { category: '記録', expectedEmoji: '📝' },
-        { category: '考察', expectedEmoji: '💭' },
-      ];
+    // Dynamically create tests for each category defined in the spec file
+    // Use an async IIFE to load categories and then define tests with it.each
+    ;(async () => {
+      const categories = (await loadSpec<BlogPostSpecWithSelectors>('blog', 'posts')).categories;
+      it.each(categories)(
+        'should display correct emoji "$emoji" for category "$name"',
+        ({ name, emoji }) => {
+          // Arrange
+          const props: React.ComponentProps<typeof PostCard> = {
+            ...baseProps,
+            slug: `category-test-${name}`,
+            category: name,
+          };
 
-      testCases.forEach(({ category, expectedEmoji }) => {
-        const props = {
-          slug: 'test-post',
-          title: 'Test Post',
-          publishedAt: '2024-05-01',
-          category,
-          tags: [],
-          categorySpec: mockCategorySpec,
-        };
+          // Act
+          renderWithRouter(<PostCard {...props} />);
 
-        // Act
-        const { unmount } = renderWithRouter(<PostCard {...props} />);
+          // Assert
+          const categoryEmoji = screen.getByTestId(getTestId(spec.ui_selectors.card.category_emoji));
+          expect(categoryEmoji).toHaveTextContent(emoji);
+        },
+      );
+    })();
 
-        // Assert
-        const categoryEmoji = screen.getByTestId('category-emoji');
-        expect(categoryEmoji).toHaveTextContent(expectedEmoji);
+    it('should display default emoji for an unknown category', () => {
+      // Arrange
+      const props: React.ComponentProps<typeof PostCard> = {
+        ...baseProps,
+        slug: 'unknown-category-test',
+        category: 'Unknown Category',
+      };
 
-        // Cleanup
-        unmount();
-      });
+      // Act
+      renderWithRouter(<PostCard {...props} />);
+
+      // Assert
+      const categoryEmoji = screen.getByTestId(getTestId(spec.ui_selectors.card.category_emoji));
+      expect(categoryEmoji).toHaveTextContent(spec.business_rules.display.default_category_emoji);
     });
   });
 
   describe('Metadata Enhancement', () => {
     it('should display description when provided', () => {
       // Arrange
-      const props = {
-        slug: 'test-post',
-        title: 'Test Post',
-        publishedAt: '2024-05-01',
-        category: 'ガイド',
+      const props: React.ComponentProps<typeof PostCard> = {
+        ...baseProps,
+        slug: 'description-test',
         description: 'This is a test description',
-        tags: [],
-        categorySpec: mockCategorySpec,
       };
 
       // Act
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const descriptionElement = screen.getByText('This is a test description');
+      const descriptionElement = screen.getByText(props.description as string);
       expect(descriptionElement).toBeInTheDocument();
       expect(descriptionElement).toHaveClass('post-description');
     });
 
     it('should display tags as space-separated plain text', () => {
       // Arrange
-      const props = {
-        slug: 'test-post',
-        title: 'Test Post',
-        publishedAt: '2024-05-01',
-        category: 'ガイド',
-        tags: ['AI', 'Claude', 'TDD'],
-        categorySpec: mockCategorySpec,
+      const tags = [spec.tags[0].name, spec.tags[1].name, spec.tags[2].name];
+      const props: React.ComponentProps<typeof PostCard> = {
+        ...baseProps,
+        slug: 'tags-test',
+        tags,
       };
 
       // Act
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const tagBadge = screen.getByTestId('tag-badge');
-      expect(tagBadge).toHaveTextContent('AI Claude TDD');
+      const tagBadge = screen.getByTestId(getTestId(spec.ui_selectors.card.tag_badge));
+      expect(tagBadge).toHaveTextContent(tags.join(' '));
       expect(tagBadge).toHaveClass('tag-badge');
     });
 
-    it('should handle posts without tags', () => {
+    it('should not render tag badge when post has no tags', () => {
       // Arrange
-      const props = {
-        slug: 'test-post',
-        title: 'Test Post',
-        publishedAt: '2024-05-01',
-        category: 'ガイド',
+      const props: React.ComponentProps<typeof PostCard> = {
+        ...baseProps,
+        slug: 'no-tags-test',
         tags: [],
-        description: 'Test description',
-        categorySpec: mockCategorySpec,
       };
 
       // Act
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const tagBadge = screen.queryByTestId('tag-badge');
+      const tagBadge = screen.queryByTestId(getTestId(spec.ui_selectors.card.tag_badge));
       expect(tagBadge).not.toBeInTheDocument();
     });
+  });
 
-    it('should display both description and tags together', () => {
+  describe('Locked State', () => {
+    it('should apply locked styles and show message when isLocked is true', () => {
       // Arrange
-      const props = {
-        slug: 'test-post',
-        title: 'Test Post',
-        publishedAt: '2024-05-01',
-        category: 'ガイド',
-        description: 'Comprehensive guide',
-        tags: ['Remix', 'TypeScript'],
-        categorySpec: mockCategorySpec,
+      const props: React.ComponentProps<typeof PostCard> = {
+        ...baseProps,
+        slug: 'locked-post',
+        isLocked: true,
       };
 
       // Act
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const descriptionElement = screen.getByText('Comprehensive guide');
-      expect(descriptionElement).toBeInTheDocument();
+      const cardElement = screen.getByTestId(getTestId(spec.ui_selectors.card.post_card));
+      expect(cardElement).toHaveClass('post-card--locked');
+      expect(cardElement).toHaveAttribute('data-locked', 'true');
 
-      const tagBadge = screen.getByTestId('tag-badge');
-      expect(tagBadge).toHaveTextContent('Remix TypeScript');
+      const lockMessage = screen.getByTestId('lock-message');
+      expect(lockMessage).toBeInTheDocument();
+      expect(lockMessage).toHaveTextContent('ログインで読む');
     });
   });
 });

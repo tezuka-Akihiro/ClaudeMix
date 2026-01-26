@@ -4,7 +4,7 @@ title: "RemixのResource RouteでOGP画像を生成する際にハマったWASM�
 description: "RemixでOGP画像生成を実装したらローカルは動くのにCloudflare Workersでビルドエラー。workers-ogのWASM読み込みが原因で発生した「Could not resolve」エラーを、vite.config.tsのssr.external設定で解決した全プロセスを記録します。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-16"
-category: "記録"
+category: "ClaudeMix 記録"
 tags: ["Workers", "troubleshooting", "Vite"]
 freeContentHeading: "💡 根本原因の特定"
 ---

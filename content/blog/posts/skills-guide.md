@@ -3,7 +3,7 @@ slug: "skills-guide"
 title: "claude skills 公式まとめ"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-21"
-category: "ガイド"
+category: "ClaudeMix ガイド"
 description: "Claude Codeの機能を拡張する「Skills」の公式ガイド。文脈に応じて自動起動するモジュール化されたパッケージの作成方法、SKILL.mdの構造、発見性を高める記述テクニック、そしてチームでの共有・運用ベストプラクティスを網羅的に解説します。"
 tags: ["Skills"]
 ---

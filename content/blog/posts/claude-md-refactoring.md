@@ -4,7 +4,7 @@ title: "CLAUDE.md最適化：公式ベストプラクティスでコンテキス
 description: "CLAUDE.mdが毎回の会話で不要な情報をロードし、コンテキストを圧迫していた問題を、Anthropic公式ベストプラクティスに準拠した構成への全面リファクタリングで解決。WHAT/WHY/HOWの3要素への集約と、詳細ドキュメントへのポインタ化により、Claude Codeとの協調開発効率を最大化。"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-22"
-category: "考察"
+category: "ClaudeMix 考察"
 tags: ["CLAUDE.md", "architecture"]
 freeContentHeading: "具体的なタスク"
 ---

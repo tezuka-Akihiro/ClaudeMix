@@ -4,7 +4,7 @@ title: "Lighthouse JavaScript最適化の壁 - 削減できなかった39 KiBか
 description: "CSS削減は46%成功したのに、JavaScript削減は失敗。lazy loading、chunk splitting、prefetch無効化を試したが、39 KiBは減らなかった。Remix/Viteの共有バンドル戦略という壁にぶつかり、フレームワークの制約を受け入れることの重要性を学んだ実践記録です。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-19"
-category: "記録"
+category: "ClaudeMix 記録"
 tags: ["Vite", "performance", "troubleshooting", "refactoring"]
 freeContentHeading: "達成した結果と直面した現実"
 ---

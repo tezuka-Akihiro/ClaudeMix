@@ -4,7 +4,7 @@ title: "Claude Code 公式ベストプラクティス：5つのレイヤーで�
 description: "Claude Codeを使いこなすための最新公式ベストプラクティス。CLAUDE.md, Rules, Skills, Subagents, MCPsの5つのレイヤーを正しく使い分け、コンテキスト効率と自律性を最大化する構築手法を解説します。"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-21"
-category: "ガイド"
+category: "ClaudeMix ガイド"
 tags: ["CLAUDE.md", "rules", "Skills", "Subagent", "MCP"]
 ---
 

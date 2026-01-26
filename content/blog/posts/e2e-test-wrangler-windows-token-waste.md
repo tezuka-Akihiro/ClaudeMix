@@ -4,7 +4,7 @@ description: "E2Eテストでコードは正しいのにテストが落ちる。
 author: "ClaudeMix Team"
 publishedAt: "2025-12-28"
 slug: "e2e-test-wrangler-windows-token-waste"
-category: "記録"
+category: "ClaudeMix 記録"
 tags: ["Playwright", "troubleshooting", "testing"]
 freeContentHeading: "根本原因の特定"
 ---

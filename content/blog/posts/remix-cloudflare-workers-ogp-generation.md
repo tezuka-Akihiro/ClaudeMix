@@ -4,7 +4,7 @@ title: "Remix × Cloudflare Workers で実現する動的OGP画像生成 - worke
 description: "RemixアプリでOGP画像を動的に生成する実装を、Cloudflare Workers環境に最適化されたworkers-ogライブラリとCache APIを使って実現。日本語フォントの取得をキャッシュし、ExecutionContext.waitUntil()で非ブロッキング処理を行う設計パターンを詳しく解説します。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-16"
-category: "記録"
+category: "ClaudeMix 記録"
 tags: ["Workers", "OGP", "architecture"]
 freeContentHeading: "📝 概要"
 ---

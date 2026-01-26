@@ -3,7 +3,7 @@ slug: "subagent-guide"
 title: "claude Subagent 公式まとめ"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-21"
-category: "ガイド"
+category: "ClaudeMix ガイド"
 description: "Claude Codeの「Subagent（サブエージェント）」活用ガイド。メインコンテキストを汚さずに特定タスクを遂行する独立した専門員の作成方法、権限管理、そして2026年の最新機能であるHookやSkill注入による高度な統制技術を解説します。"
 tags: ["Subagent"]
 ---

@@ -36,7 +36,7 @@ export interface TestArticleFrontmatter {
  * @param section
  * @returns spec.yamlの内容
  */
-export async function loadSpec<T = BlogPostsSpec>(service: string ,section: string): Promise<T> {
+export async function loadSpec<T = BlogPostsSpec>(service: string, section: string): Promise<T> {
   const specPath = join(process.cwd(), 'app/specs/',service,'/',section + '-spec.yaml');
   const content = await readFile(specPath, 'utf-8');
   const spec = load(content) as T;

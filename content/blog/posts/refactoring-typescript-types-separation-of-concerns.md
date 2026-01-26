@@ -5,7 +5,7 @@ publishedAt: "2025-11-21"
 summary: "AIとの協調リファクタリング第3弾。今回はフィルター機能に散らばる型定義にメスを入れます。TypeScriptのIntersection Typesを活用して『責務の分離』を実践し、再利用性と見通しを向上させる過程を記録します。"
 author: "ClaudeMix Team"
 tags: ["refactoring", "architecture"]
-category: "考察"
+category: "ClaudeMix 考察"
 description: "AIとの協調リファクタリング第3弾。今回はフィルター機能に散らばる型定義にメスを入れます。TypeScriptのIntersection Typesを活用して『責務の分離』を実践し、再利用性と見通しを向上させる過程を記録します。"
 freeContentHeading: "AIが陥る責務混在の罠"
 ---
