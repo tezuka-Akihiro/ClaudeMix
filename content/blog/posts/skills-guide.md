@@ -401,7 +401,7 @@ When a user provides unclear requirements, guide them through structured clarifi
 
 プロジェクトの持続的な開発を支えるため、すべてのリテラル値・設定値を `app/specs/` 配下の `*-spec.yaml` ファイルに集約する方針です。
 
-```
+```text
 プロジェクトの寿命
     ↑
 開発サイクルの高速化
@@ -537,7 +537,7 @@ const testArticles = await loadTestArticles();
 ### 使い分けの注意点
 
 | 用途 | 使用するローダー | 理由 |
-|------|-----------------|------|
+| ---- | --------------- | ---- |
 | Route loader/action | `specLoader.server.ts` | サーバー専用、同期的 |
 | Vitest ユニットテスト | `tests/utils/loadSpec.ts` | 非同期、テストユーティリティ付き |
 | E2E テスト | `tests/utils/loadSpec.ts` | テスト記事ヘルパー利用可能 |
