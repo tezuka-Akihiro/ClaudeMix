@@ -3,7 +3,7 @@ slug: "rules-guide"
 title: "claude rules 公式まとめ"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-21"
-category: "Claude Best Practices"
+category: "ガイド"
 description: "Claude Codeの「Rules」機能の公式ガイド。プロジェクトの規律を自動適用する憲法のような仕組みについて、ディレクトリ構造による管理、パスベースの適用範囲設定、そしてAIの判断基準を最適化する運用のベストプラクティスを解説します。"
 tags: ["rules"]
 

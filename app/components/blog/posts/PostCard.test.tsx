@@ -33,7 +33,7 @@ describe('PostCard', () => {
         slug:'test-post',
         title: 'Test Post Title',
         publishedAt: '2024-05-01',
-        category: 'Claude Best Practices',
+        category: 'ガイド',
         tags: [],
         categorySpec: mockCategorySpec,
       };
@@ -47,7 +47,7 @@ describe('PostCard', () => {
       const dateElement = screen.getByTestId('post-card-date');
 
       expect(categoryEmoji).toBeInTheDocument();
-      expect(categoryEmoji).toHaveTextContent('📚');
+      expect(categoryEmoji).toHaveTextContent('📖');
       expect(titleElement).toBeInTheDocument();
       expect(titleElement).toHaveTextContent('Test Post Title');
       expect(dateElement).toBeInTheDocument();
@@ -60,7 +60,7 @@ describe('PostCard', () => {
         slug: 'test-post',
         title: 'Test Post',
         publishedAt: '2024-05-01',
-        category: 'Claude Best Practices',
+        category: 'ガイド',
         tags: [],
         categorySpec: mockCategorySpec,
       };
@@ -80,7 +80,7 @@ describe('PostCard', () => {
         slug: 'test-post',
         title: 'Test Post',
         publishedAt: '2024-05-01',
-        category: 'Claude Best Practices',
+        category: 'ガイド',
         tags: [],
         categorySpec: mockCategorySpec,
       };
@@ -102,7 +102,7 @@ describe('PostCard', () => {
         slug: 'sample-remix-tips-2024',
         title: 'Remix Tips',
         publishedAt: '2024-05-01',
-        category: 'Tutorials & Use Cases',
+        category: '記録',
         tags: [],
         categorySpec: mockCategorySpec,
       };
@@ -121,7 +121,7 @@ describe('PostCard', () => {
         slug: 'another-post',
         title: 'Another Post',
         publishedAt: '2024-06-15',
-        category: 'ClaudeMix Philosophy',
+        category: '考察',
         tags: [],
         categorySpec: mockCategorySpec,
       };
@@ -142,7 +142,7 @@ describe('PostCard', () => {
         slug: 'test-post',
         title: 'Test Post',
         publishedAt: '2024-05-01',
-        category: 'Claude Best Practices',
+        category: 'ガイド',
         tags: [],
         categorySpec: mockCategorySpec,
       };
@@ -174,7 +174,7 @@ describe('PostCard', () => {
           slug: 'test-post',
           title: 'Test Post',
           publishedAt,
-          category: 'Claude Best Practices',
+          category: 'ガイド',
           tags: [],
           categorySpec: mockCategorySpec,
         };
@@ -196,9 +196,9 @@ describe('PostCard', () => {
     it('should display correct emoji for each category', () => {
       // Arrange - Test all three categories
       const testCases = [
-        { category: 'Claude Best Practices', expectedEmoji: '📚' },
-        { category: 'ClaudeMix Philosophy', expectedEmoji: '🎨' },
-        { category: 'Tutorials & Use Cases', expectedEmoji: '🚀' },
+        { category: 'ガイド', expectedEmoji: '📖' },
+        { category: '記録', expectedEmoji: '📝' },
+        { category: '考察', expectedEmoji: '💭' },
       ];
 
       testCases.forEach(({ category, expectedEmoji }) => {
@@ -231,7 +231,7 @@ describe('PostCard', () => {
         slug: 'test-post',
         title: 'Test Post',
         publishedAt: '2024-05-01',
-        category: 'Claude Best Practices',
+        category: 'ガイド',
         description: 'This is a test description',
         tags: [],
         categorySpec: mockCategorySpec,
@@ -252,7 +252,7 @@ describe('PostCard', () => {
         slug: 'test-post',
         title: 'Test Post',
         publishedAt: '2024-05-01',
-        category: 'Claude Best Practices',
+        category: 'ガイド',
         tags: ['AI', 'Claude', 'TDD'],
         categorySpec: mockCategorySpec,
       };
@@ -272,7 +272,7 @@ describe('PostCard', () => {
         slug: 'test-post',
         title: 'Test Post',
         publishedAt: '2024-05-01',
-        category: 'Claude Best Practices',
+        category: 'ガイド',
         tags: [],
         description: 'Test description',
         categorySpec: mockCategorySpec,
@@ -292,7 +292,7 @@ describe('PostCard', () => {
         slug: 'test-post',
         title: 'Test Post',
         publishedAt: '2024-05-01',
-        category: 'Claude Best Practices',
+        category: 'ガイド',
         description: 'Comprehensive guide',
         tags: ['Remix', 'TypeScript'],
         categorySpec: mockCategorySpec,

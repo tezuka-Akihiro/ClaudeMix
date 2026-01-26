@@ -4,7 +4,7 @@ title: "Cloudflare WorkersのWebAssembly制約をビルド時HTML変換で乗り
 description: "Cloudflare Workers環境でShikiのWebAssemblyが動作せず、ブログ記事詳細ページがエラーになる問題に遭遇。ビルド時にマークダウンをHTMLに変換する戦略と、並列処理の競合を防ぐShiki事前初期化の実装を解説します。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-02"
-category: "Claude Best Practices"
+category: "記録"
 tags: ["Workers", "troubleshooting", "Vite"]
 freeContentHeading: "⚠️ 問題の発見と症状"
 ---

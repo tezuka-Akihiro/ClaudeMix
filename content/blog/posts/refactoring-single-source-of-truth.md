@@ -4,7 +4,7 @@ title: "E2Eテストが壊れ続けた理由と、テストデータ一元管理
 description: "設計書・実装・テストの情報散在とE2Eテストデータ問題を、spec.yaml中心のSingle Source of Truth設計で解決したリファクタリング実践記"
 author: "ClaudeMix Team"
 publishedAt: "2025-11-27"
-category: "Claude Best Practices"
+category: "考察"
 tags: ["refactoring", "testing", "architecture"]
 freeContentHeading: "設計方針の策定"
 ---

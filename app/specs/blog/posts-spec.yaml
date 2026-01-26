@@ -27,20 +27,20 @@ server_io:
 # ==========================================
 categories:
   - id: 1
-    name: "Claude Best Practices"
-    emoji: "📚"
-    description: "実装・トラブルシュートから得たベストプラクティス"
-    use_case: "トラブルシュート起因の記事の大半（60-70%）"
+    name: "ガイド"
+    emoji: "📖"
+    description: "Claude Code公式ドキュメントの翻訳・まとめ"
+    use_case: "機能を調べたいときの参照用"
   - id: 2
-    name: "ClaudeMix Philosophy"
-    emoji: "🎨"
-    description: "設計思想・アーキテクチャ哲学・学んだことまとめ"
-    use_case: "月1回の「学んだことまとめ記事」（5-10%）"
+    name: "記録"
+    emoji: "📝"
+    description: "トラブルシュート・最適化の実践ログ"
+    use_case: "同じ問題に遭遇したときの解決策"
   - id: 3
-    name: "Tutorials & Use Cases"
-    emoji: "🚀"
-    description: "機能追加・改修のチュートリアル"
-    use_case: "新機能追加・機能改修の記事（20-30%）"
+    name: "考察"
+    emoji: "💭"
+    description: "設計思想・リファクタリングから得た知見"
+    use_case: "設計判断の参考にしたいとき"
   - id: 4
     name: "起業"
     emoji: "💼"

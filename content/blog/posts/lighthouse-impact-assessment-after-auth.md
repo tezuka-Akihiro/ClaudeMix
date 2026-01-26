@@ -4,7 +4,7 @@ title: "ログイン機能追加後のLighthouse影響調査計画 - 100点ス�
 description: "全カテゴリ100点を達成したLighthouseスコア。しかし、ログイン機能を追加したことで、その完璧なスコアはどう変化するのか？JavaScript増加、CSS増加、パフォーマンス劣化のリスクを体系的に測定し、影響を評価するための完全な調査計画を公開します。"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-13"
-category: "Claude Best Practices"
+category: "記録"
 tags: ["performance", "troubleshooting", "testing"]
 freeContentHeading: "AIが陥る場当たり測定の罠"
 ---

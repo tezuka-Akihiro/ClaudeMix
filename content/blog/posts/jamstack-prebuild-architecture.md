@@ -4,7 +4,7 @@ title: "爆速ブログを実現するJamstackアーキテクチャ：RemixとVi
 description: "TTFBを極限まで短縮し、圧倒的な表示速度を実現するためのHTMLプレビルドシステムを解説。リクエスト時の動的処理を廃し、ビルド時に重い処理を完了させるJamstackのベストプラクティスをRemixとViteで実装します。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-03"
-category: "ClaudeMix Philosophy"
+category: "考察"
 tags: ["architecture", "performance", "Vite"]
 freeContentHeading: "📝 概要"
 ---

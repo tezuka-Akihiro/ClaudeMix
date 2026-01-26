@@ -4,7 +4,7 @@ title: "Lighthouse 99点で止めた理由 - 100点を追わないパフォー�
 description: "Performance 94点から99点へ改善。しかし100点は目指さなかった。CSSインライン化で初回は速くなるが、2ページ目以降が遅くなる。Lighthouseスコアの本質を理解し、実用的なパフォーマンスを追求した最適化の記録。"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-14"
-category: "Claude Best Practices"
+category: "記録"
 tags: ["performance"]
 freeContentHeading: "課題と解決策"
 ---

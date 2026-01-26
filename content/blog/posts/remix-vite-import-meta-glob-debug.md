@@ -4,7 +4,7 @@ description: "RemixとViteのプロジェクトで、`import.meta.glob`が`.yaml
 author: "ClaudeMix Team"
 publishedAt: "2025-11-16"
 slug: "remix-vite-import-meta-glob-debug"
-category: "Claude Best Practices"
+category: "記録"
 tags: ["Vite", "troubleshooting", "architecture"]
 freeContentHeading: "💡 根本原因の特定"
 ---

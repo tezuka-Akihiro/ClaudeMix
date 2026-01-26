@@ -6,7 +6,7 @@ describe('CategorySelector', () => {
   describe('Rendering', () => {
     it('should display category selector', () => {
       // Arrange
-      const availableCategories = ['Claude Best Practices', 'ClaudeMix Philosophy'];
+      const availableCategories = ['ガイド', '考察'];
 
       // Act
       render(<CategorySelector availableCategories={availableCategories} />);
@@ -18,7 +18,7 @@ describe('CategorySelector', () => {
 
     it('should have category-selector class', () => {
       // Arrange
-      const availableCategories = ['Claude Best Practices'];
+      const availableCategories = ['ガイド'];
 
       // Act
       const { container } = render(<CategorySelector availableCategories={availableCategories} />);
@@ -32,7 +32,7 @@ describe('CategorySelector', () => {
   describe('Options', () => {
     it('should display "All Categories" as default option with empty value', () => {
       // Arrange
-      const availableCategories = ['Claude Best Practices'];
+      const availableCategories = ['ガイド'];
 
       // Act
       render(<CategorySelector availableCategories={availableCategories} />);
@@ -47,9 +47,9 @@ describe('CategorySelector', () => {
     it('should display all available categories as options', () => {
       // Arrange
       const availableCategories = [
-        'Claude Best Practices',
-        'ClaudeMix Philosophy',
-        'Tutorials & Use Cases',
+        'ガイド',
+        '考察',
+        '記録',
       ];
 
       // Act
@@ -70,8 +70,8 @@ describe('CategorySelector', () => {
 
     it('should select the provided selectedCategory', () => {
       // Arrange
-      const availableCategories = ['Claude Best Practices', 'ClaudeMix Philosophy'];
-      const selectedCategory = 'Claude Best Practices';
+      const availableCategories = ['ガイド', '考察'];
+      const selectedCategory = 'ガイド';
 
       // Act
       const { container } = render(
@@ -88,7 +88,7 @@ describe('CategorySelector', () => {
 
     it('should default to empty string when no category is selected', () => {
       // Arrange
-      const availableCategories = ['Claude Best Practices'];
+      const availableCategories = ['ガイド'];
 
       // Act
       const { container } = render(<CategorySelector availableCategories={availableCategories} />);
@@ -102,7 +102,7 @@ describe('CategorySelector', () => {
   describe('Attributes', () => {
     it('should have name="category" attribute', () => {
       // Arrange
-      const availableCategories = ['Claude Best Practices'];
+      const availableCategories = ['ガイド'];
 
       // Act
       const { container } = render(<CategorySelector availableCategories={availableCategories} />);

@@ -4,7 +4,7 @@ title: "ログイン機能追加後のLighthouse測定結果 - 92点という現
 description: "全カテゴリ100点を目指したはずが、ログイン機能を追加したら92点に低下。しかし、未使用JavaScriptは逆に3.1 KiB削減された。レンダリングブロックCSSと強制リフローという2つの壁に直面した実測データと、ページごとに異なるパフォーマンスが示す設計の課題を公開します。"
 author: "ClaudeMix Team"
 publishedAt: "2026-01-13"
-category: "Claude Best Practices"
+category: "記録"
 tags: ["performance", "troubleshooting", "testing"]
 freeContentHeading: "測定結果のハイライト"
 ---

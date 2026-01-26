@@ -4,7 +4,7 @@ title: "Lighthouseの未使用CSS削減 - ルート別分割で19.3%軽量化"
 description: "Lighthouseで22 KiBの未使用CSS警告が表示。全ページで同じCSSを読み込んでいたため、記事詳細ページに不要なスタイルが含まれていた。layer2.cssを3つのルート別ファイルに分割し、40.92 kB → 33.02 kBへと19.3%削減を達成した実践記録です。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-20"
-category: "Claude Best Practices"
+category: "記録"
 tags: ["Vite", "performance", "refactoring"]
 freeContentHeading: "達成した成果"
 ---

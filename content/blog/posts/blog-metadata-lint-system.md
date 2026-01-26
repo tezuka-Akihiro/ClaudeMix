@@ -4,7 +4,7 @@ title: "AIレビューで磨くリントシステム設計：ブログメタデ�
 description: "ブログ記事のメタデータ品質を自動保証するリントシステムを、AIとの共同設計で構築。エッジランタイムに最適化したプレビルド志向の実装と、AIレビューによる改善プロセスを解説します。"
 author: "ClaudeMix Team"
 publishedAt: "2025-12-09"
-category: "Claude Best Practices"
+category: "考察"
 tags: ["architecture", "testing", "Vite", "CLAUDE.md"]
 freeContentHeading: "具体的なタスク"
 ---

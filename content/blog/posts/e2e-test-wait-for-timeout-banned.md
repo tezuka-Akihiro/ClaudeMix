@@ -4,7 +4,7 @@ description: "AIにE2Eテストの修正を頼むと、高確率でwaitForTimeou
 author: "ClaudeMix Team"
 publishedAt: "2025-12-28"
 slug: "e2e-test-wait-for-timeout-banned"
-category: "Claude Best Practices"
+category: "記録"
 tags: ["Playwright", "testing", "troubleshooting"]
 freeContentHeading: "塵も積もれば ― 待機時間の累積的害悪"
 ---

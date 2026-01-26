@@ -28,37 +28,37 @@ tags: []
 
 ---
 
-## 📚 Layer 1: Claude Best Practices
+## 📖 ガイド
 
-**Claude公式のベストプラクティスを学び、誰もが実践できる普遍的な知識**を扱います。Claudeを効果的に使うための基礎固めに最適です。
+**Claude Code公式ドキュメントの翻訳・まとめ**を提供します。機能を調べたいときの参照用として最適です。
 
-- **Prompt Engineering**: 明確な指示、XMLタグの活用法など、Claudeとの対話の質を高める基本的なテクニック。
+- **MCP (Model Context Protocol)**: 外部ツール（GitHub、DB等）をClaudeに連携させる方法。
 - **Skills**: 再利用可能な専門知識をAIに与える「Skills」の作り方や活用事例。
 - **Prompts**: 効果的な指示テンプレートの設計パターンと、公式推奨の書き方。
-- **Projects & Context**: プロジェクト全体の文脈をAIに共有し、一貫性を保つ方法。
-- **Tool Use (MCP)**: 外部ツール（リンター、テストランナー等）をClaudeに連携させる方法。
+- **Rules**: プロジェクトの規律を自動適用するルール機能の活用法。
+- **Subagent**: 特定タスクに特化した独立エージェントの作成と活用。
 
 ---
 
-## 🎨 Layer 2: ClaudeMix Philosophy
+## 📝 記録
 
-**`ClaudeMix`独自の、より高品質な開発を目指すための応用的な設計思想**について解説します。
+**トラブルシュート・最適化の実践ログ**を公開します。同じ問題に遭遇したときの解決策として役立ちます。
 
-- **3-Layer Architecture**: UI/Logic/Data-IOを分離する設計原則とその実装方法。
-- **Outside-In TDD**: E2Eテストから始める開発サイクル（▶️→...→🪨）の実践ガイド。
-- **Structural Scoping**: `{service}/{section}` パターンでAIのスコープ逸脱を構造的に防ぐ方法。
-- **Emoji-Driven Flow**: 絵文字数式（💭🏗️▶️...）が示す開発プロセスの各ステップの詳細解説。
-- **Styling Charter**: 5階層のCSS設計規律と、デザイントークンの効果的な使い方。
+- **Troubleshooting**: 実際に遭遇したエラーや問題の解決過程を詳細に記録。
+- **Performance**: Lighthouseスコア改善など、パフォーマンス最適化の実践記録。
+- **E2E Testing**: PlaywrightによるE2Eテストで遭遇した問題と解決策。
+- **Build & Deploy**: Cloudflare Pages/Workersへのデプロイで発生した問題の対処法。
 
 ---
 
-## 🚀 Layer 3: Tutorials & Use Cases
+## 💭 考察
 
-**Layer 1と2を組み合わせた、より実践的なチュートリアル**を提供します。具体的な開発を通じて、知識を定着させることができます。
+**設計思想・リファクタリングから得た知見**を共有します。設計判断の参考にしたいときにご覧ください。
 
-- **Getting Started**: ClaudeMix を使って最初の機能を開発するまでのステップバイステップガイド。
-- **Building a Feature**: 「ブログ機能」「TODOアプリ」など、具体的なお題で開発フロー全体を体験するチュートリアル。
-- **Tips & Tricks**: 開発効率を上げるための小技や、よくある問題の解決策。
+- **Refactoring**: AIと協調したリファクタリングの実践記録とその設計思想。
+- **Architecture**: 3-Layer Architecture、Single Source of Truthなどの設計原則。
+- **Type Design**: TypeScriptの型定義を「生きた仕様書」として活用する手法。
+- **System Design**: リントシステムやプレビルド戦略など、開発基盤の設計論。
 
 ---
 
