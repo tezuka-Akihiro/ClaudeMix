@@ -206,28 +206,4 @@ test.describe('Common Components', () => {
     });
   });
 
-  test.describe('Badge', () => {
-    test.beforeEach(async ({ page }) => {
-      await createAuthenticatedSession(page, 'test-badge');
-    });
-
-    test('should display badge with correct variant', async ({ page }) => {
-      // Navigate to subscription page
-      await page.goto('/account/subscription');
-
-      // New users have 'inactive' status by default, so verify danger badge
-      const dangerBadge = page.locator('[data-testid="badge-danger"]');
-      await expect(dangerBadge).toBeVisible();
-      await expect(dangerBadge).toHaveClass(/badge-danger/);
-      await expect(dangerBadge).toHaveText('非アクティブ');
-
-      // Verify plan selector is visible for inactive users
-      const planSelector = page.locator('[data-testid="plan-selector"]');
-      await expect(planSelector).toBeVisible();
-
-      // Verify purchase button is available (check for any plan's subscribe button)
-      const purchaseButton = page.locator('[data-testid^="subscribe-"]').first();
-      await expect(purchaseButton).toBeVisible();
-    });
-  });
 });

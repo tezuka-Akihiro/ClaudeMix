@@ -16,3 +16,18 @@ VALUES (
   datetime('now'),
   datetime('now')
 );
+
+-- Subscription for tezuke (active until 2030-12-31)
+INSERT OR IGNORE INTO subscriptions (id, userId, stripeSubscriptionId, stripeCustomerId, planId, status, currentPeriodStart, currentPeriodEnd, createdAt, updatedAt)
+VALUES (
+  'sub-tezuke-001',
+  'tezuke-001',
+  'sub_test_dev_001',
+  'cus_test_dev_001',
+  'plan_monthly',
+  'active',
+  datetime('now'),
+  '2030-12-31T23:59:59Z',
+  datetime('now'),
+  datetime('now')
+);

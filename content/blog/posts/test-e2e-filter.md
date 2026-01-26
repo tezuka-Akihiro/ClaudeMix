@@ -6,7 +6,7 @@ publishedAt: "2026-01-15"
 category: "インフォメーション"
 tags: ["Playwright", "testing"]
 description: "ブログのカテゴリ・タグフィルター機能をPlaywrightでテストする実装例"
-freeContentHeading: "テストデータの管理"
+freeContentHeading: "まとめ"
 testOnly: true
 ---
 
@@ -76,6 +76,67 @@ test('タグフィルタ選択確認', async ({ page }) => {
 });
 ```
 
+## ベストプラクティス
+
+E2Eテストを書く際のベストプラクティスをいくつか紹介します。
+
+### 1. セレクタの選定
+
+テスト用のセレクタは `data-testid` を使用することを推奨します。これにより、CSSクラスやDOM構造の変更に影響されにくいテストを書くことができます。
+
+```typescript
+// 良い例: data-testidを使用
+await page.click('[data-testid="submit-button"]');
+
+// 悪い例: CSSクラスに依存
+await page.click('.btn-primary');
+```
+
+### 2. 待機処理の適切な使用
+
+`waitForTimeout` の使用は避け、代わりに `waitForSelector` や `waitForLoadState` を使用しましょう。
+
+```typescript
+// 良い例: 要素の出現を待つ
+await page.waitForSelector('[data-testid="result"]');
+
+// 悪い例: 固定時間待機
+await page.waitForTimeout(1000);
+```
+
+### 3. テストの独立性
+
+各テストは他のテストに依存せず、単独で実行できるようにしましょう。テスト間で状態を共有しないことが重要です。
+
+## トラブルシューティング
+
+E2Eテストでよく遭遇する問題とその解決方法を紹介します。
+
+### タイムアウトエラー
+
+要素が見つからない場合、タイムアウトエラーが発生します。以下の点を確認してください：
+
+- セレクタが正しいか
+- 要素が表示されるまでの待機処理が適切か
+- ネットワークリクエストが完了しているか
+
+### フレーキーテスト
+
+テストが不安定な場合（たまに失敗する）、以下の対策を検討してください：
+
+- 適切な待機処理の追加
+- テスト環境の安定化
+- 並列実行の見直し
+
 ## まとめ
 
 フィルター機能のE2Eテストでは、spec.yamlからテストデータを読み込み、実際のユーザー操作をシミュレートすることで、堅牢なテストを実現できます。
+
+テストの品質を維持するためには、適切なセレクタの選定、待機処理の使用、そしてテストの独立性を意識することが重要です。
+
+## 参考リソース
+
+さらに詳しく学びたい方は、以下のリソースを参照してください：
+
+- [Playwright公式ドキュメント](https://playwright.dev/docs/intro)
+- [E2Eテストのベストプラクティス](https://playwright.dev/docs/best-practices)

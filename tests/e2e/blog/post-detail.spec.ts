@@ -1,6 +1,21 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { loadSpec, loadTestArticles, type TestArticleFrontmatter } from '../../utils/loadSpec';
 import type { BlogPostsSpec } from '~/specs/blog/types';
+
+// Seeded test user with active subscription (from migrations/seed-dev.sql)
+const SUBSCRIBED_USER = {
+  email: 'tizuhanpen8+preview@gmail.com',
+  password: '14801250At',
+};
+
+// Helper: Login as subscribed user (seeded in D1)
+async function loginAsSubscribedUser(page: Page) {
+  await page.goto('/login');
+  await page.fill('input[name="email"]', SUBSCRIBED_USER.email);
+  await page.fill('input[name="password"]', SUBSCRIBED_USER.password);
+  await page.click('button[type="submit"]');
+  await page.waitForURL('/account');
+}
 
 // テスト用変数（beforeAllで初期化）
 let spec: BlogPostsSpec;
@@ -95,14 +110,14 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     // 1. 記事詳細ページにアクセス
     await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
-    // 2. コードブロックが存在するか確認
-    const codeBlock = page.locator('pre code');
-    if (await codeBlock.count() > 0) {
-      // 3. Shikiが生成するインラインスタイルが含まれていることを確認
-      const firstCodeBlock = codeBlock.first();
-      const styleAttr = await firstCodeBlock.getAttribute('style');
+    // 2. Shikiが生成するpre.shikiが存在するか確認
+    const shikiCodeBlock = page.locator('pre.shiki');
+    if (await shikiCodeBlock.count() > 0) {
+      // 3. Shikiが生成するインラインスタイル付きspanが含まれていることを確認
+      const styledSpan = shikiCodeBlock.first().locator('span[style]').first();
+      const styleAttr = await styledSpan.getAttribute('style');
 
-      // Shikiはインラインスタイルで色を指定する
+      // Shikiはspan要素にインラインスタイルで色を指定する
       expect(styleAttr).toBeTruthy();
     }
   });
@@ -297,12 +312,13 @@ test.describe('E2E Test for Blog - Post Detail', () => {
   /**
    * Post Detail Heading-based Paywall: 見出しベース分割の検証
    * @description
-   * freeContentHeadingで指定された見出しの終わりまでがvisibleContentに含まれ、
-   * 次の見出しから先がhiddenContentに含まれることを検証
+   * freeContentHeadingで指定された見出しセクションまでがvisibleContentに含まれ、
+   * その次の見出しから先がhiddenContentに含まれることを検証
    *
    * Note: test-e2e-filter記事を使用
-   * - frontmatter: freeContentHeading: "テストデータの管理"
-   * - 本文: ## FilterPanelのE2Eテスト設計、## テストデータの管理、## フィルタ適用後の検証ポイント等
+   * - frontmatter: freeContentHeading: "まとめ"
+   * - visibleContent: ## FilterPanelのE2Eテスト設計 〜 ## まとめ
+   * - hiddenContent: ## 参考リソース
    */
   test('Post Detail: 見出しベースで正しくコンテンツが分割される', async ({ page }) => {
     const TEST_SLUG = 'test-e2e-filter';
@@ -311,17 +327,20 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     // 1. 記事詳細ページにアクセス
     await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
-    // 2. visibleContentに「テストデータの管理」見出しとその内容が含まれる
+    // 2. visibleContentに「トラブルシューティング」見出しが含まれる
     const visibleContent = page.locator('[data-testid="post-content-visible"]');
-    await expect(visibleContent.locator('h2#テストデータの管理')).toBeVisible();
+    await expect(visibleContent.locator('h2#トラブルシューティング')).toBeVisible();
 
-    // 3. 「フィルタ適用後の検証ポイント」見出しはvisibleContentに含まれない（次の見出しなので非表示）
-    await expect(visibleContent.locator('h2#フィルタ適用後の検証ポイント')).not.toBeVisible();
+    // 3. 「まとめ」見出しもvisibleContentに含まれる（freeContentHeadingで指定された見出しまで表示）
+    await expect(visibleContent.locator('h2#まとめ')).toBeVisible();
 
-    // 4. ペイウォールが表示される
-    await expect(page.locator('text=続きを読むには会員登録が必要です')).toBeVisible();
+    // 4. 「参考リソース」見出しはvisibleContentに含まれない（まとめの後なので非表示）
+    await expect(visibleContent.locator('h2#参考リソース')).not.toBeVisible();
 
-    // 5. hiddenContentは表示されない（未契約ユーザー）
+    // 5. ペイウォールが表示される
+    await expect(page.locator('.paywall-message')).toBeVisible();
+
+    // 6. hiddenContentは表示されない（未契約ユーザー）
     const hiddenContent = page.locator('[data-testid="post-content-hidden"]');
     await expect(hiddenContent).not.toBeVisible();
   });
@@ -331,30 +350,31 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * @description
    * 契約ユーザー（hasActiveSubscription: true）の場合、
    * freeContentHeadingの設定に関わらず全文が表示され、ペイウォールが表示されないことを検証
-   *
-   * Note: このテストを実行するには、サブスクリプション認証機能の実装が必要
    */
-  test.skip('Post Detail: 契約ユーザーは全文が表示されペイウォールが表示されない', async ({ page }) => {
-    // TODO: サブスクリプション認証実装後、このテストを有効化
-    // const TEST_SLUG = 'test-article-with-free-content-heading';
-    // const TARGET_URL = `/blog/${TEST_SLUG}`;
+  test('Post Detail: 契約ユーザーは全文が表示されペイウォールが表示されない', async ({ page }) => {
+    // freeContentHeading付きの記事を使用（test-e2e-filter.md）
+    const TEST_SLUG = 'test-e2e-filter';
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
 
-    // // 0. 契約ユーザーとしてログイン（認証機能実装後）
-    // // await loginAsSubscriber(page);
+    // 0. 契約ユーザーとしてログイン（D1シードユーザー）
+    await loginAsSubscribedUser(page);
 
-    // // 1. 記事詳細ページにアクセス
-    // await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
-    // // 2. visibleContentが表示される
-    // const visibleContent = page.locator('[data-testid="post-content-visible"]');
-    // await expect(visibleContent).toBeVisible();
+    // 2. visibleContentが表示される
+    const visibleContent = page.locator('[data-testid="post-content-visible"]');
+    await expect(visibleContent).toBeVisible();
 
-    // // 3. hiddenContentも表示される（全文表示）
-    // const hiddenContent = page.locator('[data-testid="post-content-hidden"]');
-    // await expect(hiddenContent).toBeVisible();
+    // 3. hiddenContentも表示される（全文表示）
+    const hiddenContent = page.locator('[data-testid="post-content-hidden"]');
+    await expect(hiddenContent).toBeVisible();
 
-    // // 4. ペイウォールは表示されない
-    // await expect(page.locator('text=続きを読むには会員登録が必要です')).not.toBeVisible();
+    // 4. hiddenContent内に「参考リソース」見出しが含まれることを確認
+    await expect(hiddenContent.locator('h2#参考リソース')).toBeVisible();
+
+    // 5. ペイウォールは表示されない
+    await expect(page.locator('.paywall-message')).not.toBeVisible();
   });
 
   /**
@@ -362,9 +382,12 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * @description
    * freeContentHeadingが設定されていない記事は、未契約ユーザーでも全文が表示され、
    * ペイウォールが表示されないことを検証（後方互換性）
+   *
+   * test-e2e-no-tags.md は freeContentHeading が未設定のテスト記事
    */
   test('Post Detail: freeContentHeading未設定の記事は全文表示される', async ({ page }) => {
-    const TEST_SLUG = testArticleSlug;
+    // freeContentHeadingが未設定の記事を使用（test-e2e-no-tags.md）
+    const TEST_SLUG = 'test-e2e-no-tags';
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
     // 1. 記事詳細ページにアクセス
@@ -375,8 +398,16 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     await expect(visibleContent).toBeVisible();
     await expect(visibleContent).not.toBeEmpty();
 
-    // 3. ペイウォールは表示されない（freeContentHeading未設定のため全文公開）
-    const paywall = page.locator('text=続きを読むには会員登録が必要です');
+    // 3. 非表示コンテンツは空（freeContentHeading未設定のため全コンテンツがvisible）
+    const hiddenContent = page.locator('[data-testid="post-content-hidden"]');
+    // hiddenContentが存在しないか、空であることを確認
+    const hiddenCount = await hiddenContent.count();
+    if (hiddenCount > 0) {
+      await expect(hiddenContent).toBeEmpty();
+    }
+
+    // 4. ペイウォールは表示されない（freeContentHeading未設定のため全文公開）
+    const paywall = page.locator('.paywall-message');
     await expect(paywall).not.toBeVisible();
   });
 
@@ -386,20 +417,30 @@ test.describe('E2E Test for Blog - Post Detail', () => {
    * 記事間の遷移時にスクロール位置がトップにリセットされることを検証
    */
   test('Post Detail: scroll position resets to top on article navigation', async ({ page }) => {
-    // 1. 最初の記事にアクセス（テスト記事を使用）
-    const FIRST_SLUG = testArticleSlug;
+    // 1. 最初の記事にアクセス（test-e2e-filterは十分な長さがある）
+    const FIRST_SLUG = 'test-e2e-filter';
     const FIRST_URL = `/blog/${FIRST_SLUG}`;
-    await page.goto(FIRST_URL, { waitUntil: 'domcontentloaded' });
+    await page.goto(FIRST_URL, { waitUntil: 'networkidle' });
 
-    // 2. ページを下にスクロール
+    // 2. コンテンツが完全にレンダリングされるのを待つ
+    await page.locator('[data-testid="post-content-visible"]').waitFor({ state: 'visible' });
+
+    // 3. ページがスクロール可能になるまで待機
+    await page.waitForFunction(() => {
+      return document.documentElement.scrollHeight > window.innerHeight;
+    }, { timeout: 5000 });
+
+    // 4. ページを下にスクロール
     await page.evaluate(() => window.scrollTo(0, 500));
-    await page.waitForTimeout(100);
 
-    // 3. スクロール位置が下にあることを確認
+    // 5. スクロールが反映されるのを待つ
+    await page.waitForFunction(() => window.scrollY > 0, { timeout: 3000 });
+
+    // 6. スクロール位置が下にあることを確認
     const scrollYBefore = await page.evaluate(() => window.scrollY);
     expect(scrollYBefore).toBeGreaterThan(0);
 
-    // 4. 別の記事に遷移（ブログトップから別の記事を選択）
+    // 7. 別の記事に遷移（ブログトップから別の記事を選択）
     await page.goto('/blog', { waitUntil: 'domcontentloaded' });
     const postCards = page.getByTestId('post-card');
     const postCount = await postCards.count();
@@ -409,9 +450,8 @@ test.describe('E2E Test for Blog - Post Detail', () => {
       const secondPostCard = postCards.nth(1);
       await secondPostCard.click();
       await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(200);
 
-      // 5. スクロール位置がトップにリセットされていることを確認
+      // 8. スクロール位置がトップにリセットされていることを確認
       const scrollYAfter = await page.evaluate(() => window.scrollY);
       expect(scrollYAfter).toBe(0);
     }
