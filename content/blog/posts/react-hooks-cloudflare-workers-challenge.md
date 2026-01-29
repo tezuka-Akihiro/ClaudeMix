@@ -5,7 +5,7 @@ publishedAt: "2025-11-22"
 category: "ClaudeMix 考察"
 summary: "Remix × Cloudflare Workers 環境で発生した React Hooks エラーの原因究明から、一時的な回避策の実装まで。React の重複バンドル問題がもたらす影響と、その解決に向けた試行錯誤の記録。"
 description: "Remix × Cloudflare Workers 環境で発生した React Hooks エラーの原因究明から、一時的な回避策の実装まで。React の重複バンドル問題がもたらす影響と、その解決に向けた試行錯誤の記録。"
-tags: ["React", "Workers", "Vite", "SSR", "troubleshooting"]
+tags: ["React", "Pages", "Vite", "SSR", "troubleshooting"]
 author: "ClaudeMix Team"
 freeContentHeading: "💡 根本原因の特定"
 ---

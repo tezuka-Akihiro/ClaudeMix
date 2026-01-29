@@ -5,7 +5,7 @@ description: "Cloudflare Workers環境でShikiのWebAssemblyが動作せず、�
 author: "ClaudeMix Team"
 publishedAt: "2025-12-02"
 category: "ClaudeMix 記録"
-tags: ["Workers", "troubleshooting", "Vite"]
+tags: ["Pages", "troubleshooting", "Vite"]
 freeContentHeading: "⚠️ 問題の発見と症状"
 ---
 
