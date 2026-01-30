@@ -36,6 +36,7 @@ graph TD
         FilterPosts["filterPosts<br/>(記事フィルタリング)"]
         CalcLoadMore["calculateLoadMore<br/>(追加読み込み情報計算)"]
         GroupTags["groupTagsByCategory<br/>(タググループ化)"]
+        BuildThumbUrl["buildThumbnailUrl<br/>(サムネイルURL生成)"]
     end
 
     subgraph "副作用層 (data-io)"
@@ -63,6 +64,8 @@ graph TD
     PostsSection -->|loadMoreInfo| LoadMoreButton
     PostCard -->|publishedAt: string| FormatDate
     FormatDate -->|formatted date| PostCard
+    FetchPosts -->|slug| BuildThumbUrl
+    BuildThumbUrl -->|thumbnailUrl| FetchPosts
 
     %% スタイル
     classDef routeStyle fill:#e1f5ff,stroke:#01579b,stroke-width:2px
@@ -102,7 +105,7 @@ graph TD
 | :--- | :--- | :--- |
 | **PostsSection** | 記事一覧のメインコンテナ。ページタイトル、FilterPanel、記事カードグリッド、LoadMoreButtonを配置 | FilterPanel, PostCard, LoadMoreButton |
 | **FilterPanel** | フィルタUIコンポーネント。カテゴリフィルタ（ラジオボタン）とタグフィルタ（チェックボックス）を提供 | - |
-| **PostCard** | 個別記事の表示カード。タイトル、投稿日、カテゴリバッジ、タグバッジを表示し、クリックで記事詳細へ遷移 | formatPublishedDate |
+| **PostCard** | 個別記事の表示カード。サムネイル画像（存在する場合）、タイトル、投稿日、カテゴリバッジ、タグバッジを表示し、クリックで記事詳細へ遷移。CLS対策としてaspect-ratio: 1200/630、loading="lazy"を適用 | formatPublishedDate |
 | **LoadMoreButton** | 追加記事を読み込むボタン。クリックでuseFetcherを使用して追加記事を取得し、記事一覧に追加表示 | - |
 
 ### 純粋ロジック層（lib）
@@ -113,6 +116,7 @@ graph TD
 | **filterPosts** | 記事フィルタリング処理。記事一覧を指定された条件（category, tags）でフィルタリング。タグ条件はAND条件 | - |
 | **calculateLoadMore** | 追加読み込み情報計算処理。総記事数と現在読み込み済み件数から、追加読み込み可能かを判定（hasMore, loadedCount, totalPosts, postsPerLoad）を返す | - |
 | **groupTagsByCategory** | タググループ化処理。利用可能なタグリストとspec.yamlのタグ定義から、グループ別タグ情報（{ group: string; tags: string[] }[]）を生成する純粋関数 | - |
+| **buildThumbnailUrl** | サムネイルURL生成処理（ゼロ設定方式）。記事のslugからR2サムネイル画像のURL（`{base_url}/blog/{slug}/thumbnail.webp`）を生成する純粋関数 | - |
 
 ### 副作用層（data-io）
 

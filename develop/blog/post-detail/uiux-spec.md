@@ -95,6 +95,7 @@ graph TD
     Page --> Section["PostDetailSection"]
     Page --> Footer["Footer (common)"]
 
+    Section --> ThumbArea["Article Thumbnail Container (条件付き表示)"]
     Section --> MetaArea["Article Metadata Container"]
     Section --> ContentArea["Article Content Container"]
     Section --> PaywallArea["Paywall Container (条件付き表示)"]
@@ -106,6 +107,7 @@ graph TD
 
 - **Header/Footer**: commonセクションで定義された共通コンポーネント
 - **PostDetailSection**: 記事詳細セクションのメインコンテナ
+- **Article Thumbnail Container**: サムネイル画像を表示するエリア（thumbnailUrlが存在する場合のみ表示）。CLS対策として`aspect-ratio: 1200 / 630`を指定し、`loading="lazy"`で遅延読み込み
 - **Article Metadata Container**: 記事のタイトル、投稿日、著者を表示するエリア
 - **Article Content Container**: マークダウンから変換されたHTML本文を表示するエリア（サブスクリプション状態に応じて部分表示）
 - **Paywall Container**: 未契約ユーザーに対して、制限を超えるコンテンツの前に表示される障壁（条件付き表示）
@@ -138,6 +140,13 @@ graph TD
 - **エラー (error)**: 記事が存在しない場合、ErrorBoundaryによる404エラー表示
 
 #### 表示内容
+
+- **Article Thumbnail Container**（thumbnailUrlが存在する場合のみ表示）:
+  - CLS対策: `aspect-ratio: 1200 / 630` でレイアウトシフト防止
+  - 遅延読み込み: `loading="lazy"` 属性
+  - 非同期デコード: `decoding="async"` 属性
+  - オブジェクトフィット: `object-fit: cover`
+  - 画像がない場合: コンテナごと非表示（fallback: hide）
 
 - **Article Metadata Container**:
   - タイトル: 記事のタイトル

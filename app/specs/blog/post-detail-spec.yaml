@@ -39,6 +39,8 @@ ui_selectors:
     published_date: "[data-testid='article-published-date']"
     author: "[data-testid='article-author']"
     content: "[data-testid='article-content']"
+    thumbnail_container: "[data-testid='article-thumbnail-container']"
+    thumbnail_image: "[data-testid='article-thumbnail-image']"
 
   table_of_contents:
     container: "[data-testid='table-of-contents']"
@@ -50,6 +52,39 @@ ui_selectors:
 
   error:
     message: "[data-testid='error-message']"
+
+# ==========================================
+# サムネイル画像表示設定
+# ==========================================
+thumbnail:
+  # 表示設定
+  display:
+    # サムネイル表示を有効化
+    enabled: true
+    # サムネイルが存在しない場合の動作
+    fallback: "hide"  # "hide" | "placeholder"
+    # 表示位置
+    position: "header"  # 記事ヘッダー部分に表示
+
+  # CLS対策（レイアウトシフト防止）
+  performance:
+    # CSS aspect-ratio
+    aspect_ratio: "1200 / 630"
+    # 遅延読み込み
+    loading: "lazy"
+    # 非同期デコード
+    decoding: "async"
+
+  # スタイル設定
+  styles:
+    # 画像コンテナのCSSクラス
+    container_class: "article-thumbnail-container"
+    # 画像のobject-fit
+    object_fit: "cover"
+    # 角丸
+    border_radius: "8px"
+    # 最大幅
+    max_width: "100%"
 
 # ==========================================
 # マークダウン処理設定

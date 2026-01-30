@@ -233,6 +233,35 @@ posts_config:
     - "tags"
 
 # ==========================================
+# サムネイル画像表示設定
+# ==========================================
+thumbnail:
+  # 表示設定
+  display:
+    # サムネイル表示を有効化
+    enabled: true
+    # サムネイルが存在しない場合の動作
+    fallback: "hide"  # "hide" | "placeholder"
+
+  # CLS対策（レイアウトシフト防止）
+  performance:
+    # CSS aspect-ratio
+    aspect_ratio: "1200 / 630"
+    # 遅延読み込み
+    loading: "lazy"
+    # 非同期デコード
+    decoding: "async"
+
+  # スタイル設定
+  styles:
+    # 画像コンテナのCSSクラス
+    container_class: "thumbnail-container"
+    # 画像のobject-fit
+    object_fit: "cover"
+    # 角丸
+    border_radius: "8px"
+
+# ==========================================
 # UI要素セレクタ
 # ==========================================
 ui_selectors:
@@ -248,6 +277,8 @@ ui_selectors:
     post_link: "[data-testid='post-link']"
     category_emoji: "[data-testid='category-emoji']"
     tag_badge: "[data-testid='tag-badge']"
+    thumbnail_container: "[data-testid='thumbnail-container']"
+    thumbnail_image: "[data-testid='thumbnail-image']"
 
   filter:
     filter_toggle_button: "[data-testid='filter-toggle-button']"
