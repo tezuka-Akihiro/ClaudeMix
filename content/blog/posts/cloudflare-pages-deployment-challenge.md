@@ -5,7 +5,7 @@ description: "RemixアプリをCloudflare Pagesにデプロイする過程で遭
 author: "ClaudeMix Team"
 publishedAt: "2025-11-20"
 category: "ClaudeMix 記録"
-tags: ["Workers", "Vite", "troubleshooting"]
+tags: ["Pages", "Vite", "troubleshooting"]
 freeContentHeading: "💡 根本原因の特定"
 ---
 

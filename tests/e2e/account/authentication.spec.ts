@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { loadSpec, type AccountAuthenticationSpec } from '../../utils/loadSpec';
+import { createAuthenticatedUser, generateUniqueEmail } from '../../utils/auth-helper';
 
 /**
  * E2E Test: Account Authentication Section
@@ -18,24 +19,12 @@ test.beforeAll(async () => {
   spec = await loadSpec<AccountAuthenticationSpec>('account', 'authentication');
 });
 
-// Helper function to generate unique email addresses for each test run
-function generateUniqueEmail(prefix: string = 'test'): string {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 1000);
-  return `${prefix}-${timestamp}-${random}@example.com`;
-}
-
-async function registerUser(page: Page, email: string, password = 'Password123') {
-  await page.goto('/register');
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', password);
-  await page.fill('input[name="passwordConfirm"]', password);
-  await page.click('button[type="submit"]');
-  await expect(page).toHaveURL('/account');
-}
 
 test.describe('Account Authentication - Happy Path', () => {
   test.describe('User Registration', () => {
+    // Ensure unauthenticated state for registration tests
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should display registration form', async ({ page }) => {
       // Navigate to registration page
       await page.goto('/register');
@@ -109,6 +98,9 @@ test.describe('Account Authentication - Happy Path', () => {
   });
 
   test.describe('User Login', () => {
+    // Ensure unauthenticated state for login tests
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should display login form', async ({ page }) => {
       // Navigate to login page
       await page.goto('/login');
@@ -140,7 +132,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // First, register a new user
       const email = generateUniqueEmail('logintest');
       const password = 'Password123';
-      await registerUser(page, email, password);
+      await createAuthenticatedUser(page, { email, password });
 
       // Logout
       await page.goto('/logout');
@@ -184,7 +176,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // First, register a user
       const email = generateUniqueEmail('redirect');
       const password = 'Password123';
-      await registerUser(page, email, password);
+      await createAuthenticatedUser(page, { email, password });
 
       // Logout
       await page.goto('/logout');
@@ -206,11 +198,14 @@ test.describe('Account Authentication - Happy Path', () => {
   });
 
   test.describe('User Logout', () => {
+    // Isolate logout test to prevent invalidating the global session
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should logout user successfully', async ({ page }) => {
-      // Register and login first
+      // Create a dedicated user for this test
       const email = generateUniqueEmail('logout');
       const password = 'Password123';
-      await registerUser(page, email, password);
+      await createAuthenticatedUser(page, { email, password });
 
       // Navigate to logout
       await page.goto('/logout');
@@ -227,11 +222,14 @@ test.describe('Account Authentication - Happy Path', () => {
   });
 
   test.describe('Authentication State Persistence', () => {
+    // Use isolated session to verify persistence mechanism works for a fresh login
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should persist session across page reloads', async ({ page }) => {
       // Register and login
       const email = generateUniqueEmail('persistence');
       const password = 'Password123';
-      await registerUser(page, email, password);
+      await createAuthenticatedUser(page, { email, password });
 
       // Reload page
       await page.reload();

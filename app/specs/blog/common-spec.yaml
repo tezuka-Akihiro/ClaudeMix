@@ -38,7 +38,7 @@ navigation:
     - label: "はじめまして"
       path: "/blog/hazimemasite"
     - label: "カテゴリー"
-      path: "/blog/welcome"
+      path: "/blog/category"
     - label: "LINK"
       path: "/blog/link"
 

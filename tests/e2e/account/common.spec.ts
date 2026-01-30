@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { createAuthenticatedUser } from '../../utils/auth-helper';
 
 /**
  * E2E Test: Account Common Section (Happy Path)
@@ -9,23 +10,13 @@ import { test, expect, type Page } from '@playwright/test';
  * - Verify authentication guard redirects unauthenticated users
  */
 
-async function createAuthenticatedSession(page: Page, prefix: string) {
-  const email = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-  const password = 'Password123';
-
-  await page.goto('/register');
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', password);
-  await page.fill('input[name="passwordConfirm"]', password);
-  await page.click('button[type="submit"]');
-  await page.waitForURL('/account');
-  return { email, password };
-}
-
 test.describe('Account Common Section - Happy Path', () => {
   test.describe('Authenticated User', () => {
+    // Isolate from global setup to ensure stability
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test.beforeEach(async ({ page }) => {
-      await createAuthenticatedSession(page, 'test-common');
+      await createAuthenticatedUser(page, { prefix: 'common-user' });
     });
 
     test('should render AccountLayout with AccountNav', async ({ page }) => {
@@ -116,6 +107,9 @@ test.describe('Account Common Section - Happy Path', () => {
   });
 
   test.describe('Unauthenticated User', () => {
+    // Ensure unauthenticated state for these tests
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should redirect to login with redirect-url parameter', async ({ page }) => {
       // Navigate to /account without authentication
       await page.goto('/account');
@@ -156,6 +150,9 @@ test.describe('Account Common Section - Happy Path', () => {
 
 test.describe('Common Components', () => {
   test.describe('FlashMessage', () => {
+    // Ensure unauthenticated state to test login page behavior
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should display flash message from URL parameter', async ({ page }) => {
       // Navigate with flash message URL parameter
       await page.goto('/login?message=session-expired');
@@ -172,8 +169,11 @@ test.describe('Common Components', () => {
   });
 
   test.describe('Modal', () => {
+    // Isolate from global setup to ensure stability
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test.beforeEach(async ({ page }) => {
-      await createAuthenticatedSession(page, 'test-modal');
+      await createAuthenticatedUser(page, { prefix: 'modal-user' });
     });
 
     test('should open and close modal with focus trap', async ({ page }) => {

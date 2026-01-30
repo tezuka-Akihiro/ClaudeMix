@@ -7,21 +7,12 @@
  */
 
 import { expect, test, type Page } from '@playwright/test';
-
-function generateUniqueEmail(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-}
-
-async function createUser(page: Page, email: string, password: string) {
-  await page.goto('/register');
-  await page.fill('[data-testid="email-input"]', email);
-  await page.fill('[data-testid="password-input"]', password);
-  await page.fill('[data-testid="confirm-password-input"]', password);
-  await page.click('[data-testid="submit-button"]');
-  await expect(page).toHaveURL('/account');
-}
+import { createAuthenticatedUser, generateUniqueEmail } from '../../utils/auth-helper';
 
 test.describe('Password Reset', () => {
+  // Ensure unauthenticated state for password reset flows
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test.describe('Forgot Password Flow', () => {
     test('should display forgot password form', async ({ page }) => {
       await page.goto('/forgot-password');
@@ -37,7 +28,7 @@ test.describe('Password Reset', () => {
       const password = 'OldPassword123';
 
       // Create user first
-      await createUser(page, email, password);
+      await createAuthenticatedUser(page, { email, password, useTestId: true });
       await page.goto('/logout');
 
       // Request password reset
@@ -85,7 +76,7 @@ test.describe('Password Reset', () => {
       const newPassword = 'NewPassword456';
 
       // Create user
-      await createUser(page, email, oldPassword);
+      await createAuthenticatedUser(page, { email, password: oldPassword, useTestId: true });
       await page.goto('/logout');
 
       // Request password reset

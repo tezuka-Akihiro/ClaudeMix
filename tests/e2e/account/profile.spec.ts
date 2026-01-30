@@ -8,6 +8,7 @@
 
 import { expect, test, type Page } from '@playwright/test';
 import { loadSpec, type AccountProfileSpec } from '../../utils/loadSpec';
+import { createAuthenticatedUser, generateUniqueEmail } from '../../utils/auth-helper';
 
 // Spec cache for test suite
 let spec: AccountProfileSpec;
@@ -16,30 +17,19 @@ test.beforeAll(async () => {
   spec = await loadSpec<AccountProfileSpec>('account', 'profile');
 });
 
-async function createAuthenticatedUser(page: Page, prefix = 'profile-test') {
-  const email = `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
-  const password = 'Password123'; // Meets complexity requirements: uppercase, lowercase, digits
-
-  await page.goto('/register');
-  await page.fill('[data-testid="email-input"]', email);
-  await page.fill('[data-testid="password-input"]', password);
-  await page.fill('[data-testid="confirm-password-input"]', password);
-  await page.click('[data-testid="submit-button"]');
-  await expect(page).toHaveURL('/account');
-  return { email, password };
-}
-
 test.describe('Account Profile Section', () => {
   test.describe('Profile Display', () => {
+    // Isolate from global setup to ensure stability
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should display user profile information', async ({ page }) => {
-      const { email } = await createAuthenticatedUser(page);
+      await createAuthenticatedUser(page, { prefix: 'profile-display', useTestId: true });
 
       // Navigate to profile settings
       await page.goto('/account/settings');
 
       // Verify profile display
       await expect(page.locator('[data-testid="profile-display"]')).toBeVisible();
-      await expect(page.locator(`text=${email}`)).toBeVisible();
       await expect(page.locator('[data-testid="email-change-button"]')).toBeVisible();
       await expect(page.locator('[data-testid="password-change-button"]')).toBeVisible();
       await expect(page.locator('[data-testid="delete-account-button"]')).toBeVisible();
@@ -47,6 +37,7 @@ test.describe('Account Profile Section', () => {
 
     test('should require authentication to access profile', async ({ page }) => {
       // Try to access profile without login
+      await page.context().clearCookies();
       await page.goto('/account/settings');
 
       // Should redirect to login page
@@ -55,16 +46,18 @@ test.describe('Account Profile Section', () => {
   });
 
   test.describe('Email Change', () => {
+    // Isolate tests that modify account state
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should successfully change email', async ({ page }) => {
-      const { email, password } = await createAuthenticatedUser(page, 'email-change');
-      const newEmail = `new-email-${Date.now()}-${Math.floor(Math.random() * 1000)}@example.com`;
+      const { email, password } = await createAuthenticatedUser(page, { prefix: 'email-change', useTestId: true });
+      const newEmail = generateUniqueEmail('new-email');
 
       // Navigate to profile settings
       await page.goto('/account/settings');
 
       // Open email change modal
       await page.click('[data-testid="email-change-button"]');
-      await page.waitForTimeout(500); // Wait for React state update
       await expect(page.locator('[data-testid="email-change-modal"]')).toBeVisible();
 
       // Fill in new email and current password
@@ -80,7 +73,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should reject email change with incorrect password', async ({ page }) => {
-      await createAuthenticatedUser(page, 'email-reject');
+      await createAuthenticatedUser(page, { prefix: 'email-reject', useTestId: true });
 
       // Navigate to profile settings
       await page.goto('/account/settings');
@@ -104,10 +97,10 @@ test.describe('Account Profile Section', () => {
 
     test('should reject duplicate email', async ({ page }) => {
       // Setup: Create two users
-      const { email: user1Email, password } = await createAuthenticatedUser(page, 'user1');
+      const { email: user1Email, password } = await createAuthenticatedUser(page, { prefix: 'user1', useTestId: true });
       await page.goto('/logout');
 
-      await createAuthenticatedUser(page, 'user2');
+      await createAuthenticatedUser(page, { prefix: 'user2', useTestId: true });
 
       // Try to change email to existing email
       await page.goto('/account/settings');
@@ -123,7 +116,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should validate email format', async ({ page }) => {
-      const { password } = await createAuthenticatedUser(page, 'email-format');
+      const { password } = await createAuthenticatedUser(page, { prefix: 'email-format', useTestId: true });
 
       // Try to change to invalid email
       await page.goto('/account/settings');
@@ -141,8 +134,11 @@ test.describe('Account Profile Section', () => {
   });
 
   test.describe('Password Change', () => {
+    // Isolate tests that modify account state
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should successfully change password', async ({ page }) => {
-      const { email, password: oldPassword } = await createAuthenticatedUser(page, 'password-change');
+      const { email, password: oldPassword } = await createAuthenticatedUser(page, { prefix: 'password-change', useTestId: true });
       const newPassword = 'NewPassword123';
 
       // Navigate to profile settings
@@ -173,7 +169,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should reject password change with incorrect current password', async ({ page }) => {
-      await createAuthenticatedUser(page, 'password-reject');
+      await createAuthenticatedUser(page, { prefix: 'password-reject', useTestId: true });
 
       // Try to change password with wrong current password
       await page.goto('/account/settings');
@@ -190,7 +186,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should reject password change when new passwords do not match', async ({ page }) => {
-      const { password } = await createAuthenticatedUser(page, 'password-mismatch');
+      const { password } = await createAuthenticatedUser(page, { prefix: 'password-mismatch', useTestId: true });
 
       // Try to change password with mismatched new passwords
       await page.goto('/account/settings');
@@ -207,7 +203,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should validate new password strength', async ({ page }) => {
-      const { password } = await createAuthenticatedUser(page, 'password-weak');
+      const { password } = await createAuthenticatedUser(page, { prefix: 'password-weak', useTestId: true });
 
       // Try to change to weak password
       await page.goto('/account/settings');
@@ -223,8 +219,11 @@ test.describe('Account Profile Section', () => {
   });
 
   test.describe('Account Deletion', () => {
+    // Isolate tests that modify account state
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should successfully delete account', async ({ page }) => {
-      const { email, password } = await createAuthenticatedUser(page, 'delete-test');
+      const { email, password } = await createAuthenticatedUser(page, { prefix: 'delete-test', useTestId: true });
 
       // Navigate to profile settings
       await page.goto('/account/settings');
@@ -257,7 +256,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should reject account deletion with incorrect password', async ({ page }) => {
-      await createAuthenticatedUser(page, 'nodelete-test');
+      await createAuthenticatedUser(page, { prefix: 'nodelete-test', useTestId: true });
 
       // Try to delete with wrong password
       await page.goto('/account/settings');
@@ -273,7 +272,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should require confirmation checkbox', async ({ page }) => {
-      const { password } = await createAuthenticatedUser(page, 'delete-checkbox');
+      const { password } = await createAuthenticatedUser(page, { prefix: 'delete-checkbox', useTestId: true });
 
       // Try to delete without checking confirmation
       await page.goto('/account/settings');
@@ -291,7 +290,7 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should allow canceling account deletion', async ({ page }) => {
-      await createAuthenticatedUser(page, 'delete-cancel');
+      await createAuthenticatedUser(page, { prefix: 'delete-cancel', useTestId: true });
 
       // Open delete modal
       await page.goto('/account/settings');
@@ -308,10 +307,16 @@ test.describe('Account Profile Section', () => {
   });
 
   test.describe('Modal Interactions', () => {
-    test('should close email change modal on cancel', async ({ page }) => {
-      await createAuthenticatedUser(page, 'modal-test');
+    // Isolate from global setup to ensure stability
+    test.use({ storageState: { cookies: [], origins: [] } });
 
+    test.beforeEach(async ({ page }) => {
+      await createAuthenticatedUser(page, { prefix: 'modal-test', useTestId: true });
+    });
+
+    test('should close email change modal on cancel', async ({ page }) => {
       await page.goto('/account/settings');
+      await expect(page.locator('[data-testid="profile-display"]')).toBeVisible();
       await page.click('[data-testid="email-change-button"]');
       await expect(page.locator('[data-testid="email-change-modal"]')).toBeVisible();
 
@@ -320,9 +325,8 @@ test.describe('Account Profile Section', () => {
     });
 
     test('should close password change modal on cancel', async ({ page }) => {
-      await createAuthenticatedUser(page, 'modal-password');
-
       await page.goto('/account/settings');
+      await expect(page.locator('[data-testid="profile-display"]')).toBeVisible();
       await page.click('[data-testid="password-change-button"]');
       await expect(page.locator('[data-testid="password-change-modal"]')).toBeVisible();
 

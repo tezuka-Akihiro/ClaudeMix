@@ -10,32 +10,16 @@
  */
 
 import { test, expect, type Page } from '@playwright/test';
-
-// Helper function to generate unique email addresses
-function generateUniqueEmail(prefix: string = 'test'): string {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 1000);
-  return `${prefix}-${timestamp}-${random}@example.com`;
-}
-
-async function createAuthenticatedUser(page: Page, prefix: string) {
-  const email = generateUniqueEmail(prefix);
-  const password = 'Password123';
-
-  await page.goto('/register');
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', password);
-  await page.fill('input[name="passwordConfirm"]', password);
-  await page.click('button[type="submit"]');
-  await expect(page).toHaveURL('/account');
-  return { email, password };
-}
+import { createAuthenticatedUser } from '../../utils/auth-helper';
 
 test.describe('Account Subscription Management', () => {
   test.describe('Subscription Page Display', () => {
+    // Isolate from global setup to ensure stability
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should display subscription page for authenticated user', async ({ page }) => {
       // Register and login
-      await createAuthenticatedUser(page, 'subscription-user');
+      await createAuthenticatedUser(page, { prefix: 'sub-display' });
 
       // Navigate to subscription page
       await page.goto('/account/subscription');
@@ -52,6 +36,8 @@ test.describe('Account Subscription Management', () => {
     });
 
     test('should redirect to login if not authenticated', async ({ page }) => {
+      // Force unauthenticated state
+      await page.context().clearCookies();
       await page.goto('/account/subscription');
 
       // Should redirect to login
@@ -60,9 +46,12 @@ test.describe('Account Subscription Management', () => {
   });
 
   test.describe('Subscription Status - Inactive', () => {
+    // Isolate from global setup to ensure stability
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should display subscription page for new user', async ({ page }) => {
       // Register new user (default status is inactive)
-      await createAuthenticatedUser(page, 'inactive-user');
+      await createAuthenticatedUser(page, { prefix: 'sub-inactive-1' });
 
       // Navigate to subscription page
       await page.goto('/account/subscription');
@@ -82,7 +71,7 @@ test.describe('Account Subscription Management', () => {
 
     test('should display plan cards for inactive user', async ({ page }) => {
       // Register new user
-      await createAuthenticatedUser(page, 'plan-user');
+      await createAuthenticatedUser(page, { prefix: 'sub-inactive-2' });
 
       // Navigate to subscription page
       await page.goto('/account/subscription');
@@ -103,9 +92,11 @@ test.describe('Account Subscription Management', () => {
   });
 
   test.describe('Navigation and Integration', () => {
+    // Isolate from global setup to ensure stability
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should navigate to subscription from account settings', async ({ page }) => {
-      // Register and login
-      await createAuthenticatedUser(page, 'nav-user');
+      await createAuthenticatedUser(page, { prefix: 'sub-nav-1' });
 
       // Find and click subscription link in navigation
       const subscriptionLink = page.locator('a[href="/account/subscription"]');
@@ -117,8 +108,7 @@ test.describe('Account Subscription Management', () => {
     });
 
     test('should maintain session across subscription page visits', async ({ page }) => {
-      // Register and login
-      await createAuthenticatedUser(page, 'session-user');
+      await createAuthenticatedUser(page, { prefix: 'sub-nav-2' });
 
       // Visit subscription page
       await page.goto('/account/subscription');
@@ -135,9 +125,13 @@ test.describe('Account Subscription Management', () => {
   });
 
   test.describe('Error Handling', () => {
+    // Isolate this test to avoid side effects on global user and ensure clean registration
+    test.use({ storageState: { cookies: [], origins: [] } });
+
     test('should handle rapid successive button clicks', async ({ page }) => {
+      // Create isolated user to avoid side effects (subscribing) on global user
       // Register user
-      await createAuthenticatedUser(page, 'rapid-change-user');
+      await createAuthenticatedUser(page, { prefix: 'rapid-change-user' });
 
       await page.goto('/account/subscription');
 

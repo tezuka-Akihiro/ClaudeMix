@@ -99,10 +99,22 @@ tags:
     description: "Vitestを使用したユニットテスト"
 
   # Cloudflare関連
-  - name: "Workers"
+  - name: "Pages"
     category: "technical"
     group: "Cloudflare"
-    description: "Cloudflare Workers"
+    description: "Cloudflare Pages"
+  - name: "D1"
+    category: "technical"
+    group: "Cloudflare"
+    description: "Cloudflare D1"
+  - name: "R2"
+    category: "technical"
+    group: "Cloudflare"
+    description: "Cloudflare R2"
+  - name: "KV"
+    category: "technical"
+    group: "Cloudflare"
+    description: "Cloudflare KV"
 
   # Claude Code関連
   - name: "MCP"
@@ -171,6 +183,10 @@ tags:
     category: "nature"
     group: "起業"
     description: "エンジニア初心者向けQ&A"
+  - name: "spiritual"
+    category: "nature"
+    group: "起業"
+    description: "六星占術の月運念運、占いなど"
 
 # ==========================================
 # タググループ順序定義

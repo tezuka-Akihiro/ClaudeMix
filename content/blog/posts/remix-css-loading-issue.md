@@ -5,7 +5,7 @@ author: "ClaudeMix Team"
 publishedAt: "2025-11-21"
 category: "ClaudeMix 記録"
 description: "RemixとCloudflare Workers環境で発生したCSS読み込み問題を解決するデバッグプロセスを解説。パスエイリアス、SSRレンダリングの不整合、開発環境設定の誤りといった複数の原因を特定し、`wrangler pages dev`とViteプラグインを使った正しい開発方法を明らかにします。"
-tags: ["SSR", "Vite", "Workers", "troubleshooting"]
+tags: ["SSR", "Vite", "Pages", "troubleshooting"]
 freeContentHeading: "💡 根本原因の特定"
 ---
 

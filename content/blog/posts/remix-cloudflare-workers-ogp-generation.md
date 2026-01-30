@@ -5,7 +5,7 @@ description: "RemixアプリでOGP画像を動的に生成する実装を、Clou
 author: "ClaudeMix Team"
 publishedAt: "2025-12-16"
 category: "ClaudeMix 記録"
-tags: ["Workers", "OGP", "architecture"]
+tags: ["Pages", "OGP"]
 freeContentHeading: "📝 概要"
 ---
 

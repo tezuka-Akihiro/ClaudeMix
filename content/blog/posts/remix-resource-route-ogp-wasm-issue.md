@@ -5,7 +5,7 @@ description: "RemixでOGP画像生成を実装したらローカルは動くの�
 author: "ClaudeMix Team"
 publishedAt: "2025-12-16"
 category: "ClaudeMix 記録"
-tags: ["Workers", "troubleshooting", "Vite"]
+tags: ["Pages", "troubleshooting", "Vite"]
 freeContentHeading: "💡 根本原因の特定"
 ---
 
