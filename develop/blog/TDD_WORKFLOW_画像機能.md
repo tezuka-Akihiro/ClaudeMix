@@ -358,6 +358,206 @@ npm run build
 
 ---
 
+## Phase 3.8: E2Eテスト
+
+### 3.8.1 posts.spec.ts（既存ファイルに追加）
+
+**ファイル**: `tests/e2e/blog/posts.spec.ts`
+
+```typescript
+// 既存のテストスイート内に追加
+
+/**
+ * Posts: サムネイル画像の表示テスト
+ * @description
+ * R2からのサムネイル画像が正しく表示されることを検証
+ */
+test('Posts: サムネイル画像が表示される（存在する場合）', async ({ page }) => {
+  await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+  // 1. 記事カードを取得
+  const postsSection = page.getByTestId('posts-section');
+  const postCards = postsSection.getByTestId('post-card');
+  const postCount = await postCards.count();
+  expect(postCount).toBeGreaterThan(0);
+
+  // 2. サムネイルコンテナが存在するカードを確認
+  for (let i = 0; i < Math.min(postCount, 3); i++) {
+    const card = postCards.nth(i);
+    const thumbnailContainer = card.getByTestId('thumbnail-container');
+    const containerCount = await thumbnailContainer.count();
+
+    if (containerCount > 0) {
+      // サムネイルが存在する場合のテスト
+      await expect(thumbnailContainer).toBeVisible();
+
+      // 3. 画像要素が正しく設定されている
+      const thumbnailImage = card.getByTestId('thumbnail-image');
+      await expect(thumbnailImage).toBeVisible();
+
+      // 4. loading="lazy"属性が設定されている（CLS対策）
+      await expect(thumbnailImage).toHaveAttribute('loading', 'lazy');
+
+      // 5. src属性がR2のURLパターンに一致
+      const src = await thumbnailImage.getAttribute('src');
+      expect(src).toMatch(/\/blog\/[^/]+\/thumbnail\.webp$/);
+    }
+  }
+});
+
+/**
+ * Posts: サムネイル未設定時の表示テスト
+ * @description
+ * サムネイルが存在しない記事ではサムネイルコンテナが表示されないことを検証
+ */
+test('Posts: サムネイル未設定時は画像コンテナが非表示', async ({ page }) => {
+  await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+  // 記事カードを取得
+  const postsSection = page.getByTestId('posts-section');
+  const postCards = postsSection.getByTestId('post-card');
+  const postCount = await postCards.count();
+
+  // サムネイルコンテナがないカードでは、thumbnail-containerが存在しないことを確認
+  for (let i = 0; i < Math.min(postCount, 3); i++) {
+    const card = postCards.nth(i);
+    const thumbnailContainer = card.getByTestId('thumbnail-container');
+    const containerCount = await thumbnailContainer.count();
+
+    if (containerCount === 0) {
+      // サムネイルがない場合、コンテナ自体が存在しない
+      await expect(thumbnailContainer).not.toBeVisible();
+    }
+  }
+});
+
+/**
+ * Posts: サムネイル画像のCLS対策確認
+ * @description
+ * サムネイルコンテナにaspect-ratioが設定されていることを検証
+ */
+test('Posts: サムネイルコンテナにCLS対策が適用されている', async ({ page }) => {
+  await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+  const postsSection = page.getByTestId('posts-section');
+  const thumbnailContainer = postsSection.getByTestId('thumbnail-container').first();
+
+  if (await thumbnailContainer.count() > 0) {
+    // aspect-ratioが設定されていることを確認
+    const aspectRatio = await thumbnailContainer.evaluate((el) => {
+      return window.getComputedStyle(el).aspectRatio;
+    });
+    // 1200/630 ≈ 1.905
+    expect(aspectRatio).toMatch(/1200\s*\/\s*630|1\.9/);
+  }
+});
+```
+
+### 3.8.2 post-detail.spec.ts（既存ファイルに追加）
+
+**ファイル**: `tests/e2e/blog/post-detail.spec.ts`
+
+```typescript
+// 既存のテストスイート内に追加
+
+/**
+ * Post Detail: サムネイル画像の表示テスト
+ * @description
+ * 記事詳細ページでR2からのサムネイル画像が正しく表示されることを検証
+ */
+test('Post Detail: サムネイル画像が記事ヘッダーに表示される（存在する場合）', async ({ page }) => {
+  const TEST_SLUG = testArticleSlug;
+  const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+  // 1. 記事詳細ページにアクセス
+  await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+  // 2. PostDetailSectionが表示されること
+  await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
+
+  // 3. サムネイルコンテナを確認
+  const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');
+  const containerCount = await thumbnailContainer.count();
+
+  if (containerCount > 0) {
+    // サムネイルが存在する場合
+    await expect(thumbnailContainer).toBeVisible();
+
+    // 4. 画像要素が正しく設定されている
+    const thumbnailImage = page.locator('[data-testid="article-thumbnail-image"]');
+    await expect(thumbnailImage).toBeVisible();
+
+    // 5. loading="lazy"属性が設定されている
+    await expect(thumbnailImage).toHaveAttribute('loading', 'lazy');
+
+    // 6. src属性がR2のURLパターンに一致
+    const src = await thumbnailImage.getAttribute('src');
+    expect(src).toMatch(/\/blog\/[^/]+\/thumbnail\.webp$/);
+  }
+});
+
+/**
+ * Post Detail: サムネイル画像のCLS対策確認
+ * @description
+ * サムネイルコンテナにaspect-ratioが設定されていることを検証
+ */
+test('Post Detail: サムネイルコンテナにCLS対策が適用されている', async ({ page }) => {
+  const TEST_SLUG = testArticleSlug;
+  const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+  await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+  const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');
+
+  if (await thumbnailContainer.count() > 0) {
+    // aspect-ratioが設定されていることを確認
+    const aspectRatio = await thumbnailContainer.evaluate((el) => {
+      return window.getComputedStyle(el).aspectRatio;
+    });
+    // 1200/630 ≈ 1.905
+    expect(aspectRatio).toMatch(/1200\s*\/\s*630|1\.9/);
+  }
+});
+
+/**
+ * Post Detail: サムネイル未設定時の表示テスト
+ * @description
+ * サムネイルが存在しない記事ではサムネイルコンテナが表示されないことを検証
+ */
+test('Post Detail: サムネイル未設定時は画像コンテナが非表示', async ({ page }) => {
+  // サムネイルがない記事でテスト（例: test-e2e-no-tags）
+  const TEST_SLUG = 'test-e2e-no-tags';
+  const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+  await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+  // サムネイルコンテナが存在しないことを確認
+  const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');
+  await expect(thumbnailContainer).not.toBeVisible();
+});
+```
+
+### 3.8.3 E2Eテスト実行コマンド
+
+```bash
+# サムネイル関連のE2Eテストのみ実行
+npx playwright test tests/e2e/blog/posts.spec.ts tests/e2e/blog/post-detail.spec.ts --grep "サムネイル"
+
+# ブログ全体のE2Eテスト実行
+npx playwright test tests/e2e/blog/
+```
+
+### 3.8.4 E2E成功基準
+
+- [ ] posts.spec.ts: サムネイル表示テストパス
+- [ ] posts.spec.ts: サムネイル未設定テストパス
+- [ ] posts.spec.ts: CLS対策テストパス
+- [ ] post-detail.spec.ts: サムネイル表示テストパス
+- [ ] post-detail.spec.ts: CLS対策テストパス
+- [ ] post-detail.spec.ts: サムネイル未設定テストパス
+
+---
+
 ## 実装チェックリスト
 
 | Phase | ファイル | 種別 | ステータス |
@@ -377,6 +577,9 @@ npm run build
 | 3.6.1 | `blog._index.tsx` | Route | ⬜ |
 | 3.6.2 | `blog.$slug.tsx` | Route | ⬜ |
 | 3.7.1 | typecheck / test / lint / build | 確認 | ⬜ |
+| 3.8.1 | `posts.spec.ts` | E2E | ⬜ |
+| 3.8.2 | `post-detail.spec.ts` | E2E | ⬜ |
+| 3.8.3 | E2Eテスト実行 | 確認 | ⬜ |
 
 ---
 
