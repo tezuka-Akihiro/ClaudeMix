@@ -58,7 +58,6 @@
     aspect-ratio: 1200 / 630;
     width: calc(100% + var(--spacing-5) * 2);
     margin: calc(-1 * var(--spacing-5));
-    margin-bottom: var(--spacing-4);
     overflow: hidden;
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
   }
