@@ -3,7 +3,9 @@
 
 import { getAllPosts } from '~/generated/blog-posts';
 import { filterPosts } from '~/lib/blog/posts/filterPosts';
-import type { FilterOptions, PostSummary, FilteredPostsResult } from '~/specs/blog/types';
+import { buildThumbnailUrl } from '~/lib/blog/common/buildThumbnailUrl';
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { FilterOptions, PostSummary, FilteredPostsResult, BlogCommonSpec } from '~/specs/blog/types';
 
 // 型を再エクスポート
 export type { PostSummary, FilteredPostsResult };
@@ -30,7 +32,11 @@ export async function fetchPosts(
     // getAllPosts()は既にソート済み（投稿日降順）
     const allPosts = getAllPosts();
 
-    // PostSummary形式に変換（メタデータを含む）
+    // R2アセット設定を取得（サムネイルURL生成用）
+    const commonSpec = loadSpec<BlogCommonSpec>('blog/common');
+    const r2Config = commonSpec.r2_assets;
+
+    // PostSummary形式に変換（メタデータとサムネイルURLを含む）
     const posts: PostSummary[] = allPosts.map(post => ({
       slug: post.slug,
       title: post.frontmatter.title,
@@ -38,6 +44,7 @@ export async function fetchPosts(
       category: post.frontmatter.category,
       description: post.frontmatter.description,
       tags: post.frontmatter.tags,
+      thumbnailUrl: buildThumbnailUrl(post.slug, r2Config),
     }));
 
     // フィルタリング処理（純粋ロジック層を使用）

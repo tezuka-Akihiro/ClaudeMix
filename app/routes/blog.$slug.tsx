@@ -16,6 +16,7 @@ import type { BlogCommonSpec, BlogPostsSpec } from "~/specs/blog/types";
 import { getSubscriptionStatus } from "~/data-io/blog/post-detail/getSubscriptionStatus.server";
 import { determineContentVisibility } from "~/lib/blog/post-detail/determineContentVisibility";
 import { getSession } from "~/data-io/account/common/getSession.server";
+import { buildThumbnailUrl } from "~/lib/blog/common/buildThumbnailUrl";
 
 // 共通コンポーネントのCSS（BlogHeader, BlogFooter等）
 import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
@@ -51,6 +52,7 @@ export interface PostDetailLoaderData {
     cutoffHeadingId: string | null;
     hasActiveSubscription: boolean;
   };
+  thumbnailUrl: string | null;
 }
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
@@ -104,6 +106,9 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const ogpImageWidth = spec.ogp.image.width;
   const ogpImageHeight = spec.ogp.image.height;
 
+  // サムネイルURLを生成（R2アセットからのゼロ設定方式）
+  const thumbnailUrl = buildThumbnailUrl(slug, spec.r2_assets);
+
   // サブスクリプション状態を取得（セッションからuserIdを使用）
   const subscriptionStatus = await getSubscriptionStatus(userId, context as unknown as Parameters<typeof getSubscriptionStatus>[1]);
 
@@ -142,6 +147,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
       cutoffHeadingId: contentVisibility.cutoffHeadingId,
       hasActiveSubscription: subscriptionStatus.hasActiveSubscription,
     },
+    thumbnailUrl,
   });
 }
 
@@ -180,7 +186,7 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
 };
 
 export default function BlogPostDetail() {
-  const { post, headings, config, subscriptionAccess } = useLoaderData<typeof loader>();
+  const { post, headings, config, subscriptionAccess, thumbnailUrl } = useLoaderData<typeof loader>();
 
   // Scroll to top on page navigation
   useEffect(() => {
@@ -194,6 +200,7 @@ export default function BlogPostDetail() {
         headings={headings}
         hasMermaid={post.hasMermaid}
         subscriptionAccess={subscriptionAccess}
+        thumbnailUrl={thumbnailUrl}
       />
     </BlogLayout>
   );

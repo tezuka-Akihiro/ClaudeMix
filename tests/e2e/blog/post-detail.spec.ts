@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { loadSpec, loadTestArticles, type TestArticleFrontmatter } from '../../utils/loadSpec';
-import type { BlogPostsSpec } from '~/specs/blog/types';
+import type { BlogPostsSpec, BlogCommonSpec } from '~/specs/blog/types';
 
 // Seeded test user with active subscription (from migrations/seed-dev.sql)
 const SUBSCRIBED_USER = {
@@ -19,6 +19,7 @@ async function loginAsSubscribedUser(page: Page) {
 
 // テスト用変数（beforeAllで初期化）
 let spec: BlogPostsSpec;
+let commonSpec: BlogCommonSpec;
 let testArticles: TestArticleFrontmatter[];
 let testArticleSlug: string;
 
@@ -29,6 +30,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
 
   test.beforeAll(async () => {
     spec = await loadSpec<BlogPostsSpec>('blog', 'posts');
+    commonSpec = await loadSpec<BlogCommonSpec>('blog', 'common');
     testArticles = await loadTestArticles();
     // テスト記事の最初のものを使用
     testArticleSlug = testArticles[0]?.slug || 'test-e2e-filter';
@@ -454,6 +456,89 @@ test.describe('E2E Test for Blog - Post Detail', () => {
       // 8. スクロール位置がトップにリセットされていることを確認
       const scrollYAfter = await page.evaluate(() => window.scrollY);
       expect(scrollYAfter).toBe(0);
+    }
+  });
+
+  /**
+   * Post Detail Thumbnail: サムネイル画像の表示
+   * @description
+   * 記事詳細ページでサムネイル画像が正しく表示されることを検証
+   * - サムネイルコンテナが存在する場合、img要素が適切に設定されている
+   * - loading="lazy"とdecoding="async"でCLS対策されている
+   * - アスペクト比1200/630が適用されている
+   *
+   * Note: サムネイルはオプション。R2にアセットが存在する場合のみ表示される
+   */
+  test('Post Detail: サムネイル画像が適切な属性で表示される', async ({ page }) => {
+    const TEST_SLUG = testArticleSlug;
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    // 2. PostDetailSectionが表示されること
+    await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
+
+    // 3. サムネイルコンテナが存在するか確認（オプション）
+    const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');
+    const thumbnailCount = await thumbnailContainer.count();
+
+    if (thumbnailCount > 0) {
+      // 4. サムネイルコンテナが表示される
+      await expect(thumbnailContainer).toBeVisible();
+
+      // 5. サムネイル画像が存在し、適切な属性が設定されている
+      const thumbnailImg = page.locator('[data-testid="article-thumbnail-image"]');
+      await expect(thumbnailImg).toBeVisible();
+
+      // 6. loading="lazy"属性が設定されている（CLS対策）
+      await expect(thumbnailImg).toHaveAttribute('loading', 'lazy');
+
+      // 7. decoding="async"属性が設定されている（パフォーマンス最適化）
+      await expect(thumbnailImg).toHaveAttribute('decoding', 'async');
+
+      // 8. src属性がR2のURLパターンに一致する
+      const src = await thumbnailImg.getAttribute('src');
+      expect(src).toBeTruthy();
+      // R2のブログ画像パスパターン: {base_url}/blog/{slug}/thumbnail.webp
+      const r2Config = commonSpec.r2_assets;
+      const expectedPattern = new RegExp(
+        `${r2Config.base_url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${r2Config.blog_path}/.+/${r2Config.thumbnail.filename}`
+      );
+      expect(src).toMatch(expectedPattern);
+
+      // 9. alt属性が設定されている（アクセシビリティ）
+      const alt = await thumbnailImg.getAttribute('alt');
+      expect(alt).toBeTruthy();
+      expect(alt).toContain('サムネイル');
+    }
+  });
+
+  /**
+   * Post Detail Thumbnail: サムネイルのCSSスタイル検証
+   * @description
+   * サムネイルコンテナにaspect-ratioが適用されていることを検証
+   */
+  test('Post Detail: サムネイルにアスペクト比が適用される', async ({ page }) => {
+    const TEST_SLUG = testArticleSlug;
+    const TARGET_URL = `/blog/${TEST_SLUG}`;
+
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
+    // 2. サムネイルコンテナが存在するか確認
+    const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');
+    const thumbnailCount = await thumbnailContainer.count();
+
+    if (thumbnailCount > 0) {
+      // 3. aspect-ratioスタイルが適用されていることを確認
+      const aspectRatio = await thumbnailContainer.evaluate((el) => {
+        return window.getComputedStyle(el).aspectRatio;
+      });
+      // CSSで aspect-ratio: 1200 / 630 を指定
+      // ブラウザによって "1200 / 630" または "1.90476..." として返される
+      expect(aspectRatio).toBeTruthy();
+      expect(aspectRatio).not.toBe('auto');
     }
   });
 

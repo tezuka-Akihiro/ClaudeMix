@@ -85,10 +85,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       category,
       tags,
     },
-    categorySpec: {
-      categories: spec.categories,
-      defaultEmoji: spec.business_rules.display.default_category_emoji,
-    },
     pageTitle: spec.posts_config.page_title,
     publicCategories: spec.access_control.public_categories,
   });
@@ -102,7 +98,6 @@ export default function BlogIndex() {
     loadMoreInfo,
     availableFilters,
     selectedFilters,
-    categorySpec,
     pageTitle,
     publicCategories,
   } = useLoaderData<typeof loader>();
@@ -115,7 +110,6 @@ export default function BlogIndex() {
         loadMoreInfo={loadMoreInfo}
         availableFilters={availableFilters}
         selectedFilters={selectedFilters}
-        categorySpec={categorySpec}
         pageTitle={pageTitle}
         publicCategories={publicCategories}
       />

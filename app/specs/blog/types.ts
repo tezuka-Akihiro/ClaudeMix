@@ -70,10 +70,16 @@ export interface Post {
 /**
  * 記事一覧で利用する、Postから派生した型
  */
+/**
+ * 記事一覧で利用する、Postから派生した型
+ * thumbnailUrlはR2からの自動解決（ゼロ設定方式）
+ */
 export type PostSummary = Pick<
   Post,
   'slug' | 'title' | 'publishedAt' | 'category' | 'description' | 'tags'
->;
+> & {
+  thumbnailUrl: string | null;
+};
 
 /**
  * 記事をフィルタリングするためのオプション
@@ -151,15 +157,15 @@ export interface FilteredPostsResult {
 /**
  * 記事一覧ページ（PostsSection）で利用するすべてのデータ
  */
+/**
+ * 記事一覧ページ（PostsSection）で利用するすべてのデータ
+ * Note: categorySpecは廃止（カテゴリ絵文字表示を削除）
+ */
 export interface PostsPageData {
   posts: PostSummary[];
   loadMoreInfo: Pick<LoadMoreInfo, 'loadedCount' | 'hasMore'>;
   availableFilters: AvailableFilters;
   selectedFilters: FilterOptions;
-  categorySpec: {
-    categories: Array<{ name: string; emoji: string }>;
-    defaultEmoji: string;
-  };
 }
 
 /**
@@ -169,6 +175,31 @@ export interface PostsPageData {
 export type RenderedPost = Omit<Post, 'content' | 'summary' | 'testOnly'> & {
   htmlContent: string;
 };
+
+/**
+ * R2アセット設定の型定義（common-spec.yaml r2_assets）
+ */
+export interface R2AssetsConfig {
+  base_url: string;
+  blog_path: string;
+  thumbnail: {
+    filename: string;
+    width: number;
+    height: number;
+    aspect_ratio: string;
+    format: string;
+    max_size_kb: number;
+  };
+  article_images: {
+    pattern: string;
+    max_count: number;
+    max_size_kb: number;
+  };
+  performance: {
+    loading: string;
+    decoding: string;
+  };
+}
 
 /**
  * Blog commonセクションのspec.yamlの型定義
@@ -216,6 +247,7 @@ export interface BlogCommonSpec {
       legal_modal_close: string;
     };
   };
+  r2_assets: R2AssetsConfig;
   ogp: {
     image: {
       width: number;

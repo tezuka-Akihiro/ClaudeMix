@@ -17,11 +17,9 @@ const renderWithRouter = (ui: React.ReactElement) => {
 };
 
 // Define a more complete type for the spec object locally
-// to include properties used in tests but potentially missing from the global type.
 interface BlogPostSpecWithSelectors extends BlogPostsSpec {
   ui_selectors: {
     card: {
-      category_emoji: string;
       post_title: string;
       post_date: string;
       post_card: string;
@@ -33,15 +31,10 @@ interface BlogPostSpecWithSelectors extends BlogPostsSpec {
 describe('PostCard', () => {
   let spec: BlogPostSpecWithSelectors;
   let baseProps: Omit<React.ComponentProps<typeof PostCard>, 'slug'>;
-  let mockCategorySpec: React.ComponentProps<typeof PostCard>['categorySpec'];
 
   beforeAll(async () => {
     // Load spec.yaml dynamically to ensure tests stay in sync with spec
     spec = await loadSpec<BlogPostSpecWithSelectors>('blog', 'posts');
-    mockCategorySpec = {
-      categories: spec.categories,
-      defaultEmoji: spec.business_rules.display.default_category_emoji,
-    };
 
     baseProps = {
       title: 'Test Post Title',
@@ -49,12 +42,12 @@ describe('PostCard', () => {
       category: spec.categories[0].name,
       description: 'A test description.',
       tags: [spec.tags[0].name, spec.tags[1].name],
-      categorySpec: mockCategorySpec,
+      thumbnailUrl: null,
     };
   });
 
   describe('Rendering', () => {
-    it('should display category emoji, title and published date', () => {
+    it('should display title and published date', () => {
       // Arrange
       const props = { ...baseProps, slug: 'test-post', category: spec.categories[0].name };
 
@@ -62,18 +55,12 @@ describe('PostCard', () => {
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const categoryEmoji = screen.getByTestId(getTestId(spec.ui_selectors.card.category_emoji));
       const titleElement = screen.getByTestId(getTestId(spec.ui_selectors.card.post_title));
       const dateElement = screen.getByTestId(getTestId(spec.ui_selectors.card.post_date));
 
-      expect(categoryEmoji).toBeInTheDocument();
-      // Use the emoji from the spec for the first category
-      expect(categoryEmoji).toHaveTextContent(spec.categories[0].emoji);
       expect(titleElement).toBeInTheDocument();
       expect(titleElement).toHaveTextContent(props.title);
       expect(dateElement).toBeInTheDocument();
-      // NOTE: The spec's display_format is "YYYY年M月D日", but the current formatPublishedDate implementation seems to produce "YYYY.MM.DD".
-      // This test verifies the current behavior.
       expect(dateElement).toHaveTextContent('2024.05.01');
     });
 
@@ -140,45 +127,44 @@ describe('PostCard', () => {
     });
   });
 
-  describe('Category Display', () => {
-    // Dynamically create tests for each category defined in the spec file
-    // Use an async IIFE to load categories and then define tests with it.each
-    ;(async () => {
-      const categories = (await loadSpec<BlogPostSpecWithSelectors>('blog', 'posts')).categories;
-      it.each(categories)(
-        'should display correct emoji "$emoji" for category "$name"',
-        ({ name, emoji }) => {
-          // Arrange
-          const props: React.ComponentProps<typeof PostCard> = {
-            ...baseProps,
-            slug: `category-test-${name}`,
-            category: name,
-          };
-
-          // Act
-          renderWithRouter(<PostCard {...props} />);
-
-          // Assert
-          const categoryEmoji = screen.getByTestId(getTestId(spec.ui_selectors.card.category_emoji));
-          expect(categoryEmoji).toHaveTextContent(emoji);
-        },
-      );
-    })();
-
-    it('should display default emoji for an unknown category', () => {
+  describe('Thumbnail', () => {
+    it('should display thumbnail when thumbnailUrl is provided', () => {
       // Arrange
       const props: React.ComponentProps<typeof PostCard> = {
         ...baseProps,
-        slug: 'unknown-category-test',
-        category: 'Unknown Category',
+        slug: 'thumbnail-test',
+        thumbnailUrl: 'https://assets.example.com/blog/thumbnail-test/thumbnail.webp',
       };
 
       // Act
       renderWithRouter(<PostCard {...props} />);
 
       // Assert
-      const categoryEmoji = screen.getByTestId(getTestId(spec.ui_selectors.card.category_emoji));
-      expect(categoryEmoji).toHaveTextContent(spec.business_rules.display.default_category_emoji);
+      const thumbnailContainer = screen.getByTestId('thumbnail-container');
+      const thumbnailImage = screen.getByTestId('thumbnail-image');
+
+      expect(thumbnailContainer).toBeInTheDocument();
+      expect(thumbnailImage).toBeInTheDocument();
+      expect(thumbnailImage).toHaveAttribute('src', props.thumbnailUrl);
+      expect(thumbnailImage).toHaveAttribute('loading', 'lazy');
+      expect(thumbnailImage).toHaveAttribute('decoding', 'async');
+      expect(thumbnailImage).toHaveAttribute('alt', `${props.title}のサムネイル`);
+    });
+
+    it('should not display thumbnail when thumbnailUrl is null', () => {
+      // Arrange
+      const props: React.ComponentProps<typeof PostCard> = {
+        ...baseProps,
+        slug: 'no-thumbnail-test',
+        thumbnailUrl: null,
+      };
+
+      // Act
+      renderWithRouter(<PostCard {...props} />);
+
+      // Assert
+      const thumbnailContainer = screen.queryByTestId('thumbnail-container');
+      expect(thumbnailContainer).not.toBeInTheDocument();
     });
   });
 

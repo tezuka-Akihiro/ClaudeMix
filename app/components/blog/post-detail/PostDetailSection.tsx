@@ -29,13 +29,15 @@ interface PostDetailSectionProps {
     cutoffHeadingId: string | null;
     hasActiveSubscription: boolean;
   };
+  thumbnailUrl: string | null;
 }
 
 export function PostDetailSection({
   post,
   headings,
   hasMermaid = false,
-  subscriptionAccess
+  subscriptionAccess,
+  thumbnailUrl,
 }: PostDetailSectionProps) {
   // publishedAtをフォーマット
   const formattedDate = formatPublishedDate(post.publishedAt);
@@ -100,6 +102,22 @@ export function PostDetailSection({
           </time>
         </div>
       </header>
+
+      {/* サムネイル画像（存在する場合のみ表示） */}
+      {thumbnailUrl && (
+        <div
+          className="post-detail-section__thumbnail"
+          data-testid="article-thumbnail-container"
+        >
+          <img
+            src={thumbnailUrl}
+            alt={`${post.title}のサムネイル`}
+            loading="lazy"
+            decoding="async"
+            data-testid="article-thumbnail-image"
+          />
+        </div>
+      )}
 
       {/* 目次 */}
       <TableOfContents headings={headings} />

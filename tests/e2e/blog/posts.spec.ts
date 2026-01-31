@@ -47,15 +47,20 @@ test.describe.serial('E2E Section Test for blog - posts', () => {
     const postCount = await postCards.count();
     expect(postCount).toBeGreaterThan(0);
 
-    // 3. 各カードにカテゴリ絵文字、タイトル、投稿日が表示される
+    // 3. 各カードにタイトル、投稿日が表示される（サムネイルはオプション）
     for (let i = 0; i < Math.min(postCount, 3); i++) { // 最初の3件のみ確認
       const card = postCards.nth(i);
-      await expect(card.getByTestId('category-emoji')).toBeVisible();
-      await expect(card.getByTestId('category-emoji')).not.toBeEmpty();
       await expect(card.getByTestId('post-title')).toBeVisible();
       await expect(card.getByTestId('post-title')).not.toBeEmpty();
       await expect(card.getByTestId('post-date')).toBeVisible();
       await expect(card.getByTestId('post-date')).not.toBeEmpty();
+      // サムネイルが存在する場合、適切な属性が設定されていることを確認
+      const thumbnail = card.getByTestId('thumbnail-container');
+      if (await thumbnail.count() > 0) {
+        const thumbnailImg = card.getByTestId('thumbnail-image');
+        await expect(thumbnailImg).toHaveAttribute('loading', 'lazy');
+        await expect(thumbnailImg).toHaveAttribute('decoding', 'async');
+      }
     }
 
     // 4. 公開カテゴリの最初の記事カードをクリックして詳細ページへ遷移
