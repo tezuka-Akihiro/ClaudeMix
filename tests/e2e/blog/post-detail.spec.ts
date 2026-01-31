@@ -147,7 +147,8 @@ test.describe('E2E Test for Blog - Post Detail', () => {
   /**
    * Post Detail: 画像のレスポンシブ対応
    * @description
-   * 画像にmax-width: 100%スタイルが適用されていることを検証
+   * 記事コンテンツ内の画像にmax-width: 100%スタイルが適用されていることを検証
+   * Note: サムネイル画像はCSSクラスでレスポンシブ対応のため、コンテンツ内画像のみ検証
    */
   test('Post Detail: 画像がレスポンシブ対応される', async ({ page }) => {
     const TEST_SLUG = testArticleSlug;
@@ -156,11 +157,11 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     // 1. 記事詳細ページにアクセス
     await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
-    // 2. 画像が存在するか確認
-    const image = page.locator('img').first();
-    if (await image.count() > 0) {
+    // 2. 記事コンテンツ内の画像が存在するか確認（サムネイルを除外）
+    const contentImage = page.locator('[data-testid="post-content-visible"] img').first();
+    if (await contentImage.count() > 0) {
       // 3. style属性にmax-widthが含まれていることを確認
-      const styleAttr = await image.getAttribute('style');
+      const styleAttr = await contentImage.getAttribute('style');
       expect(styleAttr).toContain('max-width');
     }
   });
