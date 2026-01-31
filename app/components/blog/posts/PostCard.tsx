@@ -1,7 +1,7 @@
 // PostCard - Component (components層)
 // 個別記事の表示カード（サムネイル、タイトル、投稿日を表示）
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from '@remix-run/react';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import type { PostSummary } from '~/specs/blog/types';
@@ -19,6 +19,7 @@ const PostCard: React.FC<PostCardProps> = ({
   thumbnailUrl,
   isLocked = false,
 }) => {
+  const [imageError, setImageError] = useState(false);
   // 日付をフォーマット（ISO形式 → 日本語形式）
   const formattedDate = formatPublishedDate(publishedAt);
 
@@ -30,13 +31,14 @@ const PostCard: React.FC<PostCardProps> = ({
       data-slug={slug}
       data-locked={isLocked ? 'true' : undefined}
     >
-      {thumbnailUrl && (
+      {thumbnailUrl && !imageError && (
         <div className="post-card__thumbnail" data-testid="thumbnail-container">
           <img
             src={thumbnailUrl}
             alt={`${title}のサムネイル`}
             loading="lazy"
             decoding="async"
+            onError={() => setImageError(true)}
             data-testid="thumbnail-image"
           />
         </div>
