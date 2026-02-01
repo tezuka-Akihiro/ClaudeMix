@@ -109,6 +109,7 @@ graph TD
 
     H --> M["PostCard × N (記事カード)"]
 
+    M --> MThumb["ThumbnailContainer (サムネイル画像コンテナ: 条件付き表示)"]
     M --> N["CategoryEmoji (カテゴリ絵文字)"]
     M --> O["CardContent (カードコンテンツ: タイトル+日付+タグ)"]
 ```
@@ -129,7 +130,8 @@ graph TD
 | **FilterSubmitButton** | 選択されたフィルタ条件を適用するための決定ボタン |
 | **PageTitleArea** | ページタイトル（"Articles"）を表示するエリア |
 | **PostCardGrid** | 記事カードを格納するグリッドレイアウトコンテナ。レスポンシブ対応 |
-| **PostCard** | 個別記事の表示カード。カテゴリ絵文字、タイトル、投稿日、タグを表示 |
+| **PostCard** | 個別記事の表示カード。サムネイル画像（存在する場合）、カテゴリ絵文字、タイトル、投稿日、タグを表示 |
+| **ThumbnailContainer** | サムネイル画像を表示するコンテナ。thumbnailUrlが存在する場合のみ表示。CLS対策として`aspect-ratio: 1200 / 630`を指定し、`loading="lazy"`で遅延読み込み |
 | **CategoryEmoji** | 記事のカテゴリを示す絵文字を表示 |
 | **CardContent** | 記事のタイトル、投稿日、タグバッジを表示するコンテンツエリア |
 | **LoadMoreButton** | 追加記事を読み込むボタン。記事一覧の最下部に配置。クリックで追加記事を読み込み、ローディング中はスピナーを表示 |
@@ -317,6 +319,13 @@ graph TD
 
 #### 表示内容
 
+- **サムネイル画像**（thumbnailUrlが存在する場合のみ表示）:
+  - 表示位置: カードの最上部
+  - CLS対策: `aspect-ratio: 1200 / 630` でレイアウトシフト防止
+  - 遅延読み込み: `loading="lazy"` 属性
+  - 非同期デコード: `decoding="async"` 属性
+  - オブジェクトフィット: `object-fit: cover`
+  - 画像がない場合: コンテナごと非表示（fallback: hide）
 - **カテゴリ絵文字**: 記事のカテゴリを示す絵文字（左側）
 - **タイトル**: 記事のタイトル
 - **投稿日**: YYYY-MM-DD形式の投稿日

@@ -61,11 +61,14 @@ Common Components (共通コンポーネント)
 
 #### OGP Image Generation
 
-1. **OGP画像生成**: 記事ごとのSNSシェア用画像を動的に生成
+1. **OGP画像生成**: 記事ごとのSNSシェア用画像を動的に生成（ゼロ設定方式）
    - **エンドポイント**: `/ogp/$slug.png`
-   - **機能概要**: 記事のスラッグに基づいてOGP画像を動的に生成し、PNG形式で返す
+   - **機能概要**: 記事のスラッグに基づいてOGP画像を返す
    - **入力**: URL パラメータ `$slug`（記事の識別子）
    - **出力**: PNG画像（1200x630px）、Content-Type: `image/png`、Cache-Control: `public, max-age=31536000, immutable`
+   - **R2サムネイルフォールバック（ゼロ設定方式）**:
+     - R2に `blog/{slug}/thumbnail.webp` が存在する場合: そのURLへリダイレクト
+     - R2にサムネイルが存在しない場合: 従来のテキストベース動的OGP画像を生成
    - **エラーハンドリング**:
      - 記事が存在しない場合: 404エラー
      - 画像生成失敗時: 500エラー
@@ -137,6 +140,15 @@ loaderがUIに提供すべきデータ：
 
    - copyrightFormatter.ts: コピーライト文字列のフォーマット
      - 年の自動更新など
+
+   - buildThumbnailUrl.ts: R2サムネイルURL生成【新規】
+     - 入力: slug（記事の識別子）
+     - 出力: R2サムネイル画像のURL文字列
+     - ロジック:
+       - spec.yamlのr2_assets設定（base_url, blog_path, thumbnail.filename）を使用
+       - パターン: `{base_url}{blog_path}/{slug}/{filename}`
+       - 例: `https://assets.claudemix.dev/blog/stripe-integration/thumbnail.webp`
+     - 純粋関数（副作用なし）
 ```
 
 ### 🔌 副作用要件（app/data-io/blog/common）

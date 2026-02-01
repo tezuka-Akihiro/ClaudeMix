@@ -134,6 +134,35 @@ theme:
     dark: "🌙"   # ダークモード時に表示（月アイコン）
 
 # ==========================================
+# R2アセット設定
+# ==========================================
+r2_assets:
+  # R2バケットのベースURL
+  base_url: "https://assets.claudemix.dev"
+  # ブログ画像のパスプレフィックス
+  blog_path: "/blog"
+
+  # サムネイル画像設定
+  thumbnail:
+    filename: "thumbnail.webp"
+    width: 1200
+    height: 630
+    aspect_ratio: "1200 / 630"  # CSS aspect-ratio用
+    format: "webp"
+    max_size_kb: 100
+
+  # 記事内画像設定
+  article_images:
+    pattern: "{n}.webp"  # 1.webp, 2.webp, ...
+    max_count: 9
+    max_size_kb: 200
+
+  # パフォーマンス最適化（CLS対策）
+  performance:
+    loading: "lazy"  # loading属性
+    decoding: "async"  # decoding属性
+
+# ==========================================
 # OGP画像生成設定
 # ==========================================
 ogp:
@@ -141,6 +170,15 @@ ogp:
     width: 1200
     height: 630
     format: "png"
+
+  # サムネイルフォールバック設定（ゼロ設定方式）
+  thumbnail_fallback:
+    # R2にサムネイルが存在する場合: そのURLを直接使用
+    # R2にサムネイルが存在しない場合: 動的OGP画像を生成
+    strategy: "r2_first"
+    # サムネイルURL生成パターン: {base_url}{blog_path}/{slug}/{filename}
+    url_pattern: "{base_url}{blog_path}/{slug}/thumbnail.webp"
+
   cache:
     maxAge: 31536000  # 1年 (秒)
     directive: "public, max-age=31536000, immutable"

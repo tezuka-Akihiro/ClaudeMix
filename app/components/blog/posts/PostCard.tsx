@@ -1,26 +1,27 @@
 // PostCard - Component (components層)
-// 個別記事の表示カード（カテゴリ絵文字、タイトル、投稿日を表示）
+// 個別記事の表示カード（サムネイル、タイトル、投稿日を表示）
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from '@remix-run/react';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
-import { getCategoryEmoji } from '~/lib/blog/posts/categoryUtils';
 import type { PostSummary } from '~/specs/blog/types';
 
 interface PostCardProps extends PostSummary {
-  categorySpec: {
-    categories: Array<{ name: string; emoji: string }>;
-    defaultEmoji: string;
-  };
   isLocked?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category, description, tags, categorySpec, isLocked = false }) => {
+const PostCard: React.FC<PostCardProps> = ({
+  slug,
+  title,
+  publishedAt,
+  description,
+  tags,
+  thumbnailUrl,
+  isLocked = false,
+}) => {
+  const [imageError, setImageError] = useState(false);
   // 日付をフォーマット（ISO形式 → 日本語形式）
   const formattedDate = formatPublishedDate(publishedAt);
-
-  // カテゴリ絵文字を取得（spec値注入パターン）
-  const categoryEmoji = getCategoryEmoji(category, categorySpec.categories, categorySpec.defaultEmoji);
 
   return (
     <Link
@@ -30,9 +31,18 @@ const PostCard: React.FC<PostCardProps> = ({ slug, title, publishedAt, category,
       data-slug={slug}
       data-locked={isLocked ? 'true' : undefined}
     >
-      <div className="post-card__category-emoji" data-testid="category-emoji">
-        {categoryEmoji}
-      </div>
+      {thumbnailUrl && !imageError && (
+        <div className="post-card__thumbnail" data-testid="thumbnail-container">
+          <img
+            src={thumbnailUrl}
+            alt={`${title}のサムネイル`}
+            loading="lazy"
+            decoding="async"
+            onError={() => setImageError(true)}
+            data-testid="thumbnail-image"
+          />
+        </div>
+      )}
       <div className="post-card__content-structure">
         <h2 className="post-card__title" data-testid="post-title">
           {title}

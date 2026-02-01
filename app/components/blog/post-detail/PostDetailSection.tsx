@@ -1,7 +1,7 @@
 // PostDetailSection - 記事詳細セクション
 // 記事のメタデータと本文を表示
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { TableOfContents } from './TableOfContents';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import type { Heading, RenderedPost } from '~/specs/blog/types';
@@ -29,14 +29,17 @@ interface PostDetailSectionProps {
     cutoffHeadingId: string | null;
     hasActiveSubscription: boolean;
   };
+  thumbnailUrl: string | null;
 }
 
 export function PostDetailSection({
   post,
   headings,
   hasMermaid = false,
-  subscriptionAccess
+  subscriptionAccess,
+  thumbnailUrl,
 }: PostDetailSectionProps) {
+  const [imageError, setImageError] = useState(false);
   // publishedAtをフォーマット
   const formattedDate = formatPublishedDate(post.publishedAt);
 
@@ -100,6 +103,23 @@ export function PostDetailSection({
           </time>
         </div>
       </header>
+
+      {/* サムネイル画像（存在する場合のみ表示） */}
+      {thumbnailUrl && !imageError && (
+        <div
+          className="post-detail-section__thumbnail"
+          data-testid="article-thumbnail-container"
+        >
+          <img
+            src={thumbnailUrl}
+            alt={`${post.title}のサムネイル`}
+            loading="lazy"
+            decoding="async"
+            onError={() => setImageError(true)}
+            data-testid="article-thumbnail-image"
+          />
+        </div>
+      )}
 
       {/* 目次 */}
       <TableOfContents headings={headings} />

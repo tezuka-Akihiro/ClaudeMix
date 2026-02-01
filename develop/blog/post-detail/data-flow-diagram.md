@@ -45,8 +45,13 @@ graph TD
         SplitLib -->|"visibleContent<br/>hiddenContent"| Route
     end
 
+    subgraph "サムネイルURL生成フロー"
+        Route -->|"slug"| ThumbLib["buildThumbnailUrl.ts<br/>(Pure Logic層)"]
+        ThumbLib -->|"thumbnailUrl"| Route
+    end
+
     subgraph "UI表示フロー"
-        Route -->|"5. 変換後データ<br/>+可視範囲判定結果"| Component["PostDetailSection.tsx<br/>(Component)"]
+        Route -->|"5. 変換後データ<br/>+可視範囲判定結果<br/>+thumbnailUrl"| Component["PostDetailSection.tsx<br/>(Component)"]
         Route -->|"5b. 見出し情報を渡す"| TOC["TableOfContents.tsx<br/>(Component)"]
         Component -->|"条件判定"| PaywallCheck{"showFullContent?"}
         PaywallCheck -->|"false"| Paywall["Paywall.tsx<br/>(Component)"]
@@ -119,6 +124,7 @@ graph TD
 
 **責務**:
 
+- **サムネイル画像表示**: thumbnailUrlが存在する場合、記事ヘッダーにサムネイル画像を表示。CLS対策としてaspect-ratio: 1200/630、loading="lazy"を適用
 - 記事のメタデータ（タイトル、投稿日、著者）を表示
 - **サブスクリプション状態に基づくコンテンツ制御**: `showFullContent`の値に基づいて、記事全文または部分表示を決定
 - マークダウン変換後のHTML本文を表示（可視範囲に応じて部分表示）

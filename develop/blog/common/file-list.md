@@ -56,6 +56,8 @@ commonセクションの実装に必要な全ファイルを3大層分離アー�
 | copyrightFormatter.test.ts | app/lib/blog/common/copyrightFormatter.test.ts | ユニットテスト |
 | generateOgpImage.tsx | app/lib/blog/common/generateOgpImage.tsx | OGP画像生成ロジック（SatoriライブラリによるPNG生成） |
 | generateOgpImage.test.ts | app/lib/blog/common/generateOgpImage.test.ts | ユニットテスト |
+| buildThumbnailUrl.ts | app/lib/blog/common/buildThumbnailUrl.ts | R2サムネイルURL生成ロジック（ゼロ設定方式：slugからURL生成） |
+| buildThumbnailUrl.test.ts | app/lib/blog/common/buildThumbnailUrl.test.ts | ユニットテスト |
 
 ---
 

@@ -21,7 +21,6 @@ const PostsSection: React.FC<PostsSectionProps> = ({
   loadMoreInfo: initialLoadMoreInfo,
   availableFilters,
   selectedFilters,
-  categorySpec,
   pageTitle,
   publicCategories,
 }) => {
@@ -100,7 +99,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
                   category={post.category}
                   description={post.description}
                   tags={post.tags}
-                  categorySpec={categorySpec}
+                  thumbnailUrl={post.thumbnailUrl}
                   isLocked={isLocked}
                 />
               );

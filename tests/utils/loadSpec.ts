@@ -10,11 +10,11 @@ import { readFile, readdir } from 'fs/promises';
 import { join } from 'path';
 import { load } from 'js-yaml';
 import matter from 'gray-matter';
-import type { BlogPostsSpec } from '~/specs/blog/types';
+import type { BlogPostsSpec, BlogCommonSpec } from '~/specs/blog/types';
 import type { AccountAuthenticationSpec, AccountProfileSpec } from '~/specs/account/types';
 
 // Re-export the types for convenience
-export type { BlogPostsSpec, AccountAuthenticationSpec, AccountProfileSpec };
+export type { BlogPostsSpec, BlogCommonSpec, AccountAuthenticationSpec, AccountProfileSpec };
 
 /**
  * テスト記事のフロントマター型定義
