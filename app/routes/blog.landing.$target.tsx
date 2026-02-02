@@ -7,6 +7,7 @@ import { useLoaderData } from "@remix-run/react";
 import { getLandingContent } from "~/data-io/blog/landing/getLandingContent.server";
 import { getMangaAssets } from "~/data-io/blog/landing/getMangaAssets.server";
 import { validateTarget } from "~/lib/blog/landing/targetValidation";
+import { resolveLegalContent } from "~/lib/blog/common/resolveLegalContent";
 import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogLandingSpec, LandingContent, MangaAsset } from "~/specs/blog/types";
 import HeroSection from "~/components/blog/landing/HeroSection";
@@ -80,13 +81,10 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
     }));
 
     // 特定商取引法の内容をspecから取得し、秘匿項目を環境変数で置換
-    // 環境変数 LEGAL_PRIVATE_INFO: "名前|住所|電話番号" の形式（パイプ区切り）
-    const [name = '[DEBUG:名前未設定]', address = '[DEBUG:住所未設定]', phone = '[DEBUG:電話未設定]'] =
-      env?.LEGAL_PRIVATE_INFO?.split('|') ?? [];
-    const legalContent = landingSpec.footer.legal_content
-      .replace(/\{\{LEGAL_SELLER_NAME\}\}/g, name)
-      .replace(/\{\{LEGAL_SELLER_ADDRESS\}\}/g, address)
-      .replace(/\{\{LEGAL_SELLER_PHONE\}\}/g, phone);
+    const { content: legalContent } = resolveLegalContent({
+      template: landingSpec.footer.legal_content,
+      privateInfo: env?.LEGAL_PRIVATE_INFO,
+    });
 
     return json<LandingLoaderData>({
       content,
