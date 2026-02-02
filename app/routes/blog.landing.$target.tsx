@@ -7,6 +7,7 @@ import { useLoaderData } from "@remix-run/react";
 import { getLandingContent } from "~/data-io/blog/landing/getLandingContent.server";
 import { getMangaAssets } from "~/data-io/blog/landing/getMangaAssets.server";
 import { validateTarget } from "~/lib/blog/landing/targetValidation";
+import { resolveLegalContent } from "~/lib/blog/common/resolveLegalContent";
 import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogLandingSpec, LandingContent, MangaAsset } from "~/specs/blog/types";
 import HeroSection from "~/components/blog/landing/HeroSection";
@@ -79,9 +80,11 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
       isModal: link.is_modal,
     }));
 
-    // 環境変数から特定商取引法の内容を取得（本番環境用）
-    // 設定されていない場合は spec.yaml のプレースホルダーを使用（開発環境用）
-    const legalContent = env?.LEGAL_CONTENT || landingSpec.footer.legal_content;
+    // 特定商取引法の内容をspecから取得し、秘匿項目を環境変数で置換
+    const { content: legalContent } = resolveLegalContent({
+      template: landingSpec.footer.legal_content,
+      privateInfo: env?.LEGAL_PRIVATE_INFO,
+    });
 
     return json<LandingLoaderData>({
       content,

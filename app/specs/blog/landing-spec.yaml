@@ -83,41 +83,40 @@ footer:
 
   # 特定商取引法の内容（モーダル表示用）
   #
-  # 【本番環境での設定方法】
-  # 個人情報（住所、電話番号など）を含むため、以下の方法で設定してください：
+  # 【プライバシー保護方針】
+  # 秘匿項目（名前、住所、電話番号）は1つの環境変数で管理:
+  #   LEGAL_PRIVATE_INFO: "名前|住所|電話番号"（パイプ区切り）
   #
-  # 1. このファイル：プレースホルダー（[...]）のまま保持（テンプレート）
-  # 2. Cloudflare Pages 環境変数：実際の個人情報を設定
-  #    - 変数名: LEGAL_CONTENT
-  #    - 値: 以下のHTMLを実際の情報で置き換えたもの
+  # 設定例:
+  #   LEGAL_PRIVATE_INFO=山田太郎|東京都渋谷区1-2-3|03-1234-5678
   #
-  # 環境変数が設定されている場合、そちらが優先的に使用されます。
-  # 開発環境では、このプレースホルダーが使用されます。
+  # それ以外の項目はこのファイルで直接管理（specloader経由で解決）。
   #
   legal_content: |
     <section>
       <h3>事業者名（販売者名）</h3>
-      <p>[戸籍上の氏名（フルネーム）]</p>
+      <p>The Sound Edge</p>
     </section>
     <section>
       <h3>運営責任者</h3>
-      <p>[代表者名または担当者名]</p>
+      <p>{{LEGAL_SELLER_NAME}}</p>
     </section>
     <section>
       <h3>所在地</h3>
-      <p>[都道府県 市区町村 番地 建物名 部屋番号]</p>
+      <p>{{LEGAL_SELLER_ADDRESS}}</p>
     </section>
     <section>
       <h3>電話番号</h3>
-      <p>[電話番号]</p>
+      <p>{{LEGAL_SELLER_PHONE}}</p>
+      <p>ご連絡は問い合わせフォームからお問い合わせください</p>
     </section>
     <section>
       <h3>メールアドレス</h3>
-      <p>[お問い合わせ用メールアドレス]</p>
+      <p>tizuhanpen8+business@gmail.com</p>
     </section>
     <section>
       <h3>販売価格</h3>
-      <p>[金額]円（税込）</p>
+      <p>980円（税込）,9800円</p>
     </section>
     <section>
       <h3>追加手数料</h3>
@@ -141,6 +140,16 @@ footer:
       <h3>販売数量の制限</h3>
       <p>特に制限はありません。</p>
     </section>
+
+  # 秘匿項目の環境変数定義（ドキュメント用）
+  legal_private_info:
+    env_var: "LEGAL_PRIVATE_INFO"
+    format: "名前|住所|電話番号"
+    example: "山田太郎|東京都渋谷区1-2-3|03-1234-5678"
+    placeholders:
+      - "{{LEGAL_SELLER_NAME}}"
+      - "{{LEGAL_SELLER_ADDRESS}}"
+      - "{{LEGAL_SELLER_PHONE}}"
 
 # UI要素セレクタ
 ui_selectors:

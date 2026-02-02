@@ -8,6 +8,7 @@ import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { loadSpec, loadSharedSpec } from "~/spec-loader/specLoader.server";
 import type { BlogLandingSpec, MenuItem } from "~/specs/blog/types";
 import type { ProjectSpec } from "~/specs/shared/types";
+import { resolveLegalContent } from "~/lib/blog/common/resolveLegalContent";
 import BlogHeader from "~/components/blog/common/BlogHeader";
 import LandingFooter from "~/components/blog/landing/LandingFooter";
 
@@ -39,7 +40,10 @@ export async function loader({ context }: LoaderFunctionArgs) {
     isModal: link.is_modal,
   }));
 
-  const legalContent = env?.LEGAL_CONTENT || landingSpec.footer.legal_content;
+  const { content: legalContent } = resolveLegalContent({
+    template: landingSpec.footer.legal_content,
+    privateInfo: env?.LEGAL_PRIVATE_INFO,
+  });
 
   return json<LoaderData>({
     blogTitle: blogConfig.blogTitle,
