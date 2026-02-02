@@ -79,9 +79,15 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
       isModal: link.is_modal,
     }));
 
-    // 環境変数から特定商取引法の内容を取得（本番環境用）
-    // 設定されていない場合は spec.yaml のプレースホルダーを使用（開発環境用）
-    const legalContent = env?.LEGAL_CONTENT || landingSpec.footer.legal_content;
+    // 特定商取引法の内容をspecから取得し、秘匿項目を環境変数で置換
+    // 秘匿項目: LEGAL_SELLER_NAME, LEGAL_SELLER_ADDRESS, LEGAL_SELLER_PHONE
+    let legalContent = landingSpec.footer.legal_content;
+    if (env) {
+      legalContent = legalContent
+        .replace(/\{\{LEGAL_SELLER_NAME\}\}/g, env.LEGAL_SELLER_NAME || '[運営責任者名]')
+        .replace(/\{\{LEGAL_SELLER_ADDRESS\}\}/g, env.LEGAL_SELLER_ADDRESS || '[所在地]')
+        .replace(/\{\{LEGAL_SELLER_PHONE\}\}/g, env.LEGAL_SELLER_PHONE || '[電話番号]');
+    }
 
     return json<LandingLoaderData>({
       content,
