@@ -84,13 +84,13 @@ footer:
   # 特定商取引法の内容（モーダル表示用）
   #
   # 【プライバシー保護方針】
-  # 以下の3項目のみ環境変数で秘匿化（Cloudflare Pages Secrets）:
-  #   - LEGAL_SELLER_NAME: 運営責任者名
-  #   - LEGAL_SELLER_ADDRESS: 所在地
-  #   - LEGAL_SELLER_PHONE: 電話番号
+  # 秘匿項目（名前、住所、電話番号）は1つの環境変数で管理:
+  #   LEGAL_PRIVATE_INFO: "名前|住所|電話番号"（パイプ区切り）
+  #
+  # 設定例:
+  #   LEGAL_PRIVATE_INFO=山田太郎|東京都渋谷区1-2-3|03-1234-5678
   #
   # それ以外の項目はこのファイルで直接管理（specloader経由で解決）。
-  # loaderでプレースホルダー（{{LEGAL_SELLER_NAME}}等）を環境変数値で置換します。
   #
   legal_content: |
     <section>
@@ -141,17 +141,15 @@ footer:
       <p>特に制限はありません。</p>
     </section>
 
-  # 秘匿項目のプレースホルダー定義（ドキュメント用）
-  legal_placeholders:
-    - key: "{{LEGAL_SELLER_NAME}}"
-      env_var: "LEGAL_SELLER_NAME"
-      description: "運営責任者名"
-    - key: "{{LEGAL_SELLER_ADDRESS}}"
-      env_var: "LEGAL_SELLER_ADDRESS"
-      description: "所在地"
-    - key: "{{LEGAL_SELLER_PHONE}}"
-      env_var: "LEGAL_SELLER_PHONE"
-      description: "電話番号"
+  # 秘匿項目の環境変数定義（ドキュメント用）
+  legal_private_info:
+    env_var: "LEGAL_PRIVATE_INFO"
+    format: "名前|住所|電話番号"
+    example: "山田太郎|東京都渋谷区1-2-3|03-1234-5678"
+    placeholders:
+      - "{{LEGAL_SELLER_NAME}}"
+      - "{{LEGAL_SELLER_ADDRESS}}"
+      - "{{LEGAL_SELLER_PHONE}}"
 
 # UI要素セレクタ
 ui_selectors:
