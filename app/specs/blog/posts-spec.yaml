@@ -147,6 +147,10 @@ tags:
     category: "technical"
     group: "other"
     description: "Open Graph Protocol 画像生成"
+  - name: "Stripe"
+    category: "technical"
+    group: "other"
+    description: "Stripe決済・サブスクリプション"
 
   # 記事の性質
   - name: "troubleshooting"
