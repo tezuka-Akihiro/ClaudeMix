@@ -81,14 +81,12 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
     // 特定商取引法の内容をspecから取得し、秘匿項目を環境変数で置換
     // 環境変数 LEGAL_PRIVATE_INFO: "名前|住所|電話番号" の形式（パイプ区切り）
-    let legalContent = landingSpec.footer.legal_content;
-    if (env?.LEGAL_PRIVATE_INFO) {
-      const [name, address, phone] = env.LEGAL_PRIVATE_INFO.split('|');
-      legalContent = legalContent
-        .replace(/\{\{LEGAL_SELLER_NAME\}\}/g, name || '[運営責任者名]')
-        .replace(/\{\{LEGAL_SELLER_ADDRESS\}\}/g, address || '[所在地]')
-        .replace(/\{\{LEGAL_SELLER_PHONE\}\}/g, phone || '[電話番号]');
-    }
+    const [name = '[運営責任者名]', address = '[所在地]', phone = '[電話番号]'] =
+      env?.LEGAL_PRIVATE_INFO?.split('|') ?? [];
+    const legalContent = landingSpec.footer.legal_content
+      .replace(/\{\{LEGAL_SELLER_NAME\}\}/g, name)
+      .replace(/\{\{LEGAL_SELLER_ADDRESS\}\}/g, address)
+      .replace(/\{\{LEGAL_SELLER_PHONE\}\}/g, phone);
 
     return json<LandingLoaderData>({
       content,
