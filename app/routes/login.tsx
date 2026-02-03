@@ -87,7 +87,6 @@ interface LoaderData {
     };
     oauth: {
       googleLabel: string;
-      appleLabel: string;
     };
   };
 }
@@ -140,7 +139,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       },
       oauth: {
         googleLabel: 'Google でログイン',
-        appleLabel: 'Apple でログイン',
       },
     },
   });
@@ -312,30 +310,6 @@ export default function Login() {
               <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
             </svg>
             {uiSpec.oauth.googleLabel}
-          </a>
-
-          <a
-            href="/auth/apple"
-            className="auth-oauth-button"
-            data-testid="apple-login-button"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '1rem 2rem',
-              border: 'none',
-              borderRadius: '9999px',
-              backgroundColor: '#000',
-              color: 'white',
-              textDecoration: 'none',
-              fontWeight: 500,
-              transition: 'background-color 0.2s',
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18" style={{ marginRight: '0.75rem' }} fill="currentColor">
-              <path d="M14.94 5.19A4.38 4.38 0 0 0 13 8.59c0 2.08 1.63 2.85 1.69 2.87-.01.05-.26.94-.88 1.86-.54.8-1.1 1.59-1.98 1.61-.87.01-1.15-.52-2.15-.52-1 0-1.31.51-2.14.53-.85.02-1.51-.86-2.06-1.66-1.12-1.64-1.98-4.62-.83-6.64.57-1.01 1.6-1.65 2.71-1.67.85-.01 1.64.57 2.16.57.52 0 1.5-.71 2.53-.6.43.01 1.64.17 2.41 1.31-.06.04-1.44.84-1.42 2.51zM12.02 3.83c.44-.53.74-1.27.66-2-.64.03-1.41.43-1.87.96-.41.48-.77 1.24-.67 1.97.71.05 1.43-.36 1.88-.93z"/>
-            </svg>
-            {uiSpec.oauth.appleLabel}
           </a>
         </div>
 

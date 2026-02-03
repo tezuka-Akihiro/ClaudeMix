@@ -39,18 +39,28 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     return redirect('/login?error=oauth-invalid');
   }
 
-  // TODO: Validate state for CSRF protection
-  // For MVP, we skip state validation
-  // In production: const storedState = await getStateFromCookie(request);
-  // if (state !== storedState) return redirect('/login?error=csrf-detected');
+  // Validate state for CSRF protection
+  const cookieHeader = request.headers.get('Cookie') || '';
+  const cookies = Object.fromEntries(
+    cookieHeader.split('; ').filter(Boolean).map((c) => {
+      const [key, ...rest] = c.split('=');
+      return [key, rest.join('=')];
+    })
+  );
+  const storedState = cookies['oauth_state'];
+
+  if (!storedState || state !== storedState) {
+    console.error('CSRF validation failed: state mismatch');
+    return redirect('/login?error=csrf-detected');
+  }
 
   // Get OAuth configuration
   const clientId = env?.GOOGLE_CLIENT_ID;
   const clientSecret = env?.GOOGLE_CLIENT_SECRET;
-  const redirectUri = env?.GOOGLE_REDIRECT_URI || 'http://localhost:8788/auth/callback/google';
+  const redirectUri = env?.GOOGLE_REDIRECT_URI;
 
-  if (!clientId || !clientSecret) {
-    console.error('Google OAuth not configured');
+  if (!clientId || !clientSecret || !redirectUri) {
+    console.error('Google OAuth not fully configured: missing GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, or GOOGLE_REDIRECT_URI');
     return redirect('/login?error=oauth-not-configured');
   }
 
@@ -101,12 +111,12 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const sessionData = createSessionData(user.id, sessionId);
     const setCookieHeader = await saveSession(sessionData, context as any);
 
-    // Set session cookie and redirect to account page
-    return redirect('/account', {
-      headers: {
-        'Set-Cookie': setCookieHeader,
-      },
-    });
+    // Set session cookie and clear oauth_state cookie, then redirect to account page
+    const headers = new Headers();
+    headers.append('Set-Cookie', setCookieHeader);
+    headers.append('Set-Cookie', 'oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+
+    return redirect('/account', { headers });
   } catch (error) {
     console.error('Google OAuth callback error:', error);
     return redirect('/login?error=oauth-failed');
