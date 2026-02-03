@@ -221,6 +221,49 @@ test.describe('Account Authentication - Happy Path', () => {
     });
   });
 
+  test.describe('Google OAuth Authentication', () => {
+    // Ensure unauthenticated state for OAuth tests
+    test.use({ storageState: { cookies: [], origins: [] } });
+
+    test('should display Google login button on login page', async ({ page }) => {
+      // Navigate to login page
+      await page.goto('/login');
+
+      // Verify Google login button is displayed
+      const googleButton = page.locator('[data-testid="google-login-button"]');
+      await expect(googleButton).toBeVisible();
+      await expect(googleButton).toContainText('Google');
+
+      // Verify button links to /auth/google
+      await expect(googleButton).toHaveAttribute('href', '/auth/google');
+    });
+
+    test('should not display Apple login button on login page', async ({ page }) => {
+      // Navigate to login page
+      await page.goto('/login');
+
+      // Verify Apple login button is NOT displayed (removed)
+      const appleButton = page.locator('[data-testid="apple-login-button"]');
+      await expect(appleButton).not.toBeVisible();
+    });
+
+    test('should redirect to login with error when CSRF state mismatch', async ({ page }) => {
+      // Simulate callback with mismatched state (no oauth_state cookie set)
+      await page.goto('/auth/callback/google?code=test_code&state=invalid_state');
+
+      // Verify redirect to login with error
+      await expect(page).toHaveURL(/\/login\?error=csrf-detected/);
+    });
+
+    test('should redirect to login with error when OAuth params missing', async ({ page }) => {
+      // Simulate callback without required parameters
+      await page.goto('/auth/callback/google');
+
+      // Verify redirect to login with error
+      await expect(page).toHaveURL(/\/login\?error=oauth-invalid/);
+    });
+  });
+
   test.describe('Authentication State Persistence', () => {
     // Use isolated session to verify persistence mechanism works for a fresh login
     test.use({ storageState: { cookies: [], origins: [] } });
