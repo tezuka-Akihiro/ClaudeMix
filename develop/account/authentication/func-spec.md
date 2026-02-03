@@ -673,10 +673,9 @@ Cookie無効化 + /login へリダイレクト
 - メール認証（確認メール送信）
 - アカウントロック（ログイン試行回数制限）
 
-**Phase 3**: OAuth連携（将来実装）
+**Phase 3**: OAuth連携（実装済み）
 
-- Google OAuth
-- Apple OAuth
+- Google OAuth（実装済み）
 
 ## 📝 備考
 

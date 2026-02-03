@@ -18,6 +18,8 @@
 - 認証失敗時のエラー表示
 - ログアウトの成功シナリオ
 - redirect-urlパラメータの動作確認
+- Google OAuth認証の成功シナリオ
+- Google OAuth CSRF検証失敗時のエラー表示
 
 ---
 
@@ -37,6 +39,8 @@
 | forgot-password.test.tsx | app/routes/forgot-password.test.tsx | forgot-passwordルートの単体テスト |
 | reset-password.$token.tsx | app/routes/reset-password.$token.tsx | パスワードリセット実行ページのRoute定義（loader, action） |
 | reset-password.$token.test.tsx | app/routes/reset-password.$token.test.tsx | reset-passwordルートの単体テスト |
+| auth.google.tsx | app/routes/auth.google.tsx | Google OAuth認証開始（state生成、リダイレクト） |
+| auth.callback.google.tsx | app/routes/auth.callback.google.tsx | Google OAuthコールバック処理（CSRF検証、ユーザー作成/ログイン） |
 
 ### 2.2 Components
 
@@ -87,6 +91,14 @@
 | findUserByEmail.server.test.ts | app/data-io/account/authentication/findUserByEmail.server.test.ts | findUserByEmailの単体テスト（DBモック使用） |
 | checkEmailExists.server.ts | app/data-io/account/authentication/checkEmailExists.server.ts | メールアドレスの存在確認 |
 | checkEmailExists.server.test.ts | app/data-io/account/authentication/checkEmailExists.server.test.ts | checkEmailExistsの単体テスト（DBモック使用） |
+
+### 4.2 OAuth認証
+
+| ファイル名 | パス | 責務 |
+| :--- | :--- | :--- |
+| exchangeGoogleCode.server.ts | app/data-io/account/authentication/exchangeGoogleCode.server.ts | Google認可コードをトークンに交換しユーザー情報を取得 |
+| getUserByOAuth.server.ts | app/data-io/account/authentication/getUserByOAuth.server.ts | OAuthプロバイダーとIDでユーザー検索 |
+| createOAuthUser.server.ts | app/data-io/account/authentication/createOAuthUser.server.ts | OAuthユーザーの新規登録 |
 
 ---
 
@@ -143,4 +155,4 @@ authenticationセクションは、以下のcommonセクションのファイル
 
 ---
 
-**最終更新**: 2025-12-23
+**最終更新**: 2026-02-03
