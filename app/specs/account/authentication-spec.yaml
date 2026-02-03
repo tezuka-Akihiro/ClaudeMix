@@ -180,6 +180,15 @@ error_messages:
     timeout: "処理がタイムアウトしました。もう一度お試しください"
     internal_error: "エラーが発生しました。しばらく時間をおいてから再度お試しください"
 
+  oauth:
+    not_configured: "OAuth認証が設定されていません"
+    failed: "OAuth認証に失敗しました"
+    invalid: "OAuth認証のパラメータが不正です"
+    csrf_detected: "セキュリティ検証に失敗しました。もう一度お試しください"
+    email_already_exists: "このメールアドレスは既に別の方法で登録されています"
+    registration_failed: "OAuthアカウントの登録に失敗しました"
+    login_failed: "OAuthログインに失敗しました"
+
   password_reset:
     token_invalid: "トークンが無効です"
     token_verification_failed: "トークンの検証に失敗しました"
@@ -209,6 +218,32 @@ flash_messages:
   logout-success: "ログアウトしました"
   # パスワードリセット成功
   password-reset-success: "パスワードを再設定しました。新しいパスワードでログインしてください。"
+
+# ==========================================
+# OAuth設定
+# ==========================================
+oauth:
+  google:
+    enabled: true
+    # 環境変数から読み込まれる設定
+    # GOOGLE_CLIENT_ID: Google OAuthクライアントID
+    # GOOGLE_CLIENT_SECRET: Google OAuthクライアントシークレット
+    # GOOGLE_REDIRECT_URI: コールバックURL
+    scopes: "openid email profile"
+    prompt: "select_account"
+    access_type: "online"
+    # CSRF保護用stateパラメータのCookie設定
+    state_cookie:
+      name: "oauth_state"
+      path: "/"
+      http_only: true
+      secure: true
+      same_site: "Lax"
+      max_age_seconds: 600  # 10分
+
+  # Apple認証は廃止済み
+  apple:
+    enabled: false
 
 # ==========================================
 # セキュリティ設定
@@ -241,10 +276,18 @@ database:
         type: "TEXT"
         constraints: "UNIQUE NOT NULL"
         description: "メールアドレス"
-      password:
+      password_hash:
         type: "TEXT"
-        constraints: "NOT NULL"
-        description: "ハッシュ化されたパスワード"
+        constraints: ""
+        description: "ハッシュ化されたパスワード（OAuth認証の場合はNULL）"
+      oauth_provider:
+        type: "TEXT"
+        constraints: ""
+        description: "OAuthプロバイダー名（google等、通常認証の場合はNULL）"
+      oauth_id:
+        type: "TEXT"
+        constraints: ""
+        description: "OAuthプロバイダーでのユーザーID（通常認証の場合はNULL）"
       subscription_status:
         type: "TEXT"
         constraints: "NOT NULL"
@@ -264,6 +307,9 @@ database:
       - name: "idx_users_email"
         columns: ["email"]
         unique: true
+      - name: "idx_users_oauth"
+        columns: ["oauth_provider", "oauth_id"]
+        unique: false
 
 # ==========================================
 # レスポンシブ設定

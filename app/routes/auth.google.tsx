@@ -19,10 +19,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   // Get OAuth configuration from environment variables
   const clientId = env?.GOOGLE_CLIENT_ID;
-  const redirectUri = env?.GOOGLE_REDIRECT_URI || 'http://localhost:8788/auth/callback/google';
+  const clientSecret = env?.GOOGLE_CLIENT_SECRET;
+  const redirectUri = env?.GOOGLE_REDIRECT_URI;
 
-  if (!clientId) {
-    console.error('GOOGLE_CLIENT_ID not configured');
+  if (!clientId || !clientSecret || !redirectUri) {
+    console.error('Google OAuth not fully configured: missing GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, or GOOGLE_REDIRECT_URI');
     return redirect('/login?error=oauth-not-configured');
   }
 
