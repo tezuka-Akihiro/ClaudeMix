@@ -1,0 +1,28 @@
+# .dev.vars.example
+# ローカル開発用シークレットのテンプレート
+# 公開可能な設定は wrangler.toml [vars] で管理
+#
+# 使い方:
+#   cp .dev.vars.example .dev.vars
+#   # .dev.vars を編集して実際の値を設定
+
+# ============================================
+# 特定商取引法（特商法）関連
+# ============================================
+# 形式: "名前|住所|電話番号"（パイプ区切り）
+LEGAL_PRIVATE_INFO=山田太郎|東京都渋谷区1-2-3 サンプルビル101|03-1234-5678
+
+# ============================================
+# Google OAuth シークレット
+# ============================================
+# Google Cloud Console > 認証情報 から取得
+# https://console.cloud.google.com/apis/credentials
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# ============================================
+# Stripe シークレット
+# ============================================
+# Stripe Dashboard > API keys から取得
+# https://dashboard.stripe.com/apikeys
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxx

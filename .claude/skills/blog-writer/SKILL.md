@@ -19,7 +19,7 @@ ClaudeMix（Remix × Cloudflare × Claude Code）プロジェクトのブログ�
 
 - **技術スタック**: Remix, Cloudflare Edge, Claude Code, Vite, Playwright, Vitest
 - **記事の種類**: トラブルシュート記事（60%）、機能改修記事（30%）、まとめ記事（10%）
-- **設計原則**: spec.yaml中心のSingle Source of Truth設計
+- **設計原則**: posts-spec.yaml中心のSingle Source of Truth設計
 - **プロンプトエンジニアリング**: Claude公式ベストプラクティス準拠
 - **マーケティング**: 恐怖型BAB法（Before → 恐怖 → After → Bridge）
 
@@ -44,7 +44,7 @@ Phase 3: 本文作成 → prompts/03-main-content.md
 
 **参照**: `prompts/01-metadata.md`
 
-1. spec.yamlを読み込む（既存タグ・カテゴリ定義の確認）
+1. posts-spec.yamlを読み込む（既存タグ・カテゴリ定義の確認）
 2. タグを選定する（2-5個推奨）
 3. カテゴリを選定する
 4. Frontmatterを生成する
@@ -73,7 +73,7 @@ Phase 3: 本文作成 → prompts/03-main-content.md
 ## 成果物
 
 | フェーズ | 成果物 |
-|:---|:---|
+| :--- | :--- |
 | Phase 1 | Frontmatter（YAML形式） |
 | Phase 2 | 導入部（5パート構成） |
 | Phase 3 | 本文（テンプレートに従った構造） |
@@ -81,7 +81,7 @@ Phase 3: 本文作成 → prompts/03-main-content.md
 ## 参照ドキュメント
 
 | ファイル | 役割 |
-|:---|:---|
+| :--- | :--- |
 | `prompts/*.md` | 各フェーズの実行手順 |
 | `docs/bab-structure.md` | 恐怖型BAB法の設計思想 |
 | `docs/templates.md` | 記事テンプレート定義 |
@@ -91,7 +91,7 @@ Phase 3: 本文作成 → prompts/03-main-content.md
 
 - **段階的な執筆**: 各フェーズを順序通りに完了させてください
 - **品質基準の厳守**: 導入部の段落構成、文字数制限を必ず守ってください
-- **spec.yaml参照**: タグ・カテゴリは必ず `develop/blog/posts/spec.yaml` を確認
+- **posts-spec.yaml参照**: タグ・カテゴリは必ず `develop/blog/posts/posts-spec.yaml` を確認
 - **テンプレート選択**: 記事の種類に応じて適切なテンプレートを選択
 
 ---

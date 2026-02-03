@@ -30,7 +30,10 @@
     "lint:css-arch": "node scripts/lint-css-arch/engine.js",
     "lint:all": "bash scripts/lint-all.sh",
     "setup:db": "bash scripts/setup-db.sh",
-    "depcheck": "depcheck"
+    "depcheck": "depcheck",
+    "secret:set": "wrangler pages secret put",
+    "secret:list": "wrangler pages secret list",
+    "secret:bulk": "wrangler pages secret bulk"
   },
   "depcheck": {
     "ignores": [

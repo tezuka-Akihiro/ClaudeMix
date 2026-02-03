@@ -5,7 +5,23 @@ compatibility_date = "2024-11-18"
 # Pages Functions configuration
 pages_build_output_dir = "./build/client"
 
+# ============================================
+# 環境変数（非秘匿情報）
+# ============================================
+# 秘匿情報は .dev.vars または Cloudflare ダッシュボードで管理
+# 参照: .dev.vars.example
+[vars]
+# ローカル開発用のアプリケーションURL
+APP_URL = "http://localhost:8788"
+# Google OAuth（クライアントIDは公開情報）
+GOOGLE_CLIENT_ID = "395752864569-ng3tot15p3ufguvcuchre6jnfvta5d3p.apps.googleusercontent.com"
+GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/google/callback"
+# Stripe 公開キー（pk_ は公開用）
+STRIPE_PUBLISHABLE_KEY = "pk_test_51StRLVFTLZPZU8HQHblw6Ig1B6V19aU4qzs8TuvrPLfdqnujKX7eG3ynOqRK7PGCBxFU195Ikgzqp29ljaBXHUS000suqIsrSI"
+
+# ============================================
 # Local development configuration
+# ============================================
 # These bindings are used when running "npm run dev:wrangler"
 [[d1_databases]]
 binding = "DB"
@@ -17,6 +33,12 @@ binding = "SESSION_KV"
 id = "local-dev-kv"
 
 # Production environment configuration
+[env.production.vars]
+# 本番環境用のアプリケーションURL（実際のドメインに置き換えてください）
+APP_URL = "https://claudemix.dev"
+# Google OAuth リダイレクトURI（本番環境用）
+GOOGLE_REDIRECT_URI = "https://claudemix.dev/auth/callback/google"
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "claudemix-prod"
@@ -29,6 +51,12 @@ id = "228032d075f6418e9c8a770c3cf1180b"
 # Preview environment configuration (for all non-main branches)
 # SETUP REQUIRED: Create preview database and KV namespace
 # See docs/setup/preview-environment.md for instructions
+[env.preview.vars]
+# プレビュー環境用のアプリケーションURL
+APP_URL = "https://claudemix.stg.your-domain.pages.dev"
+# Google OAuth リダイレクトURI（プレビュー環境用）
+GOOGLE_REDIRECT_URI = "https://claudemix.stg.dev/auth/callback/google"
+
 [[env.preview.d1_databases]]
 binding = "DB"
 database_name = "claudemix-preview"
