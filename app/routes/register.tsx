@@ -1,86 +1,291 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/cloudflare';
-import { json, redirect } from '@remix-run/cloudflare';
-import { useActionData, Form, Link } from '@remix-run/react';
-import { getAuthenticator } from '~/data-io/account/common/authenticator.server';
-import { getSessionUser, commitUserSession } from '~/data-io/account/common/session.server';
+/**
+ * register.tsx
+ * Purpose: User registration page
+ *
+ * @layer UI層 (routes)
+ * @responsibility ユーザー登録フォーム表示と処理
+ */
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-  const user = await getSessionUser(request, context);
-  if (user) return redirect('/account');
-  return null;
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import { json, redirect } from '@remix-run/cloudflare';
+import { Form, Link, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
+import { getFormProps, getInputProps, useForm } from '@conform-to/react';
+import { parseWithValibot } from '@conform-to/valibot';
+
+// CSS imports
+import '~/styles/account/layer2-common.css';
+import '~/styles/account/layer2-authentication.css';
+import '~/styles/account/layer3-authentication.css';
+
+// Spec loader
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
+
+// Data-IO layer
+import { createUser } from '~/data-io/account/authentication/createUser.server';
+import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.server';
+import { hashPassword } from '~/data-io/account/authentication/hashPassword.server';
+import { saveSession } from '~/data-io/account/common/saveSession.server';
+import { getSession } from '~/data-io/account/common/getSession.server';
+
+// Pure logic layer
+import { sanitizeEmail } from '~/lib/account/authentication/sanitizeEmail';
+import { validateEmail } from '~/lib/account/authentication/validateEmail';
+import { validatePasswordDetailed } from '~/lib/account/authentication/validatePassword';
+import { createSessionData } from '~/lib/account/common/createSessionData';
+
+// Schema layer (Valibot)
+import { RegisterSchema } from '~/specs/account/authentication-schema';
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: '会員登録 - ClaudeMix' },
+    { name: 'description', content: 'ClaudeMixのアカウントを作成' },
+  ];
+};
+
+interface ActionData {
+  error?: string;
+  lastResult?: any; // Conform submission result
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
-  const authenticator = getAuthenticator(context);
-  try {
-    const user = await authenticator.authenticate('form', request);
-    const cookie = await commitUserSession(user, context);
+interface LoaderData {
+  uiSpec: {
+    title: string;
+    subtitle: string;
+    fields: {
+      email: {
+        label: string;
+      };
+      password: {
+        label: string;
+      };
+      confirmPassword: {
+        label: string;
+      };
+    };
+    submitButton: {
+      label: string;
+      loadingLabel: string;
+    };
+    links: {
+      loginPrompt: string;
+      loginLink: string;
+    };
+  };
+}
 
-    return redirect('/account', {
-      headers: { 'Set-Cookie': cookie },
+/**
+ * Loader: Check if user is already logged in
+ * If logged in, redirect to /account
+ */
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+
+  const session = await getSession(request, context as any);
+  if (session) {
+    return redirect(spec.server_io.loader.authenticated_redirect);
+  }
+
+  return json<LoaderData>({
+    uiSpec: {
+      title: spec.routes.register.title,
+      subtitle: `ClaudeMixのアカウントを作成`,
+      fields: {
+        email: {
+          label: spec.forms.register.fields.email.label,
+        },
+        password: {
+          label: spec.forms.register.fields.password.label,
+        },
+        confirmPassword: {
+          label: spec.forms.register.fields.password_confirm.label,
+        },
+      },
+      submitButton: {
+        label: spec.forms.register.submit_button.label,
+        loadingLabel: spec.forms.register.submit_button.loading_label,
+      },
+      links: {
+        loginPrompt: 'すでにアカウントをお持ちですか？',
+        loginLink: 'ログイン',
+      },
+    },
+  });
+}
+
+/**
+ * Action: Handle registration form submission
+ */
+export async function action({ request, context }: ActionFunctionArgs) {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+
+  const formData = await request.formData();
+
+  // Conform + Valibot: Parse and validate form data
+  const submission = parseWithValibot(formData, {
+    schema: RegisterSchema,
+  });
+
+  // Validation failed: return errors
+  if (submission.status !== 'success') {
+    return json<ActionData>(
+      { lastResult: submission.reply() },
+      { status: 400 }
+    );
+  }
+
+  // Type-safe data extraction
+  const { email, password } = submission.value;
+
+  // Sanitize email (pure logic layer)
+  const sanitizedEmail = sanitizeEmail(email);
+
+  // Check if user already exists
+  const existingUser = await getUserByEmail(sanitizedEmail, context as any);
+  if (existingUser) {
+    return json<ActionData>(
+      { error: spec.error_messages.registration.email_exists },
+      { status: 400 }
+    );
+  }
+
+  // Hash password
+  const passwordHash = await hashPassword(password);
+
+  // Create user
+  const userCreated = await createUser(sanitizedEmail, passwordHash, context as any);
+  if (!userCreated) {
+    return json<ActionData>(
+      { error: spec.error_messages.registration.creation_failed },
+      { status: 500 }
+    );
+  }
+
+  // Get the created user to obtain userId
+  const newUser = await getUserByEmail(sanitizedEmail, context as any);
+  if (!newUser) {
+    return json<ActionData>(
+      { error: spec.error_messages.registration.creation_failed },
+      { status: 500 }
+    );
+  }
+
+  // Create session
+  const sessionId = crypto.randomUUID();
+  const sessionData = createSessionData(newUser.id, sessionId);
+
+  try {
+    const setCookieHeader = await saveSession(sessionData, context as any);
+
+    // Set session cookie and redirect to /account
+    return redirect(spec.server_io.action.default_redirect, {
+      headers: {
+        'Set-Cookie': setCookieHeader,
+      },
     });
   } catch (error) {
-    if (error instanceof Response) return error;
-    return json({ error: (error as Error).message }, { status: 400 });
+    return json<ActionData>(
+      { error: spec.error_messages.authentication.session_creation_failed },
+      { status: 500 }
+    );
   }
 }
 
 export default function Register() {
   const actionData = useActionData<typeof action>();
+  const loaderData = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === 'submitting';
+  const { uiSpec } = loaderData;
+
+  // Conform: Form state management
+  const [form, fields] = useForm({
+    lastResult: actionData?.lastResult,
+    onValidate({ formData }) {
+      return parseWithValibot(formData, { schema: RegisterSchema });
+    },
+    shouldValidate: 'onBlur',
+    shouldRevalidate: 'onInput',
+  });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h1 className="mb-6 text-2xl font-bold text-center">会員登録</h1>
-        <Form method="post" className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">メールアドレス</label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md"
-              required
-            />
+    <main className="auth-container auth-container-structure" data-testid="register-page">
+      <div className="auth-card auth-card-structure">
+        <h1 className="auth-header__title">{uiSpec.title}</h1>
+        <p className="auth-header__subtitle">{uiSpec.subtitle}</p>
+
+        {actionData?.error && (
+          <div className="error-message-structure" role="alert" data-testid="error-message">
+            <span>{actionData.error}</span>
           </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">パスワード</label>
+        )}
+
+        <Form method="post" className="auth-form-structure" {...getFormProps(form)}>
+          <div className="form-field-structure">
+            <label htmlFor={fields.email.id}>{uiSpec.fields.email.label}</label>
             <input
-              id="password"
-              type="password"
-              name="password"
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md"
-              required
+              {...getInputProps(fields.email, { type: 'email' })}
+              className="form-field__input"
+              autoComplete="email"
+              data-testid="email-input"
             />
+            {fields.email.errors && (
+              <span id={fields.email.errorId} className="error-message-structure" role="alert" data-testid="error-message">
+                {fields.email.errors}
+              </span>
+            )}
           </div>
-          <div>
-            <label htmlFor="passwordConfirm" className="block text-sm font-medium text-gray-700">パスワード確認</label>
+
+          <div className="form-field-structure">
+            <label htmlFor={fields.password.id}>{uiSpec.fields.password.label}</label>
             <input
-              id="passwordConfirm"
-              type="password"
-              name="passwordConfirm"
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md"
-              required
+              {...getInputProps(fields.password, { type: 'password' })}
+              className="form-field__input"
+              autoComplete="new-password"
+              data-testid="password-input"
             />
+            {fields.password.errors && (
+              <span id={fields.password.errorId} className="error-message-structure" role="alert" data-testid="error-message">
+                {fields.password.errors}
+              </span>
+            )}
           </div>
-          {actionData?.error && (
-            <div className="text-sm text-red-600">{actionData.error}</div>
-          )}
-          <button
-            type="submit"
-            name="intent"
-            value="register"
-            className="w-full px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-          >
-            登録する
+
+          <div className="form-field-structure">
+            <label htmlFor={fields.passwordConfirm.id}>{uiSpec.fields.confirmPassword.label}</label>
+            <input
+              {...getInputProps(fields.passwordConfirm, { type: 'password' })}
+              className="form-field__input"
+              autoComplete="new-password"
+              data-testid="confirm-password-input"
+            />
+            {fields.passwordConfirm.errors && (
+              <span id={fields.passwordConfirm.errorId} className="error-message-structure" role="alert" data-testid="error-message">
+                {fields.passwordConfirm.errors}
+              </span>
+            )}
+          </div>
+
+          <button type="submit" className="btn-primary" disabled={isSubmitting} data-testid="submit-button">
+            {isSubmitting ? uiSpec.submitButton.loadingLabel : uiSpec.submitButton.label}
           </button>
         </Form>
-        <div className="mt-4 text-center">
-          <Link to="/login" className="text-sm text-blue-600 hover:underline">
-            既にアカウントをお持ちの方はこちら
+
+        <div style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
+          <p style={{ color: 'var(--color-text-primary)', marginBottom: 'var(--spacing-2)', fontSize: 'var(--font-size-sm)' }}>
+            {uiSpec.links.loginPrompt}
+          </p>
+          <Link
+            to="/login"
+            className="btn-secondary"
+            data-testid="login-link"
+            style={{ display: 'inline-block', textDecoration: 'none' }}
+          >
+            {uiSpec.links.loginLink}
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

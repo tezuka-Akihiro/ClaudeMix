@@ -32,7 +32,6 @@
 このサービスは、プロジェクトのボイラープレートで定義された以下の主要なアーキテクチャ原則を厳格に遵守します。詳細な規約については、各ドキュメントを参照してください。
 
 - **3大層分離アーキテクチャ**: `CLAUDE.md` および `README.md` に記載の通り、UI層・純粋ロジック層・副作用層の責務を分離します。
-    - **ライブラリ非依存原則**: 純粋ロジック層 (`lib`) は `Remix Auth` 等の外部ライブラリに依存してはならず、ライブラリ固有の型をインポートすることも禁止します。すべての外部データは副作用層 (`data-io`) でドメイン型に変換した後に `lib` へ渡します。
 - **Outside-In TDD**: `TDD_WORK_FLOW.md` に記載された開発フローに従います。
 - **スタイリング憲章**: `docs/CSS_structure/STYLING_CHARTER.md` に基づくCSS階層アーキテクチャを遵守します。
 
@@ -44,7 +43,7 @@
 
 | データ種別 | ストレージ | 理由 |
 | :--- | :--- | :--- |
-| **Sessions** (セッション) | **Workers KV** | エッジキャッシング、超低レイテンシ (500µs-10ms)、Read-heavy最適化。`Remix Auth` と連携。 |
+| **Sessions** (セッション) | **Workers KV** | エッジキャッシング、超低レイテンシ (500µs-10ms)、Read-heavy最適化 |
 | **Password Reset Tokens** | **Workers KV** | 一時データ、TTL自動削除、高速アクセス |
 | **Users** (ユーザー) | **D1 Database** | リレーショナルデータ、SQLクエリ、永続ストレージ |
 | **Subscriptions** (サブスクリプション) | **D1 Database** | トランザクション整合性、Stripeデータとの同期 |
@@ -66,10 +65,8 @@
 
 ```text
 認証フロー:
-1. 認証開始 (UI) → Remix Auth (Data-IO) が Strategy 実行
-2. 検証 (Lib) → D1でユーザー検索・作成 (Data-IO)
-3. 成功 → WorkersKVSessionStorage (Data-IO) を介して KV にセッション保存 → Cookie発行
-4. ページアクセス → Authenticator が Cookie からセッション復元 → 必要に応じて D1 から最新情報を取得
+1. ログイン成功 → D1でユーザー検証 → KVにセッション保存 → Cookie発行
+2. ページアクセス → CookieからセッションID取得 → KVでセッション検証 → D1からユーザー情報取得
 
 退会フロー:
 1. アカウント削除要求 → D1でサブスクリプション確認・削除 → D1でユーザー削除 (CASCADE)
@@ -162,33 +159,30 @@
 
 ```mermaid
 graph TD
-    A[/register Route] -->|action| B[Remix Auth: authenticate]
-    B --> C[data-io: Strategy / Form]
-    C --> D[lib: 入力検証 / ハッシュ化]
-    D --> E[data-io: D1 ユーザー作成]
-    E --> F[data-io: KV セッション保存]
+    A[/register Route] -->|action| B[会員登録処理]
+    B --> C[data-io: ユーザー作成]
+    C --> D[lib: パスワードハッシュ化]
 
-    G[/login Route] -->|action| H[Remix Auth: authenticate]
-    H --> I[data-io: Strategy / Google / Form]
-    I --> J[lib: プロフィール検証]
-    J --> K[data-io: D1 ユーザー照合]
-    K --> L[data-io: KV セッション保存]
+    E[/login Route] -->|action| F[ログイン処理]
+    F --> G[data-io: ユーザー認証]
+    G --> H[lib: セッション生成]
 
-    M[/account Route] -->|loader| N[Remix Auth: isAuthenticated]
-    N --> O[data-io: KV セッション取得]
-    O --> P[UI: マイページ表示]
+    I[/account Route] -->|loader| J[セッション取得]
+    J --> K[lib: セッション検証]
+    K --> L[data-io: ユーザー情報取得]
+    L --> M[UI: マイページ表示]
 
-    Q[/account/subscription Route] -->|action| R[Stripe決済処理]
-    R --> S[data-io: Stripe API連携]
-    S --> T[lib: サブスクリプション状態更新]
+    N[/account/subscription Route] -->|action| O[Stripe決済処理]
+    O --> P[data-io: Stripe API連携]
+    P --> Q[lib: サブスクリプション状態更新]
 ```
 
 **主要なデータフロー**:
 
-1. **会員登録**: Route → Remix Auth (Data-IO) → lib (ハッシュ化/検証) → data-io (D1作成) → data-io (KV保存)
-2. **ログイン**: Route → Remix Auth (Data-IO) → lib (プロフィール検証) → data-io (D1照合) → data-io (KV保存)
+1. **会員登録**: Route → data-io（ユーザー作成） → lib（パスワードハッシュ化） → lib（セッション生成） → Cookie保存
+2. **ログイン**: Route → data-io（認証） → lib（セッション生成） → Cookie保存
 3. **パスワードリセット**: Route → data-io（トークン生成・KV保存） → data-io（メール送信） → Route（トークン検証） → data-io（パスワード更新） → lib（全セッション破棄）
-4. **マイページ**: Route → Remix Auth (Data-IO) → data-io (KVセッション取得) → UI（表示）
+4. **マイページ**: Route → lib（セッション検証） → data-io（ユーザー情報取得） → UI（表示）
 5. **サブスクリプション**: Route → data-io（Stripe API） → lib（状態更新） → UI（結果表示）
 6. **退会処理**: Route → data-io（アクティブなサブスクリプション確認） → data-io（Stripeサブスクリプション即時解約） → data-io（D1: subscriptionsテーブル削除） → data-io（D1: usersテーブル削除） → lib（全セッション破棄） → /loginへリダイレクト
 
@@ -200,8 +194,6 @@ graph TD
 
 | 用語 (Term) | 定義・翻訳 (Definition/Translation) | 備考・使用例 (Notes/Examples) |
 | :--- | :--- | :--- |
-| Remix Auth | 認証エンジン | 認証フローを統制するライブラリ。Data-IO層に配置 |
-| Strategy | 認証戦略 | OAuthやFormなど、特定の認証方式を実装したもの |
 | User | ユーザー | サービスに登録したアカウント保持者 |
 | Session | セッション | ログイン状態を維持するための一時的な認証情報 |
 | Session ID | セッションID | セッションを識別する一意の文字列。Cookieに保存 |
@@ -299,7 +291,6 @@ graph TD
 - **Componentディレクトリ**: `app/components/account/<section>/`
 - **Libディレクトリ**: `app/lib/account/<section>/`
 - **Data-IOディレクトリ**: `app/data-io/account/<section>/`
-- **Strategyファイル**: `app/data-io/account/authentication/strategies/*.server.ts`
 
 ---
 

@@ -6,11 +6,12 @@
  * @responsibility 認証保護、レイアウト提供、セッション管理
  */
 
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
-import { json, redirect } from '@remix-run/cloudflare';
+import type { LoaderFunctionArgs } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
-import { getSessionUser } from '~/data-io/account/common/session.server';
-import { userRepository } from '~/data-io/account/authentication/userRepository.server';
+import { getSession } from '~/data-io/account/common/getSession.server';
+import { getUserById } from '~/data-io/account/common/getUserById.server';
+import { isSessionExpired } from '~/lib/account/common/isSessionExpired';
 import { getActiveNavItem } from '~/lib/account/common/getActiveNavItem';
 import AccountLayout from '~/components/account/common/AccountLayout';
 import type { NavItem } from '~/specs/account/types';
@@ -22,24 +23,37 @@ import '~/styles/account/layer2-common.css';
 
 /**
  * Loader: Authentication guard and data provider
+ *
+ * Flow:
+ * 1. Get session from cookie
+ * 2. Validate session (exists and not expired)
+ * 3. Get user data from database
+ * 4. Redirect to /login if any check fails
+ * 5. Return user and navigation data if authenticated
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const redirectUrl = url.pathname + url.search;
 
-  // 1. Get user from session
-  const userFromSession = await getSessionUser(request, context);
+  // Get session from cookie
+  const session = await getSession(request, context as any);
 
-  if (!userFromSession) {
+  // Check if session exists
+  if (!session) {
     return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
   }
 
-  // 2. Get latest user data from DB
-  const user = await userRepository.findByEmail(userFromSession.email, context);
+  // Check if session is expired
+  if (isSessionExpired(session.expiresAt)) {
+    return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
+  }
 
+  // Get user data
+  const user = await getUserById(session.userId, context as any);
+
+  // Check if user exists
   if (!user) {
-    // Session exists but user not in DB?
-    return redirect('/login');
+    return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
   }
 
   // Load common spec
@@ -61,6 +75,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 /**
  * Account Parent Route Component
+ *
+ * Renders nested routes with authentication context
  */
 export default function Account() {
   const { user, navItems, activeNavItem } = useLoaderData<typeof loader>();
