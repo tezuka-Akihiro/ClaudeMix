@@ -89,23 +89,61 @@ Subscription Management (サブスクリプション管理)
 
 - Stripeからのイベント受信
 - イベント検証（署名チェック）
+- 冪等性ガード（重複イベント処理防止）
 - サブスクリプション状態の同期
 
 **処理対象イベント**:
 
-- `checkout.session.completed`: 決済完了、サブスクリプション有効化
-- `customer.subscription.updated`: サブスクリプション更新
-- `customer.subscription.deleted`: サブスクリプションキャンセル
-- `invoice.paid`: 請求成功
-- `invoice.payment_failed`: 請求失敗
+| イベント | 処理内容 |
+|:--------|:--------|
+| `checkout.session.completed` | subscriptionsレコード作成、stripeCustomerId保存、ステータス有効化 |
+| `customer.subscription.updated` | cancel_at_period_end検知、解約予約状態の反映 |
+| `customer.subscription.deleted` | ステータスをinactiveに変更（期間終了時） |
+| `invoice.paid` | currentPeriodEnd更新（継続課金時の期限延長） |
+| `invoice.payment_failed` | past_dueステータス設定、警告フラグ設定 |
 
 **処理フロー**:
 
 1. Webhookイベント受信
 2. 署名検証
-3. イベントタイプ判定
-4. サブスクリプション状態更新（D1 Database）
-5. 200 OKレスポンス返却
+3. **冪等性チェック**: `isWebhookEventProcessed(eventId)`で重複確認
+4. イベントタイプ判定
+5. 対応するハンドラー実行
+6. **イベント記録**: `recordWebhookEvent(eventId, eventType)`
+7. 200 OKレスポンス返却
+
+#### 4. サブスクリプションレコード管理 (Subscription Record Management)
+
+**機能**:
+
+- Webhook受信時のsubscriptionsテーブル操作
+- ユーザー↔Stripe顧客IDのマッピング管理
+- 有効期限データの同期
+
+**checkout.session.completed 処理詳細**:
+
+1. `metadata.userId`からユーザー特定
+2. `session.subscription`からStripeサブスクリプションID取得
+3. Stripe APIで詳細取得（period_start, period_end, customer_id）
+4. **usersテーブル更新**: `stripeCustomerId`を保存
+5. **subscriptionsテーブル作成**: 全フィールドを含むレコード挿入
+6. **usersテーブル更新**: `subscriptionStatus`を'active'に
+
+**invoice.paid 処理詳細**:
+
+1. `invoice.customer`からStripe顧客ID取得
+2. **usersテーブル検索**: `stripeCustomerId`でユーザー逆引き
+3. `invoice.subscription`からサブスクリプションID取得
+4. Stripe APIで最新期間取得
+5. **subscriptionsテーブル更新**: `currentPeriodStart`, `currentPeriodEnd`を更新
+
+**customer.subscription.updated 処理詳細**:
+
+1. `subscription.id`でsubscriptionsレコード検索
+2. `cancel_at_period_end`フラグ確認
+3. trueの場合: `canceledAt`に`current_period_end`を設定（解約予約）
+4. falseの場合: `canceledAt`をnullに（再開）
+5. **ステータスは'active'のまま維持**（期間終了まで閲覧可能）
 
 ## 📂 app/components要件
 
@@ -244,6 +282,35 @@ Subscription Management (サブスクリプション管理)
 
 **出力**: Date
 
+#### 4. formatSubscriptionEndDate
+
+**配置**: `app/lib/account/subscription/formatSubscriptionEndDate.ts`
+
+**責務**: サブスクリプション終了日の日本語フォーマット
+
+**入力**: ISO 8601形式の日付文字列
+
+**処理**: 「〇月〇日まで利用可能」形式に変換
+
+**出力**: string
+
+#### 5. isSubscriptionAccessible
+
+**配置**: `app/lib/account/subscription/isSubscriptionAccessible.ts`
+
+**責務**: サブスクリプションの閲覧権限判定
+
+**入力**: subscriptionStatus, currentPeriodEnd, canceledAt
+
+**処理**: 現在日時と比較し、閲覧可能か判定
+
+**出力**: boolean
+
+**判定ロジック**:
+- status='active' かつ currentPeriodEnd > now → true
+- status='active' かつ canceledAt設定済み かつ currentPeriodEnd > now → true（解約予約中も閲覧可）
+- それ以外 → false
+
 ## 🔌 副作用要件
 
 ### data-io層の関数
@@ -289,24 +356,111 @@ Subscription Management (サブスクリプション管理)
 
 **出力**: Subscription型またはnull
 
-#### 4. updateSubscriptionStatus.server.ts
+#### 4. updateUserSubscriptionStatus.server.ts
 
-**配置**: `app/data-io/account/subscription/updateSubscriptionStatus.server.ts`
+**配置**: `app/data-io/account/subscription/updateUserSubscriptionStatus.server.ts`
 
-**責務**: サブスクリプション状態をDB更新
+**責務**: usersテーブルのsubscriptionStatus更新
 
-**入力**:
-
-- ユーザーID
-- 新しい状態
-- Stripe Subscription ID
-- 次回請求日
+**入力**: ユーザーID, 新しい状態('active' | 'inactive')
 
 **処理**: D1 DatabaseでUPDATE文実行
 
-**出力**: 更新されたSubscription型
+**出力**: boolean（更新成功/失敗）
 
-#### 5. verifyStripeWebhook.server.ts
+#### 5. createSubscription.server.ts
+
+**配置**: `app/data-io/account/subscription/createSubscription.server.ts`
+
+**責務**: subscriptionsテーブルにレコード作成
+
+**入力**:
+
+- userId
+- stripeSubscriptionId
+- stripeCustomerId
+- planId
+- status
+- currentPeriodStart
+- currentPeriodEnd
+
+**処理**: D1 DatabaseでINSERT文実行
+
+**出力**: 作成されたsubscription ID
+
+#### 6. updateSubscriptionPeriod.server.ts
+
+**配置**: `app/data-io/account/subscription/updateSubscriptionPeriod.server.ts`
+
+**責務**: サブスクリプション期間の更新（継続課金時）
+
+**入力**: stripeSubscriptionId, currentPeriodStart, currentPeriodEnd
+
+**処理**: D1 DatabaseでUPDATE文実行
+
+**出力**: boolean（更新成功/失敗）
+
+#### 7. updateUserStripeCustomerId.server.ts
+
+**配置**: `app/data-io/account/subscription/updateUserStripeCustomerId.server.ts`
+
+**責務**: usersテーブルにstripeCustomerIdを保存
+
+**入力**: userId, stripeCustomerId
+
+**処理**: D1 DatabaseでUPDATE文実行
+
+**出力**: boolean（更新成功/失敗）
+
+#### 8. getUserByStripeCustomerId.server.ts
+
+**配置**: `app/data-io/account/subscription/getUserByStripeCustomerId.server.ts`
+
+**責務**: Stripe顧客IDからユーザーを逆引き
+
+**入力**: stripeCustomerId
+
+**処理**: D1 DatabaseでSELECT文実行
+
+**出力**: User型またはnull
+
+#### 9. getSubscriptionByStripeId.server.ts
+
+**配置**: `app/data-io/account/subscription/getSubscriptionByStripeId.server.ts`
+
+**責務**: StripeサブスクリプションIDからsubscriptionレコード取得
+
+**入力**: stripeSubscriptionId
+
+**処理**: D1 DatabaseでSELECT文実行
+
+**出力**: Subscription型またはnull
+
+#### 10. recordWebhookEvent.server.ts
+
+**配置**: `app/data-io/account/subscription/recordWebhookEvent.server.ts`
+
+**責務**: 処理済みWebhookイベントを記録（冪等性ガード）
+
+**入力**: eventId, eventType
+
+**処理**: D1 DatabaseでINSERT文実行（webhook_eventsテーブル）
+
+**出力**: void
+
+#### 11. isWebhookEventProcessed.server.ts
+
+**配置**: `app/data-io/account/subscription/isWebhookEventProcessed.server.ts`
+
+**責務**: Webhookイベントが処理済みか確認
+
+**入力**: eventId
+
+**処理**: D1 DatabaseでSELECT文実行
+
+**出力**: boolean（処理済み: true）
+
+#### 12. verifyStripeWebhook.server.ts
 
 **配置**: `app/data-io/account/subscription/verifyStripeWebhook.server.ts`
 
@@ -444,21 +598,41 @@ api.webhooks.stripe (イベント受信)
 
 ### データベーススキーマ（D1）
 
+**usersテーブル（追加カラム）**:
+
+| カラム名 | 型 | 制約 | 説明 |
+| :--- | :--- | :--- | :--- |
+| stripeCustomerId | TEXT | | Stripe顧客ID（Webhook処理でのユーザー逆引き用） |
+
+**インデックス**: `idx_users_stripe_customer_id` ON `stripeCustomerId`
+
 **subscriptionsテーブル**:
 
 | カラム名 | 型 | 制約 | 説明 |
 | :--- | :--- | :--- | :--- |
 | id | TEXT | PRIMARY KEY | サブスクリプションID（UUID） |
-| user_id | TEXT | FOREIGN KEY, NOT NULL | ユーザーID |
-| stripe_subscription_id | TEXT | UNIQUE | StripeのSubscription ID |
-| stripe_customer_id | TEXT | NOT NULL | StripeのCustomer ID |
-| plan_id | TEXT | NOT NULL | プランID（1month/3months/6months） |
+| userId | TEXT | FOREIGN KEY, NOT NULL | ユーザーID |
+| stripeSubscriptionId | TEXT | UNIQUE | StripeのSubscription ID |
+| stripeCustomerId | TEXT | NOT NULL | StripeのCustomer ID |
+| planId | TEXT | NOT NULL | プランID（standard/supporter） |
 | status | TEXT | NOT NULL | 状態（active/canceled/past_due/trialing） |
-| current_period_start | TEXT | NOT NULL | 現在の請求期間開始日（ISO 8601） |
-| current_period_end | TEXT | NOT NULL | 現在の請求期間終了日（ISO 8601） |
-| canceled_at | TEXT | | キャンセル日時（ISO 8601） |
-| created_at | TEXT | NOT NULL | 作成日時（ISO 8601） |
-| updated_at | TEXT | NOT NULL | 更新日時（ISO 8601） |
+| currentPeriodStart | TEXT | NOT NULL | 現在の請求期間開始日（ISO 8601） |
+| currentPeriodEnd | TEXT | NOT NULL | 現在の請求期間終了日（ISO 8601） |
+| canceledAt | TEXT | | キャンセル予約日時（period_end、ISO 8601） |
+| createdAt | TEXT | NOT NULL | 作成日時（ISO 8601） |
+| updatedAt | TEXT | NOT NULL | 更新日時（ISO 8601） |
+
+**webhook_eventsテーブル（新規）**:
+
+| カラム名 | 型 | 制約 | 説明 |
+| :--- | :--- | :--- | :--- |
+| id | TEXT | PRIMARY KEY | レコードID（UUID） |
+| eventId | TEXT | UNIQUE, NOT NULL | StripeイベントID（冪等性キー） |
+| eventType | TEXT | NOT NULL | イベントタイプ |
+| processedAt | TEXT | NOT NULL | 処理日時（ISO 8601） |
+| createdAt | TEXT | NOT NULL | 作成日時（ISO 8601） |
+
+**インデックス**: `idx_webhook_events_event_id` ON `eventId`
 
 > **注**: 具体的な型定義は `app/specs/account/types.ts` で定義します。
 

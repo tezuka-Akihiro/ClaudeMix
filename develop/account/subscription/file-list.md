@@ -9,8 +9,9 @@
 | ファイル名 | パス |
 | :--- | :--- |
 | subscription.spec.ts | tests/e2e/account/subscription.spec.ts |
+| subscription-lifecycle.spec.ts | tests/e2e/account/subscription-lifecycle.spec.ts |
 
-**テストケース**:
+**既存テストケース（subscription.spec.ts）**:
 
 - プラン選択画面の表示確認
 - Stripe Checkout Session作成の成功シナリオ
@@ -18,6 +19,16 @@
 - キャンセルモーダルの開閉動作確認
 - キャンセル実行の成功シナリオ
 - Webhook処理の確認（モック使用）
+
+**ライフサイクルテストケース（subscription-lifecycle.spec.ts）** ※新規:
+
+| シナリオ | 確認項目 |
+|:--------|:--------|
+| 1. 初回購読の疎通と昇格 | subscriptionStatus='active', currentPeriodEnd保存, 有料記事閲覧可 |
+| 2. 解約予約と残存期間保護 | Stripe cancel_at_period_end=true, DB status='active'継続, 期限表示 |
+| 3. 有効期限切れによる自動ロック | subscriptionStatus='inactive', 有料記事→プラン選択へリダイレクト |
+| 4. 支払い失敗時の猶予と警告 | 警告バナー表示, 猶予期間中は閲覧可 |
+| 5. データ整合性（Metadata紐付け） | metadata.userIdで正しいユーザーのレコードが更新される |
 
 ---
 
@@ -58,6 +69,15 @@
 | calculateNextBillingDate.ts | app/lib/account/subscription/calculateNextBillingDate.ts | 次回請求日の計算 |
 | calculateNextBillingDate.test.ts | app/lib/account/subscription/calculateNextBillingDate.test.ts | calculateNextBillingDateの単体テスト |
 
+### 3.2 ライフサイクル管理ロジック（新規）
+
+| ファイル名 | パス | 責務 |
+| :--- | :--- | :--- |
+| formatSubscriptionEndDate.ts | app/lib/account/subscription/formatSubscriptionEndDate.ts | 期限日の日本語フォーマット（「〇月〇日まで利用可能」） |
+| formatSubscriptionEndDate.test.ts | app/lib/account/subscription/formatSubscriptionEndDate.test.ts | formatSubscriptionEndDateの単体テスト |
+| isSubscriptionAccessible.ts | app/lib/account/subscription/isSubscriptionAccessible.ts | 閲覧権限判定（期間・解約予約考慮） |
+| isSubscriptionAccessible.test.ts | app/lib/account/subscription/isSubscriptionAccessible.test.ts | isSubscriptionAccessibleの単体テスト |
+
 ---
 
 ## 4. 副作用層 (data-io層、Phase 2.1)
@@ -79,12 +99,34 @@
 | :--- | :--- | :--- |
 | getSubscriptionByUserId.server.ts | app/data-io/account/subscription/getSubscriptionByUserId.server.ts | ユーザーのサブスクリプション情報取得 |
 | getSubscriptionByUserId.server.test.ts | app/data-io/account/subscription/getSubscriptionByUserId.server.test.ts | getSubscriptionByUserIdの単体テスト（DBモック使用） |
-| updateSubscriptionStatus.server.ts | app/data-io/account/subscription/updateSubscriptionStatus.server.ts | サブスクリプション状態をDB更新 |
-| updateSubscriptionStatus.server.test.ts | app/data-io/account/subscription/updateSubscriptionStatus.server.test.ts | updateSubscriptionStatusの単体テスト（DBモック使用） |
-| createSubscription.server.ts | app/data-io/account/subscription/createSubscription.server.ts | サブスクリプションレコードをDB作成 |
+| updateUserSubscriptionStatus.server.ts | app/data-io/account/subscription/updateUserSubscriptionStatus.server.ts | usersテーブルのsubscriptionStatus更新 |
+| updateUserSubscriptionStatus.server.test.ts | app/data-io/account/subscription/updateUserSubscriptionStatus.server.test.ts | updateUserSubscriptionStatusの単体テスト（DBモック使用） |
+| createSubscription.server.ts | app/data-io/account/subscription/createSubscription.server.ts | subscriptionsテーブルにレコード作成 |
 | createSubscription.server.test.ts | app/data-io/account/subscription/createSubscription.server.test.ts | createSubscriptionの単体テスト（DBモック使用） |
 | deleteSubscription.server.ts | app/data-io/account/subscription/deleteSubscription.server.ts | サブスクリプションレコードをDB削除（アカウント削除時に使用） |
 | deleteSubscription.server.test.ts | app/data-io/account/subscription/deleteSubscription.server.test.ts | deleteSubscriptionの単体テスト（DBモック使用） |
+
+### 4.3 サブスクリプションライフサイクル管理（新規）
+
+| ファイル名 | パス | 責務 |
+| :--- | :--- | :--- |
+| updateSubscriptionPeriod.server.ts | app/data-io/account/subscription/updateSubscriptionPeriod.server.ts | 継続課金時の期間更新 |
+| updateSubscriptionPeriod.server.test.ts | app/data-io/account/subscription/updateSubscriptionPeriod.server.test.ts | updateSubscriptionPeriodの単体テスト |
+| updateUserStripeCustomerId.server.ts | app/data-io/account/subscription/updateUserStripeCustomerId.server.ts | usersテーブルにstripeCustomerId保存 |
+| updateUserStripeCustomerId.server.test.ts | app/data-io/account/subscription/updateUserStripeCustomerId.server.test.ts | updateUserStripeCustomerIdの単体テスト |
+| getUserByStripeCustomerId.server.ts | app/data-io/account/subscription/getUserByStripeCustomerId.server.ts | Stripe顧客IDからユーザー逆引き |
+| getUserByStripeCustomerId.server.test.ts | app/data-io/account/subscription/getUserByStripeCustomerId.server.test.ts | getUserByStripeCustomerIdの単体テスト |
+| getSubscriptionByStripeId.server.ts | app/data-io/account/subscription/getSubscriptionByStripeId.server.ts | StripeサブスクリプションIDからレコード取得 |
+| getSubscriptionByStripeId.server.test.ts | app/data-io/account/subscription/getSubscriptionByStripeId.server.test.ts | getSubscriptionByStripeIdの単体テスト |
+
+### 4.4 冪等性ガード（新規）
+
+| ファイル名 | パス | 責務 |
+| :--- | :--- | :--- |
+| recordWebhookEvent.server.ts | app/data-io/account/subscription/recordWebhookEvent.server.ts | 処理済みWebhookイベント記録 |
+| recordWebhookEvent.server.test.ts | app/data-io/account/subscription/recordWebhookEvent.server.test.ts | recordWebhookEventの単体テスト |
+| isWebhookEventProcessed.server.ts | app/data-io/account/subscription/isWebhookEventProcessed.server.ts | Webhookイベント重複チェック |
+| isWebhookEventProcessed.server.test.ts | app/data-io/account/subscription/isWebhookEventProcessed.server.test.ts | isWebhookEventProcessedの単体テスト |
 
 ---
 
@@ -150,27 +192,47 @@ subscriptionセクションは、以下のcommonセクションのファイル�
 
 ## データベーススキーマ
 
+### users テーブル（追加カラム）
+
+| カラム名 | 型 | 制約 | 説明 |
+|:---|:---|:---|:---|
+| stripeCustomerId | TEXT | | Stripe顧客ID（Webhook処理でのユーザー逆引き用） |
+
+**インデックス**: `idx_users_stripe_customer_id` ON `stripeCustomerId`
+
 ### subscriptions テーブル
 
 | カラム名 | 型 | 制約 | 説明 |
 |:---|:---|:---|:---|
 | id | TEXT | PRIMARY KEY | サブスクリプションID（UUID） |
-| user_id | TEXT | FOREIGN KEY, NOT NULL | ユーザーID |
-| stripe_subscription_id | TEXT | UNIQUE | StripeのSubscription ID |
-| stripe_customer_id | TEXT | NOT NULL | StripeのCustomer ID |
-| plan_id | TEXT | NOT NULL | プランID（1month/3months/6months） |
+| userId | TEXT | FOREIGN KEY, NOT NULL | ユーザーID |
+| stripeSubscriptionId | TEXT | UNIQUE | StripeのSubscription ID |
+| stripeCustomerId | TEXT | NOT NULL | StripeのCustomer ID |
+| planId | TEXT | NOT NULL | プランID（standard/supporter） |
 | status | TEXT | NOT NULL | 状態（active/canceled/past_due/trialing/incomplete/incomplete_expired/unpaid） |
-| current_period_start | TEXT | NOT NULL | 現在の請求期間開始日（ISO 8601） |
-| current_period_end | TEXT | NOT NULL | 現在の請求期間終了日（ISO 8601） |
-| canceled_at | TEXT | | キャンセル日時（ISO 8601） |
-| created_at | TEXT | NOT NULL | 作成日時（ISO 8601） |
-| updated_at | TEXT | NOT NULL | 更新日時（ISO 8601） |
+| currentPeriodStart | TEXT | NOT NULL | 現在の請求期間開始日（ISO 8601） |
+| currentPeriodEnd | TEXT | NOT NULL | 現在の請求期間終了日（ISO 8601） |
+| canceledAt | TEXT | | キャンセル予約日時（period_end、ISO 8601） |
+| createdAt | TEXT | NOT NULL | 作成日時（ISO 8601） |
+| updatedAt | TEXT | NOT NULL | 更新日時（ISO 8601） |
 
 **インデックス**:
 
-- `idx_subscriptions_user_id` ON `user_id` (ユーザーごとのサブスクリプション検索)
-- `idx_subscriptions_stripe_subscription_id` ON `stripe_subscription_id` (Webhook処理での検索)
+- `idx_subscriptions_userId` ON `userId` (ユーザーごとのサブスクリプション検索)
+- `idx_subscriptions_stripeSubscriptionId` ON `stripeSubscriptionId` (Webhook処理での検索)
 - `idx_subscriptions_status` ON `status` (状態別の検索)
+
+### webhook_events テーブル（新規）
+
+| カラム名 | 型 | 制約 | 説明 |
+|:---|:---|:---|:---|
+| id | TEXT | PRIMARY KEY | レコードID（UUID） |
+| eventId | TEXT | UNIQUE, NOT NULL | StripeイベントID（冪等性キー） |
+| eventType | TEXT | NOT NULL | イベントタイプ |
+| processedAt | TEXT | NOT NULL | 処理日時（ISO 8601） |
+| createdAt | TEXT | NOT NULL | 作成日時（ISO 8601） |
+
+**インデックス**: `idx_webhook_events_event_id` ON `eventId`
 
 ---
 

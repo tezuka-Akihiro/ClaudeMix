@@ -582,6 +582,70 @@ stateDiagram-v2
 
 ---
 
+## 契約状況表示の拡張（ライフサイクル管理対応）
+
+### 状態別表示内容
+
+| 状態 | 表示内容 | バッジ |
+|:----|:--------|:------|
+| active | 「有効」バッジ + 「次回請求日: 〇月〇日」 | success（緑） |
+| active + canceledAt設定 | 「解約予約済み」バッジ + 「〇月〇日まで利用可能」 | warning（黄） |
+| past_due | 「支払い遅延」警告 + 「カード情報を更新してください」 | danger（赤） |
+| inactive | 「未契約」+ プラン選択へ誘導 | secondary（灰） |
+
+### PaymentWarningBanner コンポーネント（新規）
+
+**ファイルパス**: `app/components/account/subscription/PaymentWarningBanner.tsx`
+
+**責務**: 支払い失敗時の警告バナー表示
+
+**表示条件**: `subscriptionStatus === 'past_due'`
+
+**UI構造**:
+
+```
+<div data-testid="payment-warning-banner" class="warning-banner" role="alert">
+  <div class="warning-icon">⚠️</div>
+  <div class="warning-content">
+    <h3>お支払いを確認できません</h3>
+    <p>カード情報を更新してください。猶予期間中は引き続きご利用いただけます。</p>
+    <a href="/account/billing" class="warning-action">
+      カード情報を更新する
+    </a>
+  </div>
+</div>
+```
+
+**アクセシビリティ**:
+
+- `role="alert"` で即座にスクリーンリーダーに通知
+- 警告アイコンとテキストの両方で状態を伝達
+
+### 解約予約時の期限表示
+
+**表示条件**: `status === 'active' && canceledAt !== null`
+
+**UI構造**:
+
+```
+<div data-testid="cancellation-notice" class="cancellation-notice">
+  <Badge variant="warning">解約予約済み</Badge>
+  <p>
+    現在のプランは<strong>〇月〇日</strong>まで引き続きご利用いただけます。
+    解約をキャンセルして継続することもできます。
+  </p>
+  <Button
+    variant="secondary"
+    data-testid="reactivate-button"
+    onClick={onReactivate}
+  >
+    解約をキャンセル
+  </Button>
+</div>
+```
+
+---
+
 ## 将来実装（Phase 2）
 
 - プラン変更機能（アップグレード/ダウングレード）
@@ -589,7 +653,8 @@ stateDiagram-v2
 - クーポン適用機能
 - トライアル期間対応
 - 複数支払い方法の管理
+- Stripe Customer Portal連携
 
 ---
 
-**最終更新**: 2025-12-23
+**最終更新**: 2026-02-04

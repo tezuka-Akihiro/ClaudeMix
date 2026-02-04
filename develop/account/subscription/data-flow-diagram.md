@@ -316,6 +316,51 @@ graph TD
     E --> F[200 OK返却]
 ```
 
+### invoice.paid イベント（継続課金）
+
+```mermaid
+graph TD
+    A[invoice.paid] --> B[Invoiceオブジェクト取得]
+    B --> C[invoice.customerからStripe顧客ID取得]
+    C --> D[getUserByStripeCustomerId.server<br/>ユーザー逆引き]
+    D --> E[invoice.subscriptionからサブスクリプションID取得]
+    E --> F[Stripe APIで最新期間取得]
+    F --> G[updateSubscriptionPeriod.server]
+    G --> H[currentPeriodStart, currentPeriodEnd更新]
+    H --> I[200 OK返却]
+
+    style D fill:#fff4e1
+    style G fill:#e8f5e9
+```
+
+**重要な注意事項**:
+
+- **ユーザー逆引き**: `invoice`イベントには`metadata`がないため、`customer`IDからusersテーブルを逆引きする必要がある
+- **stripeCustomerId必須**: checkout.session.completed時にusersテーブルにstripeCustomerIdを保存しておく必要がある
+
+---
+
+## 冪等性ガードフロー（新規）
+
+```mermaid
+graph TD
+    A[Webhookイベント受信] --> B[署名検証]
+    B --> C{isWebhookEventProcessed?}
+    C -- "処理済み" --> D[200 OK<br/>即座に返却]
+    C -- "未処理" --> E[イベント処理実行]
+    E --> F[recordWebhookEvent<br/>イベント記録]
+    F --> G[200 OK返却]
+
+    style C fill:#fff4e1
+    style F fill:#e8f5e9
+```
+
+**冪等性ガードの目的**:
+
+- Stripeは配信失敗時に同じイベントを再送する
+- 重複処理を防止することで、データの整合性を保つ
+- webhook_eventsテーブルにeventIdを記録し、処理済みチェックを行う
+
 ---
 
 ## エラーハンドリングフロー
