@@ -123,6 +123,13 @@ Google OAuth および通常のメール/パスワード認証を `Remix Auth` �
 
 本機能修正の信頼性を担保するため、以下の順序でテスト駆動開発を実施します。
 
+ステップ 0: 基盤コードの型・インポート正常化テスト
+
+対象: app/data-io/account/common/authenticator.server.ts
+
+内容: npm run typecheck をパスさせ、かつ Vitest で authenticator インスタンスがエラーなく生成される（定義が undefined にならない）ことを確認する。
+
+目的: 現在の「半端な実装状態」を脱し、TDDを開始できる「土台（Greenな最小基盤）」を取り戻す。
 ### ステップ 1: Data-IO / Session ユニットテスト
 - **対象**: `app/data-io/account/common/session.server.ts`
 - **内容**:
