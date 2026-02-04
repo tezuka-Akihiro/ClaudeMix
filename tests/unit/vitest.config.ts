@@ -21,7 +21,8 @@ export default defineConfig({
      */
     include: [
       'app/**/*.{test,spec}.{js,ts,jsx,tsx}',
-      'scripts/**/*.{test,spec}.{js,ts}'
+      'scripts/**/*.{test,spec}.{js,ts}',
+      'tests/routes/**/*.{test,spec}.{js,ts,jsx,tsx}'
     ],
 
     coverage: {

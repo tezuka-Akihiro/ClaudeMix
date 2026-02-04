@@ -120,6 +120,27 @@
   - **実装 (GREEN)**: D1 Databaseに新規ユーザーを登録
   - **リファクタリング**: トランザクション処理を追加
 
+##### 3.1.2. OAuth認証（実装済み）
+
+- **1. exchangeGoogleCode.server.ts の実装**: ✅完了
+  - **配置**: `app/data-io/account/authentication/exchangeGoogleCode.server.ts`
+  - **責務**: Google認可コードをトークンに交換し、ユーザー情報を取得
+  - **処理フロー**:
+    1. 認可コードをGoogleのトークンエンドポイントに送信
+    2. アクセストークンを取得
+    3. アクセストークンでユーザー情報APIを呼び出し
+    4. GoogleユーザーID、メールアドレス、名前を返却
+
+- **2. getUserByOAuth.server.ts の実装**: ✅完了
+  - **配置**: `app/data-io/account/authentication/getUserByOAuth.server.ts`
+  - **責務**: OAuthプロバイダーとIDでユーザーを検索
+  - **処理**: D1 Databaseで `oauthProvider` と `oauthId` で検索
+
+- **3. createOAuthUser.server.ts の実装**: ✅完了
+  - **配置**: `app/data-io/account/authentication/createOAuthUser.server.ts`
+  - **責務**: OAuthユーザーの新規登録
+  - **処理**: `oauthProvider`, `oauthId`, `email` を含むユーザーレコードを作成
+
 #### 3.2. 純粋ロジック層の実装（Phase 2.2）
 
 ##### 3.2.1. パスワード処理
@@ -198,7 +219,41 @@
   - **テスト実装**: セッション削除のテスト
   - **リファクタリング**: エラーハンドリングを改善
 
-##### 3.3.2. パスワードリセット関連（オプション機能）
+##### 3.3.2. Google OAuth認証（実装済み）
+
+- **1. auth.google.tsx の実装**: ✅完了
+  - **配置**: `app/routes/auth.google.tsx`
+  - **責務**: Google OAuth認証フローの開始
+  - **実装内容**:
+    - loader:
+      1. 環境変数チェック（GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI）
+      2. CSRF保護用stateパラメータ生成（UUID）
+      3. `oauth_state` Cookieにstate保存（HttpOnly, Secure, SameSite=Lax, MaxAge=600）
+      4. Google OAuth認証URLへリダイレクト
+  - **セキュリティ**: stateパラメータによるCSRF保護
+
+- **2. auth.callback.google.tsx の実装**: ✅完了
+  - **配置**: `app/routes/auth.callback.google.tsx`
+  - **責務**: Google OAuthコールバック処理
+  - **実装内容**:
+    - loader:
+      1. クエリパラメータから `code` と `state` を取得
+      2. **CSRF検証**: Cookieの `oauth_state` とクエリの `state` を比較
+      3. 環境変数チェック
+      4. `exchangeGoogleCode` でユーザー情報取得
+      5. `getUserByOAuth` で既存ユーザー検索
+      6. 未登録の場合は `createOAuthUser` で新規登録
+      7. セッション生成・保存
+      8. `oauth_state` Cookie削除 + セッションCookie設定
+      9. `/account` へリダイレクト
+  - **セキュリティ**:
+    - state不一致時は `/login?error=csrf-detected` へリダイレクト
+    - 認証成功後、oauth_state Cookieを即座に削除
+
+- **3. login.tsx の修正**: ✅完了
+  - **変更内容**: Apple認証ボタンを削除、Google認証ボタンのみ表示
+
+##### 3.3.3. パスワードリセット関連（オプション機能）
 
 - **4. forgot-password.tsx の実装**:
   - **依頼例**: `@GeneratorOperator "account サービスの authentication セクションに、forgot-password.tsx という名前のルートファイルを作成して"`
@@ -276,6 +331,11 @@
     - **パスワードリセット**:
       - メール送信成功の確認（将来実装）
       - トークン検証のテスト（将来実装）
+    - **Google OAuth認証**:
+      - Google認証ボタンクリックでGoogleへリダイレクト
+      - 認証成功後に `/account` へリダイレクト
+      - CSRF検証失敗時のエラー表示（state不一致）
+      - 環境変数未設定時のエラー表示
   - **テスト基準**: `E2E_TEST_CRITERIA.md` の以下を参考に、品質を盤石にします。
     - **セクションレベル**: 主要アクションのエラーハンドリング。
     - **コンポーネントレベル**: バリデーション、インタラクション、アクセシビリティの検証。
