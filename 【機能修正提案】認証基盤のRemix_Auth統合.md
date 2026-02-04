@@ -116,3 +116,36 @@ Google OAuth および通常のメール/パスワード認証を `Remix Auth` �
 
 **編集内容**:
 - `Remix Auth` を介した、UI層 -> 副作用層（Strategy/Mapper） -> 純粋ロジック層 -> 副作用層（D1/KV）の循環フローに更新。
+
+---
+
+## 6. TDD_WORK_FLOW.md (Phase 3 実施計画)
+
+本機能修正の信頼性を担保するため、以下の順序でテスト駆動開発を実施します。
+
+### ステップ 1: Data-IO / Session ユニットテスト
+- **対象**: `app/data-io/account/common/session.server.ts`
+- **内容**:
+    - `commitSession` 呼び出し時に Workers KV にデータが保存されること。
+    - `destroySession` 呼び出し時に KV からデータが削除されること。
+- **検証**: Vitest + Miniflare (KV Mock)
+
+### ステップ 2: Mapper / Pure Logic 結合テスト
+- **対象**: `app/data-io/account/authentication/mappers/authMapper.server.ts`
+- **内容**:
+    - `remix-auth` から返却される多様な Profile 型が、独自の `User` ドメインモデルに正しく変換されること。
+    - 無効なデータが渡された際に `lib` 層のバリデーションが正しくトリガーされること。
+- **検証**: Vitest
+
+### ステップ 3: Strategy バリデーションテスト
+- **対象**: `app/data-io/account/authentication/strategies/form.server.ts`
+- **内容**:
+    - 不正なメール形式やパスワード不一致時に、適切なエラーメッセージが返却されること。
+- **検証**: Vitest
+
+### ステップ 4: E2E 認証フローテスト
+- **対象**: `app/routes/login.tsx`, `app/routes/register.tsx`
+- **内容**:
+    - フォーム入力からログイン成功後のリダイレクト、およびセッション Cookie の発行。
+    - ログアウト後のセッション無効化確認。
+- **検証**: Playwright (Local Dev Server)
