@@ -59,17 +59,26 @@ app/
 4.  **副作用層 (Data-IO)**: 検証済みデータを用い、`userRepository` を介して D1 からユーザーを取得、または新規作成する。
 5.  **副作用層 (Session)**: 最終的なユーザー情報を Workers KV に保存し、Cookie を発行。
 
-### インターフェース例
+### インターフェース例 (疎結合の徹底)
+
+ライブラリの型（`GoogleProfile` 等）を `lib` 層に持ち込まないよう、`data-io` 層でデータの詰め替え（Mapping）を行います。
 
 ```typescript
 // app/data-io/account/authentication/strategies/google.server.ts (副作用層)
+import { googleAuthMapper } from '../mappers/googleMapper.server'; // data-io内での変換
+import { authLogic } from '~/lib/account/authentication/authLogic'; // 純粋ロジック
+
 export const googleStrategy = new GoogleStrategy(
   { clientId, clientSecret, callbackURL },
   async ({ profile }) => {
-    // 1. 純粋ロジック層での検証 (接合点)
-    const validatedData = authLogic.processOAuthProfile(profile);
+    // 1. ライブラリ依存の型からドメインモデルへ変換 (Data-IO層の責務)
+    const domainProfile = googleAuthMapper.toDomainProfile(profile);
 
-    // 2. 副作用層での DB 操作
+    // 2. 純粋ロジック層でのビジネスルール検証 (接合点)
+    // lib層は domainProfile のインターフェースのみを知っており、Remix Auth には依存しない
+    const validatedData = authLogic.processProfile(domainProfile);
+
+    // 3. 副作用層での DB 操作
     const user = await userRepository.findOrCreateUser(validatedData);
 
     return user;
@@ -77,7 +86,15 @@ export const googleStrategy = new GoogleStrategy(
 );
 ```
 
-## 5. GUIDING_PRINCIPLES.md への影響
+## 5. 汚染防止のための絶対ルール
+
+「アーキテクチャの死守」を確実にするため、以下の制限を課します。
+
+1.  **Lib層の純粋性保持**: `app/lib/` 配下のファイルは、`remix-auth` および関連する Strategy パッケージを **絶対に変更・インポートしてはならない**。
+2.  **データ変換の強制**: プロバイダーから提供される raw データは、必ず `data-io` 層で定義されたマッパーを通り、プロジェクト独自のドメイン型に変換してから `lib` 層に渡す。
+3.  **例外処理の分離**: ライブラリに起因する例外（トークン失効、通信エラー等）は `data-io` または `routes` でキャッチし、`lib` 層には「ビジネスルール上のエラー（規約違反等）」のみを扱わせる。
+
+## 6. GUIDING_PRINCIPLES.md への影響
 
 - **矛盾点**: 現在の原則ではセッション管理が「手動」として記述されていますが、これを「Remix Auth + WorkersKVSessionStorage」による統制に更新します。
 - **補強点**: 「ライブラリを利用しつつ、その検証ロジックは必ず Lib 層で行う」という原則を追加し、将来的なライブラリの入れ替えやセキュリティ要件の変更に強い設計とします。
