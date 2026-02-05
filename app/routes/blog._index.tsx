@@ -1,8 +1,8 @@
 // blog/index - Route (routes層)
 // ブログトップページのRoute
 
-import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/cloudflare";
+import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import BlogLayout from "~/components/blog/common/BlogLayout";
 import PostsSection from "~/components/blog/posts/PostsSection";

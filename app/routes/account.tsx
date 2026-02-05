@@ -6,8 +6,8 @@
  * @responsibility 認証保護、レイアウト提供、セッション管理
  */
 
-import type { LoaderFunctionArgs } from '@remix-run/node';
-import { json, redirect } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
+import { json, redirect } from '@remix-run/cloudflare';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';

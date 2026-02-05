@@ -41,9 +41,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
 
   // Clear session cookie and redirect to login
+  // We use the correct cookie name 'session_id' to match getSession/saveSession
   return redirect(redirectPath, {
     headers: {
-      'Set-Cookie': 'sessionId=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
+      'Set-Cookie': 'session_id=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
     },
   });
 }
@@ -58,7 +59,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   // Get current session
   const session = await getSession(request, context as any);
 
-  // Destroy session from KV if it exists
+  // Destroy session from KV if it exists (side effect)
   if (session) {
     await destroySession(session.sessionId, context as any);
   }
@@ -66,7 +67,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   // Clear session cookie and redirect to login
   return redirect(redirectPath, {
     headers: {
-      'Set-Cookie': 'sessionId=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
+      'Set-Cookie': 'session_id=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
     },
   });
 }

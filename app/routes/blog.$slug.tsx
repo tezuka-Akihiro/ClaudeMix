@@ -1,8 +1,8 @@
 // blog.$slug - Route: 記事詳細ページ
 // データフローとページ構成を担当
 
-import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/cloudflare";
+import { json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import { fetchPostBySlug } from "~/data-io/blog/post-detail/fetchPostBySlug.server";
