@@ -101,10 +101,13 @@ AIエージェントが陥った罠から、51ファイルのコードを捨て�
 
 ---
 
-## 5. カテゴリ・タグ
+## 5. カテゴリ・タグ（提供価値カテゴリ & サイト仕様）
 
-**カテゴリ**: 品質向上活動
-**タグ**: remix, cloudflare-workers, architecture, web-standard, auth
+**提供価値カテゴリ**: 品質向上活動
+（※ blog-plannerスキルの5カテゴリに基づく分類。執筆時に「ClaudeMix 記録」または「ClaudeMix 考察」へマッピング予定）
+
+**タグ案**: architecture, refactoring, SSR, KV, D1
+（※ プロジェクトのSSoTである `posts-spec.yaml` の命名規則およびタグマスタに準拠）
 
 ---
 
