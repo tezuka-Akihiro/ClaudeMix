@@ -36,8 +36,8 @@ export async function updateSubscriptionPeriod(
     const result = await db
       .prepare(
         `UPDATE subscriptions
-        SET currentPeriodStart = ?, currentPeriodEnd = ?, updatedAt = ?
-        WHERE stripeSubscriptionId = ?`
+        SET current_period_start = ?, current_period_end = ?, updated_at = ?
+        WHERE stripe_subscription_id = ?`
       )
       .bind(currentPeriodStart, currentPeriodEnd, now, stripeSubscriptionId)
       .run()

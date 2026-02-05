@@ -6,7 +6,8 @@
  * @responsibility ユーザープロフィール情報の表示
  */
 
-import type { User } from '~/specs/account/types';
+import { useFetcher } from '@remix-run/react';
+import type { User, Subscription } from '~/specs/account/types';
 
 export interface ProfileDisplaySpec {
   sections: {
@@ -37,6 +38,7 @@ export interface ProfileDisplaySpec {
 
 export interface ProfileDisplayProps {
   user: User;
+  subscription: Subscription | null;
   spec: ProfileDisplaySpec;
   onEmailChange: () => void;
   onPasswordChange: () => void;
@@ -45,12 +47,29 @@ export interface ProfileDisplayProps {
 
 export function ProfileDisplay({
   user,
+  subscription,
   spec,
   onEmailChange,
   onPasswordChange,
   onDeleteAccount,
 }: ProfileDisplayProps) {
   const { info, actions } = spec.sections;
+  const fetcher = useFetcher();
+
+  const isRenewalOn = subscription?.status === 'active' && !subscription.canceledAt;
+  const isRenewalOff = subscription?.status === 'active' && !!subscription.canceledAt;
+  const nextBillingDate = subscription ? new Date(subscription.currentPeriodEnd).toLocaleDateString('ja-JP') : '';
+
+  const handleToggleRenewal = () => {
+    if (isRenewalOn) {
+      const confirmed = window.confirm(`中断しても ${nextBillingDate} までは全機能を利用可能です。次回の更新のみを停止します。よろしいですか？`);
+      if (confirmed) {
+        fetcher.submit({ intent: 'interrupt-renewal' }, { method: 'post' });
+      }
+    } else if (isRenewalOff) {
+      fetcher.submit({ intent: 'resume-renewal' }, { method: 'post' });
+    }
+  };
 
   // Get subscription status label from spec
   const subscriptionLabel =
@@ -79,6 +98,36 @@ export function ProfileDisplay({
           </div>
         </div>
       </div>
+
+      {/* Subscription Settings Section */}
+      {subscription && subscription.status !== 'inactive' && (
+        <div className="profile-section profile-section-structure">
+          <h3 className="profile-section__title">サブスクリプション設定</h3>
+          <div className="profile-info-structure">
+            <div className="profile-info__item">
+              <div className="profile-info__label">自動更新</div>
+              <div className="profile-info__value">
+                <div className="flex flex-col gap-2">
+                  <span>{isRenewalOn ? 'ON' : 'OFF'}</span>
+                  <button
+                    type="button"
+                    onClick={handleToggleRenewal}
+                    className="btn-secondary w-fit"
+                    disabled={fetcher.state !== 'idle'}
+                  >
+                    {isRenewalOn ? '自動更新の中断に進む' : '自動更新を再開する'}
+                  </button>
+                  {isRenewalOff && (
+                    <p className="text-sm text-gray-600">
+                      次の決済日は {nextBillingDate} です（本日は決済されません）。
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="profile-section profile-section-structure">
         <h3 className="profile-section__title">{actions.title}</h3>

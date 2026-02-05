@@ -23,16 +23,8 @@ export interface SubscriptionAccessParams {
 /**
  * Check if subscription grants access to premium content
  *
- * Access is granted when:
- * - Status is 'active' and current period has not ended
- * - Status is 'active' with canceledAt set (cancellation scheduled),
- *   but current period has not ended yet
- * - Status is 'past_due' (grace period for payment retry)
- * - Status is 'trialing'
- *
- * Access is denied when:
- * - Status is 'inactive', 'canceled', 'incomplete', 'incomplete_expired', 'unpaid'
- * - Current period has ended (regardless of status)
+ * Strict Rule: Only 'active' status grants access.
+ * No grace period for 'past_due'.
  *
  * @param params - Subscription access parameters
  * @param now - Current time for comparison (optional, defaults to now)
@@ -44,23 +36,8 @@ export function isSubscriptionAccessible(
 ): boolean {
   const { status, currentPeriodEnd } = params
 
-  // Statuses that never grant access
-  const noAccessStatuses = [
-    'inactive',
-    'canceled',
-    'incomplete',
-    'incomplete_expired',
-    'unpaid',
-  ]
-
-  if (noAccessStatuses.includes(status)) {
-    return false
-  }
-
-  // Statuses that grant access (with period check)
-  const accessStatuses = ['active', 'trialing', 'past_due']
-
-  if (!accessStatuses.includes(status)) {
+  // Only 'active' status is allowed
+  if (status !== 'active') {
     return false
   }
 
@@ -128,23 +105,6 @@ export function getSubscriptionAccessStatus(
     }
   }
 
-  // Trialing
-  if (status === 'trialing' && isPeriodActive) {
-    return {
-      hasAccess: true,
-      reason: 'trialing',
-      periodEnd,
-    }
-  }
-
-  // Past due (grace period)
-  if (status === 'past_due' && isPeriodActive) {
-    return {
-      hasAccess: true,
-      reason: 'grace_period',
-      periodEnd,
-    }
-  }
 
   // Period expired
   if (isPeriodValid && now >= periodEnd) {

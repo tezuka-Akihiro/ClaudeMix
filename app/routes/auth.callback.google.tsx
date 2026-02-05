@@ -87,7 +87,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         {
           email: googleUser.email,
           oauthProvider: 'google',
-          oauthId: googleUser.id,
+          googleId: googleUser.id,
         },
         context as any
       );

@@ -37,8 +37,8 @@ export async function updateSubscriptionCancellation(
     const result = await db
       .prepare(
         `UPDATE subscriptions
-        SET canceledAt = ?, updatedAt = ?
-        WHERE stripeSubscriptionId = ?`
+        SET canceled_at = ?, updated_at = ?
+        WHERE stripe_subscription_id = ?`
       )
       .bind(canceledAt, now, stripeSubscriptionId)
       .run()
@@ -70,8 +70,8 @@ export async function updateSubscriptionStatus(
     const result = await db
       .prepare(
         `UPDATE subscriptions
-        SET status = ?, updatedAt = ?
-        WHERE stripeSubscriptionId = ?`
+        SET status = ?, updated_at = ?
+        WHERE stripe_subscription_id = ?`
       )
       .bind(status, now, stripeSubscriptionId)
       .run()

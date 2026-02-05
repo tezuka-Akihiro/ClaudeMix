@@ -137,6 +137,12 @@ profile_display:
         updated_at:
           label: "最終更新日"
 
+    subscription:
+      title: "サブスクリプション設定"
+      fields:
+        status:
+          label: "自動更新"
+
     actions:
       title: "アカウント管理"
       buttons:

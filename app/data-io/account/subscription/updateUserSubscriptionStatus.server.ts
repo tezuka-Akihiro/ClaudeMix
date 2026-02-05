@@ -25,7 +25,7 @@ interface CloudflareLoadContext {
  */
 export async function updateUserSubscriptionStatus(
   userId: string,
-  subscriptionStatus: 'active' | 'inactive',
+  subscriptionStatus: string,
   context: CloudflareLoadContext
 ): Promise<boolean> {
   try {
@@ -33,7 +33,7 @@ export async function updateUserSubscriptionStatus(
     const now = new Date().toISOString();
 
     const result = await db
-      .prepare('UPDATE users SET subscriptionStatus = ?, updatedAt = ? WHERE id = ?')
+      .prepare('UPDATE users SET subscription_status = ?, updated_at = ? WHERE id = ?')
       .bind(subscriptionStatus, now, userId)
       .run();
 

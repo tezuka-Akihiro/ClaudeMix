@@ -16,6 +16,7 @@ import { updateUserSubscriptionStatus } from '~/data-io/account/subscription/upd
 import { createStripeCheckoutSession } from '~/data-io/account/subscription/createStripeCheckoutSession.server';
 import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';
+import { getSubscriptionByUserId } from '~/data-io/account/subscription/getSubscriptionByUserId.server';
 import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { AccountSubscriptionSpec } from '~/specs/account/types';
 
@@ -77,9 +78,15 @@ export const meta: MetaFunction = () => {
 };
 
 /**
- * Loader: Return available plans
+ * Loader: Return available plans and current subscription
  */
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
+  // Get session
+  const sessionData = await getSession(request, context as any);
+  if (!sessionData) {
+    return redirect('/login');
+  }
+
   // specからプラン情報を取得
   const PLANS = getPlansFromSpec();
   const spec = loadSpec<AccountSubscriptionSpec>('account/subscription');
@@ -87,12 +94,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
   // Get enabled plans
   const plans = Object.values(PLANS).filter(plan => plan.enabled);
 
+  // Get current subscription details
+  const subscription = await getSubscriptionByUserId(sessionData.userId, context as any);
+
   // Check for success message
   const url = new URL(request.url);
   const success = url.searchParams.get('success') === 'true';
 
   return json({
     plans,
+    subscription,
     success,
     successMessage: spec.success_messages.checkout.completed,
   });
@@ -181,7 +192,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 export default function AccountSubscription() {
   // Use parent route's authentication data instead of duplicating auth logic
   const parentData = useRouteLoaderData<typeof accountLoader>('routes/account');
-  const { plans, success, successMessage } = useLoaderData<typeof loader>();
+  const { plans, subscription, success, successMessage } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
 
   if (!parentData) {
@@ -189,14 +200,9 @@ export default function AccountSubscription() {
   }
 
   const { user } = parentData;
-  const isActive = user.subscriptionStatus === 'active';
-
-  const handleCancel = () => {
-    fetcher.submit(
-      { intent: 'cancel', newStatus: 'inactive' },
-      { method: 'post' }
-    );
-  };
+  const isInterrupted = subscription?.status === 'active' && !!subscription?.canceledAt;
+  const planName = plans.find(p => p.id === subscription?.planId)?.name || 'スタンダード';
+  const planPrice = plans.find(p => p.id === subscription?.planId)?.price || 0;
 
   const handleSelectPlan = (planId: string) => {
     fetcher.submit(
@@ -219,14 +225,37 @@ export default function AccountSubscription() {
         <div className="profile-error" role="alert">{fetcher.data.error}</div>
       )}
 
-      <SubscriptionStatusCard
-        status={user.subscriptionStatus}
-        onCancel={handleCancel}
-      />
+      {/* Subscription Status Display */}
+      {subscription && subscription.status !== 'inactive' && (
+        <div className="profile-section profile-section-structure">
+          <h2 className="profile-section__title">現在のプラン</h2>
+          <div className="profile-info-structure">
+            <div className="profile-info__item">
+              <div className="profile-info__label">プラン名</div>
+              <div className="profile-info__value">{planName}</div>
+            </div>
+            <div className="profile-info__item">
+              <div className="profile-info__label">価格</div>
+              <div className="profile-info__value">¥{planPrice.toLocaleString()}</div>
+            </div>
+            <div className="profile-info__item">
+              <div className="profile-info__label">有効期限</div>
+              <div className="profile-info__value">
+                {new Date(subscription.currentPeriodEnd).toLocaleDateString('ja-JP')}
+                {subscription.canceledAt ? '（停止予定）' : '（自動更新）'}
+              </div>
+            </div>
+            {subscription.status === 'past_due' && (
+              <div className="profile-error mt-4" role="alert">
+                決済エラーが発生しました。アカウント設定から支払い情報を更新してください。
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
-      {/* Plan Selection Section (show only for inactive users) */}
-      {!isActive && (
-        <div data-testid="plan-selector">
+      {/* Plan Selection Section */}
+      <div data-testid="plan-selector">
           <h2 className="profile-section__title">プランを選択</h2>
           <div className="plan-grid">
             {plans.map((plan) => (
@@ -258,16 +287,21 @@ export default function AccountSubscription() {
                   type="button"
                   onClick={() => handleSelectPlan(plan.id)}
                   className="btn-primary plan-select-button"
-                  disabled={fetcher.state !== 'idle'}
+                  disabled={fetcher.state !== 'idle' || isInterrupted || subscription?.planId === plan.id}
+                  title={isInterrupted ? 'プラン変更を行うには、まず更新を再開してください' : ''}
                   data-testid={`subscribe-${plan.id}`}
                 >
-                  {fetcher.state !== 'idle' ? '処理中...' : '購入'}
+                  {fetcher.state !== 'idle' ? '処理中...' : subscription?.planId === plan.id ? '契約中' : '購入'}
                 </button>
+                {isInterrupted && (
+                  <p className="text-sm text-red-500 mt-2 text-center">
+                    プラン変更を行うには、まず更新を再開してください
+                  </p>
+                )}
               </div>
             ))}
           </div>
         </div>
-      )}
     </div>
   );
 }

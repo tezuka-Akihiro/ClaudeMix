@@ -22,6 +22,8 @@ export interface User {
   email: string
   subscriptionStatus: string
   stripeCustomerId: string | null
+  oauthProvider: string | null
+  googleId: string | null
   createdAt: string
   updatedAt: string
 }
@@ -47,7 +49,20 @@ export async function getUserByStripeCustomerId(
 
     const db = context.env.DB
     const user = await db
-      .prepare('SELECT * FROM users WHERE stripeCustomerId = ? LIMIT 1')
+      .prepare(`
+        SELECT
+          id,
+          email,
+          subscription_status AS subscriptionStatus,
+          stripe_customer_id AS stripeCustomerId,
+          oauth_provider AS oauthProvider,
+          google_id AS googleId,
+          created_at AS createdAt,
+          updated_at AS updatedAt
+        FROM users
+        WHERE stripe_customer_id = ?
+        LIMIT 1
+      `)
       .bind(stripeCustomerId)
       .first<User>()
 

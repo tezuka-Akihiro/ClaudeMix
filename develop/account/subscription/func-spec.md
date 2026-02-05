@@ -13,12 +13,15 @@ Subscription Management (サブスクリプション管理)
 ### 機能の目的・価値
 
 - **解決する課題**: ユーザーが有料プランに登録し、サブスクリプションを管理できる機能を提供する
+- **核心思想**:
+  - **権利の全う**: 購入済みの期間は常にアクセス権を保証する。中途解約（即時停止）という概念を排除する。
+  - **透明性の確保**: ユーザーに次の決済タイミングを明示し、意図しない課金や操作ミスを防ぐ。
+  - **疎結合な設計**: 自社DBでカード情報を保持せず、Stripeのステータスを尊重しつつ、アプリケーション側で厳格に権限判定を行う。
 - **提供する価値**:
-  - 複数プラン（1ヶ月/3ヶ月/6ヶ月）の選択
-  - Stripe Checkoutによる安全な決済
-  - サブスクリプション状態の管理（有効化、キャンセル、更新）
-  - 請求履歴の表示
-- **ビジネス効果**: 収益化、継続的な課金、ユーザーエンゲージメント向上
+  - 複数プランの選択とStripe Checkoutによる安全な決済
+  - 自動更新の制御（中断・再開）と有効期限の明示
+  - 厳格な権限管理（Stripeステータス連動）
+- **ビジネス効果**: 収益化、ユーザーの信頼獲得、継続率向上
 
 ### 実装優先度
 
@@ -307,9 +310,9 @@ Subscription Management (サブスクリプション管理)
 **出力**: boolean
 
 **判定ロジック**:
-- status='active' かつ currentPeriodEnd > now → true
-- status='active' かつ canceledAt設定済み かつ currentPeriodEnd > now → true（解約予約中も閲覧可）
-- それ以外 → false
+- status === 'active' のみを真とする集約関数で制御。
+- `past_due`（決済不履行）への対応: 猶予期間は設けず、即座に権限を制限する。
+- 判定は `app/lib/account/subscription/isSubscriptionAccessible.ts` で集約管理する。
 
 ## 🔌 副作用要件
 
@@ -598,11 +601,12 @@ api.webhooks.stripe (イベント受信)
 
 ### データベーススキーマ（D1）
 
-**usersテーブル（追加カラム）**:
+**usersテーブル（追加カラム・変更）**:
 
 | カラム名 | 型 | 制約 | 説明 |
 | :--- | :--- | :--- | :--- |
 | stripeCustomerId | TEXT | | Stripe顧客ID（Webhook処理でのユーザー逆引き用） |
+| google_id | TEXT | | Google OAuthでのユーザーID（旧 oauth_id からリネーム） |
 
 **インデックス**: `idx_users_stripe_customer_id` ON `stripeCustomerId`
 

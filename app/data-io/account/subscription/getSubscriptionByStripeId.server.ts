@@ -37,7 +37,23 @@ export async function getSubscriptionByStripeId(
 
     const db = context.env.DB
     const subscription = await db
-      .prepare('SELECT * FROM subscriptions WHERE stripeSubscriptionId = ? LIMIT 1')
+      .prepare(`
+        SELECT
+          id,
+          user_id AS userId,
+          stripe_subscription_id AS stripeSubscriptionId,
+          stripe_customer_id AS stripeCustomerId,
+          plan_id AS planId,
+          status,
+          current_period_start AS currentPeriodStart,
+          current_period_end AS currentPeriodEnd,
+          canceled_at AS canceledAt,
+          created_at AS createdAt,
+          updated_at AS updatedAt
+        FROM subscriptions
+        WHERE stripe_subscription_id = ?
+        LIMIT 1
+      `)
       .bind(stripeSubscriptionId)
       .first<Subscription>()
 

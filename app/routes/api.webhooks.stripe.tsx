@@ -108,9 +108,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
 
-        // Check if this is a cancellation reservation
+        // 1. Update cancellation status
         if (subscription.cancel_at_period_end) {
-          // Set canceledAt to period end date
           const canceledAt = new Date(
             subscription.current_period_end * 1000
           ).toISOString()
@@ -119,22 +118,33 @@ export async function action({ request, context }: ActionFunctionArgs) {
             canceledAt,
             context as any
           )
-          console.log(
-            `Subscription ${subscription.id} scheduled for cancellation at ${canceledAt}`
-          )
         } else {
-          // Clear cancellation (reactivation)
           await updateSubscriptionCancellation(subscription.id, null, context as any)
-          console.log(`Subscription ${subscription.id} reactivated`)
         }
 
-        // Update period dates
+        // 2. Sync raw status to both tables
+        await updateSubscriptionStatus(subscription.id, subscription.status, context as any)
+
+        const dbSubscription = await getSubscriptionByStripeId(
+          subscription.id,
+          context as any
+        )
+        if (dbSubscription) {
+          await updateUserSubscriptionStatus(
+            dbSubscription.userId,
+            subscription.status,
+            context as any
+          )
+        }
+
+        // 3. Update period dates
         await updateSubscriptionPeriod(
           subscription.id,
           new Date(subscription.current_period_start * 1000).toISOString(),
           new Date(subscription.current_period_end * 1000).toISOString(),
           context as any
         )
+        console.log(`Subscription ${subscription.id} updated with status: ${subscription.status}`)
         break
       }
 
@@ -187,23 +197,30 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const invoice = event.data.object as Stripe.Invoice
 
         if (invoice.subscription) {
-          // Update subscription status to past_due
+          // Sync raw status (should be past_due)
+          const stripeSubscription = await stripe.subscriptions.retrieve(
+            invoice.subscription as string
+          )
+
           await updateSubscriptionStatus(
-            invoice.subscription as string,
-            'past_due',
+            stripeSubscription.id,
+            stripeSubscription.status,
             context as any
           )
 
-          // Get user to potentially send notification
           const user = await getUserByStripeCustomerId(
             invoice.customer as string,
             context as any
           )
           if (user) {
-            console.log(
-              `Payment failed for user ${user.id}, subscription set to past_due`
+            await updateUserSubscriptionStatus(
+              user.id,
+              stripeSubscription.status,
+              context as any
             )
-            // TODO: Send notification email to user
+            console.log(
+              `Payment failed for user ${user.id}, subscription set to ${stripeSubscription.status}`
+            )
           }
         }
         break
