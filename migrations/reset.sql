@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS subscriptions;
+DROP TABLE IF EXISTS webhook_events;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS d1_migrations;
