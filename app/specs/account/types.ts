@@ -6,6 +6,9 @@
 export interface User {
   id: string;
   email: string;
+  passwordHash?: string;
+  oauthId?: string;
+  oauthProvider?: string;
   subscriptionStatus: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;

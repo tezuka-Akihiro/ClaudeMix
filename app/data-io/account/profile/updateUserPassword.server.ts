@@ -39,7 +39,7 @@ export async function updateUserPassword(
 
     // Update password hash with parameterized query
     const stmt = db
-      .prepare('UPDATE users SET passwordHash = ?, updatedAt = ? WHERE id = ?')
+      .prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
       .bind(newPasswordHash, now, userId);
 
     await stmt.run();

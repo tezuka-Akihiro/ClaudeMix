@@ -7,7 +7,7 @@
  */
 
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
-import { json, redirect } from '@remix-run/cloudflare';
+import { json } from '@remix-run/cloudflare';
 import { Form, Link, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithValibot } from '@conform-to/valibot';
@@ -25,14 +25,10 @@ import type { AccountAuthenticationSpec } from '~/specs/account/types';
 import { createUser } from '~/data-io/account/authentication/createUser.server';
 import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.server';
 import { hashPassword } from '~/data-io/account/authentication/hashPassword.server';
-import { saveSession } from '~/data-io/account/common/saveSession.server';
-import { getSession } from '~/data-io/account/common/getSession.server';
+import { getAuthenticator } from '~/data-io/account/common/authenticator.server';
 
 // Pure logic layer
 import { sanitizeEmail } from '~/lib/account/authentication/sanitizeEmail';
-import { validateEmail } from '~/lib/account/authentication/validateEmail';
-import { validatePasswordDetailed } from '~/lib/account/authentication/validatePassword';
-import { createSessionData } from '~/lib/account/common/createSessionData';
 
 // Schema layer (Valibot)
 import { RegisterSchema } from '~/specs/account/authentication-schema';
@@ -46,7 +42,7 @@ export const meta: MetaFunction = () => {
 
 interface ActionData {
   error?: string;
-  lastResult?: any; // Conform submission result
+  lastResult?: any;
 }
 
 interface LoaderData {
@@ -75,17 +71,13 @@ interface LoaderData {
   };
 }
 
-/**
- * Loader: Check if user is already logged in
- * If logged in, redirect to /account
- */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const authenticator = getAuthenticator(context as any);
 
-  const session = await getSession(request, context as any);
-  if (session) {
-    return redirect(spec.server_io.loader.authenticated_redirect);
-  }
+  await authenticator.isAuthenticated(request, {
+    successRedirect: spec.server_io.loader.authenticated_redirect,
+  });
 
   return json<LoaderData>({
     uiSpec: {
@@ -114,20 +106,20 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   });
 }
 
-/**
- * Action: Handle registration form submission
- */
 export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const authenticator = getAuthenticator(context as any);
 
+  // We need to clone the request because we need to read it twice:
+  // 1. For manual validation and user creation
+  // 2. For authenticator.authenticate
+  const clonedRequest = request.clone();
   const formData = await request.formData();
 
-  // Conform + Valibot: Parse and validate form data
   const submission = parseWithValibot(formData, {
     schema: RegisterSchema,
   });
 
-  // Validation failed: return errors
   if (submission.status !== 'success') {
     return json<ActionData>(
       { lastResult: submission.reply() },
@@ -135,13 +127,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
     );
   }
 
-  // Type-safe data extraction
   const { email, password } = submission.value;
-
-  // Sanitize email (pure logic layer)
   const sanitizedEmail = sanitizeEmail(email);
 
-  // Check if user already exists
   const existingUser = await getUserByEmail(sanitizedEmail, context as any);
   if (existingUser) {
     return json<ActionData>(
@@ -150,11 +138,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
     );
   }
 
-  // Hash password
   const passwordHash = await hashPassword(password);
-
-  // Create user
   const userCreated = await createUser(sanitizedEmail, passwordHash, context as any);
+
   if (!userCreated) {
     return json<ActionData>(
       { error: spec.error_messages.registration.creation_failed },
@@ -162,34 +148,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
     );
   }
 
-  // Get the created user to obtain userId
-  const newUser = await getUserByEmail(sanitizedEmail, context as any);
-  if (!newUser) {
-    return json<ActionData>(
-      { error: spec.error_messages.registration.creation_failed },
-      { status: 500 }
-    );
-  }
-
-  // Create session
-  const sessionId = crypto.randomUUID();
-  const sessionData = createSessionData(newUser.id, sessionId);
-
-  try {
-    const setCookieHeader = await saveSession(sessionData, context as any);
-
-    // Set session cookie and redirect to /account
-    return redirect(spec.server_io.action.default_redirect, {
-      headers: {
-        'Set-Cookie': setCookieHeader,
-      },
-    });
-  } catch (error) {
-    return json<ActionData>(
-      { error: spec.error_messages.authentication.session_creation_failed },
-      { status: 500 }
-    );
-  }
+  // Log the user in after successful registration
+  return await authenticator.authenticate("form", clonedRequest, {
+    successRedirect: spec.server_io.action.default_redirect,
+    failureRedirect: "/login?message=registration_success",
+  });
 }
 
 export default function Register() {
@@ -199,7 +162,6 @@ export default function Register() {
   const isSubmitting = navigation.state === 'submitting';
   const { uiSpec } = loaderData;
 
-  // Conform: Form state management
   const [form, fields] = useForm({
     lastResult: actionData?.lastResult,
     onValidate({ formData }) {

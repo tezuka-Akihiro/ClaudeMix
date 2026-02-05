@@ -51,9 +51,10 @@ describe('getUserById.server', () => {
       const result = await getUserById(userId, mockContext as any);
 
       // Assert
-      expect(mockD1.prepare).toHaveBeenCalledWith(
-        'SELECT * FROM users WHERE id = ?'
-      );
+      expect(mockD1.prepare).toHaveBeenCalledWith(expect.stringContaining('SELECT'));
+      expect(mockD1.prepare).toHaveBeenCalledWith(expect.stringContaining('FROM users WHERE id = ?'));
+      expect(mockD1.prepare).toHaveBeenCalledWith(expect.stringContaining('SELECT'));
+      expect(mockD1.prepare).toHaveBeenCalledWith(expect.stringContaining('FROM users WHERE id = ?'));
       expect(mockStatement.bind).toHaveBeenCalledWith(userId);
       expect(mockStatement.first).toHaveBeenCalled();
       expect(result).toEqual(userData);
@@ -100,9 +101,8 @@ describe('getUserById.server', () => {
       const result = await getUserById(userId, mockContext as any);
 
       // Assert
-      expect(mockD1.prepare).toHaveBeenCalledWith(
-        'SELECT * FROM users WHERE id = ?'
-      );
+      expect(mockD1.prepare).toHaveBeenCalledWith(expect.stringContaining('SELECT'));
+      expect(mockD1.prepare).toHaveBeenCalledWith(expect.stringContaining('FROM users WHERE id = ?'));
       expect(mockStatement.bind).toHaveBeenCalledWith(userId);
       expect(result).toBeNull();
     });

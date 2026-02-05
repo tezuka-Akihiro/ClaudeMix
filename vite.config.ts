@@ -93,6 +93,14 @@ export default defineConfig({
       externalConditions: ["workerd", "worker"],
     },
     external: ["workers-og"],  // Exclude workers-og due to WASM
-    noExternal: true,  // Bundle all other dependencies for Cloudflare Workers
+    noExternal: [
+      "remix-auth",
+      "remix-auth-form",
+      "remix-auth-google",
+      "@remix-run/server-runtime",
+    ],
+  },
+  optimizeDeps: {
+    include: ["remix-auth", "remix-auth-form", "remix-auth-google"],
   },
 });

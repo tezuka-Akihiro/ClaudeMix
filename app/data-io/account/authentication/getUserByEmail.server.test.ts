@@ -47,9 +47,8 @@ describe('getUserByEmail.server', () => {
       const result = await getUserByEmail(email, mockContext);
 
       // Assert
-      expect(mockDB.prepare).toHaveBeenCalledWith(
-        'SELECT * FROM users WHERE email = ?'
-      );
+      expect(mockDB.prepare).toHaveBeenCalledWith(expect.stringContaining('SELECT'));
+      expect(mockDB.prepare).toHaveBeenCalledWith(expect.stringContaining('FROM users WHERE email = ?'));
       expect(mockStmt.bind).toHaveBeenCalledWith(email);
       expect(result).toEqual(mockUser);
     });

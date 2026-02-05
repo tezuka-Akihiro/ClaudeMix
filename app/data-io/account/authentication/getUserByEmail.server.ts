@@ -37,7 +37,18 @@ export async function getUserByEmail(
     }
 
     const db = context.env.DB;
-    const stmt = db.prepare('SELECT * FROM users WHERE email = ?').bind(email);
+    const stmt = db.prepare(`
+      SELECT
+        id,
+        email,
+        password_hash as passwordHash,
+        subscription_status as subscriptionStatus,
+        oauth_provider as oauthProvider,
+        oauth_id as oauthId,
+        created_at as createdAt,
+        updated_at as updatedAt
+      FROM users WHERE email = ?
+    `).bind(email);
     const user = await stmt.first<User>();
 
     if (!user) {

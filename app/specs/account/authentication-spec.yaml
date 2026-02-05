@@ -241,10 +241,18 @@ database:
         type: "TEXT"
         constraints: "UNIQUE NOT NULL"
         description: "メールアドレス"
-      password:
+      password_hash:
         type: "TEXT"
-        constraints: "NOT NULL"
-        description: "ハッシュ化されたパスワード"
+        constraints: ""
+        description: "ハッシュ化されたパスワード（OAuthのみの場合はNULL可）"
+      oauth_id:
+        type: "TEXT"
+        constraints: ""
+        description: "OAuthプロバイダー固有のユーザーID"
+      oauth_provider:
+        type: "TEXT"
+        constraints: ""
+        description: "OAuthプロバイダー名 (google等)"
       subscription_status:
         type: "TEXT"
         constraints: "NOT NULL"
@@ -263,6 +271,9 @@ database:
     indexes:
       - name: "idx_users_email"
         columns: ["email"]
+        unique: true
+      - name: "idx_users_oauth"
+        columns: ["oauth_provider", "oauth_id"]
         unique: true
 
 # ==========================================

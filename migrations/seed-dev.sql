@@ -7,7 +7,7 @@
 -- Test User: tezuke (active subscription)
 -- Email: tizuhanpen8+preview@gmail.com
 -- Password: 14801250At
-INSERT OR IGNORE INTO users (id, email, passwordHash, subscriptionStatus, createdAt, updatedAt)
+INSERT OR IGNORE INTO users (id, email, password_hash, subscription_status, created_at, updated_at)
 VALUES (
   'tezuke-001',
   'tizuhanpen8+preview@gmail.com',

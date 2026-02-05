@@ -1,13 +1,12 @@
 /**
  * logout.tsx
- * Purpose: User logout handler
+ * Purpose: User logout handler using Remix Auth
  *
  * @layer UI層 (routes)
  * @responsibility ユーザーログアウト処理
  */
 
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/cloudflare';
-import { redirect } from '@remix-run/cloudflare';
 import { Form, useNavigation } from '@remix-run/react';
 import { useEffect, useRef } from 'react';
 
@@ -21,53 +20,31 @@ import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 // Data-IO layer
-import { destroySession } from '~/data-io/account/common/destroySession.server';
-import { getSession } from '~/data-io/account/common/getSession.server';
+import { getAuthenticator } from '~/data-io/account/common/authenticator.server';
 
 /**
- * Loader: Handle logout on GET request
- * This allows direct navigation to /logout via browser or test
+ * Loader: Redirect to dashboard if logged in (safety)
+ * In some cases, GET /logout might want to logout directly,
+ * but Remix Auth prefers POST for logout.
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
-  const redirectPath = spec.routes.logout.redirect_after;
+  const authenticator = getAuthenticator(context as any);
 
-  // Get current session
-  const session = await getSession(request, context as any);
-
-  // Destroy session from database if it exists
-  if (session) {
-    await destroySession(session.sessionId, context as any);
-  }
-
-  // Clear session cookie and redirect to login
-  return redirect(redirectPath, {
-    headers: {
-      'Set-Cookie': 'sessionId=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
-    },
+  return await authenticator.logout(request, {
+    redirectTo: spec.routes.logout.redirect_after,
   });
 }
 
 /**
- * Action: Handle logout
+ * Action: Handle logout via POST
  */
 export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
-  const redirectPath = spec.routes.logout.redirect_after;
+  const authenticator = getAuthenticator(context as any);
 
-  // Get current session
-  const session = await getSession(request, context as any);
-
-  // Destroy session from KV if it exists
-  if (session) {
-    await destroySession(session.sessionId, context as any);
-  }
-
-  // Clear session cookie and redirect to login
-  return redirect(redirectPath, {
-    headers: {
-      'Set-Cookie': 'sessionId=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
-    },
+  return await authenticator.logout(request, {
+    redirectTo: spec.routes.logout.redirect_after,
   });
 }
 
@@ -76,12 +53,12 @@ export default function Logout() {
   const formRef = useRef<HTMLFormElement>(null);
   const isSubmitting = navigation.state === 'submitting';
 
-  // Auto-submit form on mount
+  // Auto-submit form on mount if it's not already submitting
   useEffect(() => {
-    if (formRef.current && !isSubmitting) {
+    if (formRef.current && navigation.state === 'idle') {
       formRef.current.submit();
     }
-  }, [isSubmitting]);
+  }, [navigation.state]);
 
   return (
     <div className="auth-container auth-container-structure" data-testid="logout-page">

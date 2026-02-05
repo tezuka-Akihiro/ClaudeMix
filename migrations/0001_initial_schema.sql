@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
-  passwordHash TEXT,
-  subscriptionStatus TEXT NOT NULL DEFAULT 'inactive',
-  oauthProvider TEXT,
-  oauthId TEXT,
-  createdAt TEXT NOT NULL,
-  updatedAt TEXT NOT NULL
+  password_hash TEXT,
+  subscription_status TEXT NOT NULL DEFAULT 'inactive',
+  oauth_provider TEXT,
+  oauth_id TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_users_oauth ON users(oauthProvider, oauthId);
+CREATE INDEX IF NOT EXISTS idx_users_oauth ON users(oauth_provider, oauth_id);
 
 CREATE TABLE IF NOT EXISTS subscriptions (
   id TEXT PRIMARY KEY,

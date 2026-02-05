@@ -38,7 +38,18 @@ export async function getUserById(
 
     // Query user from D1 database using parameterized query (SQL injection protection)
     const db = context.env.DB;
-    const stmt = db.prepare('SELECT * FROM users WHERE id = ?').bind(userId);
+    const stmt = db.prepare(`
+      SELECT
+        id,
+        email,
+        password_hash as passwordHash,
+        subscription_status as subscriptionStatus,
+        oauth_provider as oauthProvider,
+        oauth_id as oauthId,
+        created_at as createdAt,
+        updated_at as updatedAt
+      FROM users WHERE id = ?
+    `).bind(userId);
     const user = await stmt.first<User>();
 
     if (!user) {
