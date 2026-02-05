@@ -7,12 +7,13 @@
 -- Test User: tezuke (active subscription)
 -- Email: tizuhanpen8+preview@gmail.com
 -- Password: 14801250At
-INSERT OR IGNORE INTO users (id, email, passwordHash, subscriptionStatus, createdAt, updatedAt)
+INSERT OR IGNORE INTO users (id, email, passwordHash, subscriptionStatus, stripeCustomerId, createdAt, updatedAt)
 VALUES (
   'tezuke-001',
   'tizuhanpen8+preview@gmail.com',
   'test-salt-dev-001:3804714e34f1b1863714c69d75e0c4f64a99127d3d5a5d8bcb90c7b3752b317c',
   'active',
+  'cus_test_dev_001',
   datetime('now'),
   datetime('now')
 );
