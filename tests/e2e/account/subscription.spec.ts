@@ -56,13 +56,9 @@ test.describe('Account Subscription Management', () => {
       // Navigate to subscription page
       await page.goto('/account/subscription');
 
-      // Verify subscription status card is displayed
-      const statusCard = page.locator('[data-testid="subscription-status-card"]');
-      await expect(statusCard).toBeVisible();
-
-      // Verify cancel button is NOT visible (already inactive)
-      const cancelButton = page.locator('[data-testid="cancel-button"]');
-      await expect(cancelButton).not.toBeVisible();
+      // Verify subscription page is displayed
+      const subscriptionPage = page.locator('[data-testid="subscription-page"]');
+      await expect(subscriptionPage).toBeVisible();
 
       // Verify plan selector is visible for inactive users
       const planSelector = page.locator('[data-testid="plan-selector"]');

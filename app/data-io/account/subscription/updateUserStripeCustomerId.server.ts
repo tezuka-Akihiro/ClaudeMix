@@ -32,7 +32,7 @@ export async function updateUserStripeCustomerId(
     const now = new Date().toISOString()
 
     const result = await db
-      .prepare('UPDATE users SET stripeCustomerId = ?, updatedAt = ? WHERE id = ?')
+      .prepare('UPDATE users SET stripe_customer_id = ?, updated_at = ? WHERE id = ?')
       .bind(stripeCustomerId, now, userId)
       .run()
 

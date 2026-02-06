@@ -32,7 +32,7 @@ describe('updateUserEmail', () => {
 
       expect(result).toBe(true);
       expect(mockDB.prepare).toHaveBeenCalledWith(
-        'UPDATE users SET email = ?, updatedAt = ? WHERE id = ?'
+        'UPDATE users SET email = ?, updated_at = ? WHERE id = ?'
       );
       expect(mockDB.bind).toHaveBeenCalledWith(
         'newemail@example.com',

@@ -3,6 +3,7 @@ import {
   Meta,
   Outlet,
   Scripts,
+  ScrollRestoration,
 } from "@remix-run/react";
 // セルフホスティングフォント (Lighthouse最適化: 外部リクエスト削減)
 import "@fontsource/oswald/400.css";
@@ -24,7 +25,7 @@ export default function App() {
         {/* クリティカルCSS: 初期レンダリングに必要な最小限のスタイル */}
         <style
           dangerouslySetInnerHTML={{
-            __html: `*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}:root{--color-background-primary:#111;--color-text-primary:#E8E8E8;--color-accent-gold:#D4BC89;--color-interactive-primary:#22d3ee;--spacing-3:16px;--spacing-4:24px;--font-heading-primary:'Oswald'}`,
+            __html: `*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:auto}:root{--color-background-primary:#111;--color-text-primary:#E8E8E8;--color-accent-gold:#D4BC89;--color-interactive-primary:#22d3ee;--spacing-3:16px;--spacing-4:24px;--font-heading-primary:'Oswald'}`,
           }}
         />
         <Links />
@@ -45,6 +46,7 @@ export default function App() {
         <div id="root">
           <Outlet />
         </div>
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>

@@ -35,7 +35,7 @@ export async function isWebhookEventProcessed(
 
     const db = context.env.DB
     const event = await db
-      .prepare('SELECT id FROM webhook_events WHERE eventId = ? LIMIT 1')
+      .prepare('SELECT id FROM webhook_events WHERE event_id = ? LIMIT 1')
       .bind(eventId)
       .first()
 

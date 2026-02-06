@@ -6,7 +6,8 @@
  * @responsibility ユーザープロフィール情報の表示
  */
 
-import type { User } from '~/specs/account/types';
+import { useFetcher } from '@remix-run/react';
+import type { User, Subscription } from '~/specs/account/types';
 
 export interface ProfileDisplaySpec {
   sections: {
@@ -37,6 +38,7 @@ export interface ProfileDisplaySpec {
 
 export interface ProfileDisplayProps {
   user: User;
+  subscription: Subscription | null;
   spec: ProfileDisplaySpec;
   onEmailChange: () => void;
   onPasswordChange: () => void;
@@ -45,16 +47,34 @@ export interface ProfileDisplayProps {
 
 export function ProfileDisplay({
   user,
+  subscription,
   spec,
   onEmailChange,
   onPasswordChange,
   onDeleteAccount,
 }: ProfileDisplayProps) {
   const { info, actions } = spec.sections;
+  const fetcher = useFetcher();
+
+  const isRenewalOn = subscription?.status === 'active' && !subscription.canceledAt;
+  const isRenewalOff = subscription?.status === 'active' && !!subscription.canceledAt;
+  const nextBillingDate = subscription ? new Date(subscription.currentPeriodEnd).toLocaleDateString('ja-JP') : '';
+
+  const handleToggleRenewal = () => {
+    if (isRenewalOn) {
+      const confirmed = window.confirm(`中断しても ${nextBillingDate} までは全機能を利用可能です。次回の更新のみを停止します。よろしいですか？`);
+      if (confirmed) {
+        fetcher.submit({ intent: 'interrupt-renewal' }, { method: 'post' });
+      }
+    } else if (isRenewalOff) {
+      fetcher.submit({ intent: 'resume-renewal' }, { method: 'post' });
+    }
+  };
 
   // Get subscription status label from spec
+  const statusKey = user.subscriptionStatus as keyof typeof info.fields.subscription_status.values;
   const subscriptionLabel =
-    info.fields.subscription_status.values[user.subscriptionStatus] ||
+    info.fields.subscription_status.values[statusKey] ||
     info.fields.subscription_status.values.inactive;
 
   return (
@@ -79,6 +99,65 @@ export function ProfileDisplay({
           </div>
         </div>
       </div>
+
+      {/* Subscription Settings Section */}
+      {subscription && subscription.status !== 'inactive' && (
+        <div className="profile-section profile-section-structure" data-testid="subscription-status-display">
+          <h3 className="profile-section__title">サブスクリプション設定</h3>
+          <div className="profile-info-structure">
+            <div className="profile-info__item">
+              <div className="profile-info__label">自動更新</div>
+              <div className="profile-info__value">
+                <div className="flex flex-col gap-2">
+                  <span data-testid="renewal-status">{isRenewalOn ? 'ON' : 'OFF'}</span>
+                  <button
+                    type="button"
+                    onClick={handleToggleRenewal}
+                    className="btn-secondary"
+                    disabled={fetcher.state !== 'idle'}
+                    data-testid="renewal-toggle-button"
+                  >
+                    {isRenewalOn ? '自動更新の中断に進む' : '自動更新を再開する'}
+                  </button>
+                  {isRenewalOff && (
+                    <p className="text-sm text-gray-600" data-testid="next-billing-notice">
+                      次の決済日は {nextBillingDate} です（本日は決済されません）。
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="profile-info__item">
+              <div className="profile-info__label">カード情報</div>
+              <div className="profile-info__value">
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isRenewalOn) {
+                        alert('先に自動更新を中断してください');
+                      } else if (window.confirm('カード情報を削除します。よろしいですか？')) {
+                        fetcher.submit({ intent: 'delete-payment-method' }, { method: 'post' });
+                      }
+                    }}
+                    className="btn-secondary"
+                    disabled={fetcher.state !== 'idle'}
+                    data-testid="delete-payment-method-button"
+                  >
+                    カード情報を削除する
+                  </button>
+                  {isRenewalOn && (
+                    <p className="text-sm text-red-600" data-testid="card-deletion-disabled-notice">
+                      ※ 自動更新がONの状態では削除できません。
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="profile-section profile-section-structure">
         <h3 className="profile-section__title">{actions.title}</h3>

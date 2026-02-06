@@ -17,7 +17,7 @@ interface CloudflareLoadContext {
 export interface OAuthUserData {
   email: string;
   oauthProvider: 'google' | 'apple';
-  oauthId: string;
+  googleId: string;
 }
 
 /**
@@ -47,14 +47,14 @@ export async function createOAuthUser(
 
     const result = await db
       .prepare(
-        `INSERT INTO users (id, email, passwordHash, oauthProvider, oauthId, subscriptionStatus, createdAt, updatedAt)
+        `INSERT INTO users (id, email, password_hash, oauth_provider, google_id, subscription_status, created_at, updated_at)
          VALUES (?, ?, NULL, ?, ?, 'inactive', ?, ?)`
       )
       .bind(
         userId,
         userData.email,
         userData.oauthProvider,
-        userData.oauthId,
+        userData.googleId,
         now,
         now
       )

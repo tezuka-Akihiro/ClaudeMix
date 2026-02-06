@@ -47,7 +47,7 @@ describe('createUser.server', () => {
   });
 
   describe('Error Case: Database errors', () => {
-    it('should return false when INSERT fails', async () => {
+    it('should throw error when INSERT fails', async () => {
       // Arrange
       const email = 'user@example.com';
       const passwordHash = 'hashed-password';
@@ -58,14 +58,11 @@ describe('createUser.server', () => {
       };
       mockDB.prepare.mockReturnValue(mockStmt);
 
-      // Act
-      const result = await createUser(email, passwordHash, mockContext);
-
-      // Assert
-      expect(result).toBe(false);
+      // Act & Assert
+      await expect(createUser(email, passwordHash, mockContext)).rejects.toThrow('Database error');
     });
 
-    it('should return false when email already exists (unique constraint)', async () => {
+    it('should throw error when email already exists (unique constraint)', async () => {
       // Arrange
       const email = 'existing@example.com';
       const passwordHash = 'hashed-password';
@@ -76,11 +73,8 @@ describe('createUser.server', () => {
       };
       mockDB.prepare.mockReturnValue(mockStmt);
 
-      // Act
-      const result = await createUser(email, passwordHash, mockContext);
-
-      // Assert
-      expect(result).toBe(false);
+      // Act & Assert
+      await expect(createUser(email, passwordHash, mockContext)).rejects.toThrow('UNIQUE constraint failed');
     });
   });
 

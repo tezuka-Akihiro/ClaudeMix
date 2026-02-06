@@ -163,7 +163,7 @@ describe('auth.callback.google loader', () => {
       id: 'user-uuid-123',
       email: 'test@example.com',
       oauthProvider: 'google',
-      oauthId: 'google-user-123',
+      googleId: 'google-user-123',
     };
 
     it('should redirect to account page for existing OAuth user', async () => {
@@ -210,7 +210,7 @@ describe('auth.callback.google loader', () => {
         {
           email: 'test@example.com',
           oauthProvider: 'google',
-          oauthId: 'google-user-123',
+          googleId: 'google-user-123',
         },
         context
       );

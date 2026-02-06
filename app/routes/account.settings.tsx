@@ -6,9 +6,9 @@
  * @responsibility ユーザープロフィール設定の表示と更新
  */
 
-import type { ActionFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
-import { useActionData, useRouteLoaderData } from '@remix-run/react';
+import { useActionData, useRouteLoaderData, useLoaderData } from '@remix-run/react';
 import { useState, useEffect } from 'react';
 import type { loader as accountLoader } from './account';
 
@@ -24,6 +24,9 @@ import type { AccountProfileSpec } from '~/specs/account/types';
 import { deleteUser } from '~/data-io/account/profile/deleteUser.server';
 import { updateUserEmail } from '~/data-io/account/profile/updateUserEmail.server';
 import { updateUserPassword } from '~/data-io/account/profile/updateUserPassword.server';
+import { getSubscriptionByUserId } from '~/data-io/account/subscription/getSubscriptionByUserId.server';
+import { cancelStripeSubscription, reactivateStripeSubscription } from '~/data-io/account/subscription/cancelStripeSubscription.server';
+import { updateSubscriptionCancellation } from '~/data-io/account/subscription/updateSubscriptionCancellation.server';
 import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.server';
 import { hashPassword } from '~/data-io/account/authentication/hashPassword.server';
 import { verifyPassword } from '~/data-io/account/authentication/verifyPassword.server';
@@ -72,13 +75,19 @@ interface ActionData {
 }
 
 /**
- * Loader: Provide UI spec to client
- * (actual auth data comes from parent route)
+ * Loader: Provide UI spec and subscription data to client
  */
-export async function loader() {
+export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountProfileSpec>('account/profile');
+  const session = await getSession(request, context as any);
+
+  let subscription = null;
+  if (session) {
+    subscription = await getSubscriptionByUserId(session.userId, context as any);
+  }
 
   return json({
+    subscription,
     profileSpec: {
       sections: spec.profile_display.sections,
     },
@@ -311,12 +320,15 @@ export async function action({ request, context }: ActionFunctionArgs) {
       );
     }
 
-    // Check for active subscription (Phase 2)
+    // Check for active subscription
     if (currentUser.subscriptionStatus === 'active') {
-      console.warn(`User ${session.userId} has active subscription. Proceeding with deletion.`);
-      // TODO: Future implementation - Cancel Stripe subscription via API
-      // await cancelStripeSubscription(currentUser.stripeCustomerId, currentUser.stripeSubscriptionId);
-      // Note: Database CASCADE will automatically delete subscription records
+      const subscription = await getSubscriptionByUserId(session.userId, context as any);
+      if (subscription?.status === 'active' && !subscription.canceledAt) {
+        return json<ActionData>(
+          { error: '自動更新がONの状態では退会できません。先に自動更新を中断してください。' },
+          { status: 400 }
+        );
+      }
     }
 
     // Delete all user sessions
@@ -334,9 +346,57 @@ export async function action({ request, context }: ActionFunctionArgs) {
     // Redirect to login with cleared session cookie
     return redirect('/login', {
       headers: {
-        'Set-Cookie': 'sessionId=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
+        'Set-Cookie': 'session_id=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
       },
     });
+  }
+
+  // Handle interrupt-renewal
+  if (intent === 'interrupt-renewal') {
+    const subscription = await getSubscriptionByUserId(session.userId, context as any);
+    if (!subscription || !subscription.stripeSubscriptionId) {
+      return json<ActionData>({ error: 'サブスクリプションが見つかりません' }, { status: 404 });
+    }
+
+    try {
+      await cancelStripeSubscription(subscription.stripeSubscriptionId, context as any);
+      await updateSubscriptionCancellation(subscription.stripeSubscriptionId, subscription.currentPeriodEnd, context as any);
+      return json<ActionData>({ success: '自動更新を中断しました' });
+    } catch (error) {
+      return json<ActionData>({ error: '自動更新の中断に失敗しました' }, { status: 500 });
+    }
+  }
+
+  // Handle resume-renewal
+  if (intent === 'resume-renewal') {
+    const subscription = await getSubscriptionByUserId(session.userId, context as any);
+    if (!subscription || !subscription.stripeSubscriptionId) {
+      return json<ActionData>({ error: 'サブスクリプションが見つかりません' }, { status: 404 });
+    }
+
+    try {
+      await reactivateStripeSubscription(subscription.stripeSubscriptionId, context as any);
+      await updateSubscriptionCancellation(subscription.stripeSubscriptionId, null, context as any);
+      return json<ActionData>({ success: '自動更新を再開しました' });
+    } catch (error) {
+      return json<ActionData>({ error: '自動更新の再開に失敗しました' }, { status: 500 });
+    }
+  }
+
+  // Handle delete-payment-method
+  if (intent === 'delete-payment-method') {
+    const subscription = await getSubscriptionByUserId(session.userId, context as any);
+    if (subscription?.status === 'active' && !subscription.canceledAt) {
+      return json<ActionData>(
+        { error: '先に自動更新を中断してください' },
+        { status: 400 }
+      );
+    }
+
+    // In a real app, we would call Stripe to delete the payment method.
+    // Since we don't have that IO implemented and it's not explicitly requested,
+    // we just implement the validation as requested.
+    return json<ActionData>({ success: 'カード情報を削除しました（デモ）' });
   }
 
   return json<ActionData>({ error: '不正なリクエストです' }, { status: 400 });
@@ -352,7 +412,7 @@ export default function AccountSettings() {
 
   const { user } = parentData;
   const actionData = useActionData<typeof action>();
-  const loaderData = useRouteLoaderData<typeof loader>('routes/account.settings');
+  const loaderData = useLoaderData<typeof loader>();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -382,6 +442,7 @@ export default function AccountSettings() {
 
       <ProfileDisplay
         user={user}
+        subscription={loaderData.subscription}
         spec={loaderData.profileSpec}
         onEmailChange={() => setEmailModalOpen(true)}
         onPasswordChange={() => setPasswordModalOpen(true)}

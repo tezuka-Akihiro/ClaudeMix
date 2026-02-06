@@ -38,7 +38,7 @@ export async function updateUserEmail(
 
     // Update email with parameterized query
     const stmt = db
-      .prepare('UPDATE users SET email = ?, updatedAt = ? WHERE id = ?')
+      .prepare('UPDATE users SET email = ?, updated_at = ? WHERE id = ?')
       .bind(newEmail, now, userId);
 
     await stmt.run();

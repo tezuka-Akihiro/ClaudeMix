@@ -37,8 +37,21 @@ export async function getUserByEmail(
     }
 
     const db = context.env.DB;
-    const stmt = db.prepare('SELECT * FROM users WHERE email = ?').bind(email);
-    const user = await stmt.first<User>();
+    const stmt = db.prepare(`
+      SELECT
+        id,
+        email,
+        password_hash AS passwordHash,
+        subscription_status AS subscriptionStatus,
+        stripe_customer_id AS stripeCustomerId,
+        oauth_provider AS oauthProvider,
+        google_id AS googleId,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+      FROM users
+      WHERE email = ?
+    `).bind(email);
+    const user = await stmt.first<User & { passwordHash: string | null }>();
 
     if (!user) {
       return null;

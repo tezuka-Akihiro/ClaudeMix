@@ -18,27 +18,27 @@ export interface User {
   id: string;
   email: string;
   oauthProvider: string | null;
-  oauthId: string | null;
-  subscriptionStatus: 'active' | 'inactive';
+  googleId: string | null;
+  subscriptionStatus: 'active' | 'inactive' | string;
   createdAt: string;
   updatedAt: string;
 }
 
 /**
- * Retrieve user by OAuth provider and ID
+ * Retrieve user by OAuth provider and Google ID
  *
  * @param provider - OAuth provider ('google' or 'apple')
- * @param oauthId - OAuth provider's user ID
+ * @param googleId - Google OAuth user ID
  * @param context - Cloudflare Workers load context with D1 binding
  * @returns User object if found, null otherwise
  *
  * Note:
  * - Used during OAuth callback to check if user already exists
- * - Combination of provider + oauthId should be unique
+ * - Combination of provider + googleId should be unique
  */
 export async function getUserByOAuth(
   provider: 'google' | 'apple',
-  oauthId: string,
+  googleId: string,
   context: CloudflareLoadContext
 ): Promise<User | null> {
   try {
@@ -46,9 +46,9 @@ export async function getUserByOAuth(
 
     const result = await db
       .prepare(
-        'SELECT id, email, oauthProvider, oauthId, subscriptionStatus, createdAt, updatedAt FROM users WHERE oauthProvider = ? AND oauthId = ?'
+        'SELECT id, email, oauth_provider AS oauthProvider, google_id AS googleId, subscription_status AS subscriptionStatus, created_at AS createdAt, updated_at AS updatedAt FROM users WHERE oauth_provider = ? AND google_id = ?'
       )
-      .bind(provider, oauthId)
+      .bind(provider, googleId)
       .first<User>();
 
     return result || null;

@@ -8,7 +8,7 @@
 
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
-import { Form, Link, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
+import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParams } from '@remix-run/react';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithValibot } from '@conform-to/valibot';
 
@@ -84,7 +84,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   const session = await getSession(request, context as any);
   if (session) {
-    return redirect(spec.server_io.loader.authenticated_redirect);
+    const url = new URL(request.url);
+    const redirectUrl = url.searchParams.get('redirect-url') || url.searchParams.get('returnTo') || spec.server_io.loader.authenticated_redirect;
+    return redirect(redirectUrl);
   }
 
   return json<LoaderData>({
@@ -121,6 +123,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
 
   const formData = await request.formData();
+  const redirectUrl = formData.get('redirectUrl');
 
   // Conform + Valibot: Parse and validate form data
   const submission = parseWithValibot(formData, {
@@ -154,8 +157,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const passwordHash = await hashPassword(password);
 
   // Create user
-  const userCreated = await createUser(sanitizedEmail, passwordHash, context as any);
-  if (!userCreated) {
+  try {
+    await createUser(sanitizedEmail, passwordHash, context as any);
+  } catch (error) {
     return json<ActionData>(
       { error: spec.error_messages.registration.creation_failed },
       { status: 500 }
@@ -178,8 +182,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
   try {
     const setCookieHeader = await saveSession(sessionData, context as any);
 
-    // Set session cookie and redirect to /account
-    return redirect(spec.server_io.action.default_redirect, {
+    // Set session cookie and redirect to /account or redirect-url
+    const targetUrl = (typeof redirectUrl === 'string' && redirectUrl)
+      ? redirectUrl
+      : spec.server_io.action.default_redirect;
+    return redirect(targetUrl, {
       headers: {
         'Set-Cookie': setCookieHeader,
       },
@@ -196,7 +203,9 @@ export default function Register() {
   const actionData = useActionData<typeof action>();
   const loaderData = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+  const [searchParams] = useSearchParams();
   const isSubmitting = navigation.state === 'submitting';
+  const redirectUrl = searchParams.get('redirect-url') || searchParams.get('returnTo') || '/account';
   const { uiSpec } = loaderData;
 
   // Conform: Form state management
@@ -222,6 +231,7 @@ export default function Register() {
         )}
 
         <Form method="post" className="auth-form-structure" {...getFormProps(form)}>
+          <input type="hidden" name="redirectUrl" value={redirectUrl} />
           <div className="form-field-structure">
             <label htmlFor={fields.email.id}>{uiSpec.fields.email.label}</label>
             <input
@@ -277,7 +287,7 @@ export default function Register() {
             {uiSpec.links.loginPrompt}
           </p>
           <Link
-            to="/login"
+            to={`/login?redirect-url=${encodeURIComponent(redirectUrl)}`}
             className="btn-secondary"
             data-testid="login-link"
             style={{ display: 'inline-block', textDecoration: 'none' }}

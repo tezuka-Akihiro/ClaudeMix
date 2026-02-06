@@ -13,6 +13,7 @@ describe('filterPosts - Pure Logic Layer', () => {
       publishedAt: "2024-05-01",
       category: "Tutorials & Use Cases",
       tags: ["Remix", "Cloudflare", "TypeScript"],
+      thumbnailUrl: null,
     },
     {
       slug: "claude-code-guide",
@@ -21,6 +22,7 @@ describe('filterPosts - Pure Logic Layer', () => {
       publishedAt: "2024-04-15",
       category: "Claude Best Practices",
       tags: ["AI", "Claude", "TDD"],
+      thumbnailUrl: null,
     },
     {
       slug: "typescript-best-practices",
@@ -29,6 +31,7 @@ describe('filterPosts - Pure Logic Layer', () => {
       publishedAt: "2024-03-20",
       category: "ClaudeMix Philosophy",
       tags: ["TypeScript", "Architecture"],
+      thumbnailUrl: null,
     },
   ];
 

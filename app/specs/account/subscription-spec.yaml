@@ -92,10 +92,10 @@ subscription_status:
     description: "サブスクリプションは有効です"
 
   canceled:
-    label: "キャンセル済み"
+    label: "自動更新停止中"
     badge_variant: "secondary"
     color: "#6b7280"  # gray-500
-    description: "サブスクリプションはキャンセルされました。期間終了まで利用可能です。"
+    description: "自動更新が停止されています。期間終了まで全機能を利用可能です。"
 
   past_due:
     label: "支払い遅延"
@@ -189,15 +189,15 @@ ui:
       tablet: "100%"
       mobile: "100%"
 
-  cancel_modal:
-    title: "サブスクリプションをキャンセル"
-    width:
-      desktop: "480px"
-      mobile: "100%"
-    padding: "24px"
-    border_radius: "8px"
-    warning_message: "本当にサブスクリプションをキャンセルしますか？"
-    info_message: "キャンセル後も、次回請求日まで引き続きご利用いただけます。"
+  renewal_toggle:
+    interrupt:
+      button_label: "自動更新の中断に進む"
+      modal_title: "自動更新の中断"
+      confirmation_message: "中断しても {date} までは全機能を利用可能です。次回の更新のみを停止します。"
+      confirm_button: "中断を確定する"
+    resume:
+      button_label: "自動更新を再開する"
+      annotation: "次の決済日は {date} です（本日は決済されません）。"
 
 # ==========================================
 # フォーム設定
@@ -266,7 +266,7 @@ success_messages:
 # Stripe 設定
 # ==========================================
 stripe:
-  api_version: "2024-12-18.acacia"
+  api_version: "2025-12-15.clover"
 
   checkout_session:
     mode: "subscription"

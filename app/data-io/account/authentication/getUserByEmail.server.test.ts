@@ -48,7 +48,7 @@ describe('getUserByEmail.server', () => {
 
       // Assert
       expect(mockDB.prepare).toHaveBeenCalledWith(
-        'SELECT * FROM users WHERE email = ?'
+        expect.stringContaining('subscription_status AS subscriptionStatus')
       );
       expect(mockStmt.bind).toHaveBeenCalledWith(email);
       expect(result).toEqual(mockUser);

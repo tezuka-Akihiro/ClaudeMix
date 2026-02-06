@@ -6,9 +6,9 @@
   box-sizing: border-box;
 }
 
-/* スムーススクロールをグローバルに有効化 */
+/* スムーススクロールをグローバルに無効化（E2Eテストの安定性と瞬時の遷移のため） */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 :root {

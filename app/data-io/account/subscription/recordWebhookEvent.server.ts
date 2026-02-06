@@ -36,7 +36,7 @@ export async function recordWebhookEvent(
 
     await db
       .prepare(
-        `INSERT INTO webhook_events (id, eventId, eventType, processedAt, createdAt)
+        `INSERT INTO webhook_events (id, event_id, event_type, processed_at, created_at)
         VALUES (?, ?, ?, ?, ?)`
       )
       .bind(id, eventId, eventType, now, now)

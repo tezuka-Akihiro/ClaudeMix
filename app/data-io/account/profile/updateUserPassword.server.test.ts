@@ -32,7 +32,7 @@ describe('updateUserPassword', () => {
 
       expect(result).toBe(true);
       expect(mockDB.prepare).toHaveBeenCalledWith(
-        'UPDATE users SET passwordHash = ?, updatedAt = ? WHERE id = ?'
+        'UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?'
       );
       expect(mockDB.bind).toHaveBeenCalledWith(
         'new-hash-value',

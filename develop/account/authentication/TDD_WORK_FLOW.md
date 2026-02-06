@@ -134,12 +134,12 @@
 - **2. getUserByOAuth.server.ts の実装**: ✅完了
   - **配置**: `app/data-io/account/authentication/getUserByOAuth.server.ts`
   - **責務**: OAuthプロバイダーとIDでユーザーを検索
-  - **処理**: D1 Databaseで `oauthProvider` と `oauthId` で検索
+  - **処理**: D1 Databaseで `oauthProvider` と `googleId` で検索
 
 - **3. createOAuthUser.server.ts の実装**: ✅完了
   - **配置**: `app/data-io/account/authentication/createOAuthUser.server.ts`
   - **責務**: OAuthユーザーの新規登録
-  - **処理**: `oauthProvider`, `oauthId`, `email` を含むユーザーレコードを作成
+  - **処理**: `oauthProvider`, `googleId`, `email` を含むユーザーレコードを作成
 
 #### 3.2. 純粋ロジック層の実装（Phase 2.2）
 

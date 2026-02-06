@@ -4,14 +4,14 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT,
   subscription_status TEXT NOT NULL DEFAULT 'inactive',
   oauth_provider TEXT,
-  oauth_id TEXT,
+  google_id TEXT,
   stripe_customer_id TEXT UNIQUE,
   created_at TEXT NOT NULL DEFAULT (DATETIME('now')),
   updated_at TEXT NOT NULL DEFAULT (DATETIME('now'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_users_oauth ON users(oauth_provider, oauth_id);
+CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(oauth_provider, google_id);
 CREATE INDEX IF NOT EXISTS idx_users_stripe_customer_id ON users(stripe_customer_id);
 
 CREATE TABLE IF NOT EXISTS subscriptions (

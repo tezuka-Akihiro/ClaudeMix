@@ -57,7 +57,7 @@ export async function createSubscription(
     await db
       .prepare(
         `INSERT INTO subscriptions
-        (id, userId, stripeSubscriptionId, stripeCustomerId, planId, status, currentPeriodStart, currentPeriodEnd, createdAt, updatedAt)
+        (id, user_id, stripe_subscription_id, stripe_customer_id, plan_id, status, current_period_start, current_period_end, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
       .bind(

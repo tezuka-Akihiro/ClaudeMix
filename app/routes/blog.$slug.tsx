@@ -190,7 +190,9 @@ export default function BlogPostDetail() {
 
   // Scroll to top on page navigation
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // behavior: 'instant' is not in standard ScrollBehavior but supported by many browsers as a way to force jump
+    // We use 'auto' which should follow the browser's default jump behavior unless scroll-behavior is smooth
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [post.slug]);
 
   return (

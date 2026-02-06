@@ -46,7 +46,7 @@ export async function createUser(
     // Insert user with parameterized query
     const stmt = db
       .prepare(
-        'INSERT INTO users (id, email, passwordHash, subscriptionStatus, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)'
+        'INSERT INTO users (id, email, password_hash, subscription_status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)'
       )
       .bind(userId, email, passwordHash, 'inactive', now, now);
 
@@ -55,6 +55,6 @@ export async function createUser(
     return true;
   } catch (error) {
     console.error('Error creating user:', error);
-    return false; // Fail-safe: return false on error (e.g., duplicate email)
+    throw error; // Rethrow to allow action to handle specific error feedback
   }
 }

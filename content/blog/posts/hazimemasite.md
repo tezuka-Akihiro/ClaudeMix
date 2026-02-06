@@ -4,7 +4,7 @@ title: "はじめまして"
 author: "優作 / The Sound Edge"
 publishedAt: "2025-12-07"
 description: "出会った起業家仲間へ。エンジニアとしての私の開発哲学、AIと作る事業の基盤、そして挑戦を共有する仲間へのメッセージ。"
-category: "インフォメーション"
+category: "起業"
 tags: []
 ---
 

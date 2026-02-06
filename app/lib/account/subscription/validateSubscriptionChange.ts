@@ -6,7 +6,7 @@
  * @responsibility ビジネスルール検証
  */
 
-export type SubscriptionStatus = 'active' | 'inactive';
+import type { SubscriptionStatus } from '~/specs/account/types';
 
 export interface SubscriptionChangeRequest {
   currentStatus: SubscriptionStatus;

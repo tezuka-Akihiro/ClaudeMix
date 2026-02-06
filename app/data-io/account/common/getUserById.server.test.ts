@@ -40,6 +40,8 @@ describe('getUserById.server', () => {
       const userData: User = {
         id: userId,
         email: 'test@example.com',
+        oauthProvider: null,
+        googleId: null,
         subscriptionStatus: 'active',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -52,7 +54,7 @@ describe('getUserById.server', () => {
 
       // Assert
       expect(mockD1.prepare).toHaveBeenCalledWith(
-        'SELECT * FROM users WHERE id = ?'
+        expect.stringContaining('subscription_status AS subscriptionStatus')
       );
       expect(mockStatement.bind).toHaveBeenCalledWith(userId);
       expect(mockStatement.first).toHaveBeenCalled();
@@ -74,6 +76,8 @@ describe('getUserById.server', () => {
         const userData: User = {
           id: `user-${status}`,
           email: `${status}@example.com`,
+          oauthProvider: null,
+          googleId: null,
           subscriptionStatus: status,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -101,7 +105,7 @@ describe('getUserById.server', () => {
 
       // Assert
       expect(mockD1.prepare).toHaveBeenCalledWith(
-        'SELECT * FROM users WHERE id = ?'
+        expect.stringContaining('WHERE id = ?')
       );
       expect(mockStatement.bind).toHaveBeenCalledWith(userId);
       expect(result).toBeNull();

@@ -47,7 +47,7 @@ export async function createStripeCheckoutSession(
 
   // Initialize Stripe client
   const stripe = new Stripe(context.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2024-12-18.acacia',
+    apiVersion: '2025-12-15.clover',
     typescript: true,
   })
 

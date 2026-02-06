@@ -49,6 +49,7 @@ describe('PostsSection', () => {
           publishedAt: '2024-01-01',
           category: 'Category 1',
           tags: [],
+          thumbnailUrl: null,
         },
         {
           slug: 'test-post-2',
@@ -56,6 +57,7 @@ describe('PostsSection', () => {
           publishedAt: '2024-01-02',
           category: 'Category 2',
           tags: [],
+          thumbnailUrl: null,
         },
       ],
       isAuthenticated: true,
@@ -71,10 +73,6 @@ describe('PostsSection', () => {
       selectedFilters: {
         category: '',
         tags: [],
-      },
-      categorySpec: {
-        categories: spec.categories,
-        defaultEmoji: spec.business_rules.display.default_category_emoji,
       },
       pageTitle: spec.posts_config.page_title,
       publicCategories: spec.access_control.public_categories,

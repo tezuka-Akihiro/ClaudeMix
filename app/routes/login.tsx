@@ -100,14 +100,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
 
   const session = await getSession(request, context as any);
+  const url = new URL(request.url);
   if (session) {
-    const url = new URL(request.url);
-    const redirectUrl = url.searchParams.get('redirect-url') || spec.server_io.loader.authenticated_redirect;
+    const redirectUrl = url.searchParams.get('redirect-url') || url.searchParams.get('returnTo') || spec.server_io.loader.authenticated_redirect;
     return redirect(redirectUrl);
   }
 
   // Extract flash message from URL parameter
-  const url = new URL(request.url);
   const messageKey = url.searchParams.get('message');
   const flashMessage = messageKey && spec.flash_messages[messageKey as keyof typeof spec.flash_messages]
     ? spec.flash_messages[messageKey as keyof typeof spec.flash_messages]
@@ -151,7 +150,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
 
   const formData = await request.formData();
-  const redirectUrl = formData.get('redirectUrl') || spec.server_io.action.default_redirect;
+  const redirectUrl = formData.get('redirectUrl');
 
   // Conform + Valibot: Parse and validate form data
   const submission = parseWithValibot(formData, {
@@ -196,7 +195,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const setCookieHeader = await saveSession(sessionData, context as any);
 
   // Set session cookie and redirect
-  const targetUrl = typeof redirectUrl === 'string' ? redirectUrl : spec.server_io.action.default_redirect;
+  const targetUrl = (typeof redirectUrl === 'string' && redirectUrl)
+    ? redirectUrl
+    : spec.server_io.action.default_redirect;
   return redirect(targetUrl, {
     headers: {
       'Set-Cookie': setCookieHeader,
@@ -210,7 +211,7 @@ export default function Login() {
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
   const isSubmitting = navigation.state === 'submitting';
-  const redirectUrl = searchParams.get('redirect-url') || '/account';
+  const redirectUrl = searchParams.get('redirect-url') || searchParams.get('returnTo') || '/account';
   const { uiSpec } = loaderData;
 
   // Conform: Form state management
@@ -324,7 +325,7 @@ export default function Login() {
             {uiSpec.links.registerPrompt}
           </p>
           <Link
-            to="/register"
+            to={`/register?redirect-url=${encodeURIComponent(redirectUrl)}`}
             className="btn-secondary"
             data-testid="register-link"
             style={{ display: 'inline-block', textDecoration: 'none' }}

@@ -455,6 +455,8 @@ test.describe('E2E Test for Blog - Post Detail', () => {
       await page.waitForLoadState('networkidle');
 
       // 8. スクロール位置がトップにリセットされていることを確認
+      // waitForFunctionを使用して、スクロールが0になるまで待機する（アニメーション等の影響を排除）
+      await page.waitForFunction(() => window.scrollY === 0, { timeout: 3000 });
       const scrollYAfter = await page.evaluate(() => window.scrollY);
       expect(scrollYAfter).toBe(0);
     }

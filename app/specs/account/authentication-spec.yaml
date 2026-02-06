@@ -284,10 +284,10 @@ database:
         type: "TEXT"
         constraints: ""
         description: "OAuthプロバイダー名（google等、通常認証の場合はNULL）"
-      oauth_id:
+      google_id:
         type: "TEXT"
         constraints: ""
-        description: "OAuthプロバイダーでのユーザーID（通常認証の場合はNULL）"
+        description: "Google OAuthでのユーザーID（sub）"
       subscription_status:
         type: "TEXT"
         constraints: "NOT NULL"
@@ -307,8 +307,8 @@ database:
       - name: "idx_users_email"
         columns: ["email"]
         unique: true
-      - name: "idx_users_oauth"
-        columns: ["oauth_provider", "oauth_id"]
+      - name: "idx_users_google_id"
+        columns: ["oauth_provider", "google_id"]
         unique: false
 
 # ==========================================

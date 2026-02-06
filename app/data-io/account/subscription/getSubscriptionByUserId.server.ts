@@ -39,7 +39,24 @@ export async function getSubscriptionByUserId(
     // Query subscription from D1 database using parameterized query (SQL injection protection)
     const db = context.env.DB
     const stmt = db
-      .prepare('SELECT * FROM subscriptions WHERE userId = ? ORDER BY createdAt DESC LIMIT 1')
+      .prepare(`
+        SELECT
+          id,
+          user_id AS userId,
+          stripe_subscription_id AS stripeSubscriptionId,
+          stripe_customer_id AS stripeCustomerId,
+          plan_id AS planId,
+          status,
+          current_period_start AS currentPeriodStart,
+          current_period_end AS currentPeriodEnd,
+          canceled_at AS canceledAt,
+          created_at AS createdAt,
+          updated_at AS updatedAt
+        FROM subscriptions
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+      `)
       .bind(userId)
     const subscription = await stmt.first<Subscription>()
 

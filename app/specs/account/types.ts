@@ -6,7 +6,9 @@
 export interface User {
   id: string;
   email: string;
-  subscriptionStatus: 'active' | 'inactive';
+  oauthProvider: string | null;
+  googleId: string | null;
+  subscriptionStatus: SubscriptionStatus | string;
   createdAt: string;
   updatedAt: string;
 }
@@ -1020,7 +1022,8 @@ export type SubscriptionStatus =
   | 'trialing'
   | 'incomplete'
   | 'incomplete_expired'
-  | 'unpaid';
+  | 'unpaid'
+  | 'inactive';
 
 /**
  * サブスクリプション情報
