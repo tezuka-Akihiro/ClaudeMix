@@ -59,6 +59,7 @@ plans:
     stripe_price_id: "price_1StSb0FTLZPZU8HQ2LwdnWWb"
     features:
       - "全記事閲覧"
+      - "広告非表示"
     discount_rate: 0
     enabled: true
 
@@ -74,6 +75,7 @@ plans:
     stripe_price_id: "price_1StSb1FTLZPZU8HQPkNgiZDi"
     features:
       - "全記事閲覧"
+      - "広告非表示"
       - "2ヶ月分お得"
     discount_rate: 17  # (11760 - 9800) / 11760 ≈ 17%
     badge: "おすすめ"
