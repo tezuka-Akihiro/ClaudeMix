@@ -5,8 +5,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { createSessionData } from './createSessionData';
-import { loadSharedSpec } from '../../../../tests/utils/loadSpec';
-import type { ServerSpec } from '~/specs/shared/types';
+import { loadSpec } from '../../../../tests/utils/loadSpec';
+import type { AccountCommonSpec } from '~/specs/account/types';
 
 describe('createSessionData', () => {
   describe('Happy Path: Session data creation', () => {
@@ -27,8 +27,8 @@ describe('createSessionData', () => {
 
     it('should create expiresAt with default duration in the future', async () => {
       // Arrange
-      const serverSpec = await loadSharedSpec<ServerSpec>('server');
-      const maxAge = serverSpec.security.session_max_age;
+      const commonSpec = await loadSpec<AccountCommonSpec>('account', 'common');
+      const maxAge = commonSpec.session.expiry.duration_seconds;
       const userId = 'user-123';
       const sessionId = 'session-abc-123';
       const beforeCreation = Date.now();
@@ -100,8 +100,8 @@ describe('createSessionData', () => {
 
     it('should use default duration from spec when duration is not provided', async () => {
       // Arrange
-      const serverSpec = await loadSharedSpec<ServerSpec>('server');
-      const maxAge = serverSpec.security.session_max_age;
+      const commonSpec = await loadSpec<AccountCommonSpec>('account', 'common');
+      const maxAge = commonSpec.session.expiry.duration_seconds;
       const userId = 'user-123';
       const sessionId = 'session-abc-123';
       const beforeCreation = Date.now();

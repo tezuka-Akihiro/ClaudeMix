@@ -29,14 +29,14 @@ Common Components (共通コンポーネント)
 1. **AccountLayout**: `/account`配下の全ページ共通レイアウト
    - ヘッダー: AccountNavを含む
    - メインコンテンツエリア: 子コンポーネント表示
-   - 認証チェック: 未認証時は`/login`へリダイレクト
+   - 認証チェック: 未認証時は `[spec: redirect.login_path]` へリダイレクト
    - 配置: `app/components/account/common/AccountLayout.tsx`
 
 2. **AccountNav**: アカウント関連ナビゲーション
-   - ナビゲーション項目:
-     - マイページ (`/account`)
-     - 設定 (`/account/settings`)
-     - サブスクリプション (`/account/subscription`)
+   - ナビゲーション項目: `[spec: navigation.menu_items]` に定義
+     - マイページ
+     - 設定
+     - サブスクリプション
    - 現在のページをハイライト表示
    - 配置: `app/components/account/common/AccountNav.tsx`
 
@@ -44,7 +44,7 @@ Common Components (共通コンポーネント)
 
 1. **AuthGuard**: 認証保護コンポーネント
    - セッション検証を実行
-   - 未認証時: `/login`へリダイレクト（`redirect-url`パラメータ付き）
+   - 未認証時: `[spec: redirect.login_path]` へリダイレクト（`[spec: redirect.query_param_name]` パラメータ付き）
    - 認証済み時: 子コンポーネントをレンダリング
    - 配置: `app/components/account/common/AuthGuard.tsx`
 
@@ -121,7 +121,7 @@ loaderがUIに渡すべきデータ：
    Authentication Components:
    - AuthGuard:
      - セッション検証をlib層に委譲
-     - 未認証時: `/login?redirect-url=${currentPath}` へリダイレクト
+     - 未認証時: `[spec: redirect.login_path]?[spec: redirect.query_param_name]=${currentPath}` へリダイレクト
      - 認証済み時: childrenをレンダリング
      - ローディング状態の表示
 
@@ -219,7 +219,7 @@ loaderがUIに渡すべきデータ：
 セッション検証 (Route: /account/*):
 1. [Route層の責務]
    - loader内でセッション検証を実行
-   - 未認証時: `/login`へリダイレクト
+   - 未認証時: `[spec: redirect.login_path]` へリダイレクト
    - 認証済み時: ユーザー情報をUIに渡す
 
 2. [Data-IO層の責務]
@@ -248,11 +248,11 @@ Request (Cookie)
    - 暗号学的に安全な乱数生成（crypto.randomUUID()）
    - 推測不可能な128bit以上のランダム文字列
 
-2. **Cookie設定**:
+2. **Cookie設定**: `[spec: session.cookie]`
    - `HttpOnly`: JavaScriptからアクセス不可
    - `Secure`: HTTPS通信のみ
-   - `SameSite=Lax`: CSRF攻撃対策
-   - `Max-Age`: セッション有効期限（7日間）
+   - `SameSite`: CSRF攻撃対策
+   - `Max-Age`: セッション有効期限（`[spec: session.expiry.duration_seconds]`）
 
 3. **セッションデータの保存**:
    - Cloudflare Workers KVに保存（グローバル分散、暗号化済み）
@@ -265,12 +265,12 @@ Request (Cookie)
 ### エラーハンドリング
 
 1. **セッション期限切れ**:
-   - `/login?redirect-url=${currentPath}` へリダイレクト
-   - ユーザーにメッセージ表示: "セッションが期限切れです。再度ログインしてください。"
+   - `[spec: redirect.login_path]?[spec: redirect.query_param_name]=${currentPath}` へリダイレクト
+   - ユーザーにメッセージ表示: `[spec: error_messages.auth.session_expired]`
 
 2. **セッション不正**:
    - 即座にセッション削除
-   - `/login` へリダイレクト
+   - `[spec: redirect.login_path]` へリダイレクト
    - ログ出力（セキュリティ監査用）
 
 3. **KVアクセスエラー**:

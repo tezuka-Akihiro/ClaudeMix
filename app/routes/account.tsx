@@ -35,17 +35,22 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const redirectUrl = url.pathname + url.search;
 
+  // Load common spec
+  const commonSpec = loadSpec<AccountCommonSpec>('account/common');
+  const loginPath = commonSpec.redirect.login_path;
+  const redirectParam = commonSpec.redirect.query_param_name;
+
   // Get session from cookie
   const session = await getSession(request, context as any);
 
   // Check if session exists
   if (!session) {
-    return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
+    return redirect(`${loginPath}?${redirectParam}=${encodeURIComponent(redirectUrl)}`);
   }
 
   // Check if session is expired
   if (isSessionExpired(session.expiresAt)) {
-    return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
+    return redirect(`${loginPath}?${redirectParam}=${encodeURIComponent(redirectUrl)}`);
   }
 
   // Get user data
@@ -53,11 +58,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   // Check if user exists
   if (!user) {
-    return redirect(`/login?redirect-url=${encodeURIComponent(redirectUrl)}`);
+    return redirect(`${loginPath}?${redirectParam}=${encodeURIComponent(redirectUrl)}`);
   }
-
-  // Load common spec
-  const commonSpec = loadSpec<AccountCommonSpec>('account/common');
 
   // Navigation items (from common-spec.yaml)
   const navItems: NavItem[] = commonSpec.navigation.menu_items;
