@@ -67,38 +67,20 @@ AccountLayout
       <div class="price">¥980 / 月</div>
       <ul class="features">
         <li>全記事閲覧</li>
-        <li>広告非表示</li>
       </ul>
       <Button variant="primary" data-testid="subscribe-1month">
         購読する
       </Button>
     </div>
 
-    <!-- 3ヶ月プラン -->
-    <div class="plan-card plan-card-featured" data-testid="plan-card-3months">
-      <div class="badge">おすすめ</div>
-      <h3>3ヶ月プラン</h3>
-      <div class="price">¥2,800 / 3ヶ月</div>
-      <div class="price-per-month">（月あたり¥933）</div>
-      <ul class="features">
-        <li>全記事閲覧</li>
-        <li>広告非表示</li>
-        <li>5%割引</li>
-      </ul>
-      <Button variant="primary" data-testid="subscribe-3months">
-        購読する
-      </Button>
-    </div>
-
-    <!-- 6ヶ月プラン -->
+    <!-- 12ヶ月プラン -->
     <div class="plan-card" data-testid="plan-card-6months">
-      <h3>6ヶ月プラン</h3>
-      <div class="price">¥5,400 / 6ヶ月</div>
-      <div class="price-per-month">（月あたり¥900）</div>
+      <h3>12ヶ月プラン</h3>
+      <div class="price">¥9,800 / 12ヶ月</div>
+      <div class="price-per-month">（月あたり¥816）</div>
       <ul class="features">
         <li>全記事閲覧</li>
-        <li>広告非表示</li>
-        <li>8%割引</li>
+        <li>2カ月分割引</li>
       </ul>
       <Button variant="primary" data-testid="subscribe-6months">
         購読する

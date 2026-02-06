@@ -38,3 +38,4 @@ INSERT OR IGNORE INTO subscriptions (
   '2030-12-31T23:59:59Z',
   DATETIME('now'),
   DATETIME('now')
+);

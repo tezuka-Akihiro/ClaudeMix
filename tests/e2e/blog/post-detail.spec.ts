@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { loadSpec, loadTestArticles, type TestArticleFrontmatter } from '../../utils/loadSpec';
 import type { BlogPostsSpec, BlogCommonSpec } from '~/specs/blog/types';
 
-// Seeded test user with active subscription (from migrations/seed-dev.sql)
+// Seeded test user with active subscription (from migrations/seed.sql)
 const SUBSCRIBED_USER = {
   email: 'tizuhanpen8+preview@gmail.com',
   password: '14801250At',

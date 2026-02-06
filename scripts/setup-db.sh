@@ -36,9 +36,9 @@ else
 fi
 
 # Apply seed data for development
-if [ -f "migrations/seed-dev.sql" ]; then
+if [ -f "migrations/seed.sql" ]; then
     echo "🌱 Applying seed data..."
-    wrangler d1 execute claudemix-dev --local --file="migrations/seed-dev.sql"
+    wrangler d1 execute claudemix-dev --local --file="migrations/seed.sql"
     echo "✅ Seed data applied"
 fi
 
