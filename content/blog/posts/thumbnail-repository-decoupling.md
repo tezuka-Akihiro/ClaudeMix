@@ -6,6 +6,7 @@ author: "ClaudeMix Team"
 publishedAt: "2026-02-06"
 category: "ClaudeMix 考察"
 tags: ["architecture", "R2", "refactoring", "performance", "CLAUDE.md"]
+freeContentHeading: "開発の進捗"
 ---
 
 ## はじめに
