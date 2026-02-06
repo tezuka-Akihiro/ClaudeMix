@@ -1,161 +1,96 @@
-# 提供価値の5カテゴリ
+# 提供価値の3カテゴリ
 
-記事の提供価値を分類する5つのカテゴリ。
+記事の提供価値を分類する3つのカテゴリ。
 
-## 1. Remix
+## 1. ClaudeMix ガイド
 
-### 説明
+### ガイドの説明
 
-Remixフレームワークに関する知見。
+Claude Code公式ドキュメントの翻訳・まとめ。機能を調べたいときの参照用。
 
-### 対象
+### ガイドの対象
 
-- Remixフレームワーク自体の機能
-- Remix特有のパターン・アーキテクチャ
-- Remixのパフォーマンス最適化
+- MCP (Model Context Protocol)
+- Skills
+- Prompts
+- Rules
+- Subagent
 
-### 具体例
+### ガイドの具体例
 
-- **Nested Routes**: ネストされたルート構造の活用
-- **Loader/Action**: データ取得・更新パターン
-- **SSR最適化**: サーバーサイドレンダリングの最適化
-- **Error Boundary**: エラーハンドリング
-- **段階的強化（Progressive Enhancement）**: JavaScriptなしでも動作する設計
+- **MCP**: 外部ツール（GitHub、DB等）をClaudeに連携させる方法。
+- **Skills**: 再利用可能な専門知識をAIに与える「Skills」の作り方や活用事例。
+- **Prompts**: 効果的な指示テンプレートの設計パターンと、公式推奨の書き方。
+- **Rules**: プロジェクトの規律を自動適用するルール機能の活用法。
+- **Subagent**: 特定タスクに特化した独立エージェントの作成と活用。
 
-### 判定基準
+### ガイドの判定基準
 
 以下のいずれかに該当する場合、このカテゴリに分類：
 
-- Remixフレームワーク固有の機能を扱っている
-- Remix公式ドキュメントに記載されている機能
-- `@remix-run/*` パッケージを使用
+- Claude Code公式機能の解説を扱っている
+- セットアップや設定ガイドである
+- 逆引きリファレンス的な内容である
 
 ---
 
-## 2. Cloudflare Edge
+## 2. ClaudeMix 記録
 
-### 説明
+### 記録の説明
 
-Cloudflare Edgeに関する知見。
+トラブルシュート・最適化の実践ログ。同じ問題に遭遇したときの解決策。
 
-### 対象
+### 記録の対象
 
-- Cloudflare Workers
-- Cloudflare Pages
-- Cloudflare D1（データベース）
-- Cloudflareのパフォーマンス最適化
+- Troubleshooting
+- Performance
+- E2E Testing
+- Build & Deploy
 
-### 具体例
+### 記録の具体例
 
-- **Workers**: エッジでの処理
-- **Pages**: 静的サイトホスティング
-- **D1**: SQLiteベースのデータベース
-- **パフォーマンス最適化**: エッジでのキャッシング、最適化
-- **Bindings**: WorkersとD1の連携
+- **Troubleshooting**: 実際に遭遇したエラーや問題の解決過程。
+- **Performance**: Lighthouseスコア改善など、パフォーマンス最適化の実践記録。
+- **E2E Testing**: PlaywrightによるE2Eテストで遭遇した問題と解決策。
+- **Build & Deploy**: Cloudflare Pages/Workersへのデプロイで発生した問題の対処法。
 
-### 判定基準
+### 記録の判定基準
 
 以下のいずれかに該当する場合、このカテゴリに分類：
 
-- Cloudflare固有の機能を扱っている
-- Cloudflare公式ドキュメントに記載されている機能
-- `wrangler` コマンドを使用
-- `cloudflare/*` パッケージを使用
+- 実体験に基づくトラブル解決を扱っている
+- 性能改善の実測データを含む記録である
+- 環境構築やデプロイの具体的な手順を紹介している
 
 ---
 
-## 3. Claude Code（AI）
+## 3. ClaudeMix 考察
 
-### 説明
+### 考察の説明
 
-Claude Code（AI）に関する知見。
+設計思想・リファクタリングから得た知見。設計判断の参考にしたいとき。
 
-### 対象
+### 考察の対象
 
-- Claude Codeの活用方法
-- プロンプトエンジニアリング
-- Projects, Skills, MCPの活用
-- AIガードレール
+- Refactoring
+- Architecture
+- Type Design
+- System Design
 
-### 具体例
+### 考察の具体例
 
-- **プロンプトエンジニアリング**: 効果的なプロンプトの書き方
-- **Projects**: `.claude/claude-config.json` の活用
-- **Skills**: カスタムスキルの作成
-- **MCP（Model Context Protocol）**: MCPサーバーの作成
-- **AIガードレール**: AI活用時の安全対策
+- **Refactoring**: AIと協調したリファクタリングの実践記録とその設計思想。
+- **Architecture**: 3層アーキテクチャ、Single Source of Truthなどの設計原則。
+- **Type Design**: TypeScriptの型定義を「生きた仕様書」として活用する手法。
+- **System Design**: リントシステムやプレビルド戦略など、開発基盤の設計論。
 
-### 判定基準
-
-以下のいずれかに該当する場合、このカテゴリに分類：
-
-- Claude Code固有の機能を扱っている
-- `.claude/` ディレクトリ配下のファイルを扱っている
-- プロンプトエンジニアリングの手法を紹介
-- AI活用時の工夫・ベストプラクティスを紹介
-
----
-
-## 4. 品質向上活動
-
-### 説明
-
-品質向上活動に関する知見。
-
-### 対象
-
-- テスト自動化
-- アーキテクチャ設計
-- リファクタリング
-- 技術的負債の解消
-
-### 具体例
-
-- **テスト自動化**: E2Eテスト、ユニットテストの自動化
-- **アーキテクチャ設計**: 3大層アーキテクチャ、設計原則
-- **リファクタリング**: コード改善、保守性向上
-- **技術的負債の解消**: レガシーコードの刷新
-- **TDD（テスト駆動開発）**: Outside-In TDD等
-
-### 判定基準
+### 考察の判定基準
 
 以下のいずれかに該当する場合、このカテゴリに分類：
 
-- テストに関する内容
-- アーキテクチャ・設計に関する内容
-- コード品質改善に関する内容
-- プロダクトの「延命」に関する内容
-
----
-
-## 5. その他
-
-### 説明
-
-その他の技術・手法に関する知見。
-
-### 対象
-
-- TypeScript
-- Vite
-- Playwright
-- Tailwind CSS
-- その他のツール・ライブラリ
-
-### 具体例
-
-- **TypeScript**: 型定義、型推論の活用
-- **Vite**: ビルド最適化
-- **Playwright**: E2Eテストの書き方
-- **Tailwind CSS**: スタイリングの工夫
-- **Vitest**: ユニットテストの書き方
-
-### 判定基準
-
-以下のいずれかに該当する場合、このカテゴリに分類：
-
-- 上記4カテゴリに該当しない技術・手法
-- 汎用的なツール・ライブラリ
+- 設計判断の根拠や哲学の解説を扱っている
+- 抽象度の高い設計パターンの提案である
+- コードの保守性や「延命」に関する知見を紹介している
 
 ---
 
@@ -163,28 +98,19 @@ Claude Code（AI）に関する知見。
 
 記事が複数のカテゴリに該当する場合、すべてのカテゴリを記載してください。
 
-### 例1: Remix × Cloudflare Edge
+### 例1: ガイド × 記録
 
-「Remix × Cloudflare Edgeでビルド時間を50%短縮した3つの最適化手法」
+「Claude Code Skillsで自動テスト環境を構築し、Lighthouse 100を達成した全記録」
 
-- **Remix**: Remixのビルド設定
-- **Cloudflare Edge**: Cloudflare Pagesのビルド最適化
-- **その他**: Viteのビルド最適化
+- **ClaudeMix ガイド**: Skillsの作成方法
+- **ClaudeMix 記録**: Performance最適化の記録
 
-### 例2: Claude Code × 品質向上
+### 例2: 考察 × 記録
 
-「Claude Code Projectsで自動テスト環境を構築する完全ガイド」
+「3層アーキテクチャへの移行によるデバッグ効率の向上と実録」
 
-- **Claude Code**: Claude Code Projectsの活用
-- **品質向上活動**: テスト自動化
-- **その他**: Playwright, Vitestの活用
-
-### 例3: Remix × 品質向上
-
-「Remixアプリケーションの3大層アーキテクチャ設計」
-
-- **Remix**: Remix固有のアーキテクチャパターン
-- **品質向上活動**: アーキテクチャ設計
+- **ClaudeMix 考察**: Architecture設計の知見
+- **ClaudeMix 記録**: Troubleshootingの実績
 
 ---
 
@@ -194,25 +120,25 @@ Claude Code（AI）に関する知見。
 
 ### 良い記述
 
-**Remix**:
-「Nested Routesの活用により、共通レイアウトの重複を排除し、コード量を30%削減する方法を紹介します。」
+**ClaudeMix ガイド**:
+「MCPの活用により、GitHubのIssueをClaudeから直接操作可能にする設定手順を解説します。」
 
-**Cloudflare Edge**:
-「Cloudflare D1のConnection Poolingを活用し、データベースクエリのレイテンシを50ms→10msに改善する手法を解説します。」
+**ClaudeMix 記録**:
+「LighthouseのCSS最適化により、First Contentful Paintを1.2sから0.6sに改善した実践記録を公開します。」
 
-**Claude Code**:
-「Claude Code Projectsで自動テスト環境を構築し、テスト実行時間を10分→2分に短縮する方法を紹介します。」
+**ClaudeMix 考察**:
+「3層アーキテクチャの導入により、UIの変更がビジネスロジックに影響しない設計の重要性と実装例を紹介します。」
 
 ### 悪い記述
 
-**Remix**:
-「Remixに関する知見を紹介します。」（抽象的）
+**ClaudeMix ガイド**:
+「ガイドについて紹介します。」（抽象的）
 
-**Cloudflare Edge**:
-「Cloudflareを使います。」（具体性なし）
+**ClaudeMix 記録**:
+「記録を残します。」（具体性なし）
 
-**Claude Code**:
-「Claude Codeを活用します。」（価値が不明）
+**ClaudeMix 考察**:
+「考察を書きます。」（価値が不明）
 
 ---
 
@@ -222,11 +148,9 @@ Claude Code（AI）に関する知見。
 
 ### 例
 
-**Remix**: なし
-**Cloudflare Edge**: なし
-**Claude Code**: なし
-**品質向上活動**: 「E2Eテストの自動化により、回帰テストの時間を50%削減する方法を紹介します。」
-**その他**: 「Playwrightのトレース機能を活用し、テストデバッグの時間を1/3に削減する方法を解説します。」
+**ClaudeMix ガイド**: なし
+**ClaudeMix 記録**: なし
+**ClaudeMix 考察**: 「リファクタリングによるコード品質向上の重要性について解説します。」
 
 ---
 
@@ -235,20 +159,14 @@ Claude Code（AI）に関する知見。
 ```text
 記事の内容を確認
   ↓
-Remix固有の機能？
-  → Yes: Remixカテゴリ
+公式機能の解説やガイド？
+  → Yes: ClaudeMix ガイド
   ↓ No
-Cloudflare固有の機能？
-  → Yes: Cloudflare Edgeカテゴリ
+実体験に基づくトラブル解決や記録？
+  → Yes: ClaudeMix 記録
   ↓ No
-Claude Code固有の機能？
-  → Yes: Claude Codeカテゴリ
-  ↓ No
-品質向上活動（テスト、アーキテクチャ等）？
-  → Yes: 品質向上カテゴリ
-  ↓ No
-その他のツール・ライブラリ？
-  → Yes: その他カテゴリ
+設計思想やリファクタリングの考察？
+  → Yes: ClaudeMix 考察
 ```
 
 ---
@@ -257,7 +175,7 @@ Claude Code固有の機能？
 
 ### Q1: 複数のカテゴリに該当する場合はどうすれば良いですか？
 
-**A**: すべてのカテゴリを記載してください。例えば、「Remix × Cloudflare Edge」の記事であれば、両方のカテゴリに該当します。
+**A**: すべてのカテゴリを記載してください。例えば、「ガイド」の内容を含みつつ、その「記録」も書いている場合は、両方のカテゴリに該当します。
 
 ### Q2: どのカテゴリにも該当しない場合はどうすれば良いですか？
 

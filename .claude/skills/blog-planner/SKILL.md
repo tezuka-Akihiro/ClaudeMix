@@ -39,7 +39,7 @@ ClaudeMix（Remix × Cloudflare × Claude Code）プロジェクトのブログ�
 
 ステップ3: 記事の提供価値の評価
   ↓ prompts/03-evaluate.md
-  ↓ 5つのカテゴリで分類し、品質基準を適用
+  ↓ 3つのカテゴリで分類し、品質基準を適用
 
 ステップ4: 導入部分構成の準備
   ↓ prompts/04-prepare.md
@@ -56,7 +56,7 @@ ClaudeMix（Remix × Cloudflare × Claude Code）プロジェクトのブログ�
 | :--- | :--- | :--- |
 | **ステップ1** | `prompts/01-reference.md` | ブランド・マニフェスト等4ファイルを読み込み |
 | **ステップ2** | `prompts/02-organize.md` | Why/What/Challenge/Solutionで作業を構造化 |
-| **ステップ3** | `prompts/03-evaluate.md` | 提供価値を5カテゴリで分類、4基準で品質評価 |
+| **ステップ3** | `prompts/03-evaluate.md` | 提供価値を3カテゴリで分類、4基準で品質評価 |
 | **ステップ4** | `prompts/04-prepare.md` | BAB法の要素抽出、プロダクト固有用語チェック |
 | **ステップ5** | `prompts/05-confirm.md` | 企画書を整形し、オペレーターに確認 |
 
@@ -81,15 +81,13 @@ ClaudeMix（Remix × Cloudflare × Claude Code）プロジェクトのブログ�
 
 **すべての基準を満たす必要があります。**
 
-## 提供価値の5カテゴリ
+## 提供価値の3カテゴリ
 
 **詳細**: `docs/value-categories.md`
 
-1. **Remix**: Remixフレームワークに関する知見
-2. **Cloudflare Edge**: Cloudflare Edgeに関する知見
-3. **Claude Code(AI)**: Claude Codeに関する知見
-4. **品質向上活動**: テスト自動化、アーキテクチャ設計等
-5. **その他**: TypeScript, Vite, Playwright等
+1. **ClaudeMix ガイド**: Claude Code公式ドキュメントの翻訳・まとめ
+2. **ClaudeMix 記録**: トラブルシュート・最適化の実践ログ
+3. **ClaudeMix 考察**: 設計思想・リファクタリングから得た知見
 
 ## 参照ドキュメント
 
@@ -101,7 +99,7 @@ ClaudeMix（Remix × Cloudflare × Claude Code）プロジェクトのブログ�
 | `prompts/04-prepare.md` | 導入部準備プロンプト |
 | `prompts/05-confirm.md` | 確認プロンプト |
 | `docs/quality-criteria.md` | 品質評価基準（4基準） |
-| `docs/value-categories.md` | 提供価値の5カテゴリ |
+| `docs/value-categories.md` | 提供価値の3カテゴリ |
 | `docs/bab-structure.md` | 恐怖型BAB法 |
 | `docs/terminology-check.md` | プロダクト固有用語チェック |
 | `docs/reference-files.md` | 参照ファイル一覧 |
