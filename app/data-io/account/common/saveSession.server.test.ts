@@ -6,6 +6,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { saveSession } from './saveSession.server';
 import type { SessionData } from '~/specs/account/types';
+import { loadSharedSpec } from '../../../../tests/utils/loadSpec';
+import type { ServerSpec } from '~/specs/shared/types';
 
 describe('saveSession.server', () => {
   // Mock Cloudflare Workers KV
@@ -27,11 +29,13 @@ describe('saveSession.server', () => {
   describe('Happy Path: Save session to KV and generate Cookie', () => {
     it('should save session to KV with correct TTL and return Set-Cookie header', async () => {
       // Arrange
+      const serverSpec = await loadSharedSpec<ServerSpec>('server');
+      const maxAge = serverSpec.security.session_max_age;
       const now = Date.now();
       const sessionData: SessionData = {
         sessionId: 'test-session-id-123',
         userId: 'user-123',
-        expiresAt: new Date(now + 604800000).toISOString(), // 7 days from now
+        expiresAt: new Date(now + maxAge * 1000).toISOString(),
         createdAt: new Date(now).toISOString(),
       };
 
@@ -43,8 +47,8 @@ describe('saveSession.server', () => {
       const kvPutCall = mockKV.put.mock.calls[0];
       expect(kvPutCall[0]).toBe(`session:${sessionData.sessionId}`);
       expect(kvPutCall[1]).toBe(JSON.stringify(sessionData));
-      expect(kvPutCall[2].expirationTtl).toBeGreaterThanOrEqual(604799);
-      expect(kvPutCall[2].expirationTtl).toBeLessThanOrEqual(604800);
+      expect(kvPutCall[2].expirationTtl).toBeGreaterThanOrEqual(maxAge - 1);
+      expect(kvPutCall[2].expirationTtl).toBeLessThanOrEqual(maxAge);
 
       // Verify Set-Cookie header is returned
       expect(setCookieHeader).toBeDefined();
@@ -53,7 +57,8 @@ describe('saveSession.server', () => {
       expect(setCookieHeader).toContain('Secure');
       expect(setCookieHeader).toContain('SameSite=Lax');
       expect(setCookieHeader).toContain('Path=/');
-      expect(setCookieHeader).toMatch(/Max-Age=(604799|604800)/);
+      const maxAgeRegex = new RegExp(`Max-Age=(${maxAge - 1}|${maxAge})`);
+      expect(setCookieHeader).toMatch(maxAgeRegex);
     });
 
     it('should handle session with custom expiration', async () => {
@@ -83,10 +88,12 @@ describe('saveSession.server', () => {
   describe('Error Case: KV save fails', () => {
     it('should throw error when KV.put fails', async () => {
       // Arrange
+      const serverSpec = await loadSharedSpec<ServerSpec>('server');
+      const maxAge = serverSpec.security.session_max_age;
       const sessionData: SessionData = {
         sessionId: 'test-session-id-789',
         userId: 'user-789',
-        expiresAt: new Date(Date.now() + 604800000).toISOString(),
+        expiresAt: new Date(Date.now() + maxAge * 1000).toISOString(),
         createdAt: new Date().toISOString(),
       };
 
@@ -102,10 +109,12 @@ describe('saveSession.server', () => {
   describe('Cookie generation', () => {
     it('should generate Cookie with all security attributes', async () => {
       // Arrange
+      const serverSpec = await loadSharedSpec<ServerSpec>('server');
+      const maxAge = serverSpec.security.session_max_age;
       const sessionData: SessionData = {
         sessionId: 'secure-session-123',
         userId: 'user-secure',
-        expiresAt: new Date(Date.now() + 604800000).toISOString(),
+        expiresAt: new Date(Date.now() + maxAge * 1000).toISOString(),
         createdAt: new Date().toISOString(),
       };
 

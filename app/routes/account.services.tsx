@@ -6,18 +6,21 @@
  * @responsibility サービス一覧の表示
  */
 
-import type { MetaFunction } from '@remix-run/cloudflare';
+import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
-import { Link, useRouteLoaderData } from '@remix-run/react';
+import { Link, useRouteLoaderData, useLoaderData } from '@remix-run/react';
 import type { loader as accountLoader } from './account';
+import { loadSharedSpec } from '~/spec-loader/specLoader.server';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-profile.css';
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const projectName = data?.projectName || 'ClaudeMix';
   return [
-    { title: 'サービス一覧 - ClaudeMix' },
+    { title: `サービス一覧 - ${projectName}` },
     { name: 'description', content: 'サービス一覧' },
   ];
 };
@@ -26,8 +29,11 @@ export const meta: MetaFunction = () => {
  * Minimal loader to enable client-side navigation
  * (actual data comes from parent route)
  */
-export async function loader() {
-  return json({});
+export async function loader({ request }: LoaderFunctionArgs) {
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
+  return json({
+    projectName: projectSpec.project.name,
+  });
 }
 
 export default function AccountServices() {

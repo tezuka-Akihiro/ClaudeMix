@@ -6,12 +6,15 @@
  * @responsibility セッションデータ生成（副作用なし）
  */
 
+import { getSharedSpec } from '~/generated/specs';
 import type { SessionData } from '~/specs/account/types';
+import type { ServerSpec } from '~/specs/shared/types';
 
 /**
- * Default session duration: 7 days in seconds (604800 seconds)
+ * Default session duration from shared spec
  */
-const DEFAULT_SESSION_DURATION_SECONDS = 604800;
+const serverSpec = getSharedSpec<ServerSpec>('server');
+const DEFAULT_SESSION_DURATION_SECONDS = serverSpec.security.session_max_age;
 
 /**
  * Create a new session data structure

@@ -13,7 +13,7 @@
  * @returns Promise<string> - Hashed password
  *
  * Security Notes:
- * - Uses bcrypt with salt rounds from common-spec.yaml (10 rounds)
+ * - Uses bcrypt with salt rounds from shared/server-spec.yaml
  * - Each hash is unique due to automatic salt generation
  * - Hashing is intentionally slow to prevent brute force attacks
  */
