@@ -5,6 +5,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { createSessionData } from './createSessionData';
+import { loadSharedSpec } from '../../../../tests/utils/loadSpec';
+import type { ServerSpec } from '~/specs/shared/types';
 
 describe('createSessionData', () => {
   describe('Happy Path: Session data creation', () => {
@@ -23,8 +25,10 @@ describe('createSessionData', () => {
       expect(result).toHaveProperty('createdAt');
     });
 
-    it('should create expiresAt 7 days (604800 seconds) in the future', () => {
+    it('should create expiresAt with default duration in the future', async () => {
       // Arrange
+      const serverSpec = await loadSharedSpec<ServerSpec>('server');
+      const maxAge = serverSpec.security.session_max_age;
       const userId = 'user-123';
       const sessionId = 'session-abc-123';
       const beforeCreation = Date.now();
@@ -34,7 +38,7 @@ describe('createSessionData', () => {
 
       // Assert
       const expiresAtDate = new Date(result.expiresAt);
-      const expectedExpiry = new Date(beforeCreation + 604800000); // 7 days in ms
+      const expectedExpiry = new Date(beforeCreation + maxAge * 1000);
       const timeDiff = Math.abs(expiresAtDate.getTime() - expectedExpiry.getTime());
 
       // Allow 1 second tolerance for test execution time
@@ -94,8 +98,10 @@ describe('createSessionData', () => {
       expect(timeDiff).toBeLessThan(1000);
     });
 
-    it('should use default 7 days when duration is not provided', () => {
+    it('should use default duration from spec when duration is not provided', async () => {
       // Arrange
+      const serverSpec = await loadSharedSpec<ServerSpec>('server');
+      const maxAge = serverSpec.security.session_max_age;
       const userId = 'user-123';
       const sessionId = 'session-abc-123';
       const beforeCreation = Date.now();
@@ -105,7 +111,7 @@ describe('createSessionData', () => {
 
       // Assert
       const expiresAtDate = new Date(result.expiresAt);
-      const expectedExpiry = new Date(beforeCreation + 604800000); // 7 days
+      const expectedExpiry = new Date(beforeCreation + maxAge * 1000);
       const timeDiff = Math.abs(expiresAtDate.getTime() - expectedExpiry.getTime());
 
       expect(timeDiff).toBeLessThan(1000);

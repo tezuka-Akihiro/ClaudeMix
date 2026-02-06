@@ -14,50 +14,13 @@
  */
 
 import * as v from 'valibot';
+import { getSpec, getSharedSpec } from '~/generated/specs';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import type { ValidationSpec } from '~/specs/shared/types';
 
-// TODO: Spec読み込みユーティリティの実装
-// import { getSpec } from '~/utils/spec-loader.server';
-// import type { AuthenticationSpec } from '~/specs/account/authentication-spec';
-// import type { ValidationSpec } from '~/specs/shared/validation-spec';
-
-// 一時的なハードコード（Spec読み込みユーティリティ実装後に削除）
-const authSpec = {
-  validation: {
-    email: {
-      error_messages: {
-        required: 'メールアドレスを入力してください',
-        invalid_format: '有効なメールアドレスを入力してください',
-        already_exists: 'このメールアドレスは既に登録されています',
-      },
-    },
-    password: {
-      error_messages: {
-        required: 'パスワードを入力してください',
-        too_short: 'パスワードは8文字以上で入力してください',
-        too_long: 'パスワードは128文字以下で入力してください',
-        weak: 'パスワードは大文字、小文字、数字を含む必要があります',
-      },
-    },
-    password_confirm: {
-      error_messages: {
-        required: 'パスワード確認を入力してください',
-        mismatch: 'パスワードが一致しません',
-      },
-    },
-  },
-};
-
-const validationSpec = {
-  email: {
-    pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-    max_length: 254,
-  },
-  password: {
-    min_length: 8,
-    max_length: 128,
-    pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$',
-  },
-};
+// Specの読み込み
+const authSpec = getSpec<AccountAuthenticationSpec>('account/authentication');
+const validationSpec = getSharedSpec<ValidationSpec>('validation');
 
 // ==========================================
 // 共通バリデーション（再利用可能）

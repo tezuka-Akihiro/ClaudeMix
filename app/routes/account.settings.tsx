@@ -17,8 +17,9 @@ import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-profile.css';
 
 // Spec loader
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountProfileSpec } from '~/specs/account/types';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 // Data-IO layer
 import { deleteUser } from '~/data-io/account/profile/deleteUser.server';
@@ -55,9 +56,10 @@ interface DatabaseUser {
   updatedAt: string;
 }
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const projectName = data?.projectName || 'ClaudeMix';
   return [
-    { title: '設定 - ClaudeMix' },
+    { title: `設定 - ${projectName}` },
     { name: 'description', content: 'アカウント設定' },
   ];
 };
@@ -79,6 +81,7 @@ interface ActionData {
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountProfileSpec>('account/profile');
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
   const session = await getSession(request, context as any);
 
   let subscription = null;
@@ -87,6 +90,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
 
   return json({
+    projectName: projectSpec.project.name,
     subscription,
     profileSpec: {
       sections: spec.profile_display.sections,

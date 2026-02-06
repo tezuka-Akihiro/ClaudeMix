@@ -21,8 +21,9 @@ import '~/styles/account/layer3-authentication.css';
 import { FlashMessage } from '~/components/account/common/FlashMessage';
 
 // Spec loader
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 // Data-IO layer
 import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.server';
@@ -49,10 +50,11 @@ import { createSessionData } from '~/lib/account/common/createSessionData';
 // Schema layer (Valibot)
 import { LoginSchema } from '~/specs/account/authentication-schema';
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const projectName = data?.projectName || 'ClaudeMix';
   return [
-    { title: 'ログイン - ClaudeMix' },
-    { name: 'description', content: 'ClaudeMixにログイン' },
+    { title: `ログイン - ${projectName}` },
+    { name: 'description', content: `${projectName}にログイン` },
   ];
 };
 
@@ -62,6 +64,7 @@ interface ActionData {
 }
 
 interface LoaderData {
+  projectName: string;
   flashMessage?: string;
   uiSpec: {
     title: string;
@@ -98,6 +101,7 @@ interface LoaderData {
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
   const session = await getSession(request, context as any);
   const url = new URL(request.url);
@@ -113,10 +117,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     : undefined;
 
   return json<LoaderData>({
+    projectName: projectSpec.project.name,
     flashMessage,
     uiSpec: {
       title: spec.routes.login.title,
-      subtitle: `ClaudeMixに${spec.routes.login.title.toLowerCase()}`,
+      subtitle: `${projectSpec.project.name}に${spec.routes.login.title.toLowerCase()}`,
       fields: {
         email: {
           label: spec.forms.login.fields.email.label,

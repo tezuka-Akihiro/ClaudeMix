@@ -17,8 +17,9 @@ import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';
 import { getSubscriptionByUserId } from '~/data-io/account/subscription/getSubscriptionByUserId.server';
 import type { SubscriptionStatus } from '~/specs/account/types';
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountSubscriptionSpec } from '~/specs/account/types';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 // Plan型定義（specから取得したプランをUIで使用するための型）
 interface PlanForUI {
@@ -70,9 +71,10 @@ import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-profile.css';
 import '~/styles/account/layer2-subscription.css';
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const projectName = data?.projectName || 'ClaudeMix';
   return [
-    { title: 'サブスクリプション - ClaudeMix' },
+    { title: `サブスクリプション - ${projectName}` },
     { name: 'description', content: 'サブスクリプション管理' },
   ];
 };
@@ -90,6 +92,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   // specからプラン情報を取得
   const PLANS = getPlansFromSpec();
   const spec = loadSpec<AccountSubscriptionSpec>('account/subscription');
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
   // Get enabled plans
   const plans = Object.values(PLANS).filter(plan => plan.enabled);
@@ -102,6 +105,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const success = url.searchParams.get('success') === 'true';
 
   return json({
+    projectName: projectSpec.project.name,
     plans,
     subscription,
     success,

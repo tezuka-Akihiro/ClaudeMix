@@ -13,8 +13,9 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithValibot } from '@conform-to/valibot';
 
 // Spec loader
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 // Data-IO layer
 import { generatePasswordResetToken } from '~/data-io/account/authentication/generatePasswordResetToken.server';
@@ -32,9 +33,10 @@ import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-authentication.css';
 import '~/styles/account/layer3-authentication.css';
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const projectName = data?.projectName || 'ClaudeMix';
   return [
-    { title: 'パスワードリセット - ClaudeMix' },
+    { title: `パスワードリセット - ${projectName}` },
     { name: 'description', content: 'パスワードリセット' },
   ];
 };
@@ -46,6 +48,7 @@ interface ActionData {
 }
 
 interface LoaderData {
+  projectName: string;
   uiSpec: {
     title: string;
     description: string;
@@ -68,8 +71,10 @@ interface LoaderData {
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
   return json<LoaderData>({
+    projectName: projectSpec.project.name,
     uiSpec: {
       title: spec.forms.forgot_password.title,
       description: spec.forms.forgot_password.description,

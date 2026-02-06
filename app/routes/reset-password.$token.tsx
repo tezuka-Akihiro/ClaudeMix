@@ -22,22 +22,25 @@ import { deleteAllUserSessions } from '~/data-io/account/common/deleteAllUserSes
 import { validatePassword } from '~/lib/account/authentication/validatePassword';
 
 // Spec loader
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 // CSS imports
 import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-authentication.css';
 import '~/styles/account/layer3-authentication.css';
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const projectName = data?.projectName || 'ClaudeMix';
   return [
-    { title: 'パスワード再設定 - ClaudeMix' },
+    { title: `パスワード再設定 - ${projectName}` },
     { name: 'description', content: 'パスワード再設定' },
   ];
 };
 
 interface LoaderData {
+  projectName: string;
   tokenValid: boolean;
   email?: string;
 }
@@ -56,9 +59,10 @@ interface ActionData {
  */
 export async function loader({ params, context }: LoaderFunctionArgs) {
   const { token } = params;
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
   if (!token) {
-    return json<LoaderData>({ tokenValid: false });
+    return json<LoaderData>({ projectName: projectSpec.project.name, tokenValid: false });
   }
 
   // For initial validation, we need to check all tokens in KV
@@ -67,7 +71,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
   // For MVP: Accept any token format and validate in action
   // Token validation will happen when user submits the form
-  return json<LoaderData>({ tokenValid: true });
+  return json<LoaderData>({ projectName: projectSpec.project.name, tokenValid: true });
 }
 
 /**
