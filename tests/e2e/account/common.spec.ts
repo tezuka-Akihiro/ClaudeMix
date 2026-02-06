@@ -1,5 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createAuthenticatedUser } from '../../utils/auth-helper';
+import { loadSpec } from '../../utils/loadSpec';
+import type { AccountCommonSpec } from '~/specs/account/types';
 
 /**
  * E2E Test: Account Common Section (Happy Path)
@@ -11,6 +13,12 @@ import { createAuthenticatedUser } from '../../utils/auth-helper';
  */
 
 test.describe('Account Common Section - Happy Path', () => {
+  let spec: AccountCommonSpec;
+
+  test.beforeAll(async () => {
+    spec = await loadSpec<AccountCommonSpec>('account', 'common');
+  });
+
   test.describe('Authenticated User', () => {
     // Isolate from global setup to ensure stability
     test.use({ storageState: { cookies: [], origins: [] } });
@@ -31,35 +39,38 @@ test.describe('Account Common Section - Happy Path', () => {
       const nav = page.locator('[data-testid="account-nav"]');
       await expect(nav).toBeVisible();
 
-      // Verify 4 navigation items are displayed
+      // Verify navigation items count are displayed
       const navItems = nav.locator('[data-testid="nav-item"]');
-      await expect(navItems).toHaveCount(4);
+      await expect(navItems).toHaveCount(spec.navigation.menu_items.length);
 
-      // Verify navigation item labels
-      await expect(navItems.nth(0)).toContainText('マイページ');
-      await expect(navItems.nth(1)).toContainText('サービス一覧');
-      await expect(navItems.nth(2)).toContainText('設定');
-      await expect(navItems.nth(3)).toContainText('サブスクリプション');
+      // Verify navigation item labels from spec
+      for (let i = 0; i < spec.navigation.menu_items.length; i++) {
+        await expect(navItems.nth(i)).toContainText(spec.navigation.menu_items[i].label);
+      }
 
-      // Verify current page (マイページ) is highlighted
+      // Verify current page (first item) is highlighted
+      const firstItem = spec.navigation.menu_items[0];
       const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
       await expect(activeItem).toBeVisible();
-      await expect(activeItem).toContainText('マイページ');
+      await expect(activeItem).toContainText(firstItem.label);
     });
 
     test('should navigate between account pages', async ({ page }) => {
+      const settingsItem = spec.navigation.menu_items.find(item => item.path === '/account/settings');
+      if (!settingsItem) throw new Error('Settings item not found in spec');
+
       await page.goto('/account');
 
-      // Click on 設定 navigation item
+      // Click on settings navigation item
       const nav = page.locator('[data-testid="account-nav"]');
-      await nav.locator('text=設定').click();
+      await nav.locator(`text=${settingsItem.label}`).click();
 
       // Verify URL changed to /account/settings
-      await expect(page).toHaveURL('/account/settings');
+      await expect(page).toHaveURL(settingsItem.path);
 
-      // Verify 設定 is now highlighted
+      // Verify settings is now highlighted
       const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
-      await expect(activeItem).toContainText('設定');
+      await expect(activeItem).toContainText(settingsItem.label);
     });
 
     test('should display account index page with announcements and logout button', async ({ page }) => {
@@ -77,32 +88,41 @@ test.describe('Account Common Section - Happy Path', () => {
     });
 
     test('should display services page with service links', async ({ page }) => {
-      await page.goto('/account/services');
+      const servicesItem = spec.navigation.menu_items.find(item => item.path === '/account/services');
+      if (!servicesItem) throw new Error('Services item not found in spec');
+
+      await page.goto(servicesItem.path);
 
       // Verify page title is displayed
-      const pageTitle = page.locator('h1:has-text("サービス一覧")');
+      const pageTitle = page.locator(`h1:has-text("${servicesItem.label}")`);
       await expect(pageTitle).toBeVisible();
 
       // Verify blog service link is present (using ClaudeMix label from spec)
-      const blogServiceLink = page.locator('[data-testid="service-link"]:has-text("ClaudeMix")');
+      const blogService = spec.services.items.find(s => s.path === '/blog');
+      if (!blogService) throw new Error('Blog service not found in spec');
+
+      const blogServiceLink = page.locator(`[data-testid="service-link"]:has-text("${blogService.label}")`);
       await expect(blogServiceLink).toBeVisible();
       await expect(blogServiceLink).toHaveClass(/btn-primary/);
-      await expect(blogServiceLink).toHaveAttribute('href', '/blog');
+      await expect(blogServiceLink).toHaveAttribute('href', blogService.path);
     });
 
     test('should navigate to services page from navigation', async ({ page }) => {
+      const servicesItem = spec.navigation.menu_items.find(item => item.path === '/account/services');
+      if (!servicesItem) throw new Error('Services item not found in spec');
+
       await page.goto('/account');
 
-      // Click on サービス一覧 navigation item
+      // Click on services navigation item
       const nav = page.locator('[data-testid="account-nav"]');
-      await nav.locator('text=サービス一覧').click();
+      await nav.locator(`text=${servicesItem.label}`).click();
 
       // Verify URL changed to /account/services
-      await expect(page).toHaveURL('/account/services');
+      await expect(page).toHaveURL(servicesItem.path);
 
-      // Verify サービス一覧 is now highlighted
+      // Verify services item is now highlighted
       const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
-      await expect(activeItem).toContainText('サービス一覧');
+      await expect(activeItem).toContainText(servicesItem.label);
     });
   });
 
@@ -111,11 +131,15 @@ test.describe('Account Common Section - Happy Path', () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
     test('should redirect to login with redirect-url parameter', async ({ page }) => {
+      const loginPath = spec.redirect.login_path;
+      const redirectParam = spec.redirect.query_param_name;
+      const expectedUrlPattern = new RegExp(`${loginPath.replace('/', '\\/')}\\?${redirectParam}=%2Faccount$`);
+
       // Navigate to /account without authentication
       await page.goto('/account');
 
-      // Verify redirected to /login with redirect-url parameter (URL-encoded)
-      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount$/);
+      // Verify redirected to login with redirect parameter (URL-encoded)
+      await expect(page).toHaveURL(expectedUrlPattern);
 
       // Verify login page is displayed
       const loginForm = page.locator('form');
@@ -123,44 +147,68 @@ test.describe('Account Common Section - Happy Path', () => {
     });
 
     test('should redirect to login when accessing /account/settings', async ({ page }) => {
+      const loginPath = spec.redirect.login_path;
+      const redirectParam = spec.redirect.query_param_name;
+      const expectedUrlPattern = new RegExp(`${loginPath.replace('/', '\\/')}\\?${redirectParam}=%2Faccount%2Fsettings$`);
+
       // Navigate to /account/settings without authentication
       await page.goto('/account/settings');
 
-      // Verify redirected to /login with redirect-url parameter (URL-encoded)
-      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fsettings$/);
+      // Verify redirected to login with redirect parameter (URL-encoded)
+      await expect(page).toHaveURL(expectedUrlPattern);
     });
 
     test('should redirect to login when accessing /account/subscription', async ({ page }) => {
+      const loginPath = spec.redirect.login_path;
+      const redirectParam = spec.redirect.query_param_name;
+      const expectedUrlPattern = new RegExp(`${loginPath.replace('/', '\\/')}\\?${redirectParam}=%2Faccount%2Fsubscription$`);
+
       // Navigate to /account/subscription without authentication
       await page.goto('/account/subscription');
 
-      // Verify redirected to /login with redirect-url parameter (URL-encoded)
-      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fsubscription$/);
+      // Verify redirected to login with redirect parameter (URL-encoded)
+      await expect(page).toHaveURL(expectedUrlPattern);
     });
 
     test('should redirect to login when accessing /account/services', async ({ page }) => {
+      const loginPath = spec.redirect.login_path;
+      const redirectParam = spec.redirect.query_param_name;
+      const expectedUrlPattern = new RegExp(`${loginPath.replace('/', '\\/')}\\?${redirectParam}=%2Faccount%2Fservices$`);
+
       // Navigate to /account/services without authentication
       await page.goto('/account/services');
 
-      // Verify redirected to /login with redirect-url parameter (URL-encoded)
-      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fservices$/);
+      // Verify redirected to login with redirect parameter (URL-encoded)
+      await expect(page).toHaveURL(expectedUrlPattern);
     });
   });
 });
 
 test.describe('Common Components', () => {
+  let spec: AccountCommonSpec;
+
+  test.beforeAll(async () => {
+    spec = await loadSpec<AccountCommonSpec>('account', 'common');
+  });
+
   test.describe('FlashMessage', () => {
     // Ensure unauthenticated state to test login page behavior
     test.use({ storageState: { cookies: [], origins: [] } });
 
     test('should display flash message from URL parameter', async ({ page }) => {
+      const loginPath = spec.redirect.login_path;
+      const sessionExpiredMessage = spec.error_messages.auth.session_expired;
+
       // Navigate with flash message URL parameter
-      await page.goto('/login?message=session-expired');
+      // Note: the 'message' parameter handling is in login.tsx, which uses authentication-spec
+      // but the message content should be consistent.
+      await page.goto(`${loginPath}?message=session-expired`);
 
       // Verify flash message is displayed
       const flashMessage = page.locator('[data-testid="flash-message"]');
       await expect(flashMessage).toBeVisible();
-      await expect(flashMessage).toContainText('セッションの有効期限が切れました');
+      // Note: we check if it contains the message from common spec
+      await expect(flashMessage).toContainText(sessionExpiredMessage);
 
       // Verify flash message auto-closes after delay
       // Use Playwright's built-in waiting instead of fixed timeout

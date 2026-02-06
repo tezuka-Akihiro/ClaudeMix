@@ -7,6 +7,8 @@
  */
 
 import type { SessionData } from '~/specs/account/types';
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountCommonSpec } from '~/specs/account/types';
 
 /**
  * AppLoadContext type for Cloudflare Workers environment
@@ -31,6 +33,8 @@ export async function saveSession(
   sessionData: SessionData,
   context: CloudflareLoadContext
 ): Promise<string> {
+  const commonSpec = loadSpec<AccountCommonSpec>('account/common');
+
   try {
     // Calculate TTL from expiresAt
     const expiresAt = new Date(sessionData.expiresAt);
@@ -39,7 +43,7 @@ export async function saveSession(
 
     // Save session to KV with TTL
     const kv = context.env.SESSION_KV;
-    const kvKey = `session:${sessionData.sessionId}`;
+    const kvKey = `${commonSpec.session.kv.key_prefix}${sessionData.sessionId}`;
     await kv.put(kvKey, JSON.stringify(sessionData), {
       expirationTtl: ttlSeconds,
     });
@@ -47,7 +51,8 @@ export async function saveSession(
     // Generate Set-Cookie header
     const setCookieHeader = generateSetCookieHeader(
       sessionData.sessionId,
-      ttlSeconds
+      ttlSeconds,
+      commonSpec
     );
 
     return setCookieHeader;
@@ -62,17 +67,24 @@ export async function saveSession(
  *
  * @param sessionId - Session ID to set in cookie
  * @param maxAge - Cookie max age in seconds
+ * @param commonSpec - Account common specification
  * @returns Set-Cookie header string
  */
-function generateSetCookieHeader(sessionId: string, maxAge: number): string {
+function generateSetCookieHeader(
+  sessionId: string,
+  maxAge: number,
+  commonSpec: AccountCommonSpec
+): string {
+  const { cookie } = commonSpec.session;
+
   const cookieParts = [
-    `session_id=${sessionId}`,
+    `${cookie.name}=${sessionId}`,
     `Max-Age=${maxAge}`,
-    'Path=/',
-    'HttpOnly',
-    'Secure',
-    'SameSite=Lax',
-  ];
+    `Path=${cookie.path}`,
+    cookie.http_only ? 'HttpOnly' : '',
+    cookie.secure ? 'Secure' : '',
+    `SameSite=${cookie.same_site}`,
+  ].filter(Boolean);
 
   return cookieParts.join('; ');
 }
