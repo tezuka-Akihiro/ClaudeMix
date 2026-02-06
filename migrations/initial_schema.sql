@@ -40,5 +40,3 @@ CREATE TABLE IF NOT EXISTS webhook_events (
   processed_at TEXT NOT NULL DEFAULT (DATETIME('now')),
   created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
 );
-
-CREATE
