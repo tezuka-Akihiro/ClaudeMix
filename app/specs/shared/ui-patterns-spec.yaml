@@ -1,0 +1,36 @@
+# ui-patterns-spec.yaml - 共通UIパターン定義（技術基底）
+
+# ==========================================
+# 共通UIセレクタ基底
+# ==========================================
+ui_selectors:
+  layout:
+    main_content: "[data-testid='main-content']"
+
+  navigation:
+    menu_overlay: "[data-testid='menu-overlay']"
+
+  legal_modal:
+    modal_overlay: "[data-testid='legal-modal-overlay']"
+    modal_dialog: "[role='dialog']"
+    close_button: "[data-testid='close-button']"
+
+# ==========================================
+# 共通テーマ設定
+# ==========================================
+theme:
+  storage:
+    key: "theme"
+  html_attribute:
+    name: "data-theme"
+    light_value: "light"
+    dark_value: "dark"
+  media_query: "(prefers-color-scheme: dark)"
+
+# ==========================================
+# 共通アクセシビリティ
+# ==========================================
+accessibility:
+  keyboard_shortcuts:
+    close_menu: "Escape"
+    close_modal: "Escape"

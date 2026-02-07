@@ -1,24 +1,21 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import BlogLayout from '~/components/blog/common/BlogLayout';
+import { loadSpec } from 'tests/utils/loadSpec';
+import type { BlogCommonSpec } from '~/specs/blog/types';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 
-const mockConfig = {
-  blogTitle: "Test Blog",
-  menuItems: [
-    { label: '挨拶記事', path: '/blog/greeting' },
-    { label: 'Articles', path: '/blog' },
-  ],
+let spec: BlogCommonSpec;
+
+const getMockConfig = (spec: BlogCommonSpec) => ({
+  blogTitle: spec.blog_config.title,
+  menuItems: spec.navigation.menu_items,
   copyright: "© 2025 Test Project",
-  siteUrl: "https://example.com",
-  siteName: "Test Blog",
-  footerLinks: [
-    { label: '利用規約', href: '/blog/terms', isModal: false },
-    { label: 'プライバシーポリシー', href: '/blog/privacy', isModal: false },
-    { label: '特商法', isModal: true },
-  ],
-  legalContent: '<p>特定商取引法の内容</p>',
-};
+  siteUrl: spec.blog_config.site_url,
+  siteName: spec.blog_config.title,
+  spec,
+});
 
 // localStorageとmatchMediaのモック
 const localStorageMock = (() => {
@@ -35,6 +32,10 @@ const localStorageMock = (() => {
 })();
 
 describe('BlogLayout', () => {
+  beforeAll(async () => {
+    spec = await loadSpec<BlogCommonSpec>('blog', 'common');
+  });
+
   beforeEach(() => {
     // localStorageをモック
     Object.defineProperty(window, 'localStorage', {
@@ -46,7 +47,7 @@ describe('BlogLayout', () => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation(query => ({
-        matches: query === '(prefers-color-scheme: dark)',
+        matches: query === spec.theme.media_query,
         media: query,
         onchange: null,
         addListener: vi.fn(),
@@ -66,82 +67,99 @@ describe('BlogLayout', () => {
 
   describe('Rendering', () => {
     it('should render BlogHeader, children, and BlogFooter', () => {
+      const config = getMockConfig(spec);
       // Act
       render(
         <BrowserRouter>
-          <BlogLayout config={mockConfig}>
+          <BlogLayout config={config}>
             <div data-testid="test-content">Test Content</div>
           </BlogLayout>
         </BrowserRouter>
       );
 
       // Assert
-      expect(screen.getByTestId('blog-header')).toBeInTheDocument();
+      expect(
+        screen.getByTestId(extractTestId(spec.ui_selectors.header.blog_header))
+      ).toBeInTheDocument();
       expect(screen.getByTestId('test-content')).toBeInTheDocument();
-      expect(screen.getByTestId('blog-footer')).toBeInTheDocument();
+      expect(
+        screen.getByTestId(extractTestId(spec.ui_selectors.footer.blog_footer))
+      ).toBeInTheDocument();
     });
 
     it('should render layout container', () => {
+      const config = getMockConfig(spec);
       // Act
       render(
         <BrowserRouter>
-          <BlogLayout config={mockConfig}>
+          <BlogLayout config={config}>
             <div>Test</div>
           </BlogLayout>
         </BrowserRouter>
       );
 
       // Assert
-      const layoutElement = screen.getByTestId('blog-layout');
+      const layoutElement = screen.getByTestId(
+        extractTestId(spec.ui_selectors.layout.blog_layout)
+      );
       expect(layoutElement).toBeInTheDocument();
       expect(layoutElement).toHaveClass('blog-layout');
       expect(layoutElement).toHaveClass('blog-layout-structure');
     });
 
     it('should render main content area', () => {
+      const config = getMockConfig(spec);
       // Act
       render(
         <BrowserRouter>
-          <BlogLayout config={mockConfig}>
+          <BlogLayout config={config}>
             <div data-testid="test-content">Main Content</div>
           </BlogLayout>
         </BrowserRouter>
       );
 
       // Assert
-      const mainElement = screen.getByTestId('blog-main');
+      const mainElement = screen.getByTestId(
+        extractTestId(spec.ui_selectors.layout.main_content)
+      );
       expect(mainElement).toBeInTheDocument();
       expect(mainElement).toContainElement(screen.getByTestId('test-content'));
     });
 
     it('should pass blog title to BlogHeader', () => {
+      const config = getMockConfig(spec);
       // Act
       render(
         <BrowserRouter>
-          <BlogLayout config={mockConfig}>
+          <BlogLayout config={config}>
             <div>Test</div>
           </BlogLayout>
         </BrowserRouter>
       );
 
       // Assert
-      const titleElement = screen.getByTestId('blog-header-title');
-      expect(titleElement).toHaveTextContent(mockConfig.blogTitle);
+      const titleElement = screen.getByTestId(
+        extractTestId(spec.ui_selectors.header.title_link)
+      );
+      expect(titleElement).toHaveTextContent(config.blogTitle);
     });
 
     it('should pass copyright to BlogFooter', () => {
+      const config = getMockConfig(spec);
       // Act
       render(
         <BrowserRouter>
-          <BlogLayout config={mockConfig}>
+          <BlogLayout config={config}>
             <div>Test</div>
           </BlogLayout>
         </BrowserRouter>
       );
 
       // Assert
-      const copyrightElement = screen.getByTestId('copyright');
-      expect(copyrightElement).toHaveTextContent(mockConfig.copyright);
+      const copyrightElement = screen.getByTestId(
+        extractTestId(spec.ui_selectors.footer.copyright)
+      );
+      expect(copyrightElement).toHaveTextContent(config.copyright);
     });
   });
 });

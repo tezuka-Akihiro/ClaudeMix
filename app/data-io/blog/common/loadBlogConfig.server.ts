@@ -4,6 +4,7 @@
 import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { BlogConfig, MenuItem, BlogCommonSpec } from '~/specs/blog/types';
 import type { ProjectSpec } from '~/specs/shared/types';
+import { formatCopyright } from '~/lib/blog/common/copyrightFormatter';
 
 // 型を再エクスポート
 export type { BlogConfig, MenuItem };
@@ -17,9 +18,8 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
   const spec = loadSpec<BlogCommonSpec>('blog/common');
   const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
-  // 動的に現在の年を生成してcopyrightを構築（SSoT原則に従い年はハードコードしない）
-  const currentYear = new Date().getFullYear();
-  const copyright = `© ${currentYear} ${projectSpec.project.name}`;
+  // コピーライト文字列をフォーマット（SSoT原則に従い年はハードコードしない）
+  const copyright = formatCopyright(projectSpec.project.name);
 
   return {
     blogTitle: spec.blog_config.title,
@@ -27,5 +27,6 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
     copyright,
     siteUrl: spec.blog_config.site_url,
     siteName: spec.blog_config.title,
+    spec,
   };
 }

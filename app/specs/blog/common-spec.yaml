@@ -32,6 +32,9 @@ blog_config:
 # ナビゲーションメニュー設定
 # ==========================================
 navigation:
+  # メニューアイコン
+  menu_icon: "☰"
+
   menu_items:
     - label: "マイページ"
       path: "/account"
@@ -61,15 +64,15 @@ footer:
 ui_selectors:
   layout:
     blog_layout: "[data-testid='blog-layout']"
-    main_content: "[data-testid='main-content']"
+    main_content: "[data-testid='blog-main']"
 
   header:
     blog_header: "[data-testid='blog-header']"
     title_area: "[data-testid='title-area']"
-    title_link: "[data-testid='title-link']"
+    title_link: "[data-testid='blog-header-title']"
     header_actions: "[data-testid='header-actions']"
     theme_toggle_button: "[data-testid='theme-toggle-button']"
-    menu_button: "[data-testid='menu-button']"
+    menu_button: "[data-testid='blog-header-menu-button']"
 
   navigation:
     navigation_menu: "[data-testid='navigation-menu']"
@@ -79,6 +82,18 @@ ui_selectors:
   footer:
     blog_footer: "[data-testid='blog-footer']"
     copyright: "[data-testid='copyright']"
+
+  legal_modal:
+    modal_overlay: "[data-testid='legal-modal-overlay']"
+    modal_dialog: "[role='dialog']"
+    modal_title: "#legal-modal-title"
+    close_button: "[data-testid='close-button']"
+
+# ==========================================
+# 法的表記設定
+# ==========================================
+legal_modal:
+  title: "特定商取引法に基づく表記"
 
 # ==========================================
 # レスポンシブ設定
@@ -102,6 +117,7 @@ accessibility:
     theme_toggle_button: "テーマを切り替え"
     theme_toggle_button_light: "ダークモードに切り替え"
     theme_toggle_button_dark: "ライトモードに切り替え"
+    legal_modal_close: "閉じる"
 
   keyboard_shortcuts:
     close_menu: "Escape"
@@ -127,6 +143,9 @@ theme:
     name: "data-theme"
     light_value: "light"
     dark_value: "dark"
+
+  # システム設定参照
+  media_query: "(prefers-color-scheme: dark)"
 
   # アイコン表示
   icons:
@@ -166,6 +185,22 @@ r2_assets:
 # OGP画像生成設定
 # ==========================================
 ogp:
+  # 共通設定アンカー
+  _layout: &_ogp_layout
+    paddingX: "80px"
+    paddingY: "60px"
+    contentGap: "24px"
+
+  _colors: &_ogp_colors
+    background:
+      gradientStart: "#0a0a0a"  # var(--color-surface-dark)
+      gradientEnd: "#1a1a1a"    # var(--color-background-secondary)
+      gradientAngle: "135deg"
+    text:
+      primary: "#22d3ee"        # var(--color-interactive-primary) - タイトル
+      description: "#d4d4d4"    # var(--color-text-secondary) - 説明
+      author: "#b9b6b6"         # var(--color-text-primary) - 著者
+
   image:
     width: 1200
     height: 630
@@ -185,20 +220,11 @@ ogp:
 
   # レイアウト設定
   layout:
-    paddingX: "80px"
-    paddingY: "60px"
-    contentGap: "24px"
+    <<: *_ogp_layout
 
   # 色設定（サイトデザイントークンと統一）
   colors:
-    background:
-      gradientStart: "#0a0a0a"  # var(--color-surface-dark)
-      gradientEnd: "#1a1a1a"    # var(--color-background-secondary)
-      gradientAngle: "135deg"
-    text:
-      primary: "#22d3ee"        # var(--color-interactive-primary) - タイトル
-      description: "#d4d4d4"    # var(--color-text-secondary) - 説明
-      author: "#b9b6b6"         # var(--color-text-primary) - 著者
+    <<: *_ogp_colors
 
   # テキスト設定
   title:

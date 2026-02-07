@@ -74,12 +74,20 @@ Common Components (共通コンポーネント)
      - 画像生成失敗時: 500エラー
    - **配置**: `app/routes/ogp.$slug[.png].tsx`
 
-### 開発戦略: 段階的強化 (Progressive Enhancement)
+### 開発戦略: SSoT & 3-Stage Load アーキテクチャ
 
-1. **ステップ1: モック実装 (UIの確立)**
-   - UI層はまず、固定値や単純なPropsを用いて「ガワ」を実装します。この段階では、`loader`や`action`からの実データ連携は行いません。
-2. **ステップ2: 機能強化 (ロジックの接続)**
-   - モック実装されたUIに、`loader`からの実データや`action`の処理を接続し、完全な機能として仕上げます。
+1. **SSoT (Single Source of Truth) の徹底**
+   - すべてのUI定数、バリデーションルール、技術的セレクタ、テーマ設定、法的表記は `app/specs/` 下のYAMLファイルで一元管理されます。
+   - `app/specs/shared/ui-patterns-spec.yaml`: 全ドメイン共通の技術的UI基盤。
+   - `app/specs/blog/common-spec.yaml`: ブログドメイン共通の設定。
+
+2. **3-Stage Load (階層的ロード) の実現**
+   - スペック情報はビルド時に ESモジュール（`.ts`）に変換されます。
+   - **階層構造**: `Shared Base -> Domain Common -> Section`
+   - 各階層は上位階層を `deepMerge` し、自身との「差分」のみを保持します。これによりコードの重複を排除し、Viteによるチャンク最適化（Tree Shaking）を最大限に活用して Lighthouse スコアを維持します。
+
+3. **型安全なデータアクセス**
+   - 生成されたスペックモジュールは `app/specs/blog/types.ts` で定義されたインターフェースに従い、コンポーネントおよびテストで型安全に利用されます。
 
 ## 🔄 データフロー・処理（3大層分離アーキテクチャ）
 

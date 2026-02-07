@@ -107,6 +107,7 @@ export interface BlogConfig {
   copyright: string;
   siteUrl: string;
   siteName: string;
+  spec: BlogCommonSpec;
 }
 
 /**
@@ -211,6 +212,7 @@ export interface BlogCommonSpec {
     site_url: string;
   };
   navigation: {
+    menu_icon: string;
     menu_items: MenuItem[];
     animation: {
       fade_duration_ms: number;
@@ -218,6 +220,46 @@ export interface BlogCommonSpec {
     };
   };
   footer: {};
+  legal_modal: {
+    title: string;
+  };
+  responsive: {
+    menu_display_mode: {
+      mobile: string;
+      tablet: string;
+      desktop: string;
+    };
+  };
+  ui_selectors: {
+    layout: {
+      blog_layout: string;
+      main_content: string;
+    };
+    header: {
+      blog_header: string;
+      title_area: string;
+      title_link: string;
+      header_actions: string;
+      theme_toggle_button: string;
+      menu_button: string;
+    };
+    navigation: {
+      navigation_menu: string;
+      menu_item: string;
+      menu_overlay: string;
+    };
+    footer: {
+      blog_footer: string;
+      copyright: string;
+    };
+    legal_modal: {
+      title: string;
+      modal_overlay: string;
+      modal_dialog: string;
+      modal_title: string;
+      close_button: string;
+    };
+  };
   theme: {
     modes: string[];
     default_mode: string;
@@ -229,6 +271,7 @@ export interface BlogCommonSpec {
       light_value: string;
       dark_value: string;
     };
+    media_query: string;
     icons: {
       light: string;
       dark: string;
@@ -245,6 +288,10 @@ export interface BlogCommonSpec {
       theme_toggle_button_light: string;
       theme_toggle_button_dark: string;
       legal_modal_close: string;
+    };
+    keyboard_shortcuts: {
+      close_menu: string;
+      close_modal: string;
     };
   };
   r2_assets: R2AssetsConfig;

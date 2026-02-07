@@ -5,6 +5,7 @@ import React from 'react';
 import BlogHeader from '~/components/blog/common/BlogHeader';
 import BlogFooter from '~/components/blog/common/BlogFooter';
 import type { BlogConfig } from '~/data-io/blog/common/loadBlogConfig.server';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 
 interface BlogLayoutProps {
   config: BlogConfig;
@@ -12,21 +13,28 @@ interface BlogLayoutProps {
 }
 
 const BlogLayout: React.FC<BlogLayoutProps> = ({ config, children }) => {
+  const { spec } = config;
+
   return (
-    <div className="blog-layout blog-layout-structure" data-testid="blog-layout">
+    <div
+      className="blog-layout blog-layout-structure"
+      data-testid={extractTestId(spec.ui_selectors.layout.blog_layout)}
+    >
       <BlogHeader
         blogTitle={config.blogTitle}
         menuItems={config.menuItems}
+        spec={spec}
       />
       <main
         className="blog-main-content-structure"
-        data-testid="blog-main"
+        data-testid={extractTestId(spec.ui_selectors.layout.main_content)}
         style={{ marginTop: 'var(--layout-header-height)' }}
       >
         {children}
       </main>
       <BlogFooter
         copyright={config.copyright}
+        spec={spec}
       />
     </div>
   );

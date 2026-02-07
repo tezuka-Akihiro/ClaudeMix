@@ -1,56 +1,52 @@
 // buildThumbnailUrl.test.ts - 純粋ロジック層テスト
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { buildThumbnailUrl } from './buildThumbnailUrl';
-import type { R2AssetsConfig } from '~/specs/blog/types';
+import type { R2AssetsConfig, BlogCommonSpec } from '~/specs/blog/types';
+import { loadSpec } from 'tests/utils/loadSpec';
 
-// テスト用のR2アセット設定
-const mockR2Config: R2AssetsConfig = {
-  base_url: 'https://assets.example.com',
-  blog_path: '/blog',
-  thumbnail: {
-    filename: 'thumbnail.webp',
-    width: 1200,
-    height: 630,
-    aspect_ratio: '1200/630',
-    format: 'webp',
-    max_size_kb: 100,
-  },
-  article_images: {
-    pattern: 'img-{n}.webp',
-    max_count: 10,
-    max_size_kb: 500,
-  },
-  performance: {
-    loading: 'lazy',
-    decoding: 'async',
-  },
-};
+let spec: BlogCommonSpec;
+let mockR2Config: R2AssetsConfig;
 
 describe('buildThumbnailUrl', () => {
+  beforeAll(async () => {
+    spec = await loadSpec<BlogCommonSpec>('blog', 'common');
+    mockR2Config = spec.r2_assets;
+  });
+
   describe('正常系', () => {
     it('slugからサムネイルURLを生成する', () => {
       const result = buildThumbnailUrl('my-first-post', mockR2Config);
-      expect(result).toBe('https://assets.example.com/blog/my-first-post/thumbnail.webp');
+      expect(result).toBe(
+        `${mockR2Config.base_url}${mockR2Config.blog_path}/my-first-post/${mockR2Config.thumbnail.filename}`
+      );
     });
 
     it('日本語slugでもURLを生成する', () => {
       const result = buildThumbnailUrl('日本語-記事', mockR2Config);
-      expect(result).toBe('https://assets.example.com/blog/日本語-記事/thumbnail.webp');
+      expect(result).toBe(
+        `${mockR2Config.base_url}${mockR2Config.blog_path}/日本語-記事/${mockR2Config.thumbnail.filename}`
+      );
     });
 
     it('ハイフンを含むslugでURLを生成する', () => {
       const result = buildThumbnailUrl('my-awesome-blog-post', mockR2Config);
-      expect(result).toBe('https://assets.example.com/blog/my-awesome-blog-post/thumbnail.webp');
+      expect(result).toBe(
+        `${mockR2Config.base_url}${mockR2Config.blog_path}/my-awesome-blog-post/${mockR2Config.thumbnail.filename}`
+      );
     });
 
     it('数字を含むslugでURLを生成する', () => {
       const result = buildThumbnailUrl('post-2024-01-15', mockR2Config);
-      expect(result).toBe('https://assets.example.com/blog/post-2024-01-15/thumbnail.webp');
+      expect(result).toBe(
+        `${mockR2Config.base_url}${mockR2Config.blog_path}/post-2024-01-15/${mockR2Config.thumbnail.filename}`
+      );
     });
 
     it('アンダースコアを含むslugでURLを生成する', () => {
       const result = buildThumbnailUrl('my_post_title', mockR2Config);
-      expect(result).toBe('https://assets.example.com/blog/my_post_title/thumbnail.webp');
+      expect(result).toBe(
+        `${mockR2Config.base_url}${mockR2Config.blog_path}/my_post_title/${mockR2Config.thumbnail.filename}`
+      );
     });
   });
 
@@ -67,7 +63,9 @@ describe('buildThumbnailUrl', () => {
 
     it('前後の空白はトリムされる', () => {
       const result = buildThumbnailUrl('  my-post  ', mockR2Config);
-      expect(result).toBe('https://assets.example.com/blog/my-post/thumbnail.webp');
+      expect(result).toBe(
+        `${mockR2Config.base_url}${mockR2Config.blog_path}/my-post/${mockR2Config.thumbnail.filename}`
+      );
     });
   });
 
@@ -78,7 +76,9 @@ describe('buildThumbnailUrl', () => {
         base_url: 'https://cdn.mysite.com',
       };
       const result = buildThumbnailUrl('test-post', customConfig);
-      expect(result).toBe('https://cdn.mysite.com/blog/test-post/thumbnail.webp');
+      expect(result).toBe(
+        `https://cdn.mysite.com${mockR2Config.blog_path}/test-post/${mockR2Config.thumbnail.filename}`
+      );
     });
 
     it('異なるblog_pathで正しいURLを生成する', () => {
@@ -87,7 +87,9 @@ describe('buildThumbnailUrl', () => {
         blog_path: '/articles',
       };
       const result = buildThumbnailUrl('test-post', customConfig);
-      expect(result).toBe('https://assets.example.com/articles/test-post/thumbnail.webp');
+      expect(result).toBe(
+        `${mockR2Config.base_url}/articles/test-post/${mockR2Config.thumbnail.filename}`
+      );
     });
 
     it('異なるfilenameで正しいURLを生成する', () => {
@@ -99,7 +101,9 @@ describe('buildThumbnailUrl', () => {
         },
       };
       const result = buildThumbnailUrl('test-post', customConfig);
-      expect(result).toBe('https://assets.example.com/blog/test-post/cover.jpg');
+      expect(result).toBe(
+        `${mockR2Config.base_url}${mockR2Config.blog_path}/test-post/cover.jpg`
+      );
     });
 
     it('末尾スラッシュなしのbase_urlでも正しく動作する', () => {
@@ -109,7 +113,9 @@ describe('buildThumbnailUrl', () => {
         blog_path: '/blog',
       };
       const result = buildThumbnailUrl('test-post', customConfig);
-      expect(result).toBe('https://assets.example.com/blog/test-post/thumbnail.webp');
+      expect(result).toBe(
+        `https://assets.example.com/blog/test-post/${mockR2Config.thumbnail.filename}`
+      );
     });
   });
 });

@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { loadBlogConfig } from '../../../data-io/blog/common/loadBlogConfig.server';
-import { loadSpec } from '../../../../tests/utils/loadSpec';
-import { loadSharedSpec } from '../../../spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from 'tests/utils/loadSpec';
 import type { BlogCommonSpec } from '../../../specs/blog/types';
 import type { ProjectSpec } from '../../../specs/shared/types';
 
@@ -12,7 +11,7 @@ describe('loadBlogConfig - Side Effects Layer', () => {
   beforeAll(async () => {
     // Load spec.yaml dynamically to ensure tests stay in sync with spec
     spec = await loadSpec<BlogCommonSpec>('blog', 'common');
-    projectSpec = loadSharedSpec<ProjectSpec>('project');
+    projectSpec = await loadSharedSpec<ProjectSpec>('project');
   });
 
   describe('loadBlogConfig function', () => {
