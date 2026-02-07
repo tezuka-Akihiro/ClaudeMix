@@ -64,15 +64,15 @@ footer:
 ui_selectors:
   layout:
     blog_layout: "[data-testid='blog-layout']"
-    main_content: "[data-testid='main-content']"
+    main_content: "[data-testid='blog-main']"
 
   header:
     blog_header: "[data-testid='blog-header']"
     title_area: "[data-testid='title-area']"
-    title_link: "[data-testid='title-link']"
+    title_link: "[data-testid='blog-header-title']"
     header_actions: "[data-testid='header-actions']"
     theme_toggle_button: "[data-testid='theme-toggle-button']"
-    menu_button: "[data-testid='menu-button']"
+    menu_button: "[data-testid='blog-header-menu-button']"
 
   navigation:
     navigation_menu: "[data-testid='navigation-menu']"
