@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { TableOfContents } from './TableOfContents';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
-import type { Heading, RenderedPost } from '~/specs/blog/types';
+import type { Heading, RenderedPost, BlogPostDetailSpec } from '~/specs/blog/types';
 import { Paywall } from './Paywall';
 
 // Mermaid.jsのグローバル型定義
@@ -30,6 +30,8 @@ interface PostDetailSectionProps {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
+  messages: BlogPostDetailSpec['messages'];
+  accessibility: BlogPostDetailSpec['accessibility'];
 }
 
 export function PostDetailSection({
@@ -38,6 +40,8 @@ export function PostDetailSection({
   hasMermaid = false,
   subscriptionAccess,
   thumbnailUrl,
+  messages,
+  accessibility,
 }: PostDetailSectionProps) {
   const [imageError, setImageError] = useState(false);
   // publishedAtをフォーマット
@@ -122,7 +126,10 @@ export function PostDetailSection({
       )}
 
       {/* 目次 */}
-      <TableOfContents headings={headings} />
+      <TableOfContents
+        headings={headings}
+        ariaLabel={accessibility.aria_labels.toc}
+      />
 
       {/* 本文エリア（見出しベース可視範囲） */}
       <div
@@ -132,7 +139,13 @@ export function PostDetailSection({
       />
 
       {/* ペイウォール（未契約ユーザーの場合のみ表示） */}
-      {!subscriptionAccess.showFullContent && <Paywall />}
+      {!subscriptionAccess.showFullContent && (
+        <Paywall
+          message={messages.paywall.message}
+          promotionHeading={messages.paywall.promotion_heading}
+          ctaLabel={messages.paywall.cta_label}
+        />
+      )}
 
       {/* 非表示コンテンツ（全文表示時のみ） */}
       {subscriptionAccess.showFullContent && post.hiddenContent && (

@@ -29,12 +29,13 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data) return [{ title: "Blog" }];
   return [
-    { title: "Blog - Articles" },
+    { title: data.pageTitle },
     {
       name: "description",
-      content: "Browse our collection of articles covering web development, programming, and technology."
+      content: data.metaDescription,
     },
   ];
 };
@@ -86,7 +87,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       tags,
     },
     pageTitle: spec.posts_config.page_title,
+    metaDescription: spec.meta.description,
     publicCategories: spec.access_control.public_categories,
+    spec: {
+      messages: spec.messages,
+      accessibility: spec.accessibility,
+      date_format: spec.date_format,
+    },
   });
 }
 
@@ -100,6 +107,7 @@ export default function BlogIndex() {
     selectedFilters,
     pageTitle,
     publicCategories,
+    spec,
   } = useLoaderData<typeof loader>();
 
   return (
@@ -112,6 +120,9 @@ export default function BlogIndex() {
         selectedFilters={selectedFilters}
         pageTitle={pageTitle}
         publicCategories={publicCategories}
+        messages={spec.messages}
+        accessibility={spec.accessibility}
+        dateFormat={spec.date_format}
       />
     </BlogLayout>
   );

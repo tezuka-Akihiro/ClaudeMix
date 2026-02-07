@@ -22,12 +22,15 @@ describe('FilterSubmitButton', () => {
       expect(button).toHaveClass('filter-submit-button');
     });
 
-    it('should display "フィルタ適用" text', () => {
+    it('should display the provided label text', () => {
+      // Arrange
+      const label = 'Apply Filter';
+
       // Act
-      render(<FilterSubmitButton />);
+      render(<FilterSubmitButton label={label} />);
 
       // Assert
-      const button = screen.getByText('フィルタ適用');
+      const button = screen.getByText(label);
       expect(button).toBeInTheDocument();
     });
   });

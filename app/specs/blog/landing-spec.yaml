@@ -61,6 +61,15 @@ accessibility:
   keyboard_shortcuts:
     close_modal: "Escape"
 
+# メッセージ
+messages:
+  error:
+    not_found: "ランディングページが見つかりませんでした"
+    internal_server_error: "サーバーエラーが発生しました"
+    boundary_title: "エラーが発生しました"
+    boundary_message: "ランディングページの読み込みに失敗しました。"
+    back_to_blog: "ブログに戻る"
+
 # ビジネスルール
 business_rules:
   manga_panel_count:

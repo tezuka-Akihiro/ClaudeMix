@@ -5,13 +5,14 @@ import type { Heading } from "~/lib/blog/post-detail/extractHeadings";
 
 interface TableOfContentsProps {
   headings: Heading[];
+  ariaLabel?: string;
 }
 
 /**
  * 目次コンポーネント
  * 見出し一覧をアンカーリンク付きリストとして表示
  */
-export function TableOfContents({ headings }: TableOfContentsProps) {
+export function TableOfContents({ headings, ariaLabel = '目次' }: TableOfContentsProps) {
   // 目次は h2（##）のみを対象とする
   // h3/h4 はペイウォール区切り指定用であり、目次には含めない
   const tocHeadings = headings.filter((h) => h.level === 2);
@@ -45,7 +46,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     <nav
       data-testid="table-of-contents"
       className="table-of-contents"
-      aria-label="目次"
+      aria-label={ariaLabel}
     >
       <ul className="table-of-contents__list">
         {tocHeadings.map((heading, index) => (

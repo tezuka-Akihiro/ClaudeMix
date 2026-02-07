@@ -6,6 +6,10 @@ describe('FilterPanel', () => {
   const mockOnClose = vi.fn();
   const availableCategories = ['Tech', 'Design'];
   const availableTags = ['AI', 'Claude', 'TDD'];
+  const filterMessages = {
+    submit_label: 'フィルタ適用',
+    all_categories_label: 'All Categories',
+  };
 
   describe('Visibility', () => {
     it('should display panel when isOpen={true}', () => {
@@ -16,6 +20,7 @@ describe('FilterPanel', () => {
           availableTags={availableTags}
           isOpen={true}
           onClose={mockOnClose}
+          filterMessages={filterMessages}
         />
       );
 
@@ -32,6 +37,7 @@ describe('FilterPanel', () => {
           availableTags={availableTags}
           isOpen={false}
           onClose={mockOnClose}
+          filterMessages={filterMessages}
         />
       );
 
@@ -53,6 +59,7 @@ describe('FilterPanel', () => {
           availableTags={availableTags}
           isOpen={true}
           onClose={onCloseSpy}
+          filterMessages={filterMessages}
         />
       );
       const overlay = screen.getByTestId('filter-overlay');
@@ -75,6 +82,7 @@ describe('FilterPanel', () => {
           availableTags={availableTags}
           isOpen={true}
           onClose={onCloseSpy}
+          filterMessages={filterMessages}
         />
       );
       fireEvent.keyDown(document, { key: 'Escape' });
@@ -94,6 +102,7 @@ describe('FilterPanel', () => {
           availableTags={availableTags}
           isOpen={true}
           onClose={onCloseSpy}
+          filterMessages={filterMessages}
         />
       );
       fireEvent.keyDown(document, { key: 'Enter' });
@@ -113,6 +122,7 @@ describe('FilterPanel', () => {
           availableTags={availableTags}
           isOpen={true}
           onClose={mockOnClose}
+          filterMessages={filterMessages}
         />
       );
 
@@ -131,6 +141,7 @@ describe('FilterPanel', () => {
           selectedCategory="Tech"
           isOpen={true}
           onClose={mockOnClose}
+          filterMessages={filterMessages}
         />
       );
 
@@ -148,6 +159,7 @@ describe('FilterPanel', () => {
           selectedTags={['AI', 'Claude']}
           isOpen={true}
           onClose={mockOnClose}
+          filterMessages={filterMessages}
         />
       );
 
@@ -173,6 +185,7 @@ describe('FilterPanel', () => {
           tagGroups={mockTagGroups}
           isOpen={true}
           onClose={mockOnClose}
+          filterMessages={filterMessages}
         />
       );
 

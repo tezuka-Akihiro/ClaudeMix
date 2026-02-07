@@ -76,13 +76,16 @@ describe('PostsSection', () => {
       },
       pageTitle: spec.posts_config.page_title,
       publicCategories: spec.access_control.public_categories,
+      messages: spec.messages,
+      accessibility: spec.accessibility,
+      dateFormat: spec.date_format,
     };
   });
 
   describe('Rendering', () => {
     it('should display the section title', () => {
       renderWithRouter(<PostsSection {...mockProps} />);
-      expect(screen.getByTestId('posts-section-title')).toHaveTextContent(spec.posts_config.page_title);
+      expect(screen.getByTestId('page-title')).toHaveTextContent(spec.posts_config.page_title);
     });
 
     it('should render a grid of post cards when posts are available', () => {
@@ -96,7 +99,7 @@ describe('PostsSection', () => {
     it('should display an empty message when no posts are available', () => {
       mockProps.posts = [];
       renderWithRouter(<PostsSection {...mockProps} />);
-      expect(screen.getByTestId('posts-section-empty')).toHaveTextContent('記事がまだありません');
+      expect(screen.getByTestId('posts-section-empty')).toHaveTextContent(spec.messages.empty_state.description);
       expect(screen.queryByTestId('post-card-grid')).not.toBeInTheDocument();
     });
   });

@@ -19,6 +19,9 @@ export interface BlogPostsSpec {
   tag_groups: {
     order: string[];
   };
+  meta: {
+    description: string;
+  };
   business_rules: {
     load_more: {
       posts_per_load: number;
@@ -36,6 +39,45 @@ export interface BlogPostsSpec {
     page_title: string;
     posts_directory: string;
     frontmatter_fields: string[];
+  };
+  messages: {
+    loading: {
+      posts: string;
+    };
+    error: {
+      fetch_failed: string;
+      no_posts: string;
+      network: string;
+      server: string;
+    };
+    empty_state: {
+      title: string;
+      description: string;
+    };
+    lock_message: string;
+    filter: {
+      submit_label: string;
+      all_categories_label: string;
+    };
+    load_more: {
+      button_label: string;
+      loading_label: string;
+      no_more_posts: string;
+    };
+  };
+  accessibility: {
+    aria_labels: {
+      posts_section: string;
+      post_card: string;
+      post_link: string;
+      load_more_button: string;
+    };
+  };
+  date_format: {
+    iso_format: string;
+    display_format: string;
+    display_separator: string;
+    locale: string;
   };
 }
 
@@ -439,5 +481,39 @@ export interface BlogLandingSpec {
       is_modal: boolean;
     }>;
     legal_content: string;
+  };
+  messages: {
+    error: {
+      not_found: string;
+      internal_server_error: string;
+      boundary_title: string;
+      boundary_message: string;
+      back_to_blog: string;
+    };
+  };
+}
+
+/**
+ * Post detail section spec.yamlの型定義
+ */
+export interface BlogPostDetailSpec {
+  messages: {
+    error: {
+      not_found: string;
+      network: string;
+      server: string;
+      markdown_conversion: string;
+      referenced_file_not_found: string;
+    };
+    paywall: {
+      message: string;
+      promotion_heading: string;
+      cta_label: string;
+    };
+  };
+  accessibility: {
+    aria_labels: {
+      toc: string;
+    };
   };
 }
