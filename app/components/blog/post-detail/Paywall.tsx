@@ -1,4 +1,9 @@
 import { SubscriptionPromotionBanner } from './SubscriptionPromotionBanner'
+import type { BlogPostDetailSpec } from '~/specs/blog/types'
+
+interface PaywallProps {
+  spec: BlogPostDetailSpec;
+}
 
 /**
  * ペイウォールコンポーネント
@@ -8,17 +13,17 @@ import { SubscriptionPromotionBanner } from './SubscriptionPromotionBanner'
  * SubscriptionPromotionBannerを内包し、会員登録を促す
  *
  * @example
- * <Paywall />
+ * <Paywall spec={spec} />
  */
-export function Paywall() {
+export function Paywall({ spec }: PaywallProps) {
   return (
     <div className="paywall">
       <div className="paywall-overlay">
         <div className="paywall-message">
-          続きを読むには会員登録が必要です
+          {spec.messages.ui.paywall_message}
         </div>
 
-        <SubscriptionPromotionBanner />
+        <SubscriptionPromotionBanner spec={spec} />
       </div>
     </div>
   )

@@ -118,17 +118,18 @@ describe('HeroSection', () => {
     expect(panels).toHaveLength(0);
   });
 
-  it('should render manga panels in correct order', () => {
+  it('should render manga panels in correct order with spec label', () => {
     render(
       <HeroSection
         catchCopy="Test Catch Copy"
         heroMangaAssets={mockHeroAssets}
+        mangaPanelAltLabel="Spec Label"
       />
     );
 
     const images = screen.getAllByRole('img');
-    expect(images[0]).toHaveAttribute('alt', '漫画パネル 1');
-    expect(images[1]).toHaveAttribute('alt', '漫画パネル 2');
+    expect(images[0]).toHaveAttribute('alt', 'Spec Label 1');
+    expect(images[1]).toHaveAttribute('alt', 'Spec Label 2');
   });
 
   it('should render multiline catch copy', () => {

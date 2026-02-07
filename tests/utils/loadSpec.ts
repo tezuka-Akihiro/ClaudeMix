@@ -11,11 +11,11 @@ import { join } from 'path';
 import { load } from 'js-yaml';
 import matter from 'gray-matter';
 import { deepMerge } from '~/lib/utils/deepMerge';
-import type { BlogPostsSpec, BlogCommonSpec } from '~/specs/blog/types';
+import type { BlogPostsSpec, BlogCommonSpec, BlogPostDetailSpec } from '~/specs/blog/types';
 import type { AccountAuthenticationSpec, AccountProfileSpec } from '~/specs/account/types';
 
 // Re-export the types for convenience
-export type { BlogPostsSpec, BlogCommonSpec, AccountAuthenticationSpec, AccountProfileSpec };
+export type { BlogPostsSpec, BlogCommonSpec, BlogPostDetailSpec, AccountAuthenticationSpec, AccountProfileSpec };
 
 /**
  * テスト記事のフロントマター型定義

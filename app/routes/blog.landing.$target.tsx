@@ -11,6 +11,8 @@ import { resolveLegalContent } from "~/lib/blog/common/resolveLegalContent";
 import { loadSpec, loadSharedSpec } from "~/spec-loader/specLoader.server";
 import type { BlogLandingSpec, LandingContent, MangaAsset } from "~/specs/blog/types";
 import type { ProjectSpec } from '~/specs/shared/types';
+import { Link } from "@remix-run/react";
+import { data as landingSpecRaw } from "~/generated/specs/blog/landing";
 import HeroSection from "~/components/blog/landing/HeroSection";
 import ScrollSection from "~/components/blog/landing/ScrollSection";
 import MangaPanelGrid from "~/components/blog/landing/MangaPanelGrid";
@@ -142,6 +144,7 @@ export default function LandingPage() {
       <HeroSection
         catchCopy={content.catchCopy}
         heroMangaAssets={heroMangaAssets}
+        mangaPanelAltLabel={spec.accessibility.aria_labels.manga_panel}
       />
 
       {/* スクロールセクション */}
@@ -154,6 +157,7 @@ export default function LandingPage() {
       <MangaPanelGrid
         mangaAssets={mangaAssets}
         heroMaxCount={heroMaxCount}
+        mangaPanelAltLabel={spec.accessibility.aria_labels.manga_panel}
       />
 
       {/* CTAセクション */}
@@ -170,11 +174,15 @@ export default function LandingPage() {
 }
 
 export function ErrorBoundary() {
+  // NOTE: ErrorBoundary runs on both server and client.
+  // We use the generated spec module directly (it's bundled for client).
+  const spec = landingSpecRaw as BlogLandingSpec;
+
   return (
     <div className="landing-error">
-      <h1>エラーが発生しました</h1>
-      <p>ランディングページの読み込みに失敗しました。</p>
-      <a href="/blog">ブログに戻る</a>
+      <h1>{spec.messages.error.title}</h1>
+      <p>{spec.messages.error.description}</p>
+      <Link to="/blog">{spec.messages.error.back_to_blog}</Link>
     </div>
   );
 }

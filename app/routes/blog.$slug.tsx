@@ -12,7 +12,7 @@ import BlogLayout from "~/components/blog/common/BlogLayout";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { loadSpec } from "~/spec-loader/specLoader.server";
-import type { BlogCommonSpec, BlogPostsSpec } from "~/specs/blog/types";
+import type { BlogCommonSpec, BlogPostsSpec, BlogPostDetailSpec } from "~/specs/blog/types";
 import { getSubscriptionStatus } from "~/data-io/blog/post-detail/getSubscriptionStatus.server";
 import { determineContentVisibility } from "~/lib/blog/post-detail/determineContentVisibility";
 import { getSession } from "~/data-io/account/common/getSession.server";
@@ -44,6 +44,10 @@ export interface PostDetailLoaderData {
     hiddenContent: string; // 非表示HTML（見出しベース）
     description?: string;
     tags?: string[];
+    category: string;
+    source: string | null;
+    headings: Heading[];
+    hasMermaid: boolean;
   };
   headings: Heading[];
   config: BlogConfig;
@@ -53,6 +57,7 @@ export interface PostDetailLoaderData {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
+  spec: BlogPostDetailSpec;
 }
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
@@ -101,6 +106,9 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   // ブログ設定を取得
   const config = await loadBlogConfig();
 
+  // セクションSpecを取得
+  const detailSpec = loadSpec<BlogPostDetailSpec>('blog/post-detail');
+
   // OGP画像の設定を取得
   const spec = loadSpec<BlogCommonSpec>('blog/common');
   const ogpImageWidth = spec.ogp.image.width;
@@ -121,6 +129,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   );
 
   return json({
+    spec: detailSpec,
     post: {
       slug: post.slug,
       title: post.title,
@@ -186,7 +195,7 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
 };
 
 export default function BlogPostDetail() {
-  const { post, headings, config, subscriptionAccess, thumbnailUrl } = useLoaderData<typeof loader>();
+  const { spec, post, headings, config, subscriptionAccess, thumbnailUrl } = useLoaderData<typeof loader>();
 
   // Scroll to top on page navigation
   useEffect(() => {
@@ -203,6 +212,7 @@ export default function BlogPostDetail() {
         hasMermaid={post.hasMermaid}
         subscriptionAccess={subscriptionAccess}
         thumbnailUrl={thumbnailUrl}
+        spec={spec}
       />
     </BlogLayout>
   );

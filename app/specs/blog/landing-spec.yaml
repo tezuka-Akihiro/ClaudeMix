@@ -57,6 +57,7 @@ accessibility:
     cta_section: "CTAセクション"
     landing_footer: "ランディングページフッター"
     legal_modal_close: "閉じる"
+    manga_panel: "漫画パネル"
 
   keyboard_shortcuts:
     close_modal: "Escape"
@@ -150,6 +151,13 @@ footer:
       - "{{LEGAL_SELLER_NAME}}"
       - "{{LEGAL_SELLER_ADDRESS}}"
       - "{{LEGAL_SELLER_PHONE}}"
+
+# メッセージ定数
+messages:
+  error:
+    title: "エラーが発生しました"
+    description: "ランディングページの読み込みに失敗しました。"
+    back_to_blog: "ブログに戻る"
 
 # UI要素セレクタ
 ui_selectors:

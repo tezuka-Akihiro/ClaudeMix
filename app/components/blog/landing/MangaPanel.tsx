@@ -7,14 +7,15 @@ import type { MangaAsset } from '~/specs/blog/types';
 interface MangaPanelProps {
   asset: MangaAsset;
   loading?: 'lazy' | 'eager';
+  altLabel?: string;
 }
 
-const MangaPanel: React.FC<MangaPanelProps> = ({ asset, loading = 'lazy' }) => {
+const MangaPanel: React.FC<MangaPanelProps> = ({ asset, loading = 'lazy', altLabel = '漫画パネル' }) => {
   return (
     <div className="manga-panel" data-testid="manga-panel">
       <img
         src={asset.path}
-        alt={`漫画パネル ${asset.order}`}
+        alt={`${altLabel} ${asset.order}`}
         loading={loading}
         width="400"
         height="300"

@@ -8,9 +8,14 @@ import type { MangaAsset } from '~/specs/blog/types';
 interface MangaPanelGridProps {
   mangaAssets: MangaAsset[];
   heroMaxCount?: number;
+  mangaPanelAltLabel?: string;
 }
 
-const MangaPanelGrid: React.FC<MangaPanelGridProps> = ({ mangaAssets, heroMaxCount = 2 }) => {
+const MangaPanelGrid: React.FC<MangaPanelGridProps> = ({
+  mangaAssets,
+  heroMaxCount = 2,
+  mangaPanelAltLabel,
+}) => {
   return (
     <section
       className="manga-panel-grid manga-panel-grid-structure"
@@ -21,6 +26,7 @@ const MangaPanelGrid: React.FC<MangaPanelGridProps> = ({ mangaAssets, heroMaxCou
           key={asset.fileName}
           asset={asset}
           loading={index < heroMaxCount ? 'eager' : 'lazy'}
+          altLabel={mangaPanelAltLabel}
         />
       ))}
     </section>

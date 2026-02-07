@@ -16,25 +16,13 @@ const renderWithRouter = (ui: React.ReactElement) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
 };
 
-// Define a more complete type for the spec object locally
-interface BlogPostSpecWithSelectors extends BlogPostsSpec {
-  ui_selectors: {
-    card: {
-      post_title: string;
-      post_date: string;
-      post_card: string;
-      tag_badge: string;
-    };
-  };
-}
-
 describe('PostCard', () => {
-  let spec: BlogPostSpecWithSelectors;
+  let spec: BlogPostsSpec;
   let baseProps: Omit<React.ComponentProps<typeof PostCard>, 'slug'>;
 
   beforeAll(async () => {
     // Load spec.yaml dynamically to ensure tests stay in sync with spec
-    spec = await loadSpec<BlogPostSpecWithSelectors>('blog', 'posts');
+    spec = await loadSpec<BlogPostsSpec>('blog', 'posts');
 
     baseProps = {
       title: 'Test Post Title',

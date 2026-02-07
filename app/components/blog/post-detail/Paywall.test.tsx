@@ -1,30 +1,37 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeAll } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Paywall } from './Paywall'
 import { BrowserRouter } from 'react-router-dom'
+import { loadSpec, type BlogPostDetailSpec } from '../../../../tests/utils/loadSpec'
 
 describe('Paywall', () => {
+  let spec: BlogPostDetailSpec;
+
+  beforeAll(async () => {
+    spec = await loadSpec<BlogPostDetailSpec>('blog', 'post-detail');
+  });
+
   const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>)
   }
 
   it('ペイウォールメッセージが表示される', () => {
-    renderWithRouter(<Paywall />)
+    renderWithRouter(<Paywall spec={spec} />)
 
     expect(
-      screen.getByText('続きを読むには会員登録が必要です')
+      screen.getByText(spec.messages.ui.paywall_message)
     ).toBeInTheDocument()
   })
 
   it('SubscriptionPromotionBannerが内包されている', () => {
-    renderWithRouter(<Paywall />)
+    renderWithRouter(<Paywall spec={spec} />)
 
     // SubscriptionPromotionBannerの要素が存在するか確認
     expect(
-      screen.getByText('すべての記事を読むには会員登録が必要です')
+      screen.getByText(spec.promotion.title)
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: /プランを見る/ })
+      screen.getByRole('link', { name: new RegExp(spec.promotion.button_label) })
     ).toBeInTheDocument()
   })
 })

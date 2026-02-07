@@ -22,9 +22,9 @@ describe('MangaPanel', () => {
   });
 
   it('should render with correct alt text', () => {
-    render(<MangaPanel asset={mockAsset} />);
+    render(<MangaPanel asset={mockAsset} altLabel="Test Panel" />);
 
-    const img = screen.getByAltText('漫画パネル 1');
+    const img = screen.getByAltText('Test Panel 1');
     expect(img).toBeInTheDocument();
   });
 
@@ -56,9 +56,9 @@ describe('MangaPanel', () => {
       order: 5,
     };
 
-    render(<MangaPanel asset={asset2} />);
+    render(<MangaPanel asset={asset2} altLabel="Spec Label" />);
 
-    const img = screen.getByAltText('漫画パネル 5');
+    const img = screen.getByAltText('Spec Label 5');
     expect(img).toBeInTheDocument();
   });
 });
