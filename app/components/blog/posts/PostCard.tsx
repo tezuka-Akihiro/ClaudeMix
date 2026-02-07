@@ -8,6 +8,8 @@ import type { PostSummary } from '~/specs/blog/types';
 
 interface PostCardProps extends PostSummary {
   isLocked?: boolean;
+  lockMessage?: string;
+  dateSeparator?: string;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -18,10 +20,12 @@ const PostCard: React.FC<PostCardProps> = ({
   tags,
   thumbnailUrl,
   isLocked = false,
+  lockMessage = 'ログインで読む',
+  dateSeparator = '.',
 }) => {
   const [imageError, setImageError] = useState(false);
   // 日付をフォーマット（ISO形式 → 日本語形式）
-  const formattedDate = formatPublishedDate(publishedAt);
+  const formattedDate = formatPublishedDate(publishedAt, dateSeparator);
 
   return (
     <Link
@@ -52,7 +56,7 @@ const PostCard: React.FC<PostCardProps> = ({
         </p>
         {isLocked && (
           <p className="post-card__lock-message" data-testid="lock-message">
-            ログインで読む
+            {lockMessage}
           </p>
         )}
         {description && (

@@ -3,7 +3,7 @@
 
 import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useRouteError, isRouteErrorResponse } from "@remix-run/react";
 import { getLandingContent } from "~/data-io/blog/landing/getLandingContent.server";
 import { getMangaAssets } from "~/data-io/blog/landing/getMangaAssets.server";
 import { validateTarget } from "~/lib/blog/landing/targetValidation";
@@ -104,10 +104,10 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
     // コンテンツファイルが存在しない場合は404
     if (error instanceof Error && error.message.includes('not found')) {
-      throw new Response("Landing page not found", { status: 404 });
+      throw new Response(landingSpec.messages.error.not_found, { status: 404 });
     }
     // その他のエラーは500
-    throw new Response("Internal Server Error", { status: 500 });
+    throw new Response(landingSpec.messages.error.internal_server_error, { status: 500 });
   }
 }
 
@@ -170,11 +170,23 @@ export default function LandingPage() {
 }
 
 export function ErrorBoundary() {
+  const error = useRouteError();
+
+  // デフォルト値
+  let title = "エラーが発生しました";
+  let message = "ランディングページの読み込みに失敗しました。";
+  let backText = "ブログに戻る";
+
+  if (isRouteErrorResponse(error)) {
+    title = error.status === 404 ? "404 Not Found" : "Error";
+    message = error.data;
+  }
+
   return (
     <div className="landing-error">
-      <h1>エラーが発生しました</h1>
-      <p>ランディングページの読み込みに失敗しました。</p>
-      <a href="/blog">ブログに戻る</a>
+      <h1 data-testid="error-title">{title}</h1>
+      <p data-testid="error-message">{message}</p>
+      <a href="/blog" data-testid="back-link">{backText}</a>
     </div>
   );
 }

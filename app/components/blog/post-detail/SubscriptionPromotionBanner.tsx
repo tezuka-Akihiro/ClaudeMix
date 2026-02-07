@@ -2,6 +2,14 @@ import { Link } from '@remix-run/react'
 
 /**
  * 購読促進バナーコンポーネント
+ */
+interface SubscriptionPromotionBannerProps {
+  heading: string;
+  ctaLabel: string;
+}
+
+/**
+ * 購読促進バナーコンポーネント
  *
  * @description
  * ペイウォール内に配置され、会員登録・サブスクリプション購入を促す
@@ -9,11 +17,11 @@ import { Link } from '@remix-run/react'
  * @example
  * <SubscriptionPromotionBanner />
  */
-export function SubscriptionPromotionBanner() {
+export function SubscriptionPromotionBanner({ heading, ctaLabel }: SubscriptionPromotionBannerProps) {
   return (
     <div className="subscription-promotion-banner">
       <h3 className="subscription-promotion-heading">
-        すべての記事を読むには会員登録が必要です
+        {heading}
       </h3>
 
       <div className="subscription-plans subscription-plans-structure">
@@ -33,7 +41,7 @@ export function SubscriptionPromotionBanner() {
       </div>
 
       <Link to="/account/subscription" className="subscription-cta-button">
-        プランを見る
+        {ctaLabel}
       </Link>
     </div>
   )

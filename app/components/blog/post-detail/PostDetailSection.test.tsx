@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { PostDetailSection } from './PostDetailSection';
-import type { RenderedPost } from '~/specs/blog/types';
 import { extractHeadings } from '../../../lib/blog/post-detail/extractHeadings';
 
 /**
@@ -42,6 +41,28 @@ const renderWithRouter = (component: React.ReactElement) => {
   return render(<BrowserRouter>{component}</BrowserRouter>);
 };
 
+const mockSpec = {
+  messages: {
+    error: {
+      not_found: "記事が見つかりませんでした",
+      network: "記事の読み込みに失敗しました",
+      server: "サーバーエラーが発生しました",
+      markdown_conversion: "記事の変換処理でエラーが発生しました",
+      referenced_file_not_found: "参照ファイルが見つかりませんでした",
+    },
+    paywall: {
+      message: "続きを読むには会員登録が必要です",
+      promotion_heading: "すべての記事を読むには会員登録が必要です",
+      cta_label: "プランを見る",
+    },
+  },
+  accessibility: {
+    aria_labels: {
+      toc: "目次",
+    },
+  },
+};
+
 describe('PostDetailSection', () => {
   describe('Rendering', () => {
     it('should render basic post details correctly', () => {
@@ -54,7 +75,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
       const articleElement = screen.getByTestId('post-detail-section');
@@ -92,7 +122,16 @@ describe('PostDetailSection', () => {
       const post = createMockPost({ publishedAt: date });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
       const dateElement = screen.getByTestId('post-published-date');
@@ -108,7 +147,16 @@ describe('PostDetailSection', () => {
       const post = createMockPost({ visibleContent });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
       const contentElement = screen.getByTestId('post-content-visible');
@@ -128,7 +176,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
       const contentElement = screen.getByTestId('post-content-visible');
@@ -147,7 +204,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={subscriptionAccess} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={subscriptionAccess}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
       const visibleElement = screen.getByTestId('post-content-visible');
@@ -170,7 +236,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={subscriptionAccess} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={subscriptionAccess}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
       const visibleElement = screen.getByTestId('post-content-visible');
@@ -189,7 +264,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
       const articleElement = screen.getByTestId('post-detail-section');
@@ -221,7 +305,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={headings} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={headings}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert: 目次が表示される
       const tocContainer = screen.getByTestId('table-of-contents');
@@ -242,7 +335,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={headings} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={headings}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert: 目次が表示される
       const tocContainer = screen.getByTestId('table-of-contents');
@@ -269,7 +371,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={headings} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={headings}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert: 目次が表示される
       const tocContainer = screen.getByTestId('table-of-contents');
@@ -283,23 +394,21 @@ describe('PostDetailSection', () => {
 
     it('見出しが空配列の場合は目次が表示されない', () => {
       // Arrange
-      const post = {
-        slug: 'test-post',
-        title: 'Test Post',
-        author: 'Test Author',
-        publishedAt: '2024-05-01',
-        visibleContent: '<p>Test content</p>',
-        hiddenContent: '',
-        tags: [],
-        category: 'Test Category',
-        source: null,
-        hasMermaid: false,
+      const post = createMockPost({
         headings: [],
-        thumbnailUrl: null,
-      };
+      });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert: 目次が表示されない
       const tocContainer = screen.queryByTestId('table-of-contents');
@@ -315,7 +424,16 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={headings} subscriptionAccess={createMockSubscriptionAccess()} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={headings}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert: 目次が表示されない
       const tocContainer = screen.queryByTestId('table-of-contents');
@@ -333,10 +451,19 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={subscriptionAccess} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={subscriptionAccess}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
-      expect(screen.queryByText('続きを読むには会員登録が必要です')).not.toBeInTheDocument();
+      expect(screen.queryByText(mockSpec.messages.paywall.message)).not.toBeInTheDocument();
     });
 
     it('未契約ユーザー（showFullContent: false）の場合、ペイウォールが表示される', () => {
@@ -352,11 +479,20 @@ describe('PostDetailSection', () => {
       });
 
       // Act
-      renderWithRouter(<PostDetailSection post={post} headings={[]} subscriptionAccess={subscriptionAccess} thumbnailUrl={null} />);
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={subscriptionAccess}
+          thumbnailUrl={null}
+          messages={mockSpec.messages}
+          accessibility={mockSpec.accessibility}
+        />
+      );
 
       // Assert
-      expect(screen.getByText('続きを読むには会員登録が必要です')).toBeInTheDocument();
-      expect(screen.getByText('すべての記事を読むには会員登録が必要です')).toBeInTheDocument();
+      expect(screen.getByText(mockSpec.messages.paywall.message)).toBeInTheDocument();
+      expect(screen.getByText(mockSpec.messages.paywall.promotion_heading)).toBeInTheDocument();
       // Hidden content should not be rendered
       expect(screen.queryByTestId('post-content-hidden')).not.toBeInTheDocument();
     });

@@ -6,11 +6,13 @@ import React, { useState, useEffect, useRef } from 'react';
 interface CategorySelectorProps {
   availableCategories: string[];
   selectedCategory?: string;
+  allCategoriesLabel?: string;
 }
 
 export const CategorySelector: React.FC<CategorySelectorProps> = ({
   availableCategories,
   selectedCategory,
+  allCategoriesLabel = 'All Categories',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(selectedCategory || '');
@@ -52,7 +54,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
   };
 
   const getDisplayLabel = () => {
-    if (!selected) return 'All Categories';
+    if (!selected) return allCategoriesLabel;
     return selected;
   };
 
@@ -84,7 +86,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
               aria-selected={selected === ''}
               onClick={() => handleSelect('')}
             >
-              All Categories
+              {allCategoriesLabel}
             </button>
             {availableCategories.map((category) => (
               <button

@@ -7,9 +7,9 @@
  *
  * @example
  * formatPublishedDate("2024-05-01") // => "2024.05.01"
- * formatPublishedDate("2024-12-25") // => "2024.12.25"
+ * formatPublishedDate("2024-12-25", "/") // => "2024/12/25"
  */
-export function formatPublishedDate(isoDate: string): string {
+export function formatPublishedDate(isoDate: string, separator: string = "."): string {
   // ISO形式（YYYY-MM-DD）のフォーマットチェック
   const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
   if (!isoDatePattern.test(isoDate)) {
@@ -32,6 +32,6 @@ export function formatPublishedDate(isoDate: string): string {
     throw new Error("Invalid date format");
   }
 
-  // ドット記法形式に変換（月と日を0埋めして2桁にする）
-  return `${year}.${monthStr}.${dayStr}`;
+  // 指定されたセパレータ形式に変換（月と日を0埋めして2桁にする）
+  return `${year}${separator}${monthStr}${separator}${dayStr}`;
 }

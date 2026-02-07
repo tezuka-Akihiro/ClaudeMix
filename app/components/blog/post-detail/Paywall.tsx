@@ -2,6 +2,15 @@ import { SubscriptionPromotionBanner } from './SubscriptionPromotionBanner'
 
 /**
  * ペイウォールコンポーネント
+ */
+interface PaywallProps {
+  message: string;
+  promotionHeading: string;
+  ctaLabel: string;
+}
+
+/**
+ * ペイウォールコンポーネント
  *
  * @description
  * 未契約ユーザーに対して、制限を超えるコンテンツの前に表示される障壁
@@ -10,15 +19,18 @@ import { SubscriptionPromotionBanner } from './SubscriptionPromotionBanner'
  * @example
  * <Paywall />
  */
-export function Paywall() {
+export function Paywall({ message, promotionHeading, ctaLabel }: PaywallProps) {
   return (
     <div className="paywall">
       <div className="paywall-overlay">
         <div className="paywall-message">
-          続きを読むには会員登録が必要です
+          {message}
         </div>
 
-        <SubscriptionPromotionBanner />
+        <SubscriptionPromotionBanner
+          heading={promotionHeading}
+          ctaLabel={ctaLabel}
+        />
       </div>
     </div>
   )

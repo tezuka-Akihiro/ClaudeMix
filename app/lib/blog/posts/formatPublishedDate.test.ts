@@ -8,6 +8,11 @@ describe("formatPublishedDate", () => {
       expect(formatPublishedDate("2024-12-25")).toBe("2024.12.25");
       expect(formatPublishedDate("2024-03-20")).toBe("2024.03.20");
     });
+
+    it("カスタムセパレータを指定できること", () => {
+      expect(formatPublishedDate("2024-05-01", "/")).toBe("2024/05/01");
+      expect(formatPublishedDate("2024-12-25", "-")).toBe("2024-12-25");
+    });
   });
 
   describe("境界値", () => {

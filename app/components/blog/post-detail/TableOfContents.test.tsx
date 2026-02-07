@@ -12,38 +12,40 @@ describe("TableOfContents", () => {
     { level: 2, text: "概要", id: "概要" },
     { level: 2, text: "まとめ", id: "まとめ" },
   ];
+  const mockAriaLabel = '目次';
 
   it("目次コンテナが表示される", () => {
-    render(<TableOfContents headings={mockHeadings} />);
+    render(<TableOfContents headings={mockHeadings} ariaLabel={mockAriaLabel} />);
     expect(screen.getByTestId("table-of-contents")).toBeInTheDocument();
+    expect(screen.getByTestId("table-of-contents")).toHaveAttribute('aria-label', mockAriaLabel);
   });
 
   it("すべての見出しがリンクとして表示される", () => {
-    render(<TableOfContents headings={mockHeadings} />);
+    render(<TableOfContents headings={mockHeadings} ariaLabel={mockAriaLabel} />);
     expect(screen.getByText("はじめに")).toBeInTheDocument();
     expect(screen.getByText("概要")).toBeInTheDocument();
     expect(screen.getByText("まとめ")).toBeInTheDocument();
   });
 
   it("リンクにhref属性が設定される", () => {
-    render(<TableOfContents headings={mockHeadings} />);
+    render(<TableOfContents headings={mockHeadings} ariaLabel={mockAriaLabel} />);
     const link = screen.getByText("はじめに").closest("a");
     expect(link).toHaveAttribute("href", "#はじめに");
   });
 
   it("見出しがない場合はnullを返す", () => {
-    const { container } = render(<TableOfContents headings={[]} />);
+    const { container } = render(<TableOfContents headings={[]} ariaLabel={mockAriaLabel} />);
     expect(container.firstChild).toBeNull();
   });
 
   it("各アイテムにdata-testidが設定される", () => {
-    render(<TableOfContents headings={mockHeadings} />);
+    render(<TableOfContents headings={mockHeadings} ariaLabel={mockAriaLabel} />);
     const items = screen.getAllByTestId("toc-item");
     expect(items).toHaveLength(3);
   });
 
   it("各リンクにdata-testidが設定される", () => {
-    render(<TableOfContents headings={mockHeadings} />);
+    render(<TableOfContents headings={mockHeadings} ariaLabel={mockAriaLabel} />);
     const links = screen.getAllByTestId("toc-link");
     expect(links).toHaveLength(3);
   });
@@ -55,7 +57,7 @@ describe("TableOfContents", () => {
       { level: 4, text: "詳細", id: "詳細" },
       { level: 2, text: "セクション2", id: "セクション2" },
     ];
-    render(<TableOfContents headings={mixedHeadings} />);
+    render(<TableOfContents headings={mixedHeadings} ariaLabel={mockAriaLabel} />);
 
     // h2のみが表示される
     expect(screen.getByText("セクション1")).toBeInTheDocument();

@@ -33,14 +33,20 @@ describe('CategorySelector', () => {
     it('should display "All Categories" as default option with empty value', () => {
       // Arrange
       const availableCategories = ['ClaudeMix ガイド'];
+      const allCategoriesLabel = 'すべてのカテゴリ';
 
       // Act
-      render(<CategorySelector availableCategories={availableCategories} />);
+      render(
+        <CategorySelector
+          availableCategories={availableCategories}
+          allCategoriesLabel={allCategoriesLabel}
+        />
+      );
       const button = screen.getByTestId('category-selector');
       fireEvent.click(button);
 
       // Assert
-      const allCategoriesOption = screen.getByRole('option', { name: /All Categories/i });
+      const allCategoriesOption = screen.getByRole('option', { name: allCategoriesLabel });
       expect(allCategoriesOption).toBeInTheDocument();
     });
 

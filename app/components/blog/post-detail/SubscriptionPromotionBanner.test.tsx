@@ -8,26 +8,31 @@ describe('SubscriptionPromotionBanner', () => {
     return render(<BrowserRouter>{component}</BrowserRouter>)
   }
 
+  const mockProps = {
+    heading: 'すべての記事を読むには会員登録が必要です',
+    ctaLabel: 'プランを見る',
+  }
+
   it('見出しが表示される', () => {
-    renderWithRouter(<SubscriptionPromotionBanner />)
+    renderWithRouter(<SubscriptionPromotionBanner {...mockProps} />)
 
     expect(
-      screen.getByText(/すべての記事を読むには会員登録が必要です/)
+      screen.getByText(new RegExp(mockProps.heading))
     ).toBeInTheDocument()
   })
 
   it('CTAボタンが表示され、/account/subscriptionへのリンクである', () => {
-    renderWithRouter(<SubscriptionPromotionBanner />)
+    renderWithRouter(<SubscriptionPromotionBanner {...mockProps} />)
 
     const ctaButton = screen.getByRole('link', {
-      name: /プランを見る|今すぐ登録/,
+      name: new RegExp(mockProps.ctaLabel),
     })
     expect(ctaButton).toBeInTheDocument()
     expect(ctaButton).toHaveAttribute('href', '/account/subscription')
   })
 
   it('プラン情報が表示される', () => {
-    renderWithRouter(<SubscriptionPromotionBanner />)
+    renderWithRouter(<SubscriptionPromotionBanner {...mockProps} />)
 
     // プランの期間が表示されているか確認
     expect(screen.getByText(/1ヶ月/)).toBeInTheDocument()

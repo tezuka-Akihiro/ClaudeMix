@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { CategorySelector } from './CategorySelector';
 import { TagGrid } from './TagGrid';
 import { FilterSubmitButton } from './FilterSubmitButton';
-import type { TagGroup } from '~/specs/blog/types';
+import type { TagGroup, BlogPostsSpec } from '~/specs/blog/types';
 
 interface FilterPanelProps {
   availableCategories: string[];
@@ -15,6 +15,7 @@ interface FilterPanelProps {
   selectedTags?: string[];
   isOpen: boolean;
   onClose: () => void;
+  filterMessages: BlogPostsSpec['messages']['filter'];
 }
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
@@ -25,6 +26,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   selectedTags,
   isOpen,
   onClose,
+  filterMessages,
 }) => {
   useEffect(() => {
     if (!isOpen) return;
@@ -55,13 +57,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           <CategorySelector
             availableCategories={availableCategories}
             selectedCategory={selectedCategory}
+            allCategoriesLabel={filterMessages.all_categories_label}
           />
           <TagGrid
             availableTags={availableTags}
             tagGroups={tagGroups}
             selectedTags={selectedTags}
           />
-          <FilterSubmitButton />
+          <FilterSubmitButton label={filterMessages.submit_label} />
         </form>
       </aside>
     </>

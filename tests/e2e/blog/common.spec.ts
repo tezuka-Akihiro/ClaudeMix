@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createAuthenticatedUser } from '../../utils/auth-helper';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 import {
   loadSpec,
   loadSharedSpec,
@@ -140,7 +141,7 @@ test.describe('E2E Screen Test for blog - Navigation Menu', () => {
     await expect(navigationMenu).toBeVisible();
 
     // オーバーレイをクリックして閉じる
-    const overlay = page.getByTestId('navigation-menu-overlay');
+    const overlay = page.getByTestId(extractTestId(commonSpec.ui_selectors.navigation.menu_overlay));
     await expect(overlay).toBeVisible();
     await overlay.click({ force: true }); // force:true to click through potential animations
     await expect(navigationMenu).not.toBeVisible();
