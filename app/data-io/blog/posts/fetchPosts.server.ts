@@ -36,16 +36,26 @@ export async function fetchPosts(
     const commonSpec = loadSpec<BlogCommonSpec>('blog/common');
     const r2Config = commonSpec.r2_assets;
 
+    // 記事一覧用のスペックをロードしてサムネイル表示設定を確認
+    const postsSpec = loadSpec<BlogPostsSpec>('blog/posts');
+    const suppressedCategories = postsSpec.thumbnail?.display?.suppressed_categories || [];
+
     // PostSummary形式に変換（メタデータとサムネイルURLを含む）
-    const posts: PostSummary[] = allPosts.map(post => ({
-      slug: post.slug,
-      title: post.frontmatter.title,
-      publishedAt: post.frontmatter.publishedAt,
-      category: post.frontmatter.category,
-      description: post.frontmatter.description,
-      tags: post.frontmatter.tags,
-      thumbnailUrl: buildThumbnailUrl(post.slug, r2Config),
-    }));
+    const posts: PostSummary[] = allPosts.map(post => {
+      // 特定のカテゴリやサムネイル無効設定の場合はURLを生成しない
+      const isSuppressed = suppressedCategories.includes(post.frontmatter.category);
+      const thumbnailUrl = isSuppressed ? null : buildThumbnailUrl(post.slug, r2Config);
+
+      return {
+        slug: post.slug,
+        title: post.frontmatter.title,
+        publishedAt: post.frontmatter.publishedAt,
+        category: post.frontmatter.category,
+        description: post.frontmatter.description,
+        tags: post.frontmatter.tags,
+        thumbnailUrl,
+      };
+    });
 
     // フィルタリング処理（純粋ロジック層を使用）
     const filters: FilterOptions = {

@@ -35,6 +35,13 @@ export interface BlogPostsSpec {
   access_control: {
     public_categories: string[];
   };
+  thumbnail: {
+    display: {
+      enabled: boolean;
+      fallback: string;
+      suppressed_categories: string[];
+    };
+  };
   posts_config: {
     page_title: string;
     posts_directory: string;

@@ -252,6 +252,9 @@ thumbnail:
     enabled: true
     # サムネイルが存在しない場合の動作
     fallback: "hide"  # "hide" | "placeholder"
+    # サムネイルを強制的に非表示にするカテゴリ（例: インフォメーションなど）
+    suppressed_categories:
+      - "インフォメーション"
 
   # CLS対策（レイアウトシフト防止）
   performance:

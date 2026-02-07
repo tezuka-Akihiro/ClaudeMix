@@ -114,7 +114,9 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const ogpImageHeight = spec.ogp.image.height;
 
   // サムネイルURLを生成（R2アセットからのゼロ設定方式）
-  const thumbnailUrl = buildThumbnailUrl(slug, spec.r2_assets);
+  const suppressedCategories = postsSpec.thumbnail?.display?.suppressed_categories || [];
+  const isSuppressed = suppressedCategories.includes(post.category);
+  const thumbnailUrl = isSuppressed ? null : buildThumbnailUrl(slug, spec.r2_assets);
 
   // サブスクリプション状態を取得（セッションからuserIdを使用）
   const subscriptionStatus = await getSubscriptionStatus(userId, context as unknown as Parameters<typeof getSubscriptionStatus>[1]);

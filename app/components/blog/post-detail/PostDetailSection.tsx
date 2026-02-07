@@ -44,6 +44,8 @@ export function PostDetailSection({
   accessibility,
 }: PostDetailSectionProps) {
   const [imageError, setImageError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // publishedAtをフォーマット
   const formattedDate = formatPublishedDate(post.publishedAt);
 
@@ -113,14 +115,20 @@ export function PostDetailSection({
         <div
           className="post-detail-section__thumbnail"
           data-testid="article-thumbnail-container"
+          style={imageError ? { display: 'none' } : {}}
         >
           <img
             src={thumbnailUrl}
             alt={`${post.title}のサムネイル`}
             loading="lazy"
             decoding="async"
+            onLoad={() => setIsLoaded(true)}
             onError={() => setImageError(true)}
             data-testid="article-thumbnail-image"
+            style={{
+              opacity: isLoaded ? 1 : 0,
+              transition: 'opacity 0.2s ease-in-out'
+            }}
           />
         </div>
       )}

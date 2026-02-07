@@ -24,8 +24,15 @@ const PostCard: React.FC<PostCardProps> = ({
   dateSeparator = '.',
 }) => {
   const [imageError, setImageError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // 日付をフォーマット（ISO形式 → 日本語形式）
   const formattedDate = formatPublishedDate(publishedAt, dateSeparator);
+
+  // サムネイル表示判定
+  // 1. URLが存在すること
+  // 2. 読み込みエラーが発生していないこと
+  const shouldShowThumbnail = thumbnailUrl && !imageError;
 
   return (
     <Link
@@ -35,15 +42,27 @@ const PostCard: React.FC<PostCardProps> = ({
       data-slug={slug}
       data-locked={isLocked ? 'true' : undefined}
     >
-      {thumbnailUrl && !imageError && (
-        <div className="post-card__thumbnail" data-testid="thumbnail-container">
+      {shouldShowThumbnail && (
+        <div
+          className="post-card__thumbnail"
+          data-testid="thumbnail-container"
+          // エラー時は空間ごと消去する（spec: fallback="hide" に準拠）
+          style={imageError ? { display: 'none' } : {}}
+        >
           <img
             src={thumbnailUrl}
             alt={`${title}のサムネイル`}
             loading="lazy"
             decoding="async"
+            onLoad={() => setIsLoaded(true)}
             onError={() => setImageError(true)}
             data-testid="thumbnail-image"
+            className="post-card__thumbnail-img"
+            // 読み込み完了まで不可視にすることで、エラー時のALTテキスト一瞬表示を防止
+            style={{
+              opacity: isLoaded ? 1 : 0,
+              transition: 'opacity 0.2s ease-in-out'
+            }}
           />
         </div>
       )}
