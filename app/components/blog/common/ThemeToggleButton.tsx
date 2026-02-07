@@ -1,67 +1,64 @@
-import { useEffect, useState } from 'react';
+// ThemeToggleButton - Component (components層)
+// テーマ（ライト/ダーク）切り替えボタン
 
-/**
- * ThemeToggleButton - テーマ切り替えボタンコンポーネント
- *
- * ライトモード/ダークモードを切り替え、ユーザーの選択を localStorage に保存します。
- * テーマ設定は app/specs/blog/common-spec.yaml で定義されています。
- */
-export function ThemeToggleButton() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+import React, { useEffect, useState } from 'react';
+import { data as defaultSpec } from '~/generated/specs/blog/common';
+import type { BlogCommonSpec } from '~/specs/blog/types';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
+
+interface ThemeToggleButtonProps {
+  spec?: BlogCommonSpec;
+}
+
+export const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ spec = defaultSpec }) => {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
+  const { theme: themeSpec, accessibility } = spec;
 
-  // クライアント側でのみ実行
+  // 初期テーマの取得
   useEffect(() => {
     setMounted(true);
+    const savedTheme = localStorage.getItem(themeSpec.storage.key) as 'light' | 'dark' | null;
+    const initialTheme = savedTheme ||
+      (window.matchMedia(themeSpec.media_query).matches ? 'dark' : 'light');
 
-    // localStorage からテーマを読み込む
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    setTheme(initialTheme);
+    document.documentElement.setAttribute(themeSpec.html_attribute.name,
+      initialTheme === 'light' ? themeSpec.html_attribute.light_value : themeSpec.html_attribute.dark_value);
+  }, [themeSpec]);
 
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-      // デフォルトはシステム設定を参照
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const defaultTheme = prefersDark ? 'dark' : 'light';
-      setTheme(defaultTheme);
-      document.documentElement.setAttribute('data-theme', defaultTheme);
-    }
-  }, []);
-
-  // テーマ切り替えハンドラ
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    localStorage.setItem(themeSpec.storage.key, newTheme);
+    document.documentElement.setAttribute(themeSpec.html_attribute.name,
+      newTheme === 'light' ? themeSpec.html_attribute.light_value : themeSpec.html_attribute.dark_value);
   };
 
-  // サーバーサイドレンダリング時は何も表示しない（ハイドレーションエラー防止）
   if (!mounted) {
     return (
       <button
-        data-testid="theme-toggle-button"
-        aria-label="テーマを切り替え"
         className="blog-header__theme-button"
+        aria-hidden="true"
+        data-testid={extractTestId(spec.ui_selectors.header.theme_toggle_button)}
       >
-        <span className="blog-header__theme-icon">🌙</span>
+        <div className="w-5 h-5" />
       </button>
     );
   }
 
-  // アイコン: ライトモード時は太陽、ダークモード時は月
-  const icon = theme === 'light' ? '☀️' : '🌙';
-  const ariaLabel = theme === 'light' ? 'ダークモードに切り替え' : 'ライトモードに切り替え';
-
   return (
     <button
-      data-testid="theme-toggle-button"
-      aria-label={ariaLabel}
       onClick={toggleTheme}
       className="blog-header__theme-button"
+      aria-label={
+        theme === 'light'
+          ? accessibility.aria_labels.theme_toggle_button_light
+          : accessibility.aria_labels.theme_toggle_button_dark
+      }
+      data-testid={extractTestId(spec.ui_selectors.header.theme_toggle_button)}
     >
-      <span className="blog-header__theme-icon">{icon}</span>
+      {theme === 'light' ? themeSpec.icons.light : themeSpec.icons.dark}
     </button>
   );
-}
+};

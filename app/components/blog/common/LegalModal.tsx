@@ -1,126 +1,77 @@
-/**
- * LegalModal.tsx
- * Purpose: Modal for displaying Commercial Transaction Act
- *
- * @layer UI層 (components)
- * @responsibility 特定商取引法表示用モーダル（個人情報保護のため検索エンジンから隠蔽）
- */
+// LegalModal - Component (components層)
+// 法的表記（特定商取引法など）を表示するモーダル
 
-import { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
+import { data as defaultSpec } from '~/generated/specs/blog/common';
+import type { BlogCommonSpec } from '~/specs/blog/types';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 
-export interface LegalModalProps {
+interface LegalModalProps {
   isOpen: boolean;
   onClose: () => void;
   content: string;
+  spec?: BlogCommonSpec;
 }
 
-export default function LegalModal({ isOpen, onClose, content }: LegalModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null);
+const LegalModal: React.FC<LegalModalProps> = ({
+  isOpen,
+  onClose,
+  content,
+  spec = defaultSpec
+}) => {
+  const { ui_selectors, accessibility, legal_modal } = spec;
 
-  // Handle Escape key to close modal
+  // Handle Escape key
   useEffect(() => {
-    if (!isOpen) return;
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
         onClose();
       }
     };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
-
-  // Focus trap implementation
-  useEffect(() => {
-    if (!isOpen || !modalRef.current) return;
-
-    // Get all focusable elements
-    const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
-      'button, [href], [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    // Set initial focus to close button
-    if (firstElement) {
-      firstElement.focus();
-    }
-
-    // Trap focus within modal
-    const handleTabKey = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') return;
-
-      if (event.shiftKey) {
-        // Shift+Tab: moving backwards
-        if (document.activeElement === firstElement) {
-          event.preventDefault();
-          lastElement?.focus();
-        }
-      } else {
-        // Tab: moving forwards
-        if (document.activeElement === lastElement) {
-          event.preventDefault();
-          firstElement?.focus();
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleTabKey);
-    return () => document.removeEventListener('keydown', handleTabKey);
-  }, [isOpen]);
-
-  // Prevent background scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      // Store original overflow value
-      const originalOverflow = document.body.style.overflow;
-      // Disable scroll
-      document.body.style.overflow = 'hidden';
-
-      return () => {
-        // Restore original overflow value
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <div
-      className="legal-modal__overlay legal-modal__overlay-structure"
+      className="legal-modal__overlay"
       onClick={onClose}
-      data-testid="legal-modal-overlay"
+      data-testid={extractTestId(ui_selectors.legal_modal.modal_overlay)}
     >
       <div
-        ref={modalRef}
-        className="legal-modal__dialog legal-modal__dialog-structure"
+        className="legal-modal__dialog"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="legal-modal-title"
+        aria-labelledby={ui_selectors.legal_modal.modal_title.replace('#', '')}
+        data-testid={extractTestId(ui_selectors.legal_modal.modal_dialog)}
       >
-        <div className="legal-modal__header legal-modal__header-structure">
-          <h2 id="legal-modal-title" className="legal-modal__title">
-            特商法
+        <div className="legal-modal__header">
+          <h2
+            id={ui_selectors.legal_modal.modal_title.replace('#', '')}
+            className="legal-modal__title"
+            data-testid={extractTestId(ui_selectors.legal_modal.modal_title)}
+          >
+            {legal_modal.title}
           </h2>
           <button
-            type="button"
+            className="legal-modal__close-button"
             onClick={onClose}
-            className="legal-modal__close-button legal-modal__close-button-structure"
-            aria-label="閉じる"
-            data-testid="close-button"
+            aria-label={accessibility.aria_labels.legal_modal_close}
+            data-testid={extractTestId(ui_selectors.legal_modal.close_button)}
           >
             ×
           </button>
         </div>
-
-        <div className="legal-modal__content">
-          {/* Render content as HTML (ensure content is sanitized before passing) */}
-          <div dangerouslySetInnerHTML={{ __html: content }} />
-        </div>
+        <div
+          className="legal-modal__content"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
       </div>
     </div>
   );
-}
+};
+
+export default LegalModal;

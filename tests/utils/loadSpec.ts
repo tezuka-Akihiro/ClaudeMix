@@ -6,10 +6,11 @@
  * {section}-spec.yaml にテストデータを追加することは避けてください。
  */
 
-import { readFile, readdir } from 'fs/promises';
+import { readFile, readdir, access } from 'fs/promises';
 import { join } from 'path';
 import { load } from 'js-yaml';
 import matter from 'gray-matter';
+import { deepMerge } from '~/lib/utils/deepMerge';
 import type { BlogPostsSpec, BlogCommonSpec } from '~/specs/blog/types';
 import type { AccountAuthenticationSpec, AccountProfileSpec } from '~/specs/account/types';
 
@@ -30,18 +31,39 @@ export interface TestArticleFrontmatter {
 }
 
 /**
- * ブログ記事セクションのspec.yamlを読み込む
+ * ブログ記事セクションのspec.yamlを読み込む（3段階マージ対応）
  *
  * @param service
  * @param section
  * @returns spec.yamlの内容
  */
 export async function loadSpec<T = BlogPostsSpec>(service: string, section: string): Promise<T> {
-  const specPath = join(process.cwd(), 'app/specs/',service,'/',section + '-spec.yaml');
-  const content = await readFile(specPath, 'utf-8');
-  const spec = load(content) as T;
+  // 1. 基底パターンのロード (ui-patterns)
+  const uiPatternsPath = join(process.cwd(), 'app/specs/shared/ui-patterns-spec.yaml');
+  const uiPatternsContent = await readFile(uiPatternsPath, 'utf-8');
+  const uiPatterns = load(uiPatternsContent) as any;
+  if (uiPatterns._templates) delete uiPatterns._templates;
 
-  return spec;
+  // 2. Domain Commonのロード
+  const commonPath = join(process.cwd(), `app/specs/${service}/common-spec.yaml`);
+  let commonData = {};
+  try {
+    await access(commonPath);
+    const commonContent = await readFile(commonPath, 'utf-8');
+    commonData = load(commonContent) as any;
+  } catch (e) {
+    // common-spec.yaml が存在しない場合はスキップ
+  }
+
+  // 3. Section Specのロード
+  const sectionPath = join(process.cwd(), `app/specs/${service}/${section}-spec.yaml`);
+  const sectionContent = await readFile(sectionPath, 'utf-8');
+  const sectionData = load(sectionContent) as any;
+
+  // マージ処理 (Shared Base -> Domain Common -> Section)
+  const merged = deepMerge(deepMerge(uiPatterns, commonData), sectionData);
+
+  return merged as T;
 }
 
 /**

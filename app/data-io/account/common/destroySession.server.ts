@@ -6,6 +6,9 @@
  * @responsibility Cloudflare Workers KV削除、Cookie無効化
  */
 
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountCommonSpec } from '~/specs/account/types';
+
 /**
  * AppLoadContext type for Cloudflare Workers environment
  */
@@ -29,14 +32,16 @@ export async function destroySession(
   sessionId: string,
   context: CloudflareLoadContext
 ): Promise<string> {
+  const commonSpec = loadSpec<AccountCommonSpec>('account/common');
+
   try {
     // Delete session from KV
     const kv = context.env.SESSION_KV;
-    const kvKey = `session:${sessionId}`;
+    const kvKey = `${commonSpec.session.kv.key_prefix}${sessionId}`;
     await kv.delete(kvKey);
 
     // Generate cookie deletion header
-    const setCookieHeader = generateCookieDeletionHeader();
+    const setCookieHeader = generateCookieDeletionHeader(commonSpec);
 
     return setCookieHeader;
   } catch (error) {
@@ -49,17 +54,20 @@ export async function destroySession(
  * Generate Set-Cookie header to invalidate the session cookie
  * Sets Max-Age=0 to expire the cookie immediately
  *
+ * @param commonSpec - Account common specification
  * @returns Set-Cookie header string for cookie deletion
  */
-function generateCookieDeletionHeader(): string {
+function generateCookieDeletionHeader(commonSpec: AccountCommonSpec): string {
+  const { cookie } = commonSpec.session;
+
   const cookieParts = [
-    'session_id=', // Empty value
+    `${cookie.name}=`, // Empty value
     'Max-Age=0', // Expire immediately
-    'Path=/',
-    'HttpOnly',
-    'Secure',
-    'SameSite=Lax',
-  ];
+    `Path=${cookie.path}`,
+    cookie.http_only ? 'HttpOnly' : '',
+    cookie.secure ? 'Secure' : '',
+    `SameSite=${cookie.same_site}`,
+  ].filter(Boolean);
 
   return cookieParts.join('; ');
 }

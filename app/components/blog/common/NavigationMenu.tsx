@@ -4,14 +4,23 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from '@remix-run/react';
 import type { MenuItem } from '~/data-io/blog/common/loadBlogConfig.server';
+import { data as defaultSpec } from '~/generated/specs/blog/common';
+import type { BlogCommonSpec } from '~/specs/blog/types';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 
 interface NavigationMenuProps {
   menuItems: MenuItem[];
   isOpen: boolean;
   onClose: () => void;
+  spec?: BlogCommonSpec;
 }
 
-const NavigationMenu: React.FC<NavigationMenuProps> = ({ menuItems, isOpen, onClose }) => {
+const NavigationMenu: React.FC<NavigationMenuProps> = ({
+  menuItems,
+  isOpen,
+  onClose,
+  spec = defaultSpec,
+}) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Handle outside click
@@ -52,17 +61,19 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ menuItems, isOpen, onCl
     return null;
   }
 
+  const { ui_selectors } = spec;
+
   return (
     <>
       <div
         className="navigation-menu__overlay"
-        data-testid="navigation-menu-overlay"
+        data-testid={extractTestId(ui_selectors.navigation.menu_overlay)}
         onClick={onClose}
       />
       <nav
         ref={menuRef}
         className="navigation-menu navigation-menu-structure"
-        data-testid="navigation-menu"
+        data-testid={extractTestId(ui_selectors.navigation.navigation_menu)}
       >
         {/* prefetch="none": ルート別バンドルの不要なプリフェッチを防止 */}
         {menuItems.map((item, index) => (
@@ -71,7 +82,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ menuItems, isOpen, onCl
             to={item.path}
             className="navigation-menu__item"
             onClick={onClose}
-            data-testid="menu-item"
+            data-testid={extractTestId(ui_selectors.navigation.menu_item)}
             prefetch="none"
           >
             {item.label}

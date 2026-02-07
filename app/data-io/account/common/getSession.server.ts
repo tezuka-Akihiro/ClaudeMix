@@ -7,6 +7,8 @@
  */
 
 import type { SessionData } from '~/specs/account/types';
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountCommonSpec } from '~/specs/account/types';
 
 /**
  * AppLoadContext type for Cloudflare Workers environment
@@ -30,6 +32,8 @@ export async function getSession(
   request: Request,
   context: CloudflareLoadContext
 ): Promise<SessionData | null> {
+  const commonSpec = loadSpec<AccountCommonSpec>('account/common');
+
   try {
     // Extract session ID from Cookie header
     const cookieHeader = request.headers.get('Cookie');
@@ -38,14 +42,14 @@ export async function getSession(
     }
 
     // Parse session_id from Cookie
-    const sessionId = parseCookie(cookieHeader, 'session_id');
+    const sessionId = parseCookie(cookieHeader, commonSpec.session.cookie.name);
     if (!sessionId) {
       return null;
     }
 
     // Retrieve session data from KV
     const kv = context.env.SESSION_KV;
-    const kvKey = `session:${sessionId}`;
+    const kvKey = `${commonSpec.session.kv.key_prefix}${sessionId}`;
     const sessionDataJson = await kv.get(kvKey);
 
     if (!sessionDataJson) {

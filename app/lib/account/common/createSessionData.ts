@@ -6,15 +6,15 @@
  * @responsibility セッションデータ生成（副作用なし）
  */
 
-import { getSharedSpec } from '~/generated/specs';
+import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { SessionData } from '~/specs/account/types';
-import type { ServerSpec } from '~/specs/shared/types';
+import type { AccountCommonSpec } from '~/specs/account/types';
 
 /**
- * Default session duration from shared spec
+ * Default session duration from account common spec
  */
-const serverSpec = getSharedSpec<ServerSpec>('server');
-const DEFAULT_SESSION_DURATION_SECONDS = serverSpec.security.session_max_age;
+const commonSpec = loadSpec<AccountCommonSpec>('account/common');
+const DEFAULT_SESSION_DURATION_SECONDS = commonSpec.session.expiry.duration_seconds;
 
 /**
  * Create a new session data structure

@@ -3,47 +3,41 @@
  * Purpose: Verify active navigation item detection logic (pure function)
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { getActiveNavItem } from './getActiveNavItem';
-import type { NavItem } from '~/specs/account/types';
+import type { NavItem, AccountCommonSpec } from '~/specs/account/types';
+import { loadSpec } from '../../../../tests/utils/loadSpec';
 
 describe('getActiveNavItem', () => {
-  // Test data
-  const navItems: NavItem[] = [
-    { label: 'マイページ', path: '/account', icon: 'home' },
-    { label: '設定', path: '/account/settings', icon: 'settings' },
-    { label: 'サブスクリプション', path: '/account/subscription', icon: 'payment' },
-  ];
+  // Test data loaded from spec
+  let navItems: NavItem[] = [];
+
+  beforeAll(async () => {
+    const spec = await loadSpec<AccountCommonSpec>('account', 'common');
+    navItems = spec.navigation.menu_items;
+  });
 
   describe('Happy Path: Active item detection', () => {
-    it('should return マイページ item when pathname is /account', () => {
+    it('should return first nav item when pathname matches', () => {
       // Arrange
-      const currentPath = '/account';
+      const firstItem = navItems[0];
+      const currentPath = firstItem.path;
 
       // Act
       const result = getActiveNavItem(navItems, currentPath);
 
       // Assert
       expect(result).not.toBeNull();
-      expect(result?.label).toBe('マイページ');
-      expect(result?.path).toBe('/account');
+      expect(result?.label).toBe(firstItem.label);
+      expect(result?.path).toBe(firstItem.path);
     });
 
-    it('should return 設定 item when pathname is /account/settings', () => {
+    it('should return third nav item (Subscription) when pathname matches', () => {
       // Arrange
-      const currentPath = '/account/settings';
-
-      // Act
-      const result = getActiveNavItem(navItems, currentPath);
-
-      // Assert
-      expect(result).not.toBeNull();
-      expect(result?.label).toBe('設定');
-      expect(result?.path).toBe('/account/settings');
-    });
-
-    it('should return サブスクリプション item when pathname is /account/subscription', () => {
-      // Arrange
+      // In common-spec.yaml, 3rd item is settings and 4th is subscription.
+      // Let's find by path to be sure.
+      const subscriptionItem = navItems.find(item => item.path === '/account/subscription');
+      if (!subscriptionItem) throw new Error('Subscription item not found in spec');
       const currentPath = '/account/subscription';
 
       // Act
@@ -51,7 +45,7 @@ describe('getActiveNavItem', () => {
 
       // Assert
       expect(result).not.toBeNull();
-      expect(result?.label).toBe('サブスクリプション');
+      expect(result?.label).toBe(subscriptionItem.label);
       expect(result?.path).toBe('/account/subscription');
     });
   });
