@@ -29,6 +29,59 @@ export interface BlogPostsSpec {
       default_category_emoji: string;
     };
   };
+  ui_selectors: {
+    section: Record<string, string>;
+    card: Record<string, string>;
+    filter: Record<string, string>;
+    load_more: Record<string, string>;
+    states: Record<string, string>;
+  };
+  responsive: {
+    grid_columns: {
+      mobile: number;
+      tablet: number;
+      desktop: number;
+    };
+    tag_grid_columns: {
+      default: number;
+    };
+    card_spacing: {
+      mobile: string;
+      tablet: string;
+      desktop: string;
+    };
+  };
+  messages: {
+    loading: {
+      posts: string;
+    };
+    error: {
+      fetch_failed: string;
+      no_posts: string;
+      network: string;
+      server: string;
+    };
+    empty_state: {
+      title: string;
+      description: string;
+    };
+    filter: {
+      all_categories: string;
+      submit_button: string;
+      toggle_button_open: string;
+      toggle_button_close: string;
+    };
+    load_more: {
+      button_label: string;
+      loading_label: string;
+      no_more_posts: string;
+    };
+  };
+  date_format: {
+    iso_format: string;
+    display_format: string;
+    locale: string;
+  };
   access_control: {
     public_categories: string[];
   };
@@ -386,6 +439,74 @@ export interface LandingContent {
 }
 
 /**
+ * 記事詳細セクションのspec.yamlの型定義
+ */
+export interface BlogPostDetailSpec {
+  metadata: {
+    feature_name: string;
+    slug: string;
+    created_date: string;
+    last_updated: string;
+    version: string;
+  };
+  promotion: {
+    title: string;
+    button_label: string;
+    plans: Array<{
+      duration: string;
+      price: string;
+      badge?: string;
+    }>;
+  };
+  messages: {
+    ui: {
+      author_label: string;
+      paywall_message: string;
+    };
+    error: {
+      not_found: string;
+      network: string;
+      server: string;
+      markdown_conversion: string;
+    };
+  };
+  ui_selectors: {
+    article: Record<string, string>;
+    table_of_contents: Record<string, string>;
+    loading: Record<string, string>;
+    error: Record<string, string>;
+  };
+  thumbnail: {
+    display: {
+      enabled: boolean;
+      fallback: string;
+      position: string;
+    };
+    performance: {
+      aspect_ratio: string;
+      loading: string;
+      decoding: string;
+    };
+    styles: Record<string, string>;
+  };
+  markdown: {
+    supported_features: string[];
+    security: {
+      sanitize_html: boolean;
+      allowed_tags: string[];
+    };
+  };
+  access_control: {
+    free_content_heading: {
+      field_name: string;
+      type: string;
+      description: string;
+      default: string | null;
+    };
+  };
+}
+
+/**
  * Landing section spec.yamlの型定義
  */
 export interface BlogLandingSpec {
@@ -423,6 +544,11 @@ export interface BlogLandingSpec {
       manga_panel_grid: string;
       cta_section: string;
       landing_footer: string;
+      legal_modal_close: string;
+      manga_panel: string;
+    };
+    keyboard_shortcuts: {
+      close_modal: string;
     };
   };
   business_rules: {
@@ -439,5 +565,15 @@ export interface BlogLandingSpec {
       is_modal: boolean;
     }>;
     legal_content: string;
+  };
+  messages: {
+    error: {
+      title: string;
+      description: string;
+      back_to_blog: string;
+    };
+  };
+  ui_selectors: {
+    legal_modal: Record<string, string>;
   };
 }
