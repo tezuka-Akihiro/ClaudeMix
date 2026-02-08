@@ -29,6 +29,9 @@ interface MockPostsSectionProps extends PostsPageData {
   isAuthenticated: boolean;
   pageTitle: string;
   publicCategories: string[];
+  messages: BlogPostsSpec['messages'];
+  accessibility: BlogPostsSpec['accessibility'];
+  dateFormat: BlogPostsSpec['date_format'];
 }
 
 describe('PostsSection', () => {

@@ -30,8 +30,7 @@ interface PostDetailSectionProps {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
-  messages: BlogPostDetailSpec['messages'];
-  accessibility: BlogPostDetailSpec['accessibility'];
+  spec: BlogPostDetailSpec;
 }
 
 export function PostDetailSection({
@@ -40,8 +39,7 @@ export function PostDetailSection({
   hasMermaid = false,
   subscriptionAccess,
   thumbnailUrl,
-  messages,
-  accessibility,
+  spec,
 }: PostDetailSectionProps) {
   const [imageError, setImageError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -102,7 +100,7 @@ export function PostDetailSection({
           {post.title}
         </h1>
         <div className="post-detail-section__meta-text">
-          <span data-testid="post-author">著者: {post.author}</span>
+          <span data-testid="post-author">{spec.messages.ui.author_label} {post.author}</span>
           {' | '}
           <time dateTime={post.publishedAt} data-testid="post-published-date">
             {formattedDate}
@@ -136,7 +134,7 @@ export function PostDetailSection({
       {/* 目次 */}
       <TableOfContents
         headings={headings}
-        ariaLabel={accessibility.aria_labels.toc}
+        ariaLabel={spec.accessibility.aria_labels.toc}
       />
 
       {/* 本文エリア（見出しベース可視範囲） */}
@@ -147,13 +145,7 @@ export function PostDetailSection({
       />
 
       {/* ペイウォール（未契約ユーザーの場合のみ表示） */}
-      {!subscriptionAccess.showFullContent && (
-        <Paywall
-          message={messages.paywall.message}
-          promotionHeading={messages.paywall.promotion_heading}
-          ctaLabel={messages.paywall.cta_label}
-        />
-      )}
+      {!subscriptionAccess.showFullContent && <Paywall spec={spec} />}
 
       {/* 非表示コンテンツ（全文表示時のみ） */}
       {subscriptionAccess.showFullContent && post.hiddenContent && (

@@ -1,12 +1,8 @@
 import { SubscriptionPromotionBanner } from './SubscriptionPromotionBanner'
+import type { BlogPostDetailSpec } from '~/specs/blog/types'
 
-/**
- * ペイウォールコンポーネント
- */
 interface PaywallProps {
-  message: string;
-  promotionHeading: string;
-  ctaLabel: string;
+  spec: BlogPostDetailSpec;
 }
 
 /**
@@ -17,20 +13,17 @@ interface PaywallProps {
  * SubscriptionPromotionBannerを内包し、会員登録を促す
  *
  * @example
- * <Paywall />
+ * <Paywall spec={spec} />
  */
-export function Paywall({ message, promotionHeading, ctaLabel }: PaywallProps) {
+export function Paywall({ spec }: PaywallProps) {
   return (
     <div className="paywall">
       <div className="paywall-overlay">
         <div className="paywall-message">
-          {message}
+          {spec.messages.ui.paywall_message}
         </div>
 
-        <SubscriptionPromotionBanner
-          heading={promotionHeading}
-          ctaLabel={ctaLabel}
-        />
+        <SubscriptionPromotionBanner spec={spec} />
       </div>
     </div>
   )

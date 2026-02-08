@@ -44,6 +44,10 @@ export interface PostDetailLoaderData {
     hiddenContent: string; // 非表示HTML（見出しベース）
     description?: string;
     tags?: string[];
+    category: string;
+    source: string | null;
+    headings: Heading[];
+    hasMermaid: boolean;
   };
   headings: Heading[];
   config: BlogConfig;
@@ -53,10 +57,7 @@ export interface PostDetailLoaderData {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
-  spec: {
-    messages: BlogPostDetailSpec['messages'];
-    accessibility: BlogPostDetailSpec['accessibility'];
-  };
+  spec: BlogPostDetailSpec;
 }
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
@@ -77,7 +78,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   }
 
   // 外部ファイル参照が設定されているが、コンテンツが空の場合は500エラー
-  // （ビルド時に外部ファイルが見つからなかった場合）
+  // （ビルド時に外部ファイルが見らんなかった場合）
   if (post.source && post.content.trim() === '') {
     throw new Response(postDetailSpec.messages.error.referenced_file_not_found, { status: 500 });
   }
@@ -157,10 +158,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
       hasActiveSubscription: subscriptionStatus.hasActiveSubscription,
     },
     thumbnailUrl,
-    spec: {
-      messages: postDetailSpec.messages,
-      accessibility: postDetailSpec.accessibility,
-    },
+    spec: postDetailSpec,
   });
 }
 
@@ -217,8 +215,7 @@ export default function BlogPostDetail() {
         hasMermaid={post.hasMermaid}
         subscriptionAccess={subscriptionAccess}
         thumbnailUrl={thumbnailUrl}
-        messages={spec.messages}
-        accessibility={spec.accessibility}
+        spec={spec}
       />
     </BlogLayout>
   );

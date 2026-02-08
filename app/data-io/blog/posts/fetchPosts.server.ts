@@ -5,7 +5,7 @@ import { getAllPosts } from '~/generated/blog-posts';
 import { filterPosts } from '~/lib/blog/posts/filterPosts';
 import { buildThumbnailUrl } from '~/lib/blog/common/buildThumbnailUrl';
 import { loadSpec } from '~/spec-loader/specLoader.server';
-import type { FilterOptions, PostSummary, FilteredPostsResult, BlogCommonSpec } from '~/specs/blog/types';
+import type { FilterOptions, PostSummary, FilteredPostsResult, BlogCommonSpec, BlogPostsSpec } from '~/specs/blog/types';
 
 // 型を再エクスポート
 export type { PostSummary, FilteredPostsResult };

@@ -57,18 +57,10 @@ accessibility:
     cta_section: "CTAセクション"
     landing_footer: "ランディングページフッター"
     legal_modal_close: "閉じる"
+    manga_panel: "漫画パネル"
 
   keyboard_shortcuts:
     close_modal: "Escape"
-
-# メッセージ
-messages:
-  error:
-    not_found: "ランディングページが見つかりませんでした"
-    internal_server_error: "サーバーエラーが発生しました"
-    boundary_title: "エラーが発生しました"
-    boundary_message: "ランディングページの読み込みに失敗しました。"
-    back_to_blog: "ブログに戻る"
 
 # ビジネスルール
 business_rules:
@@ -91,16 +83,6 @@ footer:
       is_modal: true
 
   # 特定商取引法の内容（モーダル表示用）
-  #
-  # 【プライバシー保護方針】
-  # 秘匿項目（名前、住所、電話番号）は1つの環境変数で管理:
-  #   LEGAL_PRIVATE_INFO: "名前|住所|電話番号"（パイプ区切り）
-  #
-  # 設定例:
-  #   LEGAL_PRIVATE_INFO=山田太郎|東京都渋谷区1-2-3|03-1234-5678
-  #
-  # それ以外の項目はこのファイルで直接管理（specloader経由で解決）。
-  #
   legal_content: |
     <section>
       <h3>事業者名（販売者名）</h3>
@@ -150,15 +132,16 @@ footer:
       <p>特に制限はありません。</p>
     </section>
 
-  # 秘匿項目の環境変数定義（ドキュメント用）
-  legal_private_info:
-    env_var: "LEGAL_PRIVATE_INFO"
-    format: "名前|住所|電話番号"
-    example: "山田太郎|東京都渋谷区1-2-3|03-1234-5678"
-    placeholders:
-      - "{{LEGAL_SELLER_NAME}}"
-      - "{{LEGAL_SELLER_ADDRESS}}"
-      - "{{LEGAL_SELLER_PHONE}}"
+# メッセージ定数
+messages:
+  error:
+    title: "エラーが発生しました"
+    description: "ランディングページの読み込みに失敗しました。"
+    back_to_blog: "ブログに戻る"
+    not_found: "ランディングページが見つかりませんでした"
+    internal_server_error: "サーバー内部エラーが発生しました"
+    boundary_title: "読み込みエラー"
+    boundary_message: "ページの表示中に予期せぬエラーが発生しました。"
 
 # UI要素セレクタ
 ui_selectors:
