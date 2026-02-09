@@ -67,7 +67,6 @@ test.describe.serial('E2E Section Test for blog - posts', () => {
     // カテゴリフィルタリングにより全ての記事が未認証でアクセス可能
     const firstPostCard = postsSection.getByTestId('post-card').first();
     await firstPostCard.click();
-    await page.waitForLoadState('networkidle');
 
     // ナビゲーション完了を待機
     await page.waitForURL(/\/blog\/[^/]+/, { timeout: 10000 });
