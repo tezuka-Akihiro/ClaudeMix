@@ -23,11 +23,27 @@ import type { AccountAuthenticationSpec } from '~/specs/account/types';
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
   const loginPath = spec.routes.login.path;
-  const cookie = spec.oauth.google.state_cookie;
+  const stateCookie = spec.oauth.google.state_cookie;
+  const redirectCookie = spec.oauth.google.redirect_cookie;
 
   // Cloudflare Pagesでは context.cloudflare.env を使用
   const env = (context as any).cloudflare?.env || (context as any).env;
   const url = new URL(request.url);
+  const isSecure = url.protocol === 'https:';
+  const securePart = isSecure ? ' Secure;' : '';
+
+  // Helper: build Set-Cookie headers to clear oauth cookies
+  function clearOAuthCookies(headers: Headers) {
+    headers.append('Set-Cookie', `${stateCookie.name}=; Path=${stateCookie.path}; HttpOnly;${securePart} SameSite=${stateCookie.same_site}; Max-Age=0`);
+    headers.append('Set-Cookie', `${redirectCookie.name}=; Path=${redirectCookie.path}; HttpOnly;${securePart} SameSite=${redirectCookie.same_site}; Max-Age=0`);
+  }
+
+  // Helper: redirect to login with error, always clearing oauth cookies
+  function redirectToLoginWithError(errorCode: string) {
+    const headers = new Headers();
+    clearOAuthCookies(headers);
+    return redirect(`${loginPath}?error=${errorCode}`, { headers });
+  }
 
   // Extract OAuth response parameters
   const code = url.searchParams.get('code');
@@ -37,12 +53,12 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   // Handle OAuth errors
   if (error) {
     console.error('Google OAuth error:', error);
-    return redirect(`${loginPath}?error=oauth-failed`);
+    return redirectToLoginWithError('oauth-failed');
   }
 
   if (!code || !state) {
     console.error('Missing code or state parameter');
-    return redirect(`${loginPath}?error=oauth-invalid`);
+    return redirectToLoginWithError('oauth-invalid');
   }
 
   // Validate state for CSRF protection
@@ -53,11 +69,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       return [key, rest.join('=')];
     })
   );
-  const storedState = cookies[cookie.name];
+  const storedState = cookies[stateCookie.name];
 
   if (!storedState || state !== storedState) {
     console.error('CSRF validation failed: state mismatch');
-    return redirect(`${loginPath}?error=csrf-detected`);
+    return redirectToLoginWithError('csrf-detected');
   }
 
   // Get OAuth configuration
@@ -67,7 +83,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   if (!clientId || !clientSecret || !redirectUri) {
     console.error('Google OAuth not fully configured: missing GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, or GOOGLE_REDIRECT_URI');
-    return redirect(`${loginPath}?error=oauth-not-configured`);
+    return redirectToLoginWithError('oauth-not-configured');
   }
 
   try {
@@ -85,7 +101,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         // Email already registered with password - for MVP, prevent login
         // In production, implement account linking flow
         console.warn(`Email ${googleUser.email} already registered with password`);
-        return redirect(`${loginPath}?error=email-already-exists`);
+        return redirectToLoginWithError('email-already-exists');
       }
 
       // Create new OAuth user
@@ -100,7 +116,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
       if (!userId) {
         console.error('Failed to create OAuth user');
-        return redirect(`${loginPath}?error=oauth-registration-failed`);
+        return redirectToLoginWithError('oauth-registration-failed');
       }
 
       // Fetch newly created user
@@ -108,7 +124,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
       if (!user) {
         console.error('Failed to retrieve newly created user');
-        return redirect(`${loginPath}?error=oauth-login-failed`);
+        return redirectToLoginWithError('oauth-login-failed');
       }
     }
 
@@ -118,7 +134,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const setCookieHeader = await saveSession(sessionData, context as any);
 
     // Determine redirect target from oauth_redirect cookie (or default)
-    const redirectCookie = spec.oauth.google.redirect_cookie;
     const rawRedirect = cookies[redirectCookie.name];
     const decodedRedirect = rawRedirect ? decodeURIComponent(rawRedirect) : null;
     // Only allow relative paths (open redirect protection)
@@ -126,18 +141,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       ? decodedRedirect
       : spec.server_io.action.default_redirect;
 
-    // Set session cookie, clear oauth_state and oauth_redirect cookies, then redirect
-    const isSecure = new URL(request.url).protocol === 'https:';
-    const securePart = isSecure ? ' Secure;' : '';
+    // Set session cookie, clear oauth cookies, then redirect
     const headers = new Headers();
     headers.append('Set-Cookie', setCookieHeader);
-    headers.append('Set-Cookie', `${cookie.name}=; Path=${cookie.path}; HttpOnly;${securePart} SameSite=${cookie.same_site}; Max-Age=0`);
-    headers.append('Set-Cookie', `${redirectCookie.name}=; Path=${redirectCookie.path}; HttpOnly;${securePart} SameSite=${redirectCookie.same_site}; Max-Age=0`);
+    clearOAuthCookies(headers);
 
     return redirect(redirectTarget, { headers });
   } catch (error) {
     console.error('Google OAuth callback error:', error);
-    return redirect(`${loginPath}?error=oauth-failed`);
+    return redirectToLoginWithError('oauth-failed');
   }
 }
 

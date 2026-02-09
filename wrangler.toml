@@ -41,8 +41,10 @@ id = "local-dev-kv"
 
 # Production environment configuration
 [env.production.vars]
-# 本番環境用のアプリケーションURL（実際のドメインに置き換えてください）
+# 本番環境用のアプリケーションURL
 APP_URL = "https://claudemix.dev"
+# Google OAuth（クライアントIDは公開情報）
+GOOGLE_CLIENT_ID = "395752864569-2ts1a1k73qbuisuup3u8umui7e6gonct.apps.googleusercontent.com"
 # Google OAuth リダイレクトURI（本番環境用）
 GOOGLE_REDIRECT_URI = "https://claudemix.dev/auth/callback/google"
 # Stripe 公開キー（本番用）
