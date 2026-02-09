@@ -132,16 +132,29 @@ profile_display:
           values:
             active: "アクティブ"
             inactive: "未契約"
-        created_at:
-          label: "登録日"
-        updated_at:
-          label: "最終更新日"
+        subscription_expiry:
+          label: "有効期限"
 
     subscription:
       title: "サブスクリプション設定"
       fields:
         status:
           label: "自動更新"
+          values:
+            on: "ON"
+            off: "OFF"
+        card:
+          label: "カード情報"
+      buttons:
+        interrupt: "自動更新の中断に進む"
+        resume: "自動更新を再開する"
+        delete_card: "カード情報を削除する"
+      messages:
+        interrupt_confirm: "中断しても {date} までは全機能を利用可能です。次回の更新のみを停止します。よろしいですか？"
+        resume_notice: "次の決済日は {date} です（本日は決済されません）。"
+        delete_card_confirm: "カード情報を削除します。よろしいですか？"
+        delete_card_restriction: "※ 自動更新がONの状態では削除できません。"
+        delete_card_error: "先に自動更新を中断してください"
 
     actions:
       title: "アカウント管理"

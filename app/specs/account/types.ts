@@ -868,12 +868,36 @@ export interface AccountProfileSpec {
               inactive: string;
             };
           };
-          created_at: {
+          subscription_expiry: {
             label: string;
           };
-          updated_at: {
+        };
+      };
+      subscription: {
+        title: string;
+        fields: {
+          status: {
+            label: string;
+            values: {
+              on: string;
+              off: string;
+            };
+          };
+          card: {
             label: string;
           };
+        };
+        buttons: {
+          interrupt: string;
+          resume: string;
+          delete_card: string;
+        };
+        messages: {
+          interrupt_confirm: string;
+          resume_notice: string;
+          delete_card_confirm: string;
+          delete_card_restriction: string;
+          delete_card_error: string;
         };
       };
       actions: {

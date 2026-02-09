@@ -58,7 +58,15 @@ export async function action({ request, context }: ActionFunctionArgs) {
     const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
       apiVersion: '2025-12-15.clover',
       typescript: true,
+      httpClient: Stripe.createFetchHttpClient(),
     })
+
+    // Convert Stripe period value to ISO string (handles unix timestamp, ISO string, or undefined)
+    const toISOString = (value: unknown): string => {
+      if (typeof value === 'number') return new Date(value * 1000).toISOString()
+      if (typeof value === 'string') return new Date(value).toISOString()
+      return new Date().toISOString() // fallback to now
+    }
 
     // Handle different event types
     switch (event.type) {
@@ -72,6 +80,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
           const stripeSubscription = (await stripe.subscriptions.retrieve(
             session.subscription as string
           )) as any
+
+          // Extract period dates from items (API 2025-12-15.clover moved these from subscription root)
+          const periodStart = stripeSubscription.current_period_start
+            ?? stripeSubscription.items?.data?.[0]?.current_period_start
+          const periodEnd = stripeSubscription.current_period_end
+            ?? stripeSubscription.items?.data?.[0]?.current_period_end
 
           // Save stripeCustomerId to users table
           await updateUserStripeCustomerId(
@@ -88,12 +102,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
               stripeCustomerId: stripeSubscription.customer as string,
               planId: planId || 'standard',
               status: 'active',
-              currentPeriodStart: new Date(
-                stripeSubscription.current_period_start * 1000
-              ).toISOString(),
-              currentPeriodEnd: new Date(
-                stripeSubscription.current_period_end * 1000
-              ).toISOString(),
+              currentPeriodStart: toISOString(periodStart),
+              currentPeriodEnd: toISOString(periodEnd),
             },
             context as any
           )
@@ -110,9 +120,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         // 1. Update cancellation status
         if (subscription.cancel_at_period_end) {
-          const canceledAt = new Date(
-            subscription.current_period_end * 1000
-          ).toISOString()
+          const periodEnd = subscription.current_period_end
+            ?? subscription.items?.data?.[0]?.current_period_end
+          const canceledAt = toISOString(periodEnd)
           await updateSubscriptionCancellation(
             subscription.id,
             canceledAt,
@@ -138,10 +148,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
         }
 
         // 3. Update period dates
+        const subPeriodStart = subscription.current_period_start
+          ?? subscription.items?.data?.[0]?.current_period_start
+        const subPeriodEnd = subscription.current_period_end
+          ?? subscription.items?.data?.[0]?.current_period_end
         await updateSubscriptionPeriod(
           subscription.id,
-          new Date(subscription.current_period_start * 1000).toISOString(),
-          new Date(subscription.current_period_end * 1000).toISOString(),
+          toISOString(subPeriodStart),
+          toISOString(subPeriodEnd),
           context as any
         )
         console.log(`Subscription ${subscription.id} updated with status: ${subscription.status}`)
@@ -179,15 +193,20 @@ export async function action({ request, context }: ActionFunctionArgs) {
             invoice.subscription as string
           )) as any
 
+          const invPeriodStart = stripeSubscription.current_period_start
+            ?? stripeSubscription.items?.data?.[0]?.current_period_start
+          const invPeriodEnd = stripeSubscription.current_period_end
+            ?? stripeSubscription.items?.data?.[0]?.current_period_end
+
           // Update subscription period
           await updateSubscriptionPeriod(
             stripeSubscription.id,
-            new Date(stripeSubscription.current_period_start * 1000).toISOString(),
-            new Date(stripeSubscription.current_period_end * 1000).toISOString(),
+            toISOString(invPeriodStart),
+            toISOString(invPeriodEnd),
             context as any
           )
           console.log(
-            `Subscription ${stripeSubscription.id} period extended to ${new Date(stripeSubscription.current_period_end * 1000).toISOString()}`
+            `Subscription ${stripeSubscription.id} period extended to ${toISOString(invPeriodEnd)}`
           )
         }
         break

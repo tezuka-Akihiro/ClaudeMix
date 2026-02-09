@@ -34,10 +34,11 @@ export async function verifyStripeWebhook(
   signature: string,
   context: CloudflareLoadContext
 ): Promise<Stripe.Event> {
-  // Initialize Stripe client
+  // Initialize Stripe client (fetch for Cloudflare Workers compatibility)
   const stripe = new Stripe(context.env.STRIPE_SECRET_KEY, {
     apiVersion: '2025-12-15.clover',
     typescript: true,
+    httpClient: Stripe.createFetchHttpClient(),
   })
 
   // Verify webhook signature
