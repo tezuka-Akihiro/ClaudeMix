@@ -9,6 +9,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { useRouteLoaderData, useLoaderData, useFetcher } from '@remix-run/react';
+import { useEffect } from 'react';
 import type { loader as accountLoader } from './account';
 import { validateSubscriptionChange } from '~/lib/account/subscription/validateSubscriptionChange';
 import { updateUserSubscriptionStatus } from '~/data-io/account/subscription/updateUserSubscriptionStatus.server';
@@ -162,7 +163,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         context as any
       );
 
-      return redirect(checkoutUrl);
+      return json({ checkoutUrl });
     } catch (error) {
       console.error('Error creating checkout session:', error);
       return json({ error: spec.error_messages.checkout.session_creation_failed }, { status: 500 });
@@ -206,6 +207,13 @@ export default function AccountSubscription() {
   const { user } = parentData;
   const isInterrupted = subscription?.status === 'active' && !!subscription?.canceledAt;
 
+  // Stripe Checkout への外部遷移（fetcherは外部URLへのredirectを処理できないため）
+  useEffect(() => {
+    if (fetcher.data && 'checkoutUrl' in fetcher.data && fetcher.data.checkoutUrl) {
+      window.location.href = fetcher.data.checkoutUrl;
+    }
+  }, [fetcher.data]);
+
   const handleSelectPlan = (planId: string) => {
     fetcher.submit(
       { intent: 'create-checkout', planId },
@@ -223,7 +231,7 @@ export default function AccountSubscription() {
         </div>
       )}
 
-      {fetcher.data?.error && (
+      {fetcher.data && 'error' in fetcher.data && fetcher.data.error && (
         <div className="profile-error" role="alert">{fetcher.data.error}</div>
       )}
 

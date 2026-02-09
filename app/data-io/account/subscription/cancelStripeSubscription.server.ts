@@ -34,6 +34,7 @@ export async function cancelStripeSubscription(
   const stripe = new Stripe(context.env.STRIPE_SECRET_KEY, {
     apiVersion: '2025-12-15.clover',
     typescript: true,
+    httpClient: Stripe.createFetchHttpClient(),
   })
 
   try {
@@ -65,6 +66,7 @@ export async function reactivateStripeSubscription(
   const stripe = new Stripe(context.env.STRIPE_SECRET_KEY, {
     apiVersion: '2025-12-15.clover',
     typescript: true,
+    httpClient: Stripe.createFetchHttpClient(),
   })
 
   try {
