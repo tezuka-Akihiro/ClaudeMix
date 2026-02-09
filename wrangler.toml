@@ -45,6 +45,8 @@ id = "local-dev-kv"
 APP_URL = "https://claudemix.dev"
 # Google OAuth リダイレクトURI（本番環境用）
 GOOGLE_REDIRECT_URI = "https://claudemix.dev/auth/callback/google"
+# Stripe 公開キー（本番用）
+STRIPE_PUBLISHABLE_KEY = "pk_live_51StRLCF7UhZtoqG9pDlguHMJkY6DOjvNxfJsJBnvJdcIquvKFz67Km6XjRL2AKgrdz6oROUP0r25IsvWW7dP8tUU00OtUGi6HW"
 
 [[env.production.d1_databases]]
 binding = "DB"
