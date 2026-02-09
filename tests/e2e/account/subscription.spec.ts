@@ -131,19 +131,18 @@ test.describe('Account Subscription Management', () => {
 
       await page.goto('/account/subscription');
 
-      // Rapidly click purchase button multiple times
+      // Click purchase button - this triggers fetcher submit then external navigation
       const purchaseButton = page.locator('[data-testid="subscribe-standard"]');
       await purchaseButton.click();
-      await purchaseButton.click();
-      await purchaseButton.click();
 
-      // Wait for processing
-      await page.waitForTimeout(2000);
-
-      // Should either show error or redirect to checkout
-      // The page should remain stable
-      const pageVisible = await page.locator('body').isVisible();
-      expect(pageVisible).toBe(true);
+      // After first click, button should become disabled (fetcher submitting)
+      // or page should navigate to Stripe Checkout
+      await expect(async () => {
+        const isDisabled = await purchaseButton.isDisabled().catch(() => true);
+        const url = page.url();
+        const navigated = url.includes('checkout.stripe.com');
+        expect(isDisabled || navigated).toBe(true);
+      }).toPass({ timeout: 10000 });
     });
   });
 });
