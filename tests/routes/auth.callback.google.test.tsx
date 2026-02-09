@@ -6,8 +6,10 @@
  * @responsibility Google OAuth認証コールバックのテスト
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { loader } from '~/routes/auth.callback.google';
+import { loadSpec } from 'tests/utils/loadSpec';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 // Mock data-io functions
 vi.mock('~/data-io/account/authentication/exchangeGoogleCode.server', () => ({
@@ -46,14 +48,20 @@ import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.
 import { createOAuthUser } from '~/data-io/account/authentication/createOAuthUser.server';
 
 describe('auth.callback.google loader', () => {
+  let spec: AccountAuthenticationSpec;
+
+  beforeAll(async () => {
+    spec = await loadSpec<AccountAuthenticationSpec>('account', 'authentication');
+  });
+
   const validEnv = {
     GOOGLE_CLIENT_ID: 'test-client-id',
     GOOGLE_CLIENT_SECRET: 'test-secret',
-    GOOGLE_REDIRECT_URI: 'http://localhost:8788/auth/callback/google',
+    GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/callback/google',
   };
 
   const createMockRequest = (params: Record<string, string> = {}, cookies: string = '') => {
-    const url = new URL('http://localhost:8788/auth/callback/google');
+    const url = new URL('http://localhost:3000/auth/callback/google');
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.set(key, value);
     });
@@ -184,7 +192,7 @@ describe('auth.callback.google loader', () => {
         'test-code',
         'test-client-id',
         'test-secret',
-        'http://localhost:8788/auth/callback/google'
+        'http://localhost:3000/auth/callback/google'
       );
     });
 
@@ -249,6 +257,90 @@ describe('auth.callback.google loader', () => {
       const setCookieHeaders = response.headers.getSetCookie();
       const sessionCookie = setCookieHeaders.find((c: string) => c.includes('session='));
       expect(sessionCookie).toBeDefined();
+    });
+  });
+
+  describe('redirect-url cookie', () => {
+    const mockGoogleUser = {
+      id: 'google-user-123',
+      email: 'test@example.com',
+      name: 'Test User',
+    };
+
+    const mockUser = {
+      id: 'user-uuid-123',
+      email: 'test@example.com',
+      oauthProvider: 'google',
+      googleId: 'google-user-123',
+    };
+
+    it('should redirect to oauth_redirect cookie value instead of default /account', async () => {
+      vi.mocked(exchangeGoogleCode).mockResolvedValue(mockGoogleUser);
+      vi.mocked(getUserByOAuth).mockResolvedValue(mockUser);
+
+      const redirectCookie = spec.oauth.google.redirect_cookie;
+      const request = createMockRequest(
+        { code: 'test-code', state: 'test-state' },
+        `oauth_state=test-state; ${redirectCookie.name}=%2Fblog%2Fmy-article`
+      );
+      const context = createMockContext();
+
+      const response = await loader({ request, context, params: {} });
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get('Location')).toBe('/blog/my-article');
+    });
+
+    it('should redirect to default /account when oauth_redirect cookie is absent', async () => {
+      vi.mocked(exchangeGoogleCode).mockResolvedValue(mockGoogleUser);
+      vi.mocked(getUserByOAuth).mockResolvedValue(mockUser);
+
+      const request = createMockRequest(
+        { code: 'test-code', state: 'test-state' },
+        'oauth_state=test-state'
+      );
+      const context = createMockContext();
+
+      const response = await loader({ request, context, params: {} });
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get('Location')).toBe(spec.server_io.action.default_redirect);
+    });
+
+    it('should clear oauth_redirect cookie after successful redirect', async () => {
+      vi.mocked(exchangeGoogleCode).mockResolvedValue(mockGoogleUser);
+      vi.mocked(getUserByOAuth).mockResolvedValue(mockUser);
+
+      const redirectCookie = spec.oauth.google.redirect_cookie;
+      const request = createMockRequest(
+        { code: 'test-code', state: 'test-state' },
+        `oauth_state=test-state; ${redirectCookie.name}=%2Fblog%2Fmy-article`
+      );
+      const context = createMockContext();
+
+      const response = await loader({ request, context, params: {} });
+
+      const setCookieHeaders = response.headers.getSetCookie();
+      const clearRedirectCookie = setCookieHeaders.find((c: string) => c.includes(`${redirectCookie.name}=;`));
+      expect(clearRedirectCookie).toBeDefined();
+      expect(clearRedirectCookie).toContain('Max-Age=0');
+    });
+
+    it('should ignore absolute URL in oauth_redirect cookie (open redirect protection)', async () => {
+      vi.mocked(exchangeGoogleCode).mockResolvedValue(mockGoogleUser);
+      vi.mocked(getUserByOAuth).mockResolvedValue(mockUser);
+
+      const redirectCookie = spec.oauth.google.redirect_cookie;
+      const request = createMockRequest(
+        { code: 'test-code', state: 'test-state' },
+        `oauth_state=test-state; ${redirectCookie.name}=https%3A%2F%2Fevil.com%2Fsteal`
+      );
+      const context = createMockContext();
+
+      const response = await loader({ request, context, params: {} });
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get('Location')).toBe(spec.server_io.action.default_redirect);
     });
   });
 

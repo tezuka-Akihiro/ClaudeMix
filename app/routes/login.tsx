@@ -292,7 +292,7 @@ export default function Login() {
 
         <div className="auth-oauth-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
           <a
-            href="/auth/google"
+            href={`/auth/google?redirect-url=${encodeURIComponent(redirectUrl)}`}
             className="auth-oauth-button"
             data-testid="google-login-button"
             style={{

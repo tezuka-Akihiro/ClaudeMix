@@ -541,6 +541,14 @@ export interface AccountAuthenticationSpec {
         same_site: string;
         max_age_seconds: number;
       };
+      redirect_cookie: {
+        name: string;
+        path: string;
+        http_only: boolean;
+        secure: string;
+        same_site: string;
+        max_age_seconds: number;
+      };
     };
     apple: {
       enabled: boolean;

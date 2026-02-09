@@ -25,6 +25,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const clientSecret = env?.GOOGLE_CLIENT_SECRET;
   const redirectUri = env?.GOOGLE_REDIRECT_URI;
 
+  const url = new URL(request.url);
+
   if (!clientId || !clientSecret || !redirectUri) {
     console.error('Google OAuth not fully configured: missing GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, or GOOGLE_REDIRECT_URI');
     return redirect(`${spec.routes.login.path}?error=oauth-not-configured`);
@@ -43,11 +45,18 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const cookie = spec.oauth.google.state_cookie;
   const isSecure = new URL(request.url).protocol === 'https:';
   const securePart = isSecure ? ' Secure;' : '';
-  return redirect(authUrl, {
-    headers: {
-      'Set-Cookie': `${cookie.name}=${state}; Path=${cookie.path}; HttpOnly;${securePart} SameSite=${cookie.same_site}; Max-Age=${cookie.max_age_seconds}`,
-    },
-  });
+
+  const headers = new Headers();
+  headers.append('Set-Cookie', `${cookie.name}=${state}; Path=${cookie.path}; HttpOnly;${securePart} SameSite=${cookie.same_site}; Max-Age=${cookie.max_age_seconds}`);
+
+  // Store redirect-url in cookie for post-auth redirect (relative paths only)
+  const redirectUrl = url.searchParams.get(spec.routes.login.redirect_param);
+  if (redirectUrl && redirectUrl.startsWith('/')) {
+    const redirectCookie = spec.oauth.google.redirect_cookie;
+    headers.append('Set-Cookie', `${redirectCookie.name}=${encodeURIComponent(redirectUrl)}; Path=${redirectCookie.path}; HttpOnly;${securePart} SameSite=${redirectCookie.same_site}; Max-Age=${redirectCookie.max_age_seconds}`);
+  }
+
+  return redirect(authUrl, { headers });
 }
 
 // No default export needed - loader-only route

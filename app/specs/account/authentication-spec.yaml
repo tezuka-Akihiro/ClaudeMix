@@ -240,6 +240,14 @@ oauth:
       secure: "protocol-dependent"  # HTTPS時のみSecureフラグを付与（HTTP開発環境対応）
       same_site: "Lax"
       max_age_seconds: 600  # 10分
+    # 認証後リダイレクト先を保持するCookie設定
+    redirect_cookie:
+      name: "oauth_redirect"
+      path: "/"
+      http_only: true
+      secure: "protocol-dependent"  # HTTPS時のみSecureフラグを付与（HTTP開発環境対応）
+      same_site: "Lax"
+      max_age_seconds: 600  # 10分
 
   # Apple認証は廃止済み
   apple:

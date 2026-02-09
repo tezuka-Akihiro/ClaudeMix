@@ -676,6 +676,7 @@ Cookie無効化 + /login へリダイレクト
 **Phase 3**: OAuth連携（実装済み）
 
 - Google OAuth（実装済み）
+- 認証後の元画面復帰: `redirect-url` パラメータを `oauth_redirect` Cookie 経由で OAuth フローに伝搬し、認証完了後に元画面にリダイレクトする（デフォルト: `/account`）
 
 ## 📝 備考
 

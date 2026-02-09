@@ -493,6 +493,19 @@ graph TD
     I --> J["リダイレクト: /account"]
 ```
 
+### Google OAuth後のリダイレクト
+
+```mermaid
+graph TD
+    A["loginページ: Googleボタンクリック"] --> B["/auth/google?redirect-url={元URL}"]
+    B --> C["oauth_redirect Cookieに元URLを保存"]
+    C --> D["Google認証画面へリダイレクト"]
+    D --> E["/auth/callback/google"]
+    E --> F{"oauth_redirect Cookie存在?"}
+    F -- Yes --> G["CookieのURLへリダイレクト + Cookie削除"]
+    F -- No --> H["デフォルト: /account へリダイレクト"]
+```
+
 ### 既にログイン済みの場合
 
 ```mermaid

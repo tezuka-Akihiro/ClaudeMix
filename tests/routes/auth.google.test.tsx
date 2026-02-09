@@ -149,6 +149,54 @@ describe('auth.google loader', () => {
     });
   });
 
+  describe('redirect-url cookie', () => {
+    const validEnv = {
+      GOOGLE_CLIENT_ID: 'test-client-id',
+      GOOGLE_CLIENT_SECRET: 'test-secret',
+      GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/callback/google',
+    };
+
+    it('should set oauth_redirect cookie when redirect-url query param is present', async () => {
+      const request = new Request('http://localhost:3000/auth/google?redirect-url=%2Fblog%2Fmy-article');
+      const context = createMockContext(validEnv);
+      const redirectCookie = spec.oauth.google.redirect_cookie;
+
+      const response = await loader({ request, context, params: {} });
+
+      const cookies = response.headers.getSetCookie();
+      const redirectCookieHeader = cookies.find((c: string) => c.startsWith(redirectCookie.name));
+      expect(redirectCookieHeader).toBeDefined();
+      expect(redirectCookieHeader).toContain(`${redirectCookie.name}=%2Fblog%2Fmy-article`);
+      expect(redirectCookieHeader).toContain('HttpOnly');
+      expect(redirectCookieHeader).toContain(`SameSite=${redirectCookie.same_site}`);
+      expect(redirectCookieHeader).toContain(`Max-Age=${redirectCookie.max_age_seconds}`);
+    });
+
+    it('should not set oauth_redirect cookie when redirect-url is absent', async () => {
+      const request = createMockRequest();
+      const context = createMockContext(validEnv);
+      const redirectCookie = spec.oauth.google.redirect_cookie;
+
+      const response = await loader({ request, context, params: {} });
+
+      const cookies = response.headers.getSetCookie();
+      const redirectCookieHeader = cookies.find((c: string) => c.startsWith(redirectCookie.name));
+      expect(redirectCookieHeader).toBeUndefined();
+    });
+
+    it('should reject absolute URL redirect-url (open redirect protection)', async () => {
+      const request = new Request('http://localhost:3000/auth/google?redirect-url=https%3A%2F%2Fevil.com%2Fsteal');
+      const context = createMockContext(validEnv);
+      const redirectCookie = spec.oauth.google.redirect_cookie;
+
+      const response = await loader({ request, context, params: {} });
+
+      const cookies = response.headers.getSetCookie();
+      const redirectCookieHeader = cookies.find((c: string) => c.startsWith(redirectCookie.name));
+      expect(redirectCookieHeader).toBeUndefined();
+    });
+  });
+
   describe('context compatibility', () => {
     it('should work with context.env fallback', async () => {
       const request = createMockRequest();

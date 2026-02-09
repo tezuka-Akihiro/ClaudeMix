@@ -479,9 +479,11 @@ sequenceDiagram
 
 | シナリオ | リダイレクト先 | 条件 |
 | :--- | :--- | :--- |
-| **会員登録成功** | `/account` | 常に |
+| **会員登録成功** | `redirect-url` または `/account` | hidden フィールド経由 |
 | **ログイン成功（redirect-url指定あり）** | クエリパラメータの`redirect-url` | パラメータが存在する場合 |
 | **ログイン成功（redirect-url指定なし）** | `/account` | デフォルト |
+| **Google OAuth成功（redirect-url指定あり）** | `oauth_redirect` Cookieの値 | Cookie が存在する場合 |
+| **Google OAuth成功（redirect-url指定なし）** | `/account` | デフォルト |
 | **既にログイン済み** | `/account` | loader時点で検出 |
 | **ログアウト成功** | `/login` | 常に |
 

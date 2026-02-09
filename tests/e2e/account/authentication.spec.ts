@@ -234,8 +234,9 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(googleButton).toBeVisible();
       await expect(googleButton).toContainText('Google');
 
-      // Verify button links to /auth/google
-      await expect(googleButton).toHaveAttribute('href', '/auth/google');
+      // Verify button links to /auth/google with redirect-url parameter
+      const href = await googleButton.getAttribute('href');
+      expect(href).toContain('/auth/google?redirect-url=');
     });
 
     test('should not display Apple login button on login page', async ({ page }) => {

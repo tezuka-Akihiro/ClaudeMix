@@ -117,14 +117,24 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     const sessionData = createSessionData(user.id, sessionId);
     const setCookieHeader = await saveSession(sessionData, context as any);
 
-    // Set session cookie and clear oauth_state cookie, then redirect to account page
+    // Determine redirect target from oauth_redirect cookie (or default)
+    const redirectCookie = spec.oauth.google.redirect_cookie;
+    const rawRedirect = cookies[redirectCookie.name];
+    const decodedRedirect = rawRedirect ? decodeURIComponent(rawRedirect) : null;
+    // Only allow relative paths (open redirect protection)
+    const redirectTarget = decodedRedirect && decodedRedirect.startsWith('/')
+      ? decodedRedirect
+      : spec.server_io.action.default_redirect;
+
+    // Set session cookie, clear oauth_state and oauth_redirect cookies, then redirect
     const isSecure = new URL(request.url).protocol === 'https:';
     const securePart = isSecure ? ' Secure;' : '';
     const headers = new Headers();
     headers.append('Set-Cookie', setCookieHeader);
     headers.append('Set-Cookie', `${cookie.name}=; Path=${cookie.path}; HttpOnly;${securePart} SameSite=${cookie.same_site}; Max-Age=0`);
+    headers.append('Set-Cookie', `${redirectCookie.name}=; Path=${redirectCookie.path}; HttpOnly;${securePart} SameSite=${redirectCookie.same_site}; Max-Age=0`);
 
-    return redirect(spec.server_io.action.default_redirect, { headers });
+    return redirect(redirectTarget, { headers });
   } catch (error) {
     console.error('Google OAuth callback error:', error);
     return redirect(`${loginPath}?error=oauth-failed`);
