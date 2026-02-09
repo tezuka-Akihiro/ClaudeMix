@@ -74,9 +74,10 @@ import '~/styles/account/layer2-subscription.css';
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const projectName = data?.projectName || 'ClaudeMix';
+  const pageTitle = data?.pageTitle || 'サブスクリプション管理';
   return [
-    { title: `サブスクリプション - ${projectName}` },
-    { name: 'description', content: 'サブスクリプション管理' },
+    { title: `${pageTitle} - ${projectName}` },
+    { name: 'description', content: pageTitle },
   ];
 };
 
@@ -107,10 +108,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   return json({
     projectName: projectSpec.project.name,
+    pageTitle: spec.routes.subscription.title,
     plans,
     subscription,
     success,
     successMessage: spec.success_messages.checkout.completed,
+    submitButtonLabel: spec.forms.create_checkout.submit_button.label,
+    loadingLabel: spec.forms.create_checkout.submit_button.loading_label,
   });
 }
 
@@ -197,7 +201,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 export default function AccountSubscription() {
   // Use parent route's authentication data instead of duplicating auth logic
   const parentData = useRouteLoaderData<typeof accountLoader>('routes/account');
-  const { plans, subscription, success, successMessage } = useLoaderData<typeof loader>();
+  const { pageTitle, plans, subscription, success, successMessage, submitButtonLabel, loadingLabel } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
 
   if (!parentData) {
@@ -223,7 +227,7 @@ export default function AccountSubscription() {
 
   return (
     <div className="profile-container profile-container-structure" data-testid="subscription-page">
-      <h1>サブスクリプション</h1>
+      <h1>{pageTitle}</h1>
 
       {success && (
         <div className="profile-success" role="status" data-testid="subscription-success">
@@ -279,7 +283,7 @@ export default function AccountSubscription() {
                   title={isInterrupted ? 'プラン変更を行うには、まず更新を再開してください' : ''}
                   data-testid={`subscribe-${plan.id}`}
                 >
-                  {fetcher.state !== 'idle' ? '処理中...' : subscription?.planId === plan.id ? '契約中' : '購入'}
+                  {fetcher.state !== 'idle' ? loadingLabel : subscription?.planId === plan.id ? '契約中' : submitButtonLabel}
                 </button>
                 {isInterrupted && (
                   <p className="text-sm text-red-500 mt-2 text-center">

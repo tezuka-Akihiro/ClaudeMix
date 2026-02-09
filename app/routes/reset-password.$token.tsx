@@ -235,7 +235,7 @@ export default function ResetPassword() {
               aria-invalid={actionData?.fieldErrors?.newPassword ? true : undefined}
               aria-describedby={actionData?.fieldErrors?.newPassword ? 'new-password-error' : undefined}
               required
-              data-testid="new-password-input"
+              data-testid="password-input"
             />
             {actionData?.fieldErrors?.newPassword && (
               <span id="new-password-error" className="form-field__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPassword}</span>
@@ -257,7 +257,7 @@ export default function ResetPassword() {
               aria-invalid={actionData?.fieldErrors?.newPasswordConfirm ? true : undefined}
               aria-describedby={actionData?.fieldErrors?.newPasswordConfirm ? 'new-password-confirm-error' : undefined}
               required
-              data-testid="new-password-confirm-input"
+              data-testid="password-confirm-input"
             />
             {actionData?.fieldErrors?.newPasswordConfirm && (
               <span id="new-password-confirm-error" className="form-field__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPasswordConfirm}</span>
