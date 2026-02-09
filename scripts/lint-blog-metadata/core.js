@@ -9,6 +9,7 @@ class RuleEngine {
     this.rules = new Map();
     this.config = null;
     this.results = [];
+    this.checkedFilesCount = 0;
   }
 
   /**
@@ -47,6 +48,7 @@ class RuleEngine {
       return [];
     }
 
+    this.checkedFilesCount++;
     const content = fs.readFileSync(filePath, 'utf8');
     const fileResults = [];
 
@@ -117,7 +119,7 @@ class RuleEngine {
 
     return {
       ...summary,
-      files: summary.files.size,
+      files: this.checkedFilesCount,
       rules: summary.rules.size
     };
   }

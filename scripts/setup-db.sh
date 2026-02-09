@@ -4,6 +4,9 @@
 
 set -e
 
+echo "🧹 Cleaning up old wrangler state..."
+rm -rf .wrangler
+
 echo "🗄️  Setting up local D1 database..."
 
 # Check if wrangler is installed
@@ -12,10 +15,6 @@ if ! command -v wrangler &> /dev/null; then
     echo "   Install with: npm install -g wrangler"
     exit 1
 fi
-
-# Create local D1 database (if it doesn't exist)
-echo "📦 Creating local D1 database..."
-wrangler d1 create claudemix-dev || echo "Database already exists (ok)"
 
 # Apply migrations
 echo "🔄 Applying database migrations..."
