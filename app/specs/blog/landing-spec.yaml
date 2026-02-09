@@ -143,13 +143,6 @@ messages:
     boundary_title: "読み込みエラー"
     boundary_message: "ページの表示中に予期せぬエラーが発生しました。"
 
-# メッセージ定数
-messages:
-  error:
-    title: "エラーが発生しました"
-    description: "ランディングページの読み込みに失敗しました。"
-    back_to_blog: "ブログに戻る"
-
 # UI要素セレクタ
 ui_selectors:
   legal_modal:

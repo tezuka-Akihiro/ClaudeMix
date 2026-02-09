@@ -480,22 +480,20 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TEST_SLUG = testArticleSlug;
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
-    // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+    // 1. 記事詳細ページにアクセス（画像ロード完了まで待機）
+    await page.goto(TARGET_URL, { waitUntil: 'load' });
 
     // 2. PostDetailSectionが表示されること
     await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
 
-    // 3. サムネイルコンテナが存在するか確認（オプション）
-    const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');
-    const thumbnailCount = await thumbnailContainer.count();
+    // 3. サムネイル画像が存在するか確認（オプション）
+    // Note: 画像ロードエラー時はonErrorでコンテナごと削除されるため、
+    //       load完了後の安定したDOMで画像要素を直接チェックする
+    const thumbnailImg = page.locator('[data-testid="article-thumbnail-image"]');
+    const imgCount = await thumbnailImg.count();
 
-    if (thumbnailCount > 0) {
-      // 4. サムネイルコンテナが表示される
-      await expect(thumbnailContainer).toBeVisible();
-
-      // 5. サムネイル画像が存在し、適切な属性が設定されている
-      const thumbnailImg = page.locator('[data-testid="article-thumbnail-image"]');
+    if (imgCount > 0) {
+      // 4. サムネイル画像が表示されている
       await expect(thumbnailImg).toBeVisible();
 
       // 6. loading="lazy"属性が設定されている（CLS対策）
@@ -530,8 +528,8 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TEST_SLUG = testArticleSlug;
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
-    // 1. 記事詳細ページにアクセス
-    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+    // 1. 記事詳細ページにアクセス（画像ロード完了まで待機）
+    await page.goto(TARGET_URL, { waitUntil: 'load' });
 
     // 2. サムネイルコンテナが存在するか確認
     const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');
