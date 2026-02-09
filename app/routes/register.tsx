@@ -18,8 +18,9 @@ import '~/styles/account/layer2-authentication.css';
 import '~/styles/account/layer3-authentication.css';
 
 // Spec loader
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import type { ProjectSpec } from '~/specs/shared/types';
 
 // Data-IO layer
 import { createUser } from '~/data-io/account/authentication/createUser.server';
@@ -37,10 +38,11 @@ import { createSessionData } from '~/lib/account/common/createSessionData';
 // Schema layer (Valibot)
 import { RegisterSchema } from '~/specs/account/authentication-schema';
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const projectName = data?.projectName || 'ClaudeMix';
   return [
-    { title: '会員登録 - ClaudeMix' },
-    { name: 'description', content: 'ClaudeMixのアカウントを作成' },
+    { title: `会員登録 - ${projectName}` },
+    { name: 'description', content: `${projectName}のアカウントを作成` },
   ];
 };
 
@@ -50,6 +52,7 @@ interface ActionData {
 }
 
 interface LoaderData {
+  projectName: string;
   uiSpec: {
     title: string;
     subtitle: string;
@@ -81,6 +84,7 @@ interface LoaderData {
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
   const session = await getSession(request, context as any);
   if (session) {
@@ -90,9 +94,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
 
   return json<LoaderData>({
+    projectName: projectSpec.project.name,
     uiSpec: {
       title: spec.routes.register.title,
-      subtitle: `ClaudeMixのアカウントを作成`,
+      subtitle: `${projectSpec.project.name}のアカウントを作成`,
       fields: {
         email: {
           label: spec.forms.register.fields.email.label,

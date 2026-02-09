@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { TableOfContents } from './TableOfContents';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
-import type { Heading, RenderedPost } from '~/specs/blog/types';
+import type { Heading, RenderedPost, BlogPostDetailSpec } from '~/specs/blog/types';
 import { Paywall } from './Paywall';
 
 // Mermaid.jsのグローバル型定義
@@ -30,6 +30,7 @@ interface PostDetailSectionProps {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
+  spec: BlogPostDetailSpec;
 }
 
 export function PostDetailSection({
@@ -38,8 +39,11 @@ export function PostDetailSection({
   hasMermaid = false,
   subscriptionAccess,
   thumbnailUrl,
+  spec,
 }: PostDetailSectionProps) {
   const [imageError, setImageError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // publishedAtをフォーマット
   const formattedDate = formatPublishedDate(post.publishedAt);
 
@@ -96,7 +100,7 @@ export function PostDetailSection({
           {post.title}
         </h1>
         <div className="post-detail-section__meta-text">
-          <span data-testid="post-author">著者: {post.author}</span>
+          <span data-testid="post-author">{spec.messages.ui.author_label} {post.author}</span>
           {' | '}
           <time dateTime={post.publishedAt} data-testid="post-published-date">
             {formattedDate}
@@ -109,20 +113,29 @@ export function PostDetailSection({
         <div
           className="post-detail-section__thumbnail"
           data-testid="article-thumbnail-container"
+          style={imageError ? { display: 'none' } : {}}
         >
           <img
             src={thumbnailUrl}
             alt={`${post.title}のサムネイル`}
             loading="lazy"
             decoding="async"
+            onLoad={() => setIsLoaded(true)}
             onError={() => setImageError(true)}
             data-testid="article-thumbnail-image"
+            style={{
+              opacity: isLoaded ? 1 : 0,
+              transition: 'opacity 0.2s ease-in-out'
+            }}
           />
         </div>
       )}
 
       {/* 目次 */}
-      <TableOfContents headings={headings} />
+      <TableOfContents
+        headings={headings}
+        ariaLabel={spec.accessibility.aria_labels.toc}
+      />
 
       {/* 本文エリア（見出しベース可視範囲） */}
       <div
@@ -132,7 +145,7 @@ export function PostDetailSection({
       />
 
       {/* ペイウォール（未契約ユーザーの場合のみ表示） */}
-      {!subscriptionAccess.showFullContent && <Paywall />}
+      {!subscriptionAccess.showFullContent && <Paywall spec={spec} />}
 
       {/* 非表示コンテンツ（全文表示時のみ） */}
       {subscriptionAccess.showFullContent && post.hiddenContent && (

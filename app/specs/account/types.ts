@@ -495,6 +495,15 @@ export interface AccountAuthenticationSpec {
       email_exists: string;
       creation_failed: string;
     };
+    oauth: {
+      not_configured: string;
+      failed: string;
+      invalid: string;
+      csrf_detected: string;
+      email_already_exists: string;
+      registration_failed: string;
+      login_failed: string;
+    };
     password_reset: {
       token_invalid: string;
       token_verification_failed: string;
@@ -516,6 +525,25 @@ export interface AccountAuthenticationSpec {
     };
     logout: {
       completed: string;
+    };
+  };
+  oauth: {
+    google: {
+      enabled: boolean;
+      scopes: string;
+      prompt: string;
+      access_type: string;
+      state_cookie: {
+        name: string;
+        path: string;
+        http_only: boolean;
+        secure: string;
+        same_site: string;
+        max_age_seconds: number;
+      };
+    };
+    apple: {
+      enabled: boolean;
     };
   };
   flash_messages: {

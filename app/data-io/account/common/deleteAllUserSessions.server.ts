@@ -7,6 +7,8 @@
  */
 
 import type { SessionData } from '~/specs/account/types';
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountCommonSpec } from '~/specs/account/types';
 
 /**
  * AppLoadContext type for Cloudflare Workers environment
@@ -31,6 +33,8 @@ export async function deleteAllUserSessions(
   userId: string,
   context: CloudflareLoadContext
 ): Promise<number> {
+  const commonSpec = loadSpec<AccountCommonSpec>('account/common');
+
   try {
     const kv = context.env.SESSION_KV;
     let deletedCount = 0;
@@ -39,7 +43,7 @@ export async function deleteAllUserSessions(
     // List all session keys with pagination support
     do {
       const listResult = await kv.list({
-        prefix: 'session:',
+        prefix: commonSpec.session.kv.key_prefix,
         ...(cursor && { cursor }),
       });
 

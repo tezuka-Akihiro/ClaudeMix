@@ -212,7 +212,7 @@ success_messages:
 # ==========================================
 flash_messages:
   # セッション関連
-  session-expired: "セッションの有効期限が切れました"
+  session-expired: "セッションが期限切れです。再度ログインしてください。"
   unauthorized: "ログインが必要です"
   # ログアウト成功
   logout-success: "ログアウトしました"
@@ -237,7 +237,7 @@ oauth:
       name: "oauth_state"
       path: "/"
       http_only: true
-      secure: true
+      secure: "protocol-dependent"  # HTTPS時のみSecureフラグを付与（HTTP開発環境対応）
       same_site: "Lax"
       max_age_seconds: 600  # 10分
 

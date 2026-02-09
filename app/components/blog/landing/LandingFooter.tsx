@@ -14,9 +14,10 @@ export interface LandingFooterLink {
 interface LandingFooterProps {
   links: LandingFooterLink[];
   legalContent: string;
+  projectName?: string;
 }
 
-const LandingFooter: React.FC<LandingFooterProps> = ({ links, legalContent }) => {
+const LandingFooter: React.FC<LandingFooterProps> = ({ links, legalContent, projectName = 'ClaudeMix' }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLinkClick = (link: LandingFooterLink) => {
@@ -56,7 +57,7 @@ const LandingFooter: React.FC<LandingFooterProps> = ({ links, legalContent }) =>
           ))}
         </nav>
         <p className="blog-footer__copyright">
-          © {new Date().getFullYear()} ClaudeMix
+          © {new Date().getFullYear()} {projectName}
         </p>
       </footer>
       <LegalModal

@@ -7,12 +7,15 @@ import PostCard from '~/components/blog/posts/PostCard';
 import LoadMoreButton from '~/components/blog/posts/LoadMoreButton';
 import { FilterToggleButton } from '~/components/blog/posts/FilterToggleButton';
 import { FilterPanel } from '~/components/blog/posts/FilterPanel';
-import type { PostsPageData, PostSummary } from '~/specs/blog/types';
+import type { PostsPageData, PostSummary, BlogPostsSpec } from '~/specs/blog/types';
 
 interface PostsSectionProps extends PostsPageData {
   isAuthenticated: boolean;
   pageTitle: string;
   publicCategories: string[];
+  messages: BlogPostsSpec['messages'];
+  accessibility: BlogPostsSpec['accessibility'];
+  dateFormat: BlogPostsSpec['date_format'];
 }
 
 const PostsSection: React.FC<PostsSectionProps> = ({
@@ -23,6 +26,9 @@ const PostsSection: React.FC<PostsSectionProps> = ({
   selectedFilters,
   pageTitle,
   publicCategories,
+  messages,
+  accessibility,
+  dateFormat,
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [posts, setPosts] = useState<PostSummary[]>(initialPosts);
@@ -77,12 +83,13 @@ const PostsSection: React.FC<PostsSectionProps> = ({
         selectedTags={selectedTags}
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        filterMessages={messages.filter}
       />
-      <h1 className="posts-section__title" data-testid="posts-section-title">
+      <h1 className="posts-section__title" data-testid="page-title">
         {pageTitle}
       </h1>
       {posts.length === 0 ? (
-        <p data-testid="posts-section-empty">記事がまだありません</p>
+        <p data-testid="posts-section-empty">{messages.empty_state.description}</p>
       ) : (
         <>
           <div className="post-card-grid" data-testid="post-card-grid">
@@ -101,6 +108,8 @@ const PostsSection: React.FC<PostsSectionProps> = ({
                   tags={post.tags}
                   thumbnailUrl={post.thumbnailUrl}
                   isLocked={isLocked}
+                  lockMessage={messages.lock_message}
+                  dateSeparator={dateFormat.display_separator}
                 />
               );
             })}
@@ -111,6 +120,8 @@ const PostsSection: React.FC<PostsSectionProps> = ({
             onClick={handleLoadMore}
             isLoading={isLoading}
             hasMore={loadMoreInfo.hasMore}
+            messages={messages.load_more}
+            ariaLabel={accessibility.aria_labels.load_more_button}
           />
         </>
       )}

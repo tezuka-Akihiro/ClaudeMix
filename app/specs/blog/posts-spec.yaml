@@ -12,6 +12,12 @@ metadata:
   version: "1.0.0"
 
 # ==========================================
+# SEO・メタタグ設定
+# ==========================================
+meta:
+  description: "Browse our collection of articles covering web development, programming, and technology."
+
+# ==========================================
 # サーバー処理設定 (Loader/Action)
 # ==========================================
 server_io:
@@ -246,6 +252,9 @@ thumbnail:
     enabled: true
     # サムネイルが存在しない場合の動作
     fallback: "hide"  # "hide" | "placeholder"
+    # サムネイルを強制的に非表示にするカテゴリ（例: インフォメーションなど）
+    suppressed_categories:
+      - "インフォメーション"
 
   # CLS対策（レイアウトシフト防止）
   performance:
@@ -331,6 +340,12 @@ messages:
     title: "記事がありません"
     description: "現在公開されている記事はありません"
 
+  lock_message: "ログインで読む"
+
+  filter:
+    submit_label: "フィルタ適用"
+    all_categories_label: "All Categories"
+
   load_more:
     button_label: "More"
     loading_label: "Loading..."
@@ -342,6 +357,7 @@ messages:
 date_format:
   iso_format: "YYYY-MM-DD" # ISO形式（例: "2024-05-01"）
   display_format: "YYYY年M月D日" # 日本語形式（例: "2024年5月1日"）
+  display_separator: "."
   locale: "ja-JP"
 
 # ==========================================
@@ -365,6 +381,7 @@ accessibility:
     posts_section: "Latest Update"
     post_card: "記事カード"
     post_link: "記事詳細へ移動"
+    load_more_button: "さらに記事を読み込む"
 
   semantic_elements:
     section_role: "region"

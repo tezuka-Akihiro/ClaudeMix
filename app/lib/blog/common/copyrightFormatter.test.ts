@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { formatCopyright } from './copyrightFormatter';
-import { loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSharedSpec } from 'tests/utils/loadSpec';
 import type { ProjectSpec } from '~/specs/shared/types';
 
 describe('formatCopyright - Pure Logic Layer', () => {
   let projectSpec: ProjectSpec;
 
-  beforeAll(() => {
-    projectSpec = loadSharedSpec<ProjectSpec>('project');
+  beforeAll(async () => {
+    projectSpec = await loadSharedSpec<ProjectSpec>('project');
   });
 
   describe('formatCopyright function', () => {

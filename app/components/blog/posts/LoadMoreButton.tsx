@@ -2,14 +2,23 @@
 // もっと見るボタンコンポーネント
 
 import React from 'react';
+import type { BlogPostsSpec } from '~/specs/blog/types';
 
 interface LoadMoreButtonProps {
   onClick: () => void;
   isLoading: boolean;
   hasMore: boolean;
+  messages: BlogPostsSpec['messages']['load_more'];
+  ariaLabel: string;
 }
 
-const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({ onClick, isLoading, hasMore }) => {
+const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({
+  onClick,
+  isLoading,
+  hasMore,
+  messages,
+  ariaLabel,
+}) => {
   // 全件読み込み済みの場合は表示しない
   if (!hasMore) {
     return null;
@@ -23,7 +32,7 @@ const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({ onClick, isLoading, has
         disabled={isLoading}
         className="load-more-button"
         data-testid="load-more-button"
-        aria-label="さらに記事を読み込む"
+        aria-label={ariaLabel}
         aria-busy={isLoading}
       >
         {isLoading ? (
@@ -31,10 +40,10 @@ const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({ onClick, isLoading, has
             <span className="loading-spinner" data-testid="loading-spinner" aria-hidden="true">
               ⏳
             </span>
-            <span>Loading...</span>
+            <span>{messages.loading_label}</span>
           </>
         ) : (
-          <span>More</span>
+          <span>{messages.button_label}</span>
         )}
       </button>
     </div>

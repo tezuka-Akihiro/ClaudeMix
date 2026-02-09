@@ -145,7 +145,7 @@ test.describe.serial('E2E Section Test for blog - landing', () => {
 
       // alt属性が設定されていること（アクセシビリティ）
       const altAttr = await img.getAttribute('alt');
-      expect(altAttr).toBeTruthy();
+      expect(altAttr).toContain(landingSpec.accessibility.aria_labels.manga_panel);
     }
   });
 
@@ -261,7 +261,7 @@ test.describe.serial('E2E Section Test for blog - landing', () => {
     await firstButton.click();
 
     // /blogへ遷移すること
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL('/blog', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL('/blog');
   });
 });

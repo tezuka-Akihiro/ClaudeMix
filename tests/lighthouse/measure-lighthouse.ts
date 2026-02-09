@@ -121,7 +121,7 @@ async function measureLighthouse(config: MeasurementConfig) {
 }
 
 async function main() {
-  const baseUrl = process.env.BASE_URL || "http://localhost:8788";
+  const baseUrl = process.env.BASE_URL || "http://localhost:3000";
 
   const measurements: MeasurementConfig[] = [
     // ブログ一覧ページ（モバイル）

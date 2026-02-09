@@ -6,16 +6,23 @@ compatibility_date = "2024-11-18"
 pages_build_output_dir = "./build/client"
 
 # ============================================
+# ローカル開発サーバー設定
+# ============================================
+# npm run dev:wrangler のポートはここで一元管理
+[dev]
+port = 3000
+
+# ============================================
 # 環境変数（非秘匿情報）
 # ============================================
 # 秘匿情報は .dev.vars または Cloudflare ダッシュボードで管理
 # 参照: .dev.vars.example
 [vars]
 # ローカル開発用のアプリケーションURL
-APP_URL = "http://localhost:8788"
+APP_URL = "http://localhost:3000"
 # Google OAuth（クライアントIDは公開情報）
 GOOGLE_CLIENT_ID = "395752864569-ng3tot15p3ufguvcuchre6jnfvta5d3p.apps.googleusercontent.com"
-GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/google/callback"
+GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/callback/google"
 # Stripe 公開キー（pk_ は公開用）
 STRIPE_PUBLISHABLE_KEY = "pk_test_51StRLVFTLZPZU8HQHblw6Ig1B6V19aU4qzs8TuvrPLfdqnujKX7eG3ynOqRK7PGCBxFU195Ikgzqp29ljaBXHUS000suqIsrSI"
 

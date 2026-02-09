@@ -3,14 +3,18 @@
 
 import React from 'react';
 
-export const FilterSubmitButton: React.FC = () => {
+interface FilterSubmitButtonProps {
+  label?: string;
+}
+
+export const FilterSubmitButton: React.FC<FilterSubmitButtonProps> = ({ label = 'フィルタ適用' }) => {
   return (
     <button
       type="submit"
       className="filter-submit-button"
       data-testid="filter-submit-button"
     >
-      フィルタ適用
+      {label}
     </button>
   );
 };

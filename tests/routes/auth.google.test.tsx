@@ -6,8 +6,10 @@
  * @responsibility Google OAuth認証開始のテスト
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { loader } from '~/routes/auth.google';
+import { loadSpec } from 'tests/utils/loadSpec';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 // Mock generateGoogleAuthUrl
 vi.mock('~/lib/account/authentication/generateGoogleAuthUrl', () => ({
@@ -22,8 +24,14 @@ vi.stubGlobal('crypto', {
 });
 
 describe('auth.google loader', () => {
+  let spec: AccountAuthenticationSpec;
+
+  beforeAll(async () => {
+    spec = await loadSpec<AccountAuthenticationSpec>('account', 'authentication');
+  });
+
   const createMockRequest = () => {
-    return new Request('http://localhost:8788/auth/google');
+    return new Request('http://localhost:3000/auth/google');
   };
 
   const createMockContext = (env: Record<string, string | undefined>) => ({
@@ -39,26 +47,26 @@ describe('auth.google loader', () => {
       const request = createMockRequest();
       const context = createMockContext({
         GOOGLE_CLIENT_SECRET: 'test-secret',
-        GOOGLE_REDIRECT_URI: 'http://localhost:8788/auth/callback/google',
+        GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/callback/google',
       });
 
       const response = await loader({ request, context, params: {} });
 
       expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe('/login?error=oauth-not-configured');
+      expect(response.headers.get('Location')).toBe(`${spec.routes.login.path}?error=oauth-not-configured`);
     });
 
     it('should redirect to login with error when GOOGLE_CLIENT_SECRET is missing', async () => {
       const request = createMockRequest();
       const context = createMockContext({
         GOOGLE_CLIENT_ID: 'test-client-id',
-        GOOGLE_REDIRECT_URI: 'http://localhost:8788/auth/callback/google',
+        GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/callback/google',
       });
 
       const response = await loader({ request, context, params: {} });
 
       expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe('/login?error=oauth-not-configured');
+      expect(response.headers.get('Location')).toBe(`${spec.routes.login.path}?error=oauth-not-configured`);
     });
 
     it('should redirect to login with error when GOOGLE_REDIRECT_URI is missing', async () => {
@@ -71,7 +79,7 @@ describe('auth.google loader', () => {
       const response = await loader({ request, context, params: {} });
 
       expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe('/login?error=oauth-not-configured');
+      expect(response.headers.get('Location')).toBe(`${spec.routes.login.path}?error=oauth-not-configured`);
     });
 
     it('should redirect to login with error when all env vars are missing', async () => {
@@ -81,7 +89,7 @@ describe('auth.google loader', () => {
       const response = await loader({ request, context, params: {} });
 
       expect(response.status).toBe(302);
-      expect(response.headers.get('Location')).toBe('/login?error=oauth-not-configured');
+      expect(response.headers.get('Location')).toBe(`${spec.routes.login.path}?error=oauth-not-configured`);
     });
   });
 
@@ -89,7 +97,7 @@ describe('auth.google loader', () => {
     const validEnv = {
       GOOGLE_CLIENT_ID: 'test-client-id',
       GOOGLE_CLIENT_SECRET: 'test-secret',
-      GOOGLE_REDIRECT_URI: 'http://localhost:8788/auth/callback/google',
+      GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/callback/google',
     };
 
     it('should redirect to Google OAuth URL', async () => {
@@ -105,19 +113,30 @@ describe('auth.google loader', () => {
       expect(location).toContain('state=test-state-uuid');
     });
 
-    it('should set oauth_state cookie with correct attributes', async () => {
+    it('should set oauth_state cookie with correct attributes (HTTP: no Secure flag)', async () => {
       const request = createMockRequest();
+      const context = createMockContext(validEnv);
+      const cookie = spec.oauth.google.state_cookie;
+
+      const response = await loader({ request, context, params: {} });
+
+      const setCookie = response.headers.get('Set-Cookie');
+      expect(setCookie).toContain(`${cookie.name}=test-state-uuid`);
+      expect(setCookie).toContain(`Path=${cookie.path}`);
+      expect(setCookie).toContain('HttpOnly');
+      expect(setCookie).not.toContain('Secure');
+      expect(setCookie).toContain(`SameSite=${cookie.same_site}`);
+      expect(setCookie).toContain(`Max-Age=${cookie.max_age_seconds}`);
+    });
+
+    it('should include Secure flag when request is HTTPS', async () => {
+      const request = new Request('https://claudemix.dev/auth/google');
       const context = createMockContext(validEnv);
 
       const response = await loader({ request, context, params: {} });
 
       const setCookie = response.headers.get('Set-Cookie');
-      expect(setCookie).toContain('oauth_state=test-state-uuid');
-      expect(setCookie).toContain('Path=/');
-      expect(setCookie).toContain('HttpOnly');
       expect(setCookie).toContain('Secure');
-      expect(setCookie).toContain('SameSite=Lax');
-      expect(setCookie).toContain('Max-Age=600');
     });
 
     it('should generate unique state for CSRF protection', async () => {
@@ -138,7 +157,7 @@ describe('auth.google loader', () => {
         env: {
           GOOGLE_CLIENT_ID: 'test-client-id',
           GOOGLE_CLIENT_SECRET: 'test-secret',
-          GOOGLE_REDIRECT_URI: 'http://localhost:8788/auth/callback/google',
+          GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/callback/google',
         },
       };
 

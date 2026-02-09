@@ -16,25 +16,13 @@ const renderWithRouter = (ui: React.ReactElement) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
 };
 
-// Define a more complete type for the spec object locally
-interface BlogPostSpecWithSelectors extends BlogPostsSpec {
-  ui_selectors: {
-    card: {
-      post_title: string;
-      post_date: string;
-      post_card: string;
-      tag_badge: string;
-    };
-  };
-}
-
 describe('PostCard', () => {
-  let spec: BlogPostSpecWithSelectors;
+  let spec: BlogPostsSpec;
   let baseProps: Omit<React.ComponentProps<typeof PostCard>, 'slug'>;
 
   beforeAll(async () => {
     // Load spec.yaml dynamically to ensure tests stay in sync with spec
-    spec = await loadSpec<BlogPostSpecWithSelectors>('blog', 'posts');
+    spec = await loadSpec<BlogPostsSpec>('blog', 'posts');
 
     baseProps = {
       title: 'Test Post Title',
@@ -43,6 +31,8 @@ describe('PostCard', () => {
       description: 'A test description.',
       tags: [spec.tags[0].name, spec.tags[1].name],
       thumbnailUrl: null,
+      lockMessage: spec.messages.lock_message,
+      dateSeparator: spec.date_format.display_separator,
     };
   });
 
@@ -61,7 +51,7 @@ describe('PostCard', () => {
       expect(titleElement).toBeInTheDocument();
       expect(titleElement).toHaveTextContent(props.title);
       expect(dateElement).toBeInTheDocument();
-      expect(dateElement).toHaveTextContent('2024.05.01');
+      expect(dateElement).toHaveTextContent(`2024${spec.date_format.display_separator}05${spec.date_format.display_separator}01`);
     });
 
     it('should render as a link element with correct classes', () => {
@@ -101,10 +91,11 @@ describe('PostCard', () => {
   describe('Date Formatting', () => {
     it('should format date correctly for different dates', () => {
       // Arrange
+      const sep = spec.date_format.display_separator;
       const testCases = [
-        { publishedAt: '2024-01-01', expected: '2024.01.01' },
-        { publishedAt: '2024-12-31', expected: '2024.12.31' },
-        { publishedAt: '2024-07-15', expected: '2024.07.15' },
+        { publishedAt: '2024-01-01', expected: `2024${sep}01${sep}01` },
+        { publishedAt: '2024-12-31', expected: `2024${sep}12${sep}31` },
+        { publishedAt: '2024-07-15', expected: `2024${sep}07${sep}15` },
       ];
 
       testCases.forEach(({ publishedAt, expected }) => {
@@ -240,7 +231,7 @@ describe('PostCard', () => {
 
       const lockMessage = screen.getByTestId('lock-message');
       expect(lockMessage).toBeInTheDocument();
-      expect(lockMessage).toHaveTextContent('ログインで読む');
+      expect(lockMessage).toHaveTextContent(spec.messages.lock_message);
     });
   });
 });

@@ -12,7 +12,7 @@ import BlogLayout from "~/components/blog/common/BlogLayout";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import { loadSpec } from "~/spec-loader/specLoader.server";
-import type { BlogCommonSpec, BlogPostsSpec } from "~/specs/blog/types";
+import type { BlogCommonSpec, BlogPostsSpec, BlogPostDetailSpec } from "~/specs/blog/types";
 import { getSubscriptionStatus } from "~/data-io/blog/post-detail/getSubscriptionStatus.server";
 import { determineContentVisibility } from "~/lib/blog/post-detail/determineContentVisibility";
 import { getSession } from "~/data-io/account/common/getSession.server";
@@ -44,6 +44,10 @@ export interface PostDetailLoaderData {
     hiddenContent: string; // 非表示HTML（見出しベース）
     description?: string;
     tags?: string[];
+    category: string;
+    source: string | null;
+    headings: Heading[];
+    hasMermaid: boolean;
   };
   headings: Heading[];
   config: BlogConfig;
@@ -53,26 +57,30 @@ export interface PostDetailLoaderData {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
+  spec: BlogPostDetailSpec;
 }
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const { slug } = params;
 
+  // post-detail specをロード
+  const postDetailSpec = loadSpec<BlogPostDetailSpec>('blog/post-detail');
+
   if (!slug) {
-    throw new Response("Not Found", { status: 404 });
+    throw new Response(postDetailSpec.messages.error.not_found, { status: 404 });
   }
 
   // 記事データを取得
   const post = await fetchPostBySlug(slug);
 
   if (!post) {
-    throw new Response("Not Found", { status: 404 });
+    throw new Response(postDetailSpec.messages.error.not_found, { status: 404 });
   }
 
   // 外部ファイル参照が設定されているが、コンテンツが空の場合は500エラー
-  // （ビルド時に外部ファイルが見つからなかった場合）
+  // （ビルド時に外部ファイルが見らんなかった場合）
   if (post.source && post.content.trim() === '') {
-    throw new Response("Referenced file not found", { status: 500 });
+    throw new Response(postDetailSpec.messages.error.referenced_file_not_found, { status: 500 });
   }
 
   // リクエストURLを解析
@@ -101,13 +109,18 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
   // ブログ設定を取得
   const config = await loadBlogConfig();
 
+  // セクションSpecを取得
+  const detailSpec = loadSpec<BlogPostDetailSpec>('blog/post-detail');
+
   // OGP画像の設定を取得
   const spec = loadSpec<BlogCommonSpec>('blog/common');
   const ogpImageWidth = spec.ogp.image.width;
   const ogpImageHeight = spec.ogp.image.height;
 
   // サムネイルURLを生成（R2アセットからのゼロ設定方式）
-  const thumbnailUrl = buildThumbnailUrl(slug, spec.r2_assets);
+  const suppressedCategories = postsSpec.thumbnail?.display?.suppressed_categories || [];
+  const isSuppressed = suppressedCategories.includes(post.category);
+  const thumbnailUrl = isSuppressed ? null : buildThumbnailUrl(slug, spec.r2_assets);
 
   // サブスクリプション状態を取得（セッションからuserIdを使用）
   const subscriptionStatus = await getSubscriptionStatus(userId, context as unknown as Parameters<typeof getSubscriptionStatus>[1]);
@@ -148,11 +161,13 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
       hasActiveSubscription: subscriptionStatus.hasActiveSubscription,
     },
     thumbnailUrl,
+    spec: postDetailSpec,
   });
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data, params, location }) => {
   if (!data) {
+    // 実際にはエラー発生時はここまで来ないことが多いが、型安全のためにデフォルト値を返す
     return [
       { title: "Not Found" },
       { name: "description", content: "The page you are looking for does not exist." },
@@ -186,7 +201,7 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
 };
 
 export default function BlogPostDetail() {
-  const { post, headings, config, subscriptionAccess, thumbnailUrl } = useLoaderData<typeof loader>();
+  const { post, headings, config, subscriptionAccess, thumbnailUrl, spec } = useLoaderData<typeof loader>();
 
   // Scroll to top on page navigation
   useEffect(() => {
@@ -203,6 +218,7 @@ export default function BlogPostDetail() {
         hasMermaid={post.hasMermaid}
         subscriptionAccess={subscriptionAccess}
         thumbnailUrl={thumbnailUrl}
+        spec={spec}
       />
     </BlogLayout>
   );

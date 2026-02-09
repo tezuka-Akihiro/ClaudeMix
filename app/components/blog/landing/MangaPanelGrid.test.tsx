@@ -97,12 +97,12 @@ describe('MangaPanelGrid', () => {
     expect(panels).toHaveLength(0);
   });
 
-  it('should render panels in correct order', () => {
-    render(<MangaPanelGrid mangaAssets={mockAssets} />);
+  it('should render panels in correct order with spec label', () => {
+    render(<MangaPanelGrid mangaAssets={mockAssets} mangaPanelAltLabel="Spec Label" />);
 
     const images = screen.getAllByRole('img');
-    expect(images[0]).toHaveAttribute('alt', '漫画パネル 1');
-    expect(images[1]).toHaveAttribute('alt', '漫画パネル 2');
-    expect(images[2]).toHaveAttribute('alt', '漫画パネル 3');
+    expect(images[0]).toHaveAttribute('alt', 'Spec Label 1');
+    expect(images[1]).toHaveAttribute('alt', 'Spec Label 2');
+    expect(images[2]).toHaveAttribute('alt', 'Spec Label 3');
   });
 });

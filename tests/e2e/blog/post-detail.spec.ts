@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { loadSpec, loadTestArticles, type TestArticleFrontmatter } from '../../utils/loadSpec';
-import type { BlogPostsSpec, BlogCommonSpec } from '~/specs/blog/types';
+import type { BlogPostsSpec, BlogCommonSpec, BlogPostDetailSpec } from '~/specs/blog/types';
 
 // Seeded test user with active subscription (from migrations/seed.sql)
 const SUBSCRIBED_USER = {
@@ -20,6 +20,7 @@ async function loginAsSubscribedUser(page: Page) {
 // テスト用変数（beforeAllで初期化）
 let spec: BlogPostsSpec;
 let commonSpec: BlogCommonSpec;
+let detailSpec: BlogPostDetailSpec;
 let testArticles: TestArticleFrontmatter[];
 let testArticleSlug: string;
 
@@ -31,6 +32,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
   test.beforeAll(async () => {
     spec = await loadSpec<BlogPostsSpec>('blog', 'posts');
     commonSpec = await loadSpec<BlogCommonSpec>('blog', 'common');
+    detailSpec = await loadSpec<BlogPostDetailSpec>('blog', 'post-detail');
     testArticles = await loadTestArticles();
     // テスト記事の最初のものを使用
     testArticleSlug = testArticles[0]?.slug || 'test-e2e-filter';
@@ -62,6 +64,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     // 4. 記事メタデータ（著者）が表示される
     const authorElement = page.locator('[data-testid="post-author"]');
     await expect(authorElement).toBeVisible();
+    await expect(authorElement).toContainText(detailSpec.messages.ui.author_label);
     // 著者名が空でないことを確認（実際の著者は記事ファイルによって異なる）
     await expect(authorElement).not.toBeEmpty();
 
@@ -299,7 +302,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
 
     // 3. freeContentHeadingが設定されている場合、ペイウォールが表示される
     // （設定されていない場合は全文表示され、ペイウォールは表示されない）
-    const paywall = page.locator('text=続きを読むには会員登録が必要です');
+    const paywall = page.locator(`text=${detailSpec.messages.ui.paywall_message}`);
     const paywallExists = await paywall.count() > 0;
 
     if (paywallExists) {
@@ -342,6 +345,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
 
     // 5. ペイウォールが表示される
     await expect(page.locator('.paywall-message')).toBeVisible();
+    await expect(page.locator('.paywall-message')).toContainText(detailSpec.messages.ui.paywall_message);
 
     // 6. hiddenContentは表示されない（未契約ユーザー）
     const hiddenContent = page.locator('[data-testid="post-content-hidden"]');
@@ -531,9 +535,9 @@ test.describe('E2E Test for Blog - Post Detail', () => {
 
     // 2. サムネイルコンテナが存在するか確認
     const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');
-    const thumbnailCount = await thumbnailContainer.count();
 
-    if (thumbnailCount > 0) {
+    // サムネイルが表示されている場合のみチェック（エラー等で非表示の場合はスキップ）
+    if (await thumbnailContainer.count() > 0 && await thumbnailContainer.isVisible()) {
       // 3. aspect-ratioスタイルが適用されていることを確認
       const aspectRatio = await thumbnailContainer.evaluate((el) => {
         return window.getComputedStyle(el).aspectRatio;

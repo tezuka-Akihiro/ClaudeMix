@@ -2,13 +2,17 @@
 // コピーライト文字列をフォーマットする純粋関数
 // 年の自動更新機能
 
+import { loadSharedSpec } from '~/spec-loader/specLoader.server';
+import type { ProjectSpec } from '~/specs/shared/types';
+
 /**
  * コピーライト文字列をフォーマットする
  *
  * @param projectName
  * @returns フォーマットされたコピーライト文字列
  */
-export function formatCopyright(projectName: string = "ClaudeMix"): string {
+export function formatCopyright(projectName?: string): string {
   const currentYear = new Date().getFullYear();
-  return `© ${currentYear} ${projectName}`;
+  const name = projectName || loadSharedSpec<ProjectSpec>('project').project.name;
+  return `© ${currentYear} ${name}`;
 }

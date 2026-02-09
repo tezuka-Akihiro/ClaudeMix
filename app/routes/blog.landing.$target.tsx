@@ -3,13 +3,16 @@
 
 import type { LoaderFunctionArgs, MetaFunction, LinksFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useRouteError, isRouteErrorResponse } from "@remix-run/react";
 import { getLandingContent } from "~/data-io/blog/landing/getLandingContent.server";
 import { getMangaAssets } from "~/data-io/blog/landing/getMangaAssets.server";
 import { validateTarget } from "~/lib/blog/landing/targetValidation";
 import { resolveLegalContent } from "~/lib/blog/common/resolveLegalContent";
-import { loadSpec } from "~/spec-loader/specLoader.server";
+import { loadSpec, loadSharedSpec } from "~/spec-loader/specLoader.server";
 import type { BlogLandingSpec, LandingContent, MangaAsset } from "~/specs/blog/types";
+import type { ProjectSpec } from '~/specs/shared/types';
+import { Link } from "@remix-run/react";
+import { data as landingSpecRaw } from "~/generated/specs/blog/landing";
 import HeroSection from "~/components/blog/landing/HeroSection";
 import ScrollSection from "~/components/blog/landing/ScrollSection";
 import MangaPanelGrid from "~/components/blog/landing/MangaPanelGrid";
@@ -44,6 +47,7 @@ export const links: LinksFunction = () => [
 ];
 
 export interface LandingLoaderData {
+  projectName: string;
   content: LandingContent;
   mangaAssets: MangaAsset[];
   spec: BlogLandingSpec;
@@ -55,6 +59,7 @@ export interface LandingLoaderData {
 export async function loader({ params, context }: LoaderFunctionArgs) {
   // landing-spec.yaml を読み込み
   const landingSpec = loadSpec<BlogLandingSpec>('blog/landing');
+  const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
   // ターゲットパラメータを検証（不正値はデフォルトにフォールバック）
   const validatedTarget = validateTarget(
@@ -87,6 +92,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
     });
 
     return json<LandingLoaderData>({
+      projectName: projectSpec.project.name,
       content,
       mangaAssets,
       spec: landingSpec,
@@ -100,23 +106,24 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
     // コンテンツファイルが存在しない場合は404
     if (error instanceof Error && error.message.includes('not found')) {
-      throw new Response("Landing page not found", { status: 404 });
+      throw new Response(landingSpec.messages.error.not_found, { status: 404 });
     }
     // その他のエラーは500
-    throw new Response("Internal Server Error", { status: 500 });
+    throw new Response(landingSpec.messages.error.internal_server_error, { status: 500 });
   }
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const projectName = data?.projectName || 'ClaudeMix';
   if (!data) {
     return [
-      { title: "Landing Page | ClaudeMix" },
-      { name: "description", content: "ClaudeMix landing page" },
+      { title: `Landing Page | ${projectName}` },
+      { name: "description", content: `${projectName} landing page` },
     ];
   }
 
   return [
-    { title: `${data.content.catchCopy} | ClaudeMix` },
+    { title: `${data.content.catchCopy} | ${projectName}` },
     { name: "description", content: data.content.description },
     { property: "og:title", content: data.content.catchCopy },
     { property: "og:description", content: data.content.description },
@@ -125,7 +132,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function LandingPage() {
-  const { content, mangaAssets, spec, footerLinks, legalContent } = useLoaderData<typeof loader>();
+  const { projectName, content, mangaAssets, spec, footerLinks, legalContent } = useLoaderData<typeof loader>();
 
   // Above-the-fold用の漫画パネル（最初のN枚）
   const heroMaxCount = spec.business_rules.manga_panel_count.hero_max;
@@ -137,6 +144,7 @@ export default function LandingPage() {
       <HeroSection
         catchCopy={content.catchCopy}
         heroMangaAssets={heroMangaAssets}
+        mangaPanelAltLabel={spec.accessibility.aria_labels.manga_panel}
       />
 
       {/* スクロールセクション */}
@@ -149,23 +157,41 @@ export default function LandingPage() {
       <MangaPanelGrid
         mangaAssets={mangaAssets}
         heroMaxCount={heroMaxCount}
+        mangaPanelAltLabel={spec.accessibility.aria_labels.manga_panel}
       />
 
       {/* CTAセクション */}
       <CTASection ctaLinks={content.ctaLinks} />
 
       {/* フッター */}
-      <LandingFooter links={footerLinks} legalContent={legalContent} />
+      <LandingFooter
+        links={footerLinks}
+        legalContent={legalContent}
+        projectName={projectName}
+      />
     </main>
   );
 }
 
 export function ErrorBoundary() {
+  // NOTE: ErrorBoundary runs on both server and client.
+  // We use the generated spec module directly (it's bundled for client).
+  const spec = landingSpecRaw as BlogLandingSpec;
+  const error = useRouteError();
+
+  let title = spec.messages.error.title;
+  let message = spec.messages.error.description;
+
+  if (isRouteErrorResponse(error)) {
+    title = error.status === 404 ? "404 Not Found" : spec.messages.error.boundary_title;
+    message = error.data || spec.messages.error.boundary_message;
+  }
+
   return (
     <div className="landing-error">
-      <h1>エラーが発生しました</h1>
-      <p>ランディングページの読み込みに失敗しました。</p>
-      <a href="/blog">ブログに戻る</a>
+      <h1 data-testid="error-title">{title}</h1>
+      <p data-testid="error-message">{message}</p>
+      <Link to="/blog" data-testid="back-link">{spec.messages.error.back_to_blog}</Link>
     </div>
   );
 }

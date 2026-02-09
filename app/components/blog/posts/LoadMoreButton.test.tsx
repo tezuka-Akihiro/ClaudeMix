@@ -6,6 +6,13 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoadMoreButton from './LoadMoreButton';
 
+const mockMessages = {
+  button_label: 'More',
+  loading_label: 'Loading...',
+  no_more_posts: 'すべての記事を読み込みました',
+};
+const mockAriaLabel = 'さらに記事を読み込む';
+
 describe('LoadMoreButton', () => {
   describe('表示状態', () => {
     it('hasMore=trueの場合、ボタンが表示される', () => {
@@ -15,6 +22,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={false}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -29,6 +38,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={false}
           hasMore={false}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -45,10 +56,12 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={false}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
-      expect(screen.getByText('More')).toBeInTheDocument();
+      expect(screen.getByText(mockMessages.button_label)).toBeInTheDocument();
       expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
 
@@ -59,12 +72,14 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={true}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
       expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
-      expect(screen.getByText('Loading...')).toBeInTheDocument();
-      expect(screen.queryByText('More')).not.toBeInTheDocument();
+      expect(screen.getByText(mockMessages.loading_label)).toBeInTheDocument();
+      expect(screen.queryByText(mockMessages.button_label)).not.toBeInTheDocument();
     });
 
     it('isLoading=trueの場合、ボタンが無効化される', () => {
@@ -74,6 +89,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={true}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -92,6 +109,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={false}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -110,6 +129,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={true}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -128,11 +149,13 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={false}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
       const button = screen.getByTestId('load-more-button');
-      expect(button).toHaveAttribute('aria-label', 'さらに記事を読み込む');
+      expect(button).toHaveAttribute('aria-label', mockAriaLabel);
     });
 
     it('ローディング中、aria-busy=trueが設定される', () => {
@@ -142,6 +165,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={true}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -156,6 +181,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={false}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -170,6 +197,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={true}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -186,6 +215,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={false}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 
@@ -201,6 +232,8 @@ describe('LoadMoreButton', () => {
           onClick={mockOnClick}
           isLoading={false}
           hasMore={true}
+          messages={mockMessages}
+          ariaLabel={mockAriaLabel}
         />
       );
 

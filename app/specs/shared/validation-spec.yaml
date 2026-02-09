@@ -3,15 +3,21 @@ metadata:
   version: "1.0.0"
   description: "サービス横断のバリデーションルール定義"
 
+_patterns:
+  email: &email_pattern "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+  password: &password_pattern "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
+  username: &username_pattern "^[a-zA-Z0-9_-]+$"
+  url: &url_pattern "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$"
+
 email:
-  pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+  pattern: *email_pattern
   max_length: 254
   error_message: "有効なメールアドレスを入力してください"
 
 password:
   min_length: 8
   max_length: 128
-  pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
+  pattern: *password_pattern
   requirements:
     - "8文字以上"
     - "大文字を含む"
@@ -22,9 +28,9 @@ password:
 username:
   min_length: 3
   max_length: 20
-  pattern: "^[a-zA-Z0-9_-]+$"
+  pattern: *username_pattern
   error_message: "ユーザー名は3-20文字で、英数字・アンダースコア・ハイフンのみ使用できます"
 
 url:
-  pattern: "^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$"
+  pattern: *url_pattern
   error_message: "有効なURLを入力してください"

@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import BlogHeader from '~/components/blog/common/BlogHeader';
+import { loadSpec } from 'tests/utils/loadSpec';
+import type { BlogCommonSpec } from '~/specs/blog/types';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 
-const mockMenuItems = [
-  { label: '挨拶記事', path: '/blog/greeting' },
-  { label: 'Articles', path: '/blog' },
-];
+let spec: BlogCommonSpec;
 
 // localStorageとmatchMediaのモック
 const localStorageMock = (() => {
@@ -23,6 +23,10 @@ const localStorageMock = (() => {
 })();
 
 describe('BlogHeader', () => {
+  beforeAll(async () => {
+    spec = await loadSpec<BlogCommonSpec>('blog', 'common');
+  });
+
   beforeEach(() => {
     // localStorageをモック
     Object.defineProperty(window, 'localStorage', {
@@ -34,7 +38,7 @@ describe('BlogHeader', () => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation(query => ({
-        matches: query === '(prefers-color-scheme: dark)',
+        matches: query === spec.theme.media_query,
         media: query,
         onchange: null,
         addListener: vi.fn(),
@@ -54,110 +58,143 @@ describe('BlogHeader', () => {
   describe('Rendering', () => {
     it('should render blog title', () => {
       // Arrange
-      const blogTitle = "Test Blog";
+      const blogTitle = spec.blog_config.title;
 
       // Act
       render(
         <BrowserRouter>
-          <BlogHeader blogTitle={blogTitle} menuItems={mockMenuItems} />
+          <BlogHeader
+            blogTitle={blogTitle}
+            menuItems={spec.navigation.menu_items}
+            spec={spec}
+          />
         </BrowserRouter>
       );
 
       // Assert
-      const titleElement = screen.getByTestId('blog-header-title');
+      const titleElement = screen.getByTestId(
+        extractTestId(spec.ui_selectors.header.title_link)
+      );
       expect(titleElement).toBeInTheDocument();
       expect(titleElement).toHaveTextContent(blogTitle);
     });
 
     it('should render menu button', () => {
-      // Arrange
-      const blogTitle = "Test Blog";
-
       // Act
       render(
         <BrowserRouter>
-          <BlogHeader blogTitle={blogTitle} menuItems={mockMenuItems} />
+          <BlogHeader
+            blogTitle={spec.blog_config.title}
+            menuItems={spec.navigation.menu_items}
+            spec={spec}
+          />
         </BrowserRouter>
       );
 
       // Assert
-      const menuButton = screen.getByTestId('blog-header-menu-button');
+      const menuButton = screen.getByTestId(
+        extractTestId(spec.ui_selectors.header.menu_button)
+      );
       expect(menuButton).toBeInTheDocument();
-      expect(menuButton).toHaveTextContent('☰');
+      expect(menuButton).toHaveTextContent(spec.navigation.menu_icon);
     });
 
     it('should render theme toggle button', () => {
-      // Arrange
-      const blogTitle = "Test Blog";
-
       // Act
       render(
         <BrowserRouter>
-          <BlogHeader blogTitle={blogTitle} menuItems={mockMenuItems} />
+          <BlogHeader
+            blogTitle={spec.blog_config.title}
+            menuItems={spec.navigation.menu_items}
+            spec={spec}
+          />
         </BrowserRouter>
       );
 
       // Assert
-      const themeToggleButton = screen.getByTestId('theme-toggle-button');
+      const themeToggleButton = screen.getByTestId(
+        extractTestId(spec.ui_selectors.header.theme_toggle_button)
+      );
       expect(themeToggleButton).toBeInTheDocument();
     });
 
     it('should render header actions container', () => {
-      // Arrange
-      const blogTitle = "Test Blog";
-
       // Act
       render(
         <BrowserRouter>
-          <BlogHeader blogTitle={blogTitle} menuItems={mockMenuItems} />
+          <BlogHeader
+            blogTitle={spec.blog_config.title}
+            menuItems={spec.navigation.menu_items}
+            spec={spec}
+          />
         </BrowserRouter>
       );
 
       // Assert
-      const headerActions = screen.getByTestId('header-actions');
+      const headerActions = screen.getByTestId(
+        extractTestId(spec.ui_selectors.header.header_actions)
+      );
       expect(headerActions).toBeInTheDocument();
     });
   });
 
   describe('User Interactions', () => {
     it('should open menu when menu button is clicked', () => {
-      // Arrange
-      const blogTitle = "Test Blog";
-
       // Act
       render(
         <BrowserRouter>
-          <BlogHeader blogTitle={blogTitle} menuItems={mockMenuItems} />
+          <BlogHeader
+            blogTitle={spec.blog_config.title}
+            menuItems={spec.navigation.menu_items}
+            spec={spec}
+          />
         </BrowserRouter>
       );
-      const menuButton = screen.getByTestId('blog-header-menu-button');
+      const menuButton = screen.getByTestId(
+        extractTestId(spec.ui_selectors.header.menu_button)
+      );
       fireEvent.click(menuButton);
 
       // Assert
-      expect(screen.getByTestId('navigation-menu')).toBeInTheDocument();
+      expect(
+        screen.getByTestId(
+          extractTestId(spec.ui_selectors.navigation.navigation_menu)
+        )
+      ).toBeInTheDocument();
     });
 
     it('should close menu when menu button is clicked again', () => {
-      // Arrange
-      const blogTitle = "Test Blog";
-
       // Act
       render(
         <BrowserRouter>
-          <BlogHeader blogTitle={blogTitle} menuItems={mockMenuItems} />
+          <BlogHeader
+            blogTitle={spec.blog_config.title}
+            menuItems={spec.navigation.menu_items}
+            spec={spec}
+          />
         </BrowserRouter>
       );
-      const menuButton = screen.getByTestId('blog-header-menu-button');
+      const menuButton = screen.getByTestId(
+        extractTestId(spec.ui_selectors.header.menu_button)
+      );
 
       // Open menu
       fireEvent.click(menuButton);
-      expect(screen.getByTestId('navigation-menu')).toBeInTheDocument();
+      expect(
+        screen.getByTestId(
+          extractTestId(spec.ui_selectors.navigation.navigation_menu)
+        )
+      ).toBeInTheDocument();
 
       // Close menu
       fireEvent.click(menuButton);
 
       // Assert
-      expect(screen.queryByTestId('navigation-menu')).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId(
+          extractTestId(spec.ui_selectors.navigation.navigation_menu)
+        )
+      ).not.toBeInTheDocument();
     });
   });
 });

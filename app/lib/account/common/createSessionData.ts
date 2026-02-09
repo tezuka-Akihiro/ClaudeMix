@@ -6,12 +6,15 @@
  * @responsibility セッションデータ生成（副作用なし）
  */
 
+import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { SessionData } from '~/specs/account/types';
+import type { AccountCommonSpec } from '~/specs/account/types';
 
 /**
- * Default session duration: 7 days in seconds (604800 seconds)
+ * Default session duration from account common spec
  */
-const DEFAULT_SESSION_DURATION_SECONDS = 604800;
+const commonSpec = loadSpec<AccountCommonSpec>('account/common');
+const DEFAULT_SESSION_DURATION_SECONDS = commonSpec.session.expiry.duration_seconds;
 
 /**
  * Create a new session data structure
