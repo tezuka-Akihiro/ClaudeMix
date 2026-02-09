@@ -96,7 +96,7 @@ graph TD
     ProfileDisplay --> ActionsSection["アクションセクション"]
 
     InfoSection --> EmailDisplay["メールアドレス表示"]
-    InfoSection --> DateDisplay["登録日時表示"]
+    InfoSection --> DateDisplay["有効期限表示"]
     InfoSection --> SubDisplay["サブスクリプション状態表示"]
 
     ActionsSection --> EmailBtn["メールアドレス変更ボタン"]
