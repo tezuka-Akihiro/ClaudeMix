@@ -84,6 +84,9 @@ test.describe('Account Subscription Management', () => {
       const purchaseButton = page.locator('[data-testid="subscribe-standard"]');
       await expect(purchaseButton).toBeVisible();
       await expect(purchaseButton).toContainText('購入');
+
+      // Verify "No Ads" is not displayed in features
+      await expect(planCard).not.toContainText('広告非表示');
     });
   });
 

@@ -33,6 +33,10 @@ test.describe('Account Profile Section', () => {
       await expect(page.locator('[data-testid="email-change-button"]')).toBeVisible();
       await expect(page.locator('[data-testid="password-change-button"]')).toBeVisible();
       await expect(page.locator('[data-testid="delete-account-button"]')).toBeVisible();
+
+      // Verify that "Expiry Date" label is present instead of "Registration Date"
+      await expect(page.locator(`text=${spec.profile_display.sections.info.fields.subscription_expiry.label}`)).toBeVisible();
+      await expect(page.locator('text=登録日')).not.toBeVisible();
     });
 
     test('should require authentication to access profile', async ({ page }) => {

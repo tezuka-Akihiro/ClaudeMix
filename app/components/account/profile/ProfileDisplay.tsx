@@ -22,7 +22,34 @@ export interface ProfileDisplaySpec {
             inactive: string;
           };
         };
-        created_at: { label: string };
+        subscription_expiry: { label: string };
+      };
+    };
+    subscription: {
+      title: string;
+      fields: {
+        status: {
+          label: string;
+          values: {
+            on: string;
+            off: string;
+          };
+        };
+        card: {
+          label: string;
+        };
+      };
+      buttons: {
+        interrupt: string;
+        resume: string;
+        delete_card: string;
+      };
+      messages: {
+        interrupt_confirm: string;
+        resume_notice: string;
+        delete_card_confirm: string;
+        delete_card_restriction: string;
+        delete_card_error: string;
       };
     };
     actions: {
@@ -53,7 +80,7 @@ export function ProfileDisplay({
   onPasswordChange,
   onDeleteAccount,
 }: ProfileDisplayProps) {
-  const { info, actions } = spec.sections;
+  const { info, subscription: subscriptionSpec, actions } = spec.sections;
   const fetcher = useFetcher();
 
   const isRenewalOn = subscription?.status === 'active' && !subscription.canceledAt;
@@ -62,7 +89,7 @@ export function ProfileDisplay({
 
   const handleToggleRenewal = () => {
     if (isRenewalOn) {
-      const confirmed = window.confirm(`中断しても ${nextBillingDate} までは全機能を利用可能です。次回の更新のみを停止します。よろしいですか？`);
+      const confirmed = window.confirm(subscriptionSpec.messages.interrupt_confirm.replace('{date}', nextBillingDate));
       if (confirmed) {
         fetcher.submit({ intent: 'interrupt-renewal' }, { method: 'post' });
       }
@@ -93,9 +120,11 @@ export function ProfileDisplay({
         </div>
 
         <div className="profile-info__item">
-          <div className="profile-info__label">{info.fields.created_at.label}</div>
+          <div className="profile-info__label">{info.fields.subscription_expiry.label}</div>
           <div className="profile-info__value">
-            {new Date(user.createdAt).toLocaleDateString('ja-JP')}
+            {subscription
+              ? new Date(subscription.currentPeriodEnd).toLocaleDateString('ja-JP')
+              : '-'}
           </div>
         </div>
       </div>
@@ -103,13 +132,15 @@ export function ProfileDisplay({
       {/* Subscription Settings Section */}
       {subscription && subscription.status !== 'inactive' && (
         <div className="profile-section profile-section-structure" data-testid="subscription-status-display">
-          <h3 className="profile-section__title">サブスクリプション設定</h3>
+          <h3 className="profile-section__title">{subscriptionSpec.title}</h3>
           <div className="profile-info-structure">
             <div className="profile-info__item">
-              <div className="profile-info__label">自動更新</div>
+              <div className="profile-info__label">{subscriptionSpec.fields.status.label}</div>
               <div className="profile-info__value">
                 <div className="flex flex-col gap-2">
-                  <span data-testid="renewal-status">{isRenewalOn ? 'ON' : 'OFF'}</span>
+                  <span data-testid="renewal-status">
+                    {isRenewalOn ? subscriptionSpec.fields.status.values.on : subscriptionSpec.fields.status.values.off}
+                  </span>
                   <button
                     type="button"
                     onClick={handleToggleRenewal}
@@ -117,11 +148,11 @@ export function ProfileDisplay({
                     disabled={fetcher.state !== 'idle'}
                     data-testid="renewal-toggle-button"
                   >
-                    {isRenewalOn ? '自動更新の中断に進む' : '自動更新を再開する'}
+                    {isRenewalOn ? subscriptionSpec.buttons.interrupt : subscriptionSpec.buttons.resume}
                   </button>
                   {isRenewalOff && (
                     <p className="text-sm text-gray-600" data-testid="next-billing-notice">
-                      次の決済日は {nextBillingDate} です（本日は決済されません）。
+                      {subscriptionSpec.messages.resume_notice.replace('{date}', nextBillingDate)}
                     </p>
                   )}
                 </div>
@@ -129,15 +160,15 @@ export function ProfileDisplay({
             </div>
 
             <div className="profile-info__item">
-              <div className="profile-info__label">カード情報</div>
+              <div className="profile-info__label">{subscriptionSpec.fields.card.label}</div>
               <div className="profile-info__value">
                 <div className="flex flex-col gap-2">
                   <button
                     type="button"
                     onClick={() => {
                       if (isRenewalOn) {
-                        alert('先に自動更新を中断してください');
-                      } else if (window.confirm('カード情報を削除します。よろしいですか？')) {
+                        alert(subscriptionSpec.messages.delete_card_error);
+                      } else if (window.confirm(subscriptionSpec.messages.delete_card_confirm)) {
                         fetcher.submit({ intent: 'delete-payment-method' }, { method: 'post' });
                       }
                     }}
@@ -145,11 +176,11 @@ export function ProfileDisplay({
                     disabled={fetcher.state !== 'idle'}
                     data-testid="delete-payment-method-button"
                   >
-                    カード情報を削除する
+                    {subscriptionSpec.buttons.delete_card}
                   </button>
                   {isRenewalOn && (
                     <p className="text-sm text-red-600" data-testid="card-deletion-disabled-notice">
-                      ※ 自動更新がONの状態では削除できません。
+                      {subscriptionSpec.messages.delete_card_restriction}
                     </p>
                   )}
                 </div>
