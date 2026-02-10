@@ -273,7 +273,7 @@ export default function Register() {
               {...getInputProps(fields.passwordConfirm, { type: 'password' })}
               className="form-field__input"
               autoComplete="new-password"
-              data-testid="confirm-password-input"
+              data-testid="password-confirm-input"
             />
             {fields.passwordConfirm.errors && (
               <span id={fields.passwordConfirm.errorId} className="error-message-structure" role="alert" data-testid="error-message">

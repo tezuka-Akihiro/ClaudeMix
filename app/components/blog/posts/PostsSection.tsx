@@ -72,6 +72,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
         <FilterToggleButton
           onClick={() => setIsFilterOpen(!isFilterOpen)}
           isOpen={isFilterOpen}
+          label={messages.filter.button_label}
         />
       )}
 
@@ -93,7 +94,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
       ) : (
         <>
           <div className="post-card-grid" data-testid="post-card-grid">
-            {posts.map((post) => {
+            {posts.map((post, index) => {
               // 公開カテゴリ以外は認証必須
               const isLocked = !isAuthenticated && !publicCategories.includes(post.category);
 
@@ -110,6 +111,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
                   isLocked={isLocked}
                   lockMessage={messages.lock_message}
                   dateSeparator={dateFormat.display_separator}
+                  isPriority={index < 2}
                 />
               );
             })}

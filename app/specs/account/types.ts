@@ -216,6 +216,33 @@ export interface AccountCommonSpec {
       description: string;
     }>;
   };
+  ui_selectors: {
+    layout: {
+      account_layout: string;
+      main_content: string;
+    };
+    navigation: {
+      account_nav: string;
+      nav_item: string;
+      nav_item_active: string;
+    };
+    auth: {
+      auth_guard: string;
+      loading_spinner: string;
+    };
+    form: {
+      form_field: string;
+      label: string;
+      input: string;
+      error_text: string;
+      button: string;
+    };
+    error: {
+      error_message: string;
+      error_icon: string;
+      close_button: string;
+    };
+  };
   validation: {
     required: {
       error_message: string;
@@ -1336,16 +1363,17 @@ export interface AccountSubscriptionSpec {
         mobile: string;
       };
     };
-    cancel_modal: {
-      title: string;
-      width: {
-        desktop: string;
-        mobile: string;
+    renewal_toggle: {
+      interrupt: {
+        button_label: string;
+        modal_title: string;
+        confirmation_message: string;
+        confirm_button: string;
       };
-      padding: string;
-      border_radius: string;
-      warning_message: string;
-      info_message: string;
+      resume: {
+        button_label: string;
+        annotation: string;
+      };
     };
   };
   forms: {
@@ -1556,12 +1584,10 @@ export interface AccountSubscriptionSpec {
     };
     selectors: {
       plan_selector: string;
-      plan_card_1month: string;
-      plan_card_3months: string;
-      plan_card_6months: string;
-      subscribe_1month: string;
-      subscribe_3months: string;
-      subscribe_6months: string;
+      plan_card_standard: string;
+      plan_card_supporter: string;
+      subscribe_standard: string;
+      subscribe_supporter: string;
       subscription_status: string;
       status_badge: string;
       cancel_subscription_button: string;

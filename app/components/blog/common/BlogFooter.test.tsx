@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import BlogFooter from '~/components/blog/common/BlogFooter';
 import { loadSpec } from 'tests/utils/loadSpec';
 import type { BlogCommonSpec } from '~/specs/blog/types';
-import { extractTestId } from '~/lib/blog/common/extractTestId';
+import { extractTestId } from '~/lib/utils/extractTestId';
 
 let spec: BlogCommonSpec;
 

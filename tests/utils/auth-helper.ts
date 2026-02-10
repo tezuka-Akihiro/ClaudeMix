@@ -33,7 +33,7 @@ export async function createAuthenticatedUser(
   if (useTestId) {
     await page.fill('[data-testid="email-input"]', email);
     await page.fill('[data-testid="password-input"]', password);
-    await page.fill('[data-testid="confirm-password-input"]', password);
+    await page.fill('[data-testid="password-confirm-input"]', password);
     await page.click('[data-testid="submit-button"]');
   } else {
     await page.fill('input[name="email"]', email);

@@ -4,7 +4,7 @@
 import React from 'react';
 import { data as defaultSpec } from '~/generated/specs/blog/common';
 import type { BlogCommonSpec } from '~/specs/blog/types';
-import { extractTestId } from '~/lib/blog/common/extractTestId';
+import { extractTestId } from '~/lib/utils/extractTestId';
 
 interface BlogFooterProps {
   copyright: string;

@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { data as defaultSpec } from '~/generated/specs/blog/common';
 import type { BlogCommonSpec } from '~/specs/blog/types';
-import { extractTestId } from '~/lib/blog/common/extractTestId';
+import { extractTestId } from '~/lib/utils/extractTestId';
 
 interface ThemeToggleButtonProps {
   spec?: BlogCommonSpec;
@@ -40,6 +40,7 @@ export const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ spec = def
       <button
         className="blog-header__theme-button"
         aria-hidden="true"
+        tabIndex={-1}
         data-testid={extractTestId(spec.ui_selectors.header.theme_toggle_button)}
       >
         <div className="w-5 h-5" />

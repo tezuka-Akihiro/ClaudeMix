@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { loadSpec, type AccountAuthenticationSpec } from '../../utils/loadSpec';
 import { createAuthenticatedUser, generateUniqueEmail } from '../../utils/auth-helper';
+import { extractTestId } from '~/lib/utils/extractTestId';
 
 /**
  * E2E Test: Account Authentication Section
@@ -27,7 +28,7 @@ test.describe('Account Authentication - Happy Path', () => {
 
     test('should display registration form', async ({ page }) => {
       // Navigate to registration page
-      await page.goto('/register');
+      await page.goto(spec.routes.register.path);
 
       // Verify page title (contains registration title)
       const titlePattern = new RegExp(spec.routes.register.title);
@@ -38,39 +39,39 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(form).toBeVisible();
 
       // Verify form fields
-      const emailInput = page.locator('input[name="email"]');
+      const emailInput = page.getByTestId(extractTestId(spec.test.selectors.email_input));
       await expect(emailInput).toBeVisible();
       await expect(emailInput).toHaveAttribute('type', 'email');
 
-      const passwordInput = page.locator('input[name="password"]');
+      const passwordInput = page.getByTestId(extractTestId(spec.test.selectors.password_input));
       await expect(passwordInput).toBeVisible();
       await expect(passwordInput).toHaveAttribute('type', 'password');
 
-      const confirmPasswordInput = page.locator('input[name="passwordConfirm"]');
+      const confirmPasswordInput = page.getByTestId(extractTestId(spec.test.selectors.password_confirm_input));
       await expect(confirmPasswordInput).toBeVisible();
       await expect(confirmPasswordInput).toHaveAttribute('type', 'password');
 
       // Verify submit button
-      const submitButton = page.locator('button[type="submit"]');
+      const submitButton = page.getByTestId(extractTestId(spec.test.selectors.submit_button));
       await expect(submitButton).toBeVisible();
       await expect(submitButton).toContainText(spec.forms.register.submit_button.label);
     });
 
     test('should register new user successfully', async ({ page }) => {
       // Navigate to registration page
-      await page.goto('/register');
+      await page.goto(spec.routes.register.path);
 
       // Fill in registration form with unique email
       const email = generateUniqueEmail('newuser');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'Password123');
-      await page.fill('input[name="passwordConfirm"]', 'Password123');
+      await page.getByTestId(extractTestId(spec.test.selectors.email_input)).fill(email);
+      await page.getByTestId(extractTestId(spec.test.selectors.password_input)).fill('Password123');
+      await page.getByTestId(extractTestId(spec.test.selectors.password_confirm_input)).fill('Password123');
 
       // Submit form
-      await page.click('button[type="submit"]');
+      await page.getByTestId(extractTestId(spec.test.selectors.submit_button)).click();
 
       // Verify redirect to account page
-      await expect(page).toHaveURL('/account');
+      await expect(page).toHaveURL(spec.server_io.action.default_redirect);
 
       // Verify user is authenticated
       const accountLayout = page.locator('[data-testid="account-layout"]');
@@ -79,19 +80,19 @@ test.describe('Account Authentication - Happy Path', () => {
 
     test('should show error when passwords do not match', async ({ page }) => {
       // Navigate to registration page
-      await page.goto('/register');
+      await page.goto(spec.routes.register.path);
 
       // Fill in registration form with mismatched passwords
       const email = generateUniqueEmail('mismatch');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'Password123');
-      await page.fill('input[name="passwordConfirm"]', 'DifferentPassword123');
+      await page.getByTestId(extractTestId(spec.test.selectors.email_input)).fill(email);
+      await page.getByTestId(extractTestId(spec.test.selectors.password_input)).fill('Password123');
+      await page.getByTestId(extractTestId(spec.test.selectors.password_confirm_input)).fill('DifferentPassword123');
 
       // Submit form
-      await page.click('button[type="submit"]');
+      await page.getByTestId(extractTestId(spec.test.selectors.submit_button)).click();
 
       // Verify error message is displayed
-      const errorMessage = page.locator('[data-testid="error-message"]');
+      const errorMessage = page.getByTestId(extractTestId(spec.test.selectors.error_message)).first();
       await expect(errorMessage).toBeVisible();
       await expect(errorMessage).toContainText(spec.validation.password_confirm.error_messages.mismatch);
     });
@@ -103,7 +104,7 @@ test.describe('Account Authentication - Happy Path', () => {
 
     test('should display login form', async ({ page }) => {
       // Navigate to login page
-      await page.goto('/login');
+      await page.goto(spec.routes.login.path);
 
       // Verify page title (contains login title)
       const loginTitlePattern = new RegExp(spec.routes.login.title);
@@ -114,16 +115,16 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(form).toBeVisible();
 
       // Verify form fields
-      const emailInput = page.locator('input[name="email"]');
+      const emailInput = page.getByTestId(extractTestId(spec.test.selectors.email_input));
       await expect(emailInput).toBeVisible();
       await expect(emailInput).toHaveAttribute('type', 'email');
 
-      const passwordInput = page.locator('input[name="password"]');
+      const passwordInput = page.getByTestId(extractTestId(spec.test.selectors.password_input));
       await expect(passwordInput).toBeVisible();
       await expect(passwordInput).toHaveAttribute('type', 'password');
 
       // Verify submit button
-      const submitButton = page.locator('button[type="submit"]');
+      const submitButton = page.getByTestId(extractTestId(spec.test.selectors.submit_button));
       await expect(submitButton).toBeVisible();
       await expect(submitButton).toContainText(spec.forms.login.submit_button.label);
     });
@@ -135,19 +136,19 @@ test.describe('Account Authentication - Happy Path', () => {
       await createAuthenticatedUser(page, { email, password });
 
       // Logout
-      await page.goto('/logout');
-      await expect(page).toHaveURL('/login');
+      await page.goto(spec.routes.logout.path);
+      await expect(page).toHaveURL(spec.routes.logout.redirect_after);
 
       // Now test login
-      await page.goto('/login');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
+      await page.goto(spec.routes.login.path);
+      await page.getByTestId(extractTestId(spec.test.selectors.email_input)).fill(email);
+      await page.getByTestId(extractTestId(spec.test.selectors.password_input)).fill(password);
 
       // Submit form
-      await page.click('button[type="submit"]');
+      await page.getByTestId(extractTestId(spec.test.selectors.submit_button)).click();
 
       // Verify redirect to account page
-      await expect(page).toHaveURL('/account');
+      await expect(page).toHaveURL(spec.server_io.action.default_redirect);
 
       // Verify user is authenticated
       const accountLayout = page.locator('[data-testid="account-layout"]');
@@ -156,18 +157,18 @@ test.describe('Account Authentication - Happy Path', () => {
 
     test('should show error when credentials are invalid', async ({ page }) => {
       // Navigate to login page
-      await page.goto('/login');
+      await page.goto(spec.routes.login.path);
 
       // Fill in login form with invalid credentials (non-existent user)
       const email = generateUniqueEmail('nonexistent');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'Wrong123');
+      await page.getByTestId(extractTestId(spec.test.selectors.email_input)).fill(email);
+      await page.getByTestId(extractTestId(spec.test.selectors.password_input)).fill('Wrong123');
 
       // Submit form
-      await page.click('button[type="submit"]');
+      await page.getByTestId(extractTestId(spec.test.selectors.submit_button)).click();
 
       // Verify error message is displayed
-      const errorMessage = page.locator('[data-testid="error-message"]');
+      const errorMessage = page.getByTestId(extractTestId(spec.test.selectors.error_message));
       await expect(errorMessage).toBeVisible();
       await expect(errorMessage).toContainText(spec.error_messages.authentication.invalid_credentials);
     });
@@ -179,18 +180,19 @@ test.describe('Account Authentication - Happy Path', () => {
       await createAuthenticatedUser(page, { email, password });
 
       // Logout
-      await page.goto('/logout');
+      await page.goto(spec.routes.logout.path);
 
       // Try to access protected page without authentication
       await page.goto('/account/settings');
 
       // Verify redirect to login with redirect-url parameter
-      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fsettings$/);
+      const expectedUrlPattern = new RegExp(`${spec.routes.login.path}\\?${spec.routes.login.redirect_param}=%2Faccount%2Fsettings$`);
+      await expect(page).toHaveURL(expectedUrlPattern);
 
       // Login
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'Password123');
-      await page.click('button[type="submit"]');
+      await page.getByTestId(extractTestId(spec.test.selectors.email_input)).fill(email);
+      await page.getByTestId(extractTestId(spec.test.selectors.password_input)).fill('Password123');
+      await page.getByTestId(extractTestId(spec.test.selectors.submit_button)).click();
 
       // Verify redirect to original page
       await expect(page).toHaveURL('/account/settings');
@@ -208,16 +210,17 @@ test.describe('Account Authentication - Happy Path', () => {
       await createAuthenticatedUser(page, { email, password });
 
       // Navigate to logout
-      await page.goto('/logout');
+      await page.goto(spec.routes.logout.path);
 
       // Verify redirect to login page
-      await expect(page).toHaveURL('/login');
+      await expect(page).toHaveURL(spec.routes.logout.redirect_after);
 
       // Try to access protected page
       await page.goto('/account');
 
       // Verify redirect to login (session destroyed, URL-encoded)
-      await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount$/);
+      const expectedUrlPattern = new RegExp(`${spec.routes.login.path}\\?${spec.routes.login.redirect_param}=%2Faccount$`);
+      await expect(page).toHaveURL(expectedUrlPattern);
     });
   });
 
@@ -227,7 +230,7 @@ test.describe('Account Authentication - Happy Path', () => {
 
     test('should display Google login button on login page', async ({ page }) => {
       // Navigate to login page
-      await page.goto('/login');
+      await page.goto(spec.routes.login.path);
 
       // Verify Google login button is displayed
       const googleButton = page.locator('[data-testid="google-login-button"]');
@@ -236,12 +239,12 @@ test.describe('Account Authentication - Happy Path', () => {
 
       // Verify button links to /auth/google with redirect-url parameter
       const href = await googleButton.getAttribute('href');
-      expect(href).toContain('/auth/google?redirect-url=');
+      expect(href).toContain(`/auth/google?${spec.routes.login.redirect_param}=`);
     });
 
     test('should not display Apple login button on login page', async ({ page }) => {
       // Navigate to login page
-      await page.goto('/login');
+      await page.goto(spec.routes.login.path);
 
       // Verify Apple login button is NOT displayed (removed)
       const appleButton = page.locator('[data-testid="apple-login-button"]');
@@ -250,18 +253,18 @@ test.describe('Account Authentication - Happy Path', () => {
 
     test('should redirect to login with error when CSRF state mismatch', async ({ page }) => {
       // Simulate callback with mismatched state (no oauth_state cookie set)
-      await page.goto('/auth/callback/google?code=test_code&state=invalid_state');
+      await page.goto(`/auth/callback/google?code=test_code&state=invalid_state`);
 
       // Verify redirect to login with error
-      await expect(page).toHaveURL(/\/login\?error=csrf-detected/);
+      await expect(page).toHaveURL(new RegExp(`${spec.routes.login.path}\\?error=csrf-detected`));
     });
 
     test('should redirect to login with error when OAuth params missing', async ({ page }) => {
       // Simulate callback without required parameters
-      await page.goto('/auth/callback/google');
+      await page.goto(`/auth/callback/google`);
 
       // Verify redirect to login with error
-      await expect(page).toHaveURL(/\/login\?error=oauth-invalid/);
+      await expect(page).toHaveURL(new RegExp(`${spec.routes.login.path}\\?error=oauth-invalid`));
     });
   });
 
@@ -281,7 +284,7 @@ test.describe('Account Authentication - Happy Path', () => {
       // Verify still authenticated
       const accountLayout = page.locator('[data-testid="account-layout"]');
       await expect(accountLayout).toBeVisible();
-      await expect(page).toHaveURL('/account');
+      await expect(page).toHaveURL(spec.server_io.action.default_redirect);
     });
   });
 });

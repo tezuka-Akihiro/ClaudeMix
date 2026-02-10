@@ -5,14 +5,19 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-// セルフホスティングフォント (Lighthouse最適化: 外部リクエスト削減)
-import "@fontsource/oswald/400.css";
-import "@fontsource/oswald/500.css";
-import "@fontsource/oswald/700.css";
+import type { LinksFunction } from "@remix-run/node";
 
-export function links() {
-  return [];
-}
+// セルフホスティングフォント: サブセット化されたwoff2を優先的に読み込む
+// ?url を使用して Link タグで管理することで、ブラウザの優先度制御を最適化
+import oswald400 from "@fontsource/oswald/400.css?url";
+import oswald500 from "@fontsource/oswald/500.css?url";
+import oswald700 from "@fontsource/oswald/700.css?url";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: oswald400 },
+  { rel: "stylesheet", href: oswald500 },
+  { rel: "stylesheet", href: oswald700 },
+];
 
 export default function App() {
   return (

@@ -32,7 +32,7 @@ const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({
         disabled={isLoading}
         className="load-more-button"
         data-testid="load-more-button"
-        aria-label={ariaLabel}
+        aria-label={`${messages.button_label} (${ariaLabel})`}
         aria-busy={isLoading}
       >
         {isLoading ? (
