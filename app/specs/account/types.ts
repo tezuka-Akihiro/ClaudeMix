@@ -372,6 +372,8 @@ export interface AccountAuthenticationSpec {
         register: string;
         login: string;
         logout: string;
+        send_otp: string;
+        verify_otp: string;
       };
     };
   };
@@ -390,6 +392,10 @@ export interface AccountAuthenticationSpec {
       redirect_after: string;
     };
     forgot_password: {
+      path: string;
+      title: string;
+    };
+    otp_verify: {
       path: string;
       title: string;
     };
@@ -488,6 +494,49 @@ export interface AccountAuthenticationSpec {
       };
       success_message: string;
     };
+    send_otp: {
+      fields: {
+        email: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          autocomplete: string;
+          required: boolean;
+        };
+      };
+      submit_button: {
+        label: string;
+        loading_label: string;
+      };
+    };
+    otp_verify: {
+      fields: {
+        otp_code: {
+          name: string;
+          label: string;
+          type: string;
+          placeholder: string;
+          inputmode: string;
+          maxlength: number;
+          autocomplete: string;
+          required: boolean;
+        };
+      };
+      submit_button: {
+        label: string;
+        loading_label: string;
+      };
+      links: {
+        resend: {
+          label: string;
+        };
+        back: {
+          label: string;
+          path: string;
+        };
+      };
+    };
   };
   validation: {
     email: {
@@ -511,6 +560,16 @@ export interface AccountAuthenticationSpec {
         mismatch: string;
       };
     };
+    otp: {
+      length: number;
+      pattern: string;
+      error_messages: {
+        required: string;
+        invalid_format: string;
+        expired: string;
+        max_attempts: string;
+      };
+    };
   };
   error_messages: {
     authentication: {
@@ -521,6 +580,13 @@ export interface AccountAuthenticationSpec {
     registration: {
       email_exists: string;
       creation_failed: string;
+    };
+    otp: {
+      invalid_code: string;
+      expired: string;
+      max_attempts_exceeded: string;
+      send_failed: string;
+      rate_limited: string;
     };
     oauth: {
       not_configured: string;
@@ -552,6 +618,10 @@ export interface AccountAuthenticationSpec {
     };
     logout: {
       completed: string;
+    };
+    otp: {
+      code_sent: string;
+      login_completed: string;
     };
   };
   oauth: {
@@ -600,6 +670,19 @@ export interface AccountAuthenticationSpec {
     rate_limit: {
       enabled: boolean;
       max_requests_per_minute: number;
+    };
+  };
+  otp_config: {
+    ttl_seconds: number;
+    max_attempts: number;
+    code_length: number;
+    kv_key_prefix: string;
+  };
+  rate_limit: {
+    otp_send: {
+      max_requests: number;
+      window_seconds: number;
+      kv_key_prefix: string;
     };
   };
   database: {
@@ -685,6 +768,13 @@ export interface AccountAuthenticationSpec {
       password_confirm_input: string;
       submit_button: string;
       error_message: string;
+      otp_email_input: string;
+      otp_send_button: string;
+      otp_code_input: string;
+      otp_verify_button: string;
+      otp_resend_link: string;
+      otp_back_link: string;
+      password_login_link: string;
     };
   };
 }
