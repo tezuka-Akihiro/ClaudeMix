@@ -26,8 +26,8 @@ Step 2: 記事内容を分析する
 Step 3: タグを選定する
   → 2-5個推奨（技術要素 + 性質）
 
-Step 4: カテゴリを選定する
-  → 記事の価値に基づいて判断
+Step 4: 有料区分（ペイウォール）の設定
+  → 制限カテゴリの場合の freeContentHeading の決定
 
 Step 5: Frontmatterを生成する
   → YAML形式で出力
@@ -111,28 +111,43 @@ Step 5: Frontmatterを生成する
 
 ### Step 3: カテゴリを選定
 
-記事の価値と内容に基づいて、適切なカテゴリを選定してください：
+記事の価値と内容に基づいて、適切なカテゴリを選定してください。
+※ `blog-writer` スキルでは、以下の3つの価値カテゴリのみを扱います。
 
 ```xml
 <category_selection>
-  <claude_best_practices>
-    <description>実装・トラブルシュートから得たベストプラクティス</description>
-    <use_case>トラブルシュート起因の記事の大半（60-70%）</use_case>
-  </claude_best_practices>
-
-  <claudemix_philosophy>
-    <description>設計思想・アーキテクチャ哲学・学んだことまとめ</description>
-    <use_case>月1回の「学んだことまとめ記事」（5-10%）</use_case>
-  </claudemix_philosophy>
-
-  <tutorials_use_cases>
-    <description>機能追加・改修のチュートリアル</description>
-    <use_case>新機能追加・機能改修の記事（20-30%）</use_case>
-  </tutorials_use_cases>
+  <category name="ClaudeMix ガイド">
+    <description>Claude Code公式ドキュメントの翻訳・まとめ</description>
+  </category>
+  <category name="ClaudeMix 記録">
+    <description>トラブルシュート・最適化の実践ログ</description>
+  </category>
+  <category name="ClaudeMix 考察">
+    <description>設計思想・リファクタリングから得た知見</description>
+  </category>
 </category_selection>
 ```
 
-### Step 4: Frontmatterを生成
+### Step 4: 有料区分（ペイウォール）の設定
+
+本スキルで扱うカテゴリはすべてログイン必須となるため、ペイウォールの設定が必要です。
+
+```xml
+<paywall_setting>
+  <rule>
+    Frontmatter に freeContentHeading を含める必要があります。
+  </rule>
+  <definition>
+    freeContentHeading: 記事内の「無料公開分」と「有料（ログイン必須）分」を隔てる見出しの文字列。
+  </definition>
+  <selection_criteria>
+    - 通常、導入部の最後や、最初の技術解説の直前の見出しを選択します。
+    - 例: "課題と解決策", "具体的な実装方法" など。
+  </selection_criteria>
+</paywall_setting>
+```
+
+### Step 5: Frontmatterを生成
 
 以下のフォーマットで出力してください：
 
@@ -154,7 +169,8 @@ Step 5: Frontmatterを生成する
 
 - [ ] spec.yamlを読み込んで既存タグを確認した
 - [ ] タグを2-5個選定した（技術要素 + 性質）
-- [ ] カテゴリを適切に選定した
+- [ ] カテゴリを適切に選定した（ガイド、記録、考察のいずれか）
+- [ ] freeContentHeading を選定した
 - [ ] タイトルは具体的で60文字以内
 - [ ] descriptionは1-2文で120-160文字以内
 
@@ -167,8 +183,9 @@ title: "[記事タイトル]"
 description: "[1-2文の説明]"
 author: "ClaudeMix Team"
 publishedAt: "YYYY-MM-DD"
-category: "[Claude Best Practices | ClaudeMix Philosophy | Tutorials & Use Cases]"
+category: "[ClaudeMix ガイド | ClaudeMix 記録 | ClaudeMix 考察]"
 tags: ["tag1", "tag2", "tag3"]
+freeContentHeading: "[無料分の終わりの見出し文字列]" # 必須
 ---
 ```
 
