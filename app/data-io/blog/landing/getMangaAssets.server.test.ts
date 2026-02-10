@@ -63,18 +63,18 @@ describe('getMangaAssets - Side Effects Layer', () => {
 
       // Assert
       result.forEach(asset => {
-        expect(asset.path).toMatch(/^\/images\/blog\/landing\/engineer\/manga\/.+\.(webp|png|jpg|jpeg)$/);
+        expect(asset.path).toMatch(/^\/images\/blog\/landing\/engineer\/manga\/.+\.avif$/);
       });
     });
 
-    it('should filter only image files (webp, png, jpg, jpeg)', async () => {
+    it('should filter only image files (avif)', async () => {
       // Act
       const result = await getMangaAssets('engineer');
 
       // Assert
       result.forEach(asset => {
         const ext = asset.fileName.toLowerCase().slice(asset.fileName.lastIndexOf('.'));
-        expect(['.webp', '.png', '.jpg', '.jpeg']).toContain(ext);
+        expect(['.avif']).toContain(ext);
       });
     });
 
@@ -102,17 +102,17 @@ describe('getMangaAssets - Side Effects Layer', () => {
       const result = await getMangaAssets('engineer');
 
       // Assert
-      // panel-01.webp, panel-02.webp, ... panel-08.webp = 8 files
+      // panel-01.avif, panel-02.avif, ... panel-08.avif = 8 files
       expect(result.length).toBe(8);
     });
 
-    it('should include panel-01.webp as first asset', async () => {
+    it('should include panel-01.avif as first asset', async () => {
       // Act
       const result = await getMangaAssets('engineer');
 
       // Assert
       expect(result.length).toBeGreaterThan(0);
-      expect(result[0].fileName).toBe('panel-01.webp');
+      expect(result[0].fileName).toBe('panel-01.avif');
       expect(result[0].order).toBe(1);
     });
   });

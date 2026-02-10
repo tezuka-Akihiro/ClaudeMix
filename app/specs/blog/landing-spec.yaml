@@ -45,7 +45,7 @@ cta:
 # 性能設定
 performance:
   critical_css_inline: true                       # Above-the-fold領域のCSSインライン化
-  image_format: "webp"                            # 画像形式
+  image_format: "avif"                            # 画像形式
   lazy_load: true                                 # 遅延ロード
 
 # アクセシビリティ設定

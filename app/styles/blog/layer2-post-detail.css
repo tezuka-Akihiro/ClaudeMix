@@ -71,8 +71,6 @@
     border: var(--border-width-sm) solid var(--color-interactive-primary);
     border-radius: 0;
     box-shadow: 0 0 var(--shadow-blur-sm) var(--color-interactive-primary-bg);
-    backdrop-filter: blur(var(--blur-glass-effect));
-    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
   }
 
   /* Inline code */
@@ -332,8 +330,6 @@
     background-color: var(--color-interactive-primary-bg-faint);
     border: var(--border-width-sm) solid var(--color-interactive-primary);
     padding: var(--spacing-4);
-    backdrop-filter: blur(var(--blur-glass-effect));
-    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
   }
 
   /* ペイウォールメッセージ */

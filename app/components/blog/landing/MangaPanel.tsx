@@ -17,6 +17,7 @@ const MangaPanel: React.FC<MangaPanelProps> = ({ asset, loading = 'lazy', altLab
         src={asset.path}
         alt={`${altLabel} ${asset.order}`}
         loading={loading}
+        decoding="async"
         width="400"
         height="300"
       />

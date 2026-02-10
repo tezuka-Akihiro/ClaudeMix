@@ -156,8 +156,6 @@
     width: 100vw;
     height: 100vh;
     z-index: var(--z-index-modal-overlay);
-    backdrop-filter: blur(var(--blur-glass-effect));
-    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
   }
 
   /* FilterPanel - Modal panel container */
@@ -231,8 +229,6 @@
     box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
     padding: var(--spacing-2);
     z-index: var(--z-index-dropdown);
-    backdrop-filter: blur(var(--blur-glass-effect));
-    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     max-height: var(--dropdown-max-height);
     overflow-y: auto;
     animation: dropdownFadeIn var(--transition-duration-fast) var(--transition-timing-function-default);
