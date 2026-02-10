@@ -1,0 +1,645 @@
+
+> ClaudeMix@1.0.0 dev:wrangler
+> npm run build && wrangler pages dev ./build/client
+
+
+> ClaudeMix@1.0.0 prebuild
+> npm run lint:md && npm run lint:blog-metadata && node scripts/prebuild/generate-blog-posts.js && node scripts/prebuild/generate-specs.js && node scripts/prebuild/generate-landing-content.js
+
+
+> ClaudeMix@1.0.0 lint:md
+> markdownlint "content/blog/**/*.md" --fix
+
+
+> ClaudeMix@1.0.0 lint:blog-metadata
+> node scripts/lint-blog-metadata/engine.js content/blog/posts
+
+🚀 Blog Metadata Linter を初期化中...
+📦 Frontmatterルール 2 個を登録
+🎯 Metadataルール 4 個を登録
+🔍 FreeContentHeadingルール 2 個を登録
+✅ 初期化完了
+
+📄 ファイルリストを構築中...
+📊 60 ファイルを検査します
+
+🔍 検査実行中...
+✅ 検査完了
+
+==================================================
+📈 実行サマリー
+==================================================
+検査ファイル数: 60
+検出問題数: 0
+  エラー: 0
+  警告: 0
+  情報: 0
+
+💾 Lint結果を /app/tests/lint/blog-metadata-report.md に保存しました
+📋 詳細は /app/tests/lint/blog-metadata-report.md を確認してください
+🚀 Starting blog posts generation...
+⚡ Initializing Shiki highlighter...
+✅ Shiki highlighter ready
+📝 Found 60 markdown files
+   🔄 Converting: about-claudemix
+   ✅ Completed: about-claudemix (34ms)
+   🔄 Converting: ai-remix-react-history-ssr
+   ✅ Completed: ai-remix-react-history-ssr (413ms) [Paywall]
+   🔄 Converting: CLAUDEmd-guide
+   ✅ Completed: CLAUDEmd-guide (5ms)
+   🔄 Converting: blog-metadata-lint-system
+   ✅ Completed: blog-metadata-lint-system (544ms) [Paywall]
+   🔄 Converting: best-practices
+   ✅ Completed: best-practices (4ms)
+   🔄 Converting: auth-foundation-web-standards
+   ✅ Completed: auth-foundation-web-standards (166ms) [Paywall]
+   🔄 Converting: claude-md-refactoring
+   ✅ Completed: claude-md-refactoring (66ms) [Paywall]
+   🔄 Converting: category
+   ✅ Completed: category (2ms)
+   🔄 Converting: claudemix-qa
+   ✅ Completed: claudemix-qa (4ms)
+   🔄 Converting: cloudflare-pages-custom-domain-migration
+   ✅ Completed: cloudflare-pages-custom-domain-migration (4ms)
+   🔄 Converting: cloudflare-pages-deployment-challenge
+   ✅ Completed: cloudflare-pages-deployment-challenge (309ms) [Paywall]
+   🔄 Converting: cloudflare-workers-shiki-build-time-html
+   ✅ Completed: cloudflare-workers-shiki-build-time-html (67ms) [Paywall]
+   🔄 Converting: e2e-test-wait-for-timeout-banned
+   ✅ Completed: e2e-test-wait-for-timeout-banned (92ms) [Paywall]
+   🔄 Converting: e2e-test-wrangler-windows-token-waste
+   ✅ Completed: e2e-test-wrangler-windows-token-waste (143ms) [Paywall]
+   🔄 Converting: get-off-the-bike-and-look-at-the-map
+   ✅ Completed: get-off-the-bike-and-look-at-the-map (1ms)
+   🔄 Converting: jamstack-prebuild-architecture
+   ✅ Completed: jamstack-prebuild-architecture (44ms) [Mermaid] [Paywall]
+   🔄 Converting: hazimemasite
+   ✅ Completed: hazimemasite (2ms)
+   🔄 Converting: lighthouse-99-not-100-optimization-strategy
+   ✅ Completed: lighthouse-99-not-100-optimization-strategy (140ms) [Paywall]
+   🔄 Converting: filling-the-void-of-why-now
+   ✅ Completed: filling-the-void-of-why-now (1ms)
+   🔄 Converting: lighthouse-auth-impact-results
+   ✅ Completed: lighthouse-auth-impact-results (46ms) [Paywall]
+   🔄 Converting: lighthouse-css-optimization-route-splitting
+   ✅ Completed: lighthouse-css-optimization-route-splitting (193ms) [Paywall]
+   🔄 Converting: lighthouse-impact-assessment-after-auth
+   ✅ Completed: lighthouse-impact-assessment-after-auth (41ms) [Paywall]
+   🔄 Converting: lighthouse-mobile-optimization-perfect-score
+   ✅ Completed: lighthouse-mobile-optimization-perfect-score (92ms) [Paywall]
+   🔄 Converting: lighthouse-javascript-optimization-challenges
+   ✅ Completed: lighthouse-javascript-optimization-challenges (117ms) [Paywall]
+   🔄 Converting: link
+   ✅ Completed: link (2ms)
+   🔄 Converting: prompts-guide
+   ✅ Completed: prompts-guide (3ms)
+   🔄 Converting: privacy
+   ✅ Completed: privacy (2ms)
+   🔄 Converting: quantify-yourself-before-divination
+   ✅ Completed: quantify-yourself-before-divination (1ms)
+   🔄 Converting: mcp-guide
+   ✅ Completed: mcp-guide (9ms)
+   🔄 Converting: react-hooks-cloudflare-workers-challenge
+   ✅ Completed: react-hooks-cloudflare-workers-challenge (32ms) [Paywall]
+   🔄 Converting: refactoring-single-source-of-truth
+   ✅ Completed: refactoring-single-source-of-truth (96ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-domain-knowledge
+   ✅ Completed: refactoring-typescript-types-domain-knowledge (11ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-final-touches
+   ✅ Completed: refactoring-typescript-types-final-touches (38ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-single-source-of-truth
+   ✅ Completed: refactoring-typescript-types-single-source-of-truth (16ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-with-ai
+   ✅ Completed: refactoring-typescript-types-with-ai (13ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-summary
+   ✅ Completed: refactoring-typescript-types-summary (10ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-separation-of-concerns
+   ✅ Completed: refactoring-typescript-types-separation-of-concerns (12ms) [Paywall]
+   🔄 Converting: remix-css-loading-issue
+   ✅ Completed: remix-css-loading-issue (85ms) [Paywall]
+   🔄 Converting: remix-resource-route-ogp-wasm-issue
+   ✅ Completed: remix-resource-route-ogp-wasm-issue (31ms) [Paywall]
+   🔄 Converting: remix-vite-import-meta-glob-debug
+   ✅ Completed: remix-vite-import-meta-glob-debug (37ms) [Mermaid] [Paywall]
+   🔄 Converting: remix-cloudflare-workers-ogp-generation
+   ✅ Completed: remix-cloudflare-workers-ogp-generation (76ms) [Paywall]
+   🔄 Converting: responsibility-gap-and-anti-excessive-advertising
+   ✅ Completed: responsibility-gap-and-anti-excessive-advertising (1ms)
+   🔄 Converting: rules-guide
+   ✅ Completed: rules-guide (4ms)
+   🔄 Converting: seminar-2025-12-05
+   ✅ Completed: seminar-2025-12-05 (1ms)
+   🔄 Converting: seminar-2025-12-16
+   ✅ Completed: seminar-2025-12-16 (2ms)
+   🔄 Converting: seminar-2026-01-22
+   ✅ Completed: seminar-2026-01-22 (1ms)
+   🔄 Converting: shinanai-gijutsu
+   ✅ Completed: shinanai-gijutsu (1ms)
+   🔄 Converting: seminar-2026-01-08
+   ✅ Completed: seminar-2026-01-08 (1ms)
+   🔄 Converting: starthub-prof
+   ✅ Completed: starthub-prof (2ms)
+   🔄 Converting: skills-guide
+   ✅ Completed: skills-guide (14ms)
+   🔄 Converting: stripe-agent-runaway-incident
+   ✅ Completed: stripe-agent-runaway-incident (49ms) [Paywall]
+   🔄 Converting: stripe-payment-review-survival-strategy
+   ✅ Completed: stripe-payment-review-survival-strategy (12ms)
+   🔄 Converting: subagent-guide
+   ✅ Completed: subagent-guide (15ms)
+   🔄 Converting: terms
+   ✅ Completed: terms (1ms)
+   🔄 Converting: test-e2e-filter
+   ✅ Completed: test-e2e-filter (35ms) [Paywall]
+   🔄 Converting: test-e2e-no-tags
+   ✅ Completed: test-e2e-no-tags (7ms)
+   🔄 Converting: test-design-and-decision-making
+   ✅ Completed: test-design-and-decision-making (4ms)
+   🔄 Converting: seminar-2026-01-21
+   ✅ Completed: seminar-2026-01-21 (1ms)
+   🔄 Converting: thumbnail-repository-decoupling
+   ✅ Completed: thumbnail-repository-decoupling (23ms) [Paywall]
+   🔄 Converting: seminar-2026-01-17
+   ✅ Completed: seminar-2026-01-17 (1ms)
+✅ Parsed 60 posts
+✅ Final post count: 60
+✅ Loaded 5 categories
+✅ Generated /app/app/generated/blog-posts.ts
+📦 Bundle contains 60 posts and 5 categories
+✨ Blog posts generation completed successfully!
+
+📊 Summary:
+   - Posts: 60
+   - Categories: 5
+🚀 Starting Advanced Specs Generation...
+   ✅ Generated: shared/project.ts
+   ✅ Generated: shared/responsive.ts
+   ✅ Generated: shared/server.ts
+   ✅ Generated: shared/ui-patterns.ts
+   ✅ Generated: shared/validation.ts
+   ✅ Generated: account/common.ts
+   ✅ Generated: account/authentication.ts
+   ✅ Generated: account/profile.ts
+   ✅ Generated: account/subscription.ts
+   ✅ Generated: blog/common.ts
+   ✅ Generated: blog/landing.ts
+   ✅ Generated: blog/post-detail.ts
+   ✅ Generated: blog/posts.ts
+   ✅ Generated: index.ts
+
+✨ Advanced Specs Generation Completed!
+🚀 Starting landing content generation...
+   ✅ Loaded content: engineer
+   ✅ Loaded 8 manga assets for: engineer
+   📁 Copied 8 images to public directory
+📝 Found 1 landing targets
+✅ Generated /app/app/generated/landing-content.ts
+
+✨ Landing content generation completed successfully!
+
+📊 Summary:
+   - Targets: 1
+     - engineer: 8 manga panels
+
+> ClaudeMix@1.0.0 build
+> remix vite:build
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Using vars defined in .dev.vars
+Using vars defined in .dev.vars
+vite v6.4.1 building for production...
+transforming...
+✓ 216 modules transformed.
+Generated an empty chunk: "auth.callback.google".
+Generated an empty chunk: "api.webhooks.stripe".
+Generated an empty chunk: "ogp._slug_.png_".
+Generated an empty chunk: "auth.google".
+Generated an empty chunk: "privacy".
+Generated an empty chunk: "terms".
+rendering chunks...
+computing gzip size...
+build/client/assets/fonts/oswald-vietnamese-500-normal-hXcn5ojQ.woff2      4.18 kB
+build/client/assets/fonts/oswald-vietnamese-700-normal-_DkZZ6ID.woff2      4.19 kB
+build/client/assets/fonts/oswald-vietnamese-400-normal-BupuUjkp.woff       5.82 kB
+build/client/assets/fonts/oswald-vietnamese-700-normal-BxFoeH7J.woff       5.86 kB
+build/client/assets/fonts/oswald-vietnamese-500-normal-Bi4XG4HV.woff       5.91 kB
+build/client/assets/fonts/oswald-cyrillic-400-normal-Dakd8U79.woff2        6.70 kB
+build/client/assets/fonts/oswald-cyrillic-700-normal-BO0IwMyy.woff2        6.75 kB
+build/client/assets/fonts/oswald-cyrillic-500-normal-Dz4ZC46J.woff2        6.84 kB
+build/client/assets/fonts/oswald-cyrillic-ext-400-normal-DaQSmjrl.woff2    7.69 kB
+build/client/assets/fonts/oswald-cyrillic-ext-700-normal-CtkJES1U.woff2    7.96 kB
+build/client/assets/fonts/oswald-cyrillic-ext-500-normal-DngHVvy4.woff2    8.13 kB
+build/client/assets/fonts/oswald-cyrillic-400-normal-BUD0W5Zj.woff         8.47 kB
+build/client/assets/fonts/oswald-cyrillic-700-normal-DxuP1Pb9.woff         8.54 kB
+build/client/assets/fonts/oswald-cyrillic-500-normal-CjKr_ZfC.woff         8.61 kB
+build/client/assets/fonts/oswald-cyrillic-ext-400-normal-BkkDEomt.woff    10.26 kB
+build/client/assets/fonts/oswald-cyrillic-ext-700-normal-VKAui8kQ.woff    10.49 kB
+build/client/assets/fonts/oswald-cyrillic-ext-500-normal-Hz7kEHBT.woff    10.58 kB
+build/client/assets/fonts/oswald-latin-ext-400-normal-DbVOzfr-.woff2      11.62 kB
+build/client/assets/fonts/oswald-latin-ext-700-normal-BKErdSR5.woff2      11.98 kB
+build/client/assets/fonts/oswald-latin-ext-500-normal-QdEKgtiz.woff2      12.04 kB
+build/client/assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2          12.25 kB
+build/client/assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2          12.67 kB
+build/client/assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2          12.70 kB
+build/client/assets/fonts/oswald-latin-400-normal-D1wpMXgf.woff           15.69 kB
+build/client/assets/fonts/oswald-latin-ext-400-normal-KcyBFdGH.woff       15.85 kB
+build/client/assets/fonts/oswald-latin-700-normal-UmC9Ev9x.woff           16.08 kB
+build/client/assets/fonts/oswald-latin-ext-700-normal-CJSSDThd.woff       16.13 kB
+build/client/assets/fonts/oswald-latin-500-normal-DM85Di4w.woff           16.16 kB
+build/client/assets/fonts/oswald-latin-ext-500-normal-DcyNJhgm.woff       16.18 kB
+build/client/.vite/manifest.json                                          20.98 kB │ gzip:  2.18 kB
+build/client/assets/layer3-authentication-CB5aOdHc.css                     1.61 kB │ gzip:  0.48 kB
+build/client/assets/layer2-landing-CZV44H4q.css                            2.56 kB │ gzip:  0.70 kB
+build/client/assets/account-DuePhcLB.css                                   3.85 kB │ gzip:  0.87 kB
+build/client/assets/layer2-profile-CiNXFehO.css                            5.60 kB │ gzip:  0.88 kB
+build/client/assets/layer2-common-ByWOGxuW.css                             7.14 kB │ gzip:  1.33 kB
+build/client/assets/layer2-post-detail-Dlll_a5M.css                        8.74 kB │ gzip:  1.53 kB
+build/client/assets/layer2-posts-BpTqtbSE.css                              9.35 kB │ gzip:  1.54 kB
+build/client/assets/layer2-common-BhxVJ8V8.css                            10.33 kB │ gzip:  1.26 kB
+build/client/assets/vendor-DJpJPsr-.css                                   10.97 kB │ gzip:  5.03 kB
+build/client/assets/entry-Dr6T4_Kh.css                                    38.81 kB │ gzip:  6.77 kB
+build/client/assets/auth.callback.google-l0sNRNKZ.js                       0.00 kB │ gzip:  0.02 kB
+build/client/assets/api.webhooks.stripe-l0sNRNKZ.js                        0.00 kB │ gzip:  0.02 kB
+build/client/assets/ogp._slug_.png_-l0sNRNKZ.js                            0.00 kB │ gzip:  0.02 kB
+build/client/assets/auth.google-l0sNRNKZ.js                                0.00 kB │ gzip:  0.02 kB
+build/client/assets/privacy-l0sNRNKZ.js                                    0.00 kB │ gzip:  0.02 kB
+build/client/assets/terms-l0sNRNKZ.js                                      0.00 kB │ gzip:  0.02 kB
+build/client/assets/layer2-common-D76D2Wd0.js                              0.15 kB │ gzip:  0.15 kB
+build/client/assets/entry.client--GhpmNxs.js                               0.23 kB │ gzip:  0.19 kB
+build/client/assets/_index-8NJvtV0Y.js                                     0.88 kB │ gzip:  0.49 kB
+build/client/assets/logout-B22aUXpz.js                                     0.91 kB │ gzip:  0.48 kB
+build/client/assets/account-CeX8wSqX.js                                    0.98 kB │ gzip:  0.48 kB
+build/client/assets/account.services-BOWTfFJi.js                           1.01 kB │ gzip:  0.56 kB
+build/client/assets/formatPublishedDate-CboJKmie.js                        1.20 kB │ gzip:  0.60 kB
+build/client/assets/account._index-BQoHHx0r.js                             1.22 kB │ gzip:  0.59 kB
+build/client/assets/root-RDWy1ZTy.js                                       1.24 kB │ gzip:  0.68 kB
+build/client/assets/LandingFooter-CaZG_Y1H.js                              2.04 kB │ gzip:  0.86 kB
+build/client/assets/forgot-password-BQNsQuZC.js                            2.32 kB │ gzip:  1.02 kB
+build/client/assets/BlogHeader-BO2ufHQy.js                                 2.87 kB │ gzip:  1.05 kB
+build/client/assets/account.subscription-CT1J18La.js                       2.90 kB │ gzip:  1.34 kB
+build/client/assets/reset-password._token-LNTEEegO.js                      3.32 kB │ gzip:  1.07 kB
+build/client/assets/register-RZ9lzIGZ.js                                   3.35 kB │ gzip:  1.24 kB
+build/client/assets/landing-CX3rZELz.js                                    3.43 kB │ gzip:  1.82 kB
+build/client/assets/blog.landing._target-BiXXs1qo.js                       3.80 kB │ gzip:  1.49 kB
+build/client/assets/common-RcK2KL68.js                                     4.15 kB │ gzip:  1.99 kB
+build/client/assets/login-BIKypvQQ.js                                      5.18 kB │ gzip:  2.23 kB
+build/client/assets/blog._slug-Iu-njbrT.js                                 6.70 kB │ gzip:  2.67 kB
+build/client/assets/blog._index-ObS2MH5X.js                                8.01 kB │ gzip:  2.78 kB
+build/client/assets/account.settings-DkmGe5Q4.js                          14.83 kB │ gzip:  2.55 kB
+build/client/assets/vendor-Dm8L0oRJ.js                                    40.63 kB │ gzip: 13.80 kB
+build/client/assets/authentication-schema-DP8dNhqb.js                     50.19 kB │ gzip: 13.98 kB
+build/client/assets/vendor-remix-BfkPIM39.js                              51.32 kB │ gzip: 18.02 kB
+build/client/assets/vendor-react-BMjrI7lf.js                             210.49 kB │ gzip: 66.93 kB
+✓ built in 5.61s
+Using vars defined in .dev.vars
+vite v6.4.1 building SSR bundle for production...
+transforming...
+✓ 673 modules transformed.
+rendering chunks...
+build/server/assets/fonts/oswald-vietnamese-500-normal-hXcn5ojQ.woff2        4.18 kB
+build/server/assets/fonts/oswald-vietnamese-700-normal-_DkZZ6ID.woff2        4.19 kB
+build/server/assets/fonts/oswald-vietnamese-400-normal-BupuUjkp.woff         5.82 kB
+build/server/assets/fonts/oswald-vietnamese-700-normal-BxFoeH7J.woff         5.86 kB
+build/server/assets/fonts/oswald-vietnamese-500-normal-Bi4XG4HV.woff         5.91 kB
+build/server/assets/fonts/oswald-cyrillic-400-normal-Dakd8U79.woff2          6.70 kB
+build/server/assets/fonts/oswald-cyrillic-700-normal-BO0IwMyy.woff2          6.75 kB
+build/server/assets/fonts/oswald-cyrillic-500-normal-Dz4ZC46J.woff2          6.84 kB
+build/server/assets/fonts/oswald-cyrillic-ext-400-normal-DaQSmjrl.woff2      7.69 kB
+build/server/assets/fonts/oswald-cyrillic-ext-700-normal-CtkJES1U.woff2      7.96 kB
+build/server/assets/fonts/oswald-cyrillic-ext-500-normal-DngHVvy4.woff2      8.13 kB
+build/server/assets/fonts/oswald-cyrillic-400-normal-BUD0W5Zj.woff           8.47 kB
+build/server/assets/fonts/oswald-cyrillic-700-normal-DxuP1Pb9.woff           8.54 kB
+build/server/assets/fonts/oswald-cyrillic-500-normal-CjKr_ZfC.woff           8.61 kB
+build/server/assets/fonts/oswald-cyrillic-ext-400-normal-BkkDEomt.woff      10.26 kB
+build/server/assets/fonts/oswald-cyrillic-ext-700-normal-VKAui8kQ.woff      10.49 kB
+build/server/.vite/manifest.json                                            10.56 kB
+build/server/assets/fonts/oswald-cyrillic-ext-500-normal-Hz7kEHBT.woff      10.58 kB
+build/server/assets/fonts/oswald-latin-ext-400-normal-DbVOzfr-.woff2        11.62 kB
+build/server/assets/fonts/oswald-latin-ext-700-normal-BKErdSR5.woff2        11.98 kB
+build/server/assets/fonts/oswald-latin-ext-500-normal-QdEKgtiz.woff2        12.04 kB
+build/server/assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2            12.25 kB
+build/server/assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2            12.67 kB
+build/server/assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2            12.70 kB
+build/server/assets/fonts/oswald-latin-400-normal-D1wpMXgf.woff             15.69 kB
+build/server/assets/fonts/oswald-latin-ext-400-normal-KcyBFdGH.woff         15.85 kB
+build/server/assets/fonts/oswald-latin-700-normal-UmC9Ev9x.woff             16.08 kB
+build/server/assets/fonts/oswald-latin-ext-700-normal-CJSSDThd.woff         16.13 kB
+build/server/assets/fonts/oswald-latin-500-normal-DM85Di4w.woff             16.16 kB
+build/server/assets/fonts/oswald-latin-ext-500-normal-DcyNJhgm.woff         16.18 kB
+build/server/assets/layer2-landing-CZV44H4q.css                              2.56 kB
+build/server/assets/layer2-common-ByWOGxuW.css                               7.14 kB
+build/server/assets/layer2-post-detail-Dlll_a5M.css                          8.74 kB
+build/server/assets/layer2-posts-BpTqtbSE.css                                9.35 kB
+build/server/assets/vendor-DJpJPsr-.css                                     10.97 kB
+build/server/assets/server-build-BWaxcGGM.css                               21.39 kB
+build/server/assets/vendor-remix-B6luJRZ4.js                               133.49 kB
+build/server/assets/vendor-lIGr8DBu.js                                     700.74 kB
+build/server/assets/vendor-react-r2Nvgw6C.js                               796.62 kB
+build/server/index.js                                                    1,969.17 kB
+✓ built in 7.29s
+
+ ⛅️ wrangler 4.60.0 (update available 4.63.0)
+─────────────────────────────────────────────
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring this import because "../node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs" was marked as having no side effects[0m [ignored-bare-import]
+
+    ../build/server/index.js:1:904:
+[37m      1 │ ..."node:async_hooks";import[32m"node:console"[37m;import"node:dns";import"...
+        ╵                             [32m~~~~~~~~~~~~~~[0m
+
+  "sideEffects" is false in the enclosing "package.json" file:
+
+    ../node_modules/@cloudflare/unenv-preset/package.json:23:2:
+[37m      23 │   [32m"sideEffects"[37m: false,
+         ╵   [32m~~~~~~~~~~~~~[0m
+
+
+Using vars defined in .dev.vars
+Your Worker has access to the following bindings:
+Binding                                                                      Resource                  Mode
+env.SESSION_KV (local-dev-kv)                                                KV Namespace              local
+env.DB (claudemix-dev)                                                       D1 Database               local
+env.APP_URL ("http://localhost:3000")                                        Environment Variable      local
+env.GOOGLE_CLIENT_ID ("395752864569-ng3tot15p3ufguvcuchre6jn...")            Environment Variable      local
+env.GOOGLE_REDIRECT_URI ("http://localhost:3000/auth/callback/g...")         Environment Variable      local
+env.STRIPE_PUBLISHABLE_KEY ("pk_test_51StRLVFTLZPZU8HQHblw6Ig1B6V1...")      Environment Variable      local
+env.LEGAL_PRIVATE_INFO ("(hidden)")                                          Environment Variable      local
+env.GOOGLE_CLIENT_SECRET ("(hidden)")                                        Environment Variable      local
+env.STRIPE_SECRET_KEY ("(hidden)")                                           Environment Variable      local
+env.STRIPE_WEBHOOK_SECRET ("(hidden)")                                       Environment Variable      local
+
+⎔ Starting local server...
+[wrangler:info] Ready on http://localhost:3000
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mError: No route matches URL "/regist"[0m
+
+      at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+      at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+      at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+      at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+      at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+      at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+      at null.<anonymous> (async file:///app/.wrangler/tmp/dev-w8gwLv/lixgaiw4z69.js:10934:14)
+      at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+      at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+      at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo routes matched location "/regist" [0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mErrorResponseImpl {[0m
+
+    status: 404,
+    statusText: 'Not Found',
+    internal: true,
+    data: 'Error: No route matches URL "/regist"',
+    error: Error: No route matches URL "/regist"
+        at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+        at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+        at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+        at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+        at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+        at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+        at null.<anonymous> (async file:///app/.wrangler/tmp/dev-w8gwLv/lixgaiw4z69.js:10934:14)
+        at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+        at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+        at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+  }
+
+
+[wrangler:info] HEAD /regist 404 Not Found (46ms)
+[wrangler:info] HEAD /register 200 OK (27ms)
+[wrangler:info] HEAD /blog 200 OK (112ms)
+[wrangler:info] HEAD /login 200 OK (26ms)
+[wrangler:info] HEAD /register 200 OK (17ms)
+[wrangler:info] GET /blog 200 OK (65ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 200 OK (74ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 200 OK (236ms)
+[wrangler:info] GET /assets/layer2-common-ByWOGxuW.css 200 OK (205ms)
+[wrangler:info] GET /assets/layer2-posts-BpTqtbSE.css 200 OK (205ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 200 OK (34ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 200 OK (91ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 200 OK (296ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 200 OK (237ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 200 OK (237ms)
+[wrangler:info] GET /assets/formatPublishedDate-CboJKmie.js 200 OK (241ms)
+[wrangler:info] GET /assets/layer2-common-D76D2Wd0.js 200 OK (240ms)
+[wrangler:info] GET /assets/BlogHeader-BO2ufHQy.js 200 OK (19ms)
+[wrangler:info] GET /assets/blog._index-ObS2MH5X.js 200 OK (57ms)
+[wrangler:info] GET /assets/common-RcK2KL68.js 200 OK (25ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2 200 OK (16ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2 200 OK (26ms)
+[wrangler:info] GET /__manifest 200 OK (10ms)
+[wrangler:info] GET /favicon.ico 200 OK (19ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 304 Not Modified (8ms)
+[wrangler:info] GET /assets/layer2-common-ByWOGxuW.css 304 Not Modified (9ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 304 Not Modified (6ms)
+[wrangler:info] GET /assets/layer2-posts-BpTqtbSE.css 304 Not Modified (10ms)
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mError: No route matches URL "/robots.txt"[0m
+
+      at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+      at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+      at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+      at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+      at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+      at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+      at null.<anonymous> (async file:///app/.wrangler/tmp/dev-w8gwLv/lixgaiw4z69.js:10934:14)
+      at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+      at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+      at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo routes matched location "/robots.txt" [0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mErrorResponseImpl {[0m
+
+    status: 404,
+    statusText: 'Not Found',
+    internal: true,
+    data: 'Error: No route matches URL "/robots.txt"',
+    error: Error: No route matches URL "/robots.txt"
+        at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+        at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+        at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+        at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+        at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+        at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+        at null.<anonymous> (async file:///app/.wrangler/tmp/dev-w8gwLv/lixgaiw4z69.js:10934:14)
+        at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+        at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+        at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+  }
+
+
+[wrangler:info] GET /robots.txt 404 Not Found (15ms)
+[wrangler:info] GET /login 200 OK (18ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 200 OK (22ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 200 OK (123ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 200 OK (154ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 200 OK (154ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 200 OK (153ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 200 OK (153ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 200 OK (159ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 200 OK (42ms)
+[wrangler:info] GET /assets/landing-CX3rZELz.js 200 OK (82ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 200 OK (76ms)
+[wrangler:info] GET /assets/authentication-schema-DP8dNhqb.js 200 OK (76ms)
+[wrangler:info] GET /assets/common-RcK2KL68.js 200 OK (77ms)
+[wrangler:info] GET /assets/login-BIKypvQQ.js 200 OK (84ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2 200 OK (13ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2 200 OK (44ms)
+[wrangler:info] GET /favicon.ico 200 OK (8ms)
+[wrangler:info] GET /__manifest 200 OK (17ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2 200 OK (7ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 304 Not Modified (8ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 304 Not Modified (9ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 304 Not Modified (9ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 304 Not Modified (10ms)
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mError: No route matches URL "/robots.txt"[0m
+
+      at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+      at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+      at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+      at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+      at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+      at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+      at null.<anonymous> (async file:///app/.wrangler/tmp/dev-w8gwLv/lixgaiw4z69.js:10934:14)
+      at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+      at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+      at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo routes matched location "/robots.txt" [0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mErrorResponseImpl {[0m
+
+    status: 404,
+    statusText: 'Not Found',
+    internal: true,
+    data: 'Error: No route matches URL "/robots.txt"',
+    error: Error: No route matches URL "/robots.txt"
+        at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+        at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+        at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+        at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+        at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+        at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+        at null.<anonymous> (async file:///app/.wrangler/tmp/dev-w8gwLv/lixgaiw4z69.js:10934:14)
+        at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+        at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+        at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+  }
+
+
+[wrangler:info] GET /robots.txt 404 Not Found (20ms)
+[wrangler:info] GET /register 200 OK (19ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 200 OK (19ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 200 OK (35ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 200 OK (32ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 200 OK (35ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 200 OK (26ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 200 OK (34ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 200 OK (57ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 200 OK (63ms)
+[wrangler:info] GET /assets/authentication-schema-DP8dNhqb.js 200 OK (36ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 200 OK (36ms)
+[wrangler:info] GET /assets/landing-CX3rZELz.js 200 OK (19ms)
+[wrangler:info] GET /assets/register-RZ9lzIGZ.js 200 OK (17ms)
+[wrangler:info] GET /assets/common-RcK2KL68.js 200 OK (36ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2 200 OK (9ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2 200 OK (11ms)
+[wrangler:info] GET /favicon.ico 200 OK (9ms)
+[wrangler:info] GET /__manifest 200 OK (13ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2 200 OK (7ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 304 Not Modified (5ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 304 Not Modified (7ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 304 Not Modified (10ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 304 Not Modified (12ms)
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mError: No route matches URL "/robots.txt"[0m
+
+      at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+      at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+      at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+      at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+      at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+      at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+      at null.<anonymous> (async file:///app/.wrangler/tmp/dev-w8gwLv/lixgaiw4z69.js:10934:14)
+      at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+      at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+      at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo routes matched location "/robots.txt" [0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mErrorResponseImpl {[0m
+
+    status: 404,
+    statusText: 'Not Found',
+    internal: true,
+    data: 'Error: No route matches URL "/robots.txt"',
+    error: Error: No route matches URL "/robots.txt"
+        at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+        at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+        at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+        at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+        at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+        at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+        at null.<anonymous> (async file:///app/.wrangler/tmp/dev-w8gwLv/lixgaiw4z69.js:10934:14)
+        at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+        at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+        at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+  }
+
+
+[wrangler:info] GET /robots.txt 404 Not Found (12ms)
+[wrangler:info] GET /blog 200 OK (20ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 200 OK (8ms)
+[wrangler:info] GET /assets/layer2-common-ByWOGxuW.css 200 OK (21ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 200 OK (28ms)
+[wrangler:info] GET /assets/layer2-posts-BpTqtbSE.css 200 OK (26ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 200 OK (30ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 200 OK (93ms)
+[wrangler:info] GET /assets/formatPublishedDate-CboJKmie.js 200 OK (74ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 200 OK (102ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 200 OK (94ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 200 OK (94ms)
+[wrangler:info] GET /assets/common-RcK2KL68.js 200 OK (17ms)
+[wrangler:info] GET /assets/blog._index-ObS2MH5X.js 200 OK (21ms)
+[wrangler:info] GET /assets/layer2-common-D76D2Wd0.js 200 OK (19ms)
+[wrangler:info] GET /assets/BlogHeader-BO2ufHQy.js 200 OK (25ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2 200 OK (12ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2 200 OK (14ms)
+[wrangler:info] GET /__manifest 200 OK (10ms)
+[wrangler:info] GET /login 200 OK (11ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 304 Not Modified (8ms)
+[wrangler:info] GET /assets/authentication-schema-DP8dNhqb.js 200 OK (13ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 200 OK (11ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 200 OK (9ms)
+[wrangler:info] GET /assets/login-BIKypvQQ.js 200 OK (21ms)
+[wrangler:info] GET /assets/landing-CX3rZELz.js 200 OK (20ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 304 Not Modified (30ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 304 Not Modified (28ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 304 Not Modified (26ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 304 Not Modified (23ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 304 Not Modified (27ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 304 Not Modified (26ms)
+[wrangler:info] GET /assets/common-RcK2KL68.js 304 Not Modified (25ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2 200 OK (7ms)
+[wrangler:info] GET /__manifest 200 OK (6ms)
+[wrangler:info] GET /register 200 OK (11ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 304 Not Modified (7ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 304 Not Modified (10ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 304 Not Modified (10ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 304 Not Modified (8ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 304 Not Modified (12ms)
+[wrangler:info] GET /assets/register-RZ9lzIGZ.js 200 OK (18ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 304 Not Modified (19ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 304 Not Modified (13ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 304 Not Modified (15ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 304 Not Modified (14ms)
+[wrangler:info] GET /assets/authentication-schema-DP8dNhqb.js 304 Not Modified (6ms)
+[wrangler:info] GET /assets/common-RcK2KL68.js 304 Not Modified (12ms)
+[wrangler:info] GET /assets/landing-CX3rZELz.js 304 Not Modified (12ms)
+[wrangler:info] GET /__manifest 200 OK (5ms)
