@@ -10,6 +10,7 @@ interface PostCardProps extends PostSummary {
   isLocked?: boolean;
   lockMessage?: string;
   dateSeparator?: string;
+  isPriority?: boolean;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -22,6 +23,7 @@ const PostCard: React.FC<PostCardProps> = ({
   isLocked = false,
   lockMessage = 'ログインで読む',
   dateSeparator = '.',
+  isPriority = false,
 }) => {
   const [imageError, setImageError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -52,7 +54,10 @@ const PostCard: React.FC<PostCardProps> = ({
           <img
             src={thumbnailUrl}
             alt={`${title}のサムネイル`}
-            loading="lazy"
+            width={1200}
+            height={630}
+            loading={isPriority ? "eager" : "lazy"}
+            fetchPriority={isPriority ? "high" : "auto"}
             decoding="async"
             onLoad={() => setIsLoaded(true)}
             onError={() => setImageError(true)}

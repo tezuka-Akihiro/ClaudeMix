@@ -60,28 +60,30 @@ describe('FilterToggleButton', () => {
   });
 
   describe('Accessibility', () => {
-    it('should have aria-label "フィルタを開く" when isOpen is false', () => {
+    it('should have correct aria-label when isOpen is false', () => {
       // Arrange
       const mockOnClick = vi.fn();
+      const label = 'Filter';
 
       // Act
-      render(<FilterToggleButton onClick={mockOnClick} isOpen={false} />);
+      render(<FilterToggleButton onClick={mockOnClick} isOpen={false} label={label} />);
 
       // Assert
       const button = screen.getByTestId('filter-toggle-button');
-      expect(button).toHaveAttribute('aria-label', 'フィルタを開く');
+      expect(button).toHaveAttribute('aria-label', `${label} (フィルタを開く)`);
     });
 
-    it('should have aria-label "フィルタを閉じる" when isOpen is true', () => {
+    it('should have correct aria-label when isOpen is true', () => {
       // Arrange
       const mockOnClick = vi.fn();
+      const label = 'Filter';
 
       // Act
-      render(<FilterToggleButton onClick={mockOnClick} isOpen={true} />);
+      render(<FilterToggleButton onClick={mockOnClick} isOpen={true} label={label} />);
 
       // Assert
       const button = screen.getByTestId('filter-toggle-button');
-      expect(button).toHaveAttribute('aria-label', 'フィルタを閉じる');
+      expect(button).toHaveAttribute('aria-label', `${label} (フィルタを閉じる)`);
     });
 
     it('should be a button element with type="button"', () => {
