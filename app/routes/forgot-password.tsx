@@ -13,7 +13,7 @@ import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithValibot } from '@conform-to/valibot';
 
 // Spec loader
-import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 

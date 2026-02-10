@@ -17,7 +17,7 @@ import '~/styles/account/layer2-authentication.css';
 import '~/styles/account/layer3-authentication.css';
 
 // Spec loader
-import { loadSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 // Data-IO layer

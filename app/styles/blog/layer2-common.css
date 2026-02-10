@@ -18,10 +18,11 @@
     right: 0;
     z-index: var(--z-index-fixed);
     padding: var(--spacing-3) var(--spacing-4);
-    /* 描画負荷軽減: backdrop-filter を廃止し、不透明度を上げた背景色を使用 */
-    background-color: var(--color-surface-dark-opaque);
+    background-color: var(--color-interactive-primary-bg-faint);
     border: none;
     box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
   }
 
   /* Header layout structure (title left, actions right) */
@@ -96,6 +97,8 @@
     right: var(--spacing-3);
     top: calc(100% + var(--spacing-1));
     z-index: var(--z-index-menu);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     min-width: var(--layout-card-width);
     width: max-content;
     border-radius: var(--border-radius-lg);
@@ -150,9 +153,11 @@
   /* Footer container styling */
   .blog-footer {
     height: var(--layout-footer-height);
-    background-color: var(--color-surface-dark-opaque);
+    background-color: var(--color-interactive-primary-bg-faint);
     border: none;
     box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     font-size: var(--font-size-sm);
   }
 

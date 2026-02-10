@@ -6,7 +6,7 @@ import { Link } from '@remix-run/react';
 import type { MenuItem } from '~/data-io/blog/common/loadBlogConfig.server';
 import { data as defaultSpec } from '~/generated/specs/blog/common';
 import type { BlogCommonSpec } from '~/specs/blog/types';
-import { extractTestId } from '~/spec-utils/extractTestId';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 
 interface NavigationMenuProps {
   menuItems: MenuItem[];

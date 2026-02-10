@@ -13,23 +13,14 @@
  * 使用されるため、`.server.ts`拡張子は使用していません。
  */
 
-import {
-  email,
-  forward,
-  maxLength,
-  minLength,
-  object,
-  partialCheck,
-  pipe,
-  regex,
-  string,
-  type InferOutput,
-} from 'valibot';
-import authSpec from '~/generated/specs/account/authentication';
-import validationSpec from '~/generated/specs/shared/validation';
+import * as v from 'valibot';
+import { getSpec, getSharedSpec } from '~/generated/specs';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import type { ValidationSpec } from '~/specs/shared/types';
 
 // Specの読み込み
-// getSpecを通さず直接インポートすることで、不要なスペックのバンドルを防止
+const authSpec = getSpec<AccountAuthenticationSpec>('account/authentication');
+const validationSpec = getSharedSpec<ValidationSpec>('validation');
 
 // ==========================================
 // 共通バリデーション（再利用可能）
@@ -41,14 +32,14 @@ import validationSpec from '~/generated/specs/shared/validation';
  * Shared/validation-spec.yamlとauthentication-spec.yamlの
  * バリデーションルールを組み合わせています。
  */
-export const EmailSchema = pipe(
-  string(authSpec.validation.email.error_messages.required),
-  email(authSpec.validation.email.error_messages.invalid_format),
-  maxLength(
+export const EmailSchema = v.pipe(
+  v.string(authSpec.validation.email.error_messages.required),
+  v.email(authSpec.validation.email.error_messages.invalid_format),
+  v.maxLength(
     validationSpec.email.max_length,
     authSpec.validation.email.error_messages.invalid_format
   ),
-  regex(
+  v.regex(
     new RegExp(validationSpec.email.pattern),
     authSpec.validation.email.error_messages.invalid_format
   )
@@ -60,17 +51,17 @@ export const EmailSchema = pipe(
  * Shared/validation-spec.yamlとauthentication-spec.yamlの
  * バリデーションルールを組み合わせています。
  */
-export const PasswordSchema = pipe(
-  string(authSpec.validation.password.error_messages.required),
-  minLength(
+export const PasswordSchema = v.pipe(
+  v.string(authSpec.validation.password.error_messages.required),
+  v.minLength(
     validationSpec.password.min_length,
     authSpec.validation.password.error_messages.too_short
   ),
-  maxLength(
+  v.maxLength(
     validationSpec.password.max_length,
     authSpec.validation.password.error_messages.too_long
   ),
-  regex(
+  v.regex(
     new RegExp(validationSpec.password.pattern),
     authSpec.validation.password.error_messages.weak
   )
@@ -86,7 +77,7 @@ export const PasswordSchema = pipe(
  * 対応するYAML: forms.login
  * Fields: email, password
  */
-export const LoginSchema = object({
+export const LoginSchema = v.object({
   email: EmailSchema,
   password: PasswordSchema,
 });
@@ -99,16 +90,16 @@ export const LoginSchema = object({
  *
  * パスワード確認の一致チェックを含みます。
  */
-export const RegisterSchema = pipe(
-  object({
+export const RegisterSchema = v.pipe(
+  v.object({
     email: EmailSchema,
     password: PasswordSchema,
-    passwordConfirm: string(
+    passwordConfirm: v.string(
       authSpec.validation.password_confirm.error_messages.required
     ),
   }),
-  forward(
-    partialCheck(
+  v.forward(
+    v.partialCheck(
       [['password'], ['passwordConfirm']],
       (input) => input.password === input.passwordConfirm,
       authSpec.validation.password_confirm.error_messages.mismatch
@@ -123,7 +114,7 @@ export const RegisterSchema = pipe(
  * 対応するYAML: forms.forgot_password
  * Fields: email
  */
-export const ForgotPasswordSchema = object({
+export const ForgotPasswordSchema = v.object({
   email: EmailSchema,
 });
 
@@ -136,6 +127,6 @@ export const ForgotPasswordSchema = object({
  * これにより、スキーマと型の乖離をゼロにします。
  */
 
-export type LoginFormData = InferOutput<typeof LoginSchema>;
-export type RegisterFormData = InferOutput<typeof RegisterSchema>;
-export type ForgotPasswordFormData = InferOutput<typeof ForgotPasswordSchema>;
+export type LoginFormData = v.InferOutput<typeof LoginSchema>;
+export type RegisterFormData = v.InferOutput<typeof RegisterSchema>;
+export type ForgotPasswordFormData = v.InferOutput<typeof ForgotPasswordSchema>;

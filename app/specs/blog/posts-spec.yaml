@@ -345,7 +345,6 @@ messages:
   filter:
     submit_label: "フィルタ適用"
     all_categories_label: "All Categories"
-    button_label: "Filter"
 
   load_more:
     button_label: "More"

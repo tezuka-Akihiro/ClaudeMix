@@ -6,7 +6,7 @@
  * @responsibility メールアドレスフォーマット検証
  */
 
-import { loadSharedSpec } from '~/spec-utils/specLoader.server';
+import { loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { ValidationSpec } from '~/specs/shared/types';
 
 /**

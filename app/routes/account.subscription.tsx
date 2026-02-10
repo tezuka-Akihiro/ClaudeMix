@@ -18,7 +18,7 @@ import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';
 import { getSubscriptionByUserId } from '~/data-io/account/subscription/getSubscriptionByUserId.server';
 import type { SubscriptionStatus } from '~/specs/account/types';
-import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountSubscriptionSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 
@@ -74,10 +74,9 @@ import '~/styles/account/layer2-subscription.css';
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const projectName = data?.projectName || 'ClaudeMix';
-  const pageTitle = data?.pageTitle || 'サブスクリプション管理';
   return [
-    { title: `${pageTitle} - ${projectName}` },
-    { name: 'description', content: pageTitle },
+    { title: `サブスクリプション - ${projectName}` },
+    { name: 'description', content: 'サブスクリプション管理' },
   ];
 };
 
@@ -108,13 +107,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   return json({
     projectName: projectSpec.project.name,
-    pageTitle: spec.routes.subscription.title,
     plans,
     subscription,
     success,
     successMessage: spec.success_messages.checkout.completed,
-    submitButtonLabel: spec.forms.create_checkout.submit_button.label,
-    loadingLabel: spec.forms.create_checkout.submit_button.loading_label,
   });
 }
 
@@ -201,7 +197,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 export default function AccountSubscription() {
   // Use parent route's authentication data instead of duplicating auth logic
   const parentData = useRouteLoaderData<typeof accountLoader>('routes/account');
-  const { pageTitle, plans, subscription, success, successMessage, submitButtonLabel, loadingLabel } = useLoaderData<typeof loader>();
+  const { plans, subscription, success, successMessage } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
 
   if (!parentData) {
@@ -227,7 +223,7 @@ export default function AccountSubscription() {
 
   return (
     <div className="profile-container profile-container-structure" data-testid="subscription-page">
-      <h1>{pageTitle}</h1>
+      <h1>サブスクリプション</h1>
 
       {success && (
         <div className="profile-success" role="status" data-testid="subscription-success">
@@ -283,7 +279,7 @@ export default function AccountSubscription() {
                   title={isInterrupted ? 'プラン変更を行うには、まず更新を再開してください' : ''}
                   data-testid={`subscribe-${plan.id}`}
                 >
-                  {fetcher.state !== 'idle' ? loadingLabel : subscription?.planId === plan.id ? '契約中' : submitButtonLabel}
+                  {fetcher.state !== 'idle' ? '処理中...' : subscription?.planId === plan.id ? '契約中' : '購入'}
                 </button>
                 {isInterrupted && (
                   <p className="text-sm text-red-500 mt-2 text-center">

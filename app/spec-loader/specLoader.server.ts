@@ -1,4 +1,4 @@
-// app/spec-utils/specLoader.server.ts
+// app/spec-loader/specLoader.server.ts
 
 import { getSpec, getSharedSpec } from '~/generated/specs/index';
 

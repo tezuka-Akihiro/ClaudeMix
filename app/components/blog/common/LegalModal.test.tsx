@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import LegalModal from '~/components/blog/common/LegalModal';
 import { loadSpec } from 'tests/utils/loadSpec';
 import type { BlogCommonSpec } from '~/specs/blog/types';
-import { extractTestId } from '~/spec-utils/extractTestId';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 
 let spec: BlogCommonSpec;
 

@@ -5,7 +5,7 @@ import React from 'react';
 import BlogHeader from '~/components/blog/common/BlogHeader';
 import BlogFooter from '~/components/blog/common/BlogFooter';
 import type { BlogConfig } from '~/data-io/blog/common/loadBlogConfig.server';
-import { extractTestId } from '~/spec-utils/extractTestId';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 
 interface BlogLayoutProps {
   config: BlogConfig;
@@ -13,8 +13,7 @@ interface BlogLayoutProps {
 }
 
 const BlogLayout: React.FC<BlogLayoutProps> = ({ config, children }) => {
-  // Specsをクライアントサイドで直接インポートすることで、HTML内のJSONを削減
-  const spec = commonSpec;
+  const { spec } = config;
 
   return (
     <div

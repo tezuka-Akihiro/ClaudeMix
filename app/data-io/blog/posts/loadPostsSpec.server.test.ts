@@ -5,7 +5,7 @@ import {
   loadPostsResponsiveConfig,
   loadProjectInfo,
 } from './loadPostsSpec.server';
-import { loadSharedSpec } from '~/spec-utils/specLoader.server';
+import { loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { ServerSpec, ResponsiveSpec, ProjectSpec } from '~/specs/shared/types';
 
 describe('loadPostsSpec.server', () => {
