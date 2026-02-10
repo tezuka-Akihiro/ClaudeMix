@@ -163,16 +163,16 @@ r2_assets:
 
   # サムネイル画像設定
   thumbnail:
-    filename: "thumbnail.webp"
+    filename: "thumbnail.avif"
     width: 1200
     height: 630
     aspect_ratio: "1200 / 630"  # CSS aspect-ratio用
-    format: "webp"
+    format: "avif"
     max_size_kb: 100
 
   # 記事内画像設定
   article_images:
-    pattern: "{n}.webp"  # 1.webp, 2.webp, ...
+    pattern: "{n}.avif"  # 1.avif, 2.avif, ...
     max_count: 9
     max_size_kb: 200
 
@@ -212,7 +212,7 @@ ogp:
     # R2にサムネイルが存在しない場合: 動的OGP画像を生成
     strategy: "r2_first"
     # サムネイルURL生成パターン: {base_url}{blog_path}/{slug}/{filename}
-    url_pattern: "{base_url}{blog_path}/{slug}/thumbnail.webp"
+    url_pattern: "{base_url}{blog_path}/{slug}/thumbnail.avif"
 
   cache:
     maxAge: 31536000  # 1年 (秒)

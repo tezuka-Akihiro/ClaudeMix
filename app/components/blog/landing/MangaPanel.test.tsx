@@ -5,8 +5,8 @@ import type { MangaAsset } from '~/specs/blog/types';
 
 describe('MangaPanel', () => {
   const mockAsset: MangaAsset = {
-    fileName: 'panel-01.webp',
-    path: '/content/blog/landing/engineer/manga/panel-01.webp',
+    fileName: 'panel-01.avif',
+    path: '/content/blog/landing/engineer/manga/panel-01.avif',
     order: 1,
   };
 
@@ -51,8 +51,8 @@ describe('MangaPanel', () => {
 
   it('should render with correct order in alt text', () => {
     const asset2: MangaAsset = {
-      fileName: 'panel-05.webp',
-      path: '/content/blog/landing/engineer/manga/panel-05.webp',
+      fileName: 'panel-05.avif',
+      path: '/content/blog/landing/engineer/manga/panel-05.avif',
       order: 5,
     };
 

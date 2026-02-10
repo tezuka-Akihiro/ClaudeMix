@@ -189,7 +189,7 @@ async function convertMarkdownToHtml(markdown) {
       const src = href ?? '';
       const alt = text || '';
       const titleAttr = title ? `title="${title}"` : '';
-      return `<img src="${src}" alt="${alt}" ${titleAttr} loading="lazy" style="max-width: 100%; height: auto;" />`;
+      return `<img src="${src}" alt="${alt}" ${titleAttr} loading="lazy" decoding="async" style="max-width: 100%; height: auto;" />`;
     },
     heading({ text, depth: level }) {
       const id = slugify(text);

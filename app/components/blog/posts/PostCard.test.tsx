@@ -124,7 +124,7 @@ describe('PostCard', () => {
       const props: React.ComponentProps<typeof PostCard> = {
         ...baseProps,
         slug: 'thumbnail-test',
-        thumbnailUrl: 'https://assets.example.com/blog/thumbnail-test/thumbnail.webp',
+        thumbnailUrl: 'https://assets.example.com/blog/thumbnail-test/thumbnail.avif',
       };
 
       // Act
