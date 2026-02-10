@@ -18,7 +18,7 @@ interface FilterPanelProps {
   filterMessages: BlogPostsSpec['messages']['filter'];
 }
 
-export const FilterPanel: React.FC<FilterPanelProps> = ({
+const FilterPanel: React.FC<FilterPanelProps> = ({
   availableCategories,
   availableTags,
   tagGroups,
@@ -70,3 +70,5 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     </>
   );
 };
+
+export default FilterPanel;

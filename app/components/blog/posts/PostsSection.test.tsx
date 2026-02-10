@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import React, { Suspense } from 'react';
 import PostsSection from './PostsSection';
 import type { PostsPageData } from '~/specs/blog/types';
 import { loadSpec, type BlogPostsSpec } from '../../../../tests/utils/loadSpec';
@@ -25,13 +26,8 @@ const renderWithRouter = (ui: React.ReactElement) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
 };
 
-interface MockPostsSectionProps extends PostsPageData {
+interface MockPostsSectionProps extends Omit<PostsPageData, 'spec'> {
   isAuthenticated: boolean;
-  pageTitle: string;
-  publicCategories: string[];
-  messages: BlogPostsSpec['messages'];
-  accessibility: BlogPostsSpec['accessibility'];
-  dateFormat: BlogPostsSpec['date_format'];
 }
 
 describe('PostsSection', () => {
@@ -77,11 +73,6 @@ describe('PostsSection', () => {
         category: '',
         tags: [],
       },
-      pageTitle: spec.posts_config.page_title,
-      publicCategories: spec.access_control.public_categories,
-      messages: spec.messages,
-      accessibility: spec.accessibility,
-      dateFormat: spec.date_format,
     };
   });
 
@@ -127,8 +118,12 @@ describe('PostsSection', () => {
       expect(screen.getByTestId('filter-toggle-button')).toBeInTheDocument();
     });
 
-    it('should open the filter panel when the toggle button is clicked', () => {
-      renderWithRouter(<PostsSection {...mockProps} />);
+    it('should open the filter panel when the toggle button is clicked', async () => {
+      renderWithRouter(
+        <Suspense fallback={<div>Loading...</div>}>
+          <PostsSection {...mockProps} />
+        </Suspense>
+      );
       const toggleButton = screen.getByTestId('filter-toggle-button');
       
       // Initially, panel is not visible
@@ -136,20 +131,32 @@ describe('PostsSection', () => {
       
       fireEvent.click(toggleButton);
       
-      // After click, panel is visible
-      expect(screen.getByTestId('filter-panel')).toBeInTheDocument();
+      // After click, panel is visible (wait for lazy component)
+      await waitFor(() => {
+        expect(screen.getByTestId('filter-panel')).toBeInTheDocument();
+      });
     });
 
-    it('should pass correct filter data to FilterPanel', () => {
+    it('should pass correct filter data to FilterPanel', async () => {
       mockProps.selectedFilters = { category: 'Category 1', tags: ['Tag 1'] };
-      const { container } = renderWithRouter(<PostsSection {...mockProps} />);
+      const { container } = renderWithRouter(
+        <Suspense fallback={<div>Loading...</div>}>
+          <PostsSection {...mockProps} />
+        </Suspense>
+      );
 
       // Open the panel to check its contents
       fireEvent.click(screen.getByTestId('filter-toggle-button'));
 
+      // Wait for lazy component
+      await waitFor(() => {
+        expect(screen.getByTestId('filter-panel')).toBeInTheDocument();
+      });
+
       // Check hidden input value for category
       const categoryInput = container.querySelector('input[name="category"]') as HTMLInputElement;
-      expect(categoryInput.value).toBe('Category 1');
+      expect(categoryInput).not.toBeNull();
+      expect((categoryInput as HTMLInputElement).value).toBe('Category 1');
 
       const tagButton = screen.getByRole('button', { name: 'Tag 1' });
       expect(tagButton).toHaveAttribute('aria-pressed', 'true');

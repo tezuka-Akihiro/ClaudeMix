@@ -1,21 +1,20 @@
 // PostsSection - Component (components層)
 // 記事一覧のメインコンテナ（タイトルと記事カードのグリッドを表示）
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useFetcher } from '@remix-run/react';
 import PostCard from '~/components/blog/posts/PostCard';
 import LoadMoreButton from '~/components/blog/posts/LoadMoreButton';
 import { FilterToggleButton } from '~/components/blog/posts/FilterToggleButton';
-import { FilterPanel } from '~/components/blog/posts/FilterPanel';
-import type { PostsPageData, PostSummary, BlogPostsSpec } from '~/specs/blog/types';
+import type { PostsPageData, PostSummary } from '~/specs/blog/types';
+import { data as postsSpec } from '~/generated/specs/blog/posts';
 
-interface PostsSectionProps extends PostsPageData {
+// FilterPanelはユーザー操作後にのみ必要となるため、React.lazyで動的インポートし
+// 初期バンドルサイズを削減（未使用JSの削減）
+const FilterPanel = lazy(() => import('~/components/blog/posts/FilterPanel'));
+
+interface PostsSectionProps extends Omit<PostsPageData, 'spec'> {
   isAuthenticated: boolean;
-  pageTitle: string;
-  publicCategories: string[];
-  messages: BlogPostsSpec['messages'];
-  accessibility: BlogPostsSpec['accessibility'];
-  dateFormat: BlogPostsSpec['date_format'];
 }
 
 const PostsSection: React.FC<PostsSectionProps> = ({
@@ -24,12 +23,18 @@ const PostsSection: React.FC<PostsSectionProps> = ({
   loadMoreInfo: initialLoadMoreInfo,
   availableFilters,
   selectedFilters,
-  pageTitle,
-  publicCategories,
-  messages,
-  accessibility,
-  dateFormat,
 }) => {
+  // Specsをクライアントサイドで直接インポートすることで、HTML内のJSONを削減
+  const {
+    messages,
+    accessibility,
+    date_format: dateFormat,
+    posts_config: postsConfig,
+    access_control: accessControl
+  } = postsSpec;
+
+  const pageTitle = postsConfig.page_title;
+  const publicCategories = accessControl.public_categories;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [posts, setPosts] = useState<PostSummary[]>(initialPosts);
   const [loadMoreInfo, setLoadMoreInfo] = useState(initialLoadMoreInfo);
@@ -76,16 +81,20 @@ const PostsSection: React.FC<PostsSectionProps> = ({
         />
       )}
 
-      <FilterPanel
-        availableCategories={availableCategories}
-        availableTags={availableTags}
-        tagGroups={tagGroups} // FilterPanel に tagGroups を渡す
-        selectedCategory={selectedCategory}
-        selectedTags={selectedTags}
-        isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-        filterMessages={messages.filter}
-      />
+      {isFilterOpen && (
+        <Suspense fallback={null}>
+          <FilterPanel
+            availableCategories={availableCategories}
+            availableTags={availableTags}
+            tagGroups={tagGroups}
+            selectedCategory={selectedCategory}
+            selectedTags={selectedTags}
+            isOpen={isFilterOpen}
+            onClose={() => setIsFilterOpen(false)}
+            filterMessages={messages.filter}
+          />
+        </Suspense>
+      )}
       <h1 className="posts-section__title" data-testid="page-title">
         {pageTitle}
       </h1>

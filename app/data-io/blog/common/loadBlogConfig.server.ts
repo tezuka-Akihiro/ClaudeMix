@@ -27,6 +27,5 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
     copyright,
     siteUrl: spec.blog_config.site_url,
     siteName: spec.blog_config.title,
-    spec,
   };
 }

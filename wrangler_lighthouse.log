@@ -1,0 +1,253 @@
+
+ ⛅️ wrangler 4.60.0 (update available 4.63.0)
+─────────────────────────────────────────────
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring this import because "../node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs" was marked as having no side effects[0m [ignored-bare-import]
+
+    ../build/server/assets/FilterPanel-FPqfGrge.js:1:560:
+[37m      1 │ ..."node:async_hooks";import[32m"node:console"[37m;import"node:dns";import"...
+        ╵                             [32m~~~~~~~~~~~~~~[0m
+
+  "sideEffects" is false in the enclosing "package.json" file:
+
+    ../node_modules/@cloudflare/unenv-preset/package.json:23:2:
+[37m      23 │   [32m"sideEffects"[37m: false,
+         ╵   [32m~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring this import because "../node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs" was marked as having no side effects[0m [ignored-bare-import]
+
+    ../build/server/index.js:1:929:
+[37m      1 │ ..."node:async_hooks";import[32m"node:console"[37m;import"node:dns";import"...
+        ╵                             [32m~~~~~~~~~~~~~~[0m
+
+  "sideEffects" is false in the enclosing "package.json" file:
+
+    ../node_modules/@cloudflare/unenv-preset/package.json:23:2:
+[37m      23 │   [32m"sideEffects"[37m: false,
+         ╵   [32m~~~~~~~~~~~~~[0m
+
+
+Using vars defined in .dev.vars
+Your Worker has access to the following bindings:
+Binding                                                                      Resource                  Mode
+env.SESSION_KV (local-dev-kv)                                                KV Namespace              local
+env.DB (claudemix-dev)                                                       D1 Database               local
+env.APP_URL ("http://localhost:3000")                                        Environment Variable      local
+env.GOOGLE_CLIENT_ID ("395752864569-ng3tot15p3ufguvcuchre6jn...")            Environment Variable      local
+env.GOOGLE_REDIRECT_URI ("http://localhost:3000/auth/callback/g...")         Environment Variable      local
+env.STRIPE_PUBLISHABLE_KEY ("pk_test_51StRLVFTLZPZU8HQHblw6Ig1B6V1...")      Environment Variable      local
+env.LEGAL_PRIVATE_INFO ("(hidden)")                                          Environment Variable      local
+env.GOOGLE_CLIENT_SECRET ("(hidden)")                                        Environment Variable      local
+env.STRIPE_SECRET_KEY ("(hidden)")                                           Environment Variable      local
+env.STRIPE_WEBHOOK_SECRET ("(hidden)")                                       Environment Variable      local
+
+⎔ Starting local server...
+[wrangler:info] Ready on http://localhost:3000
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mWarning: React does not recognize the `fetchPriority` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `fetchpriority` instead. If you accidentally passed it from a parent component, remove it from the DOM element.[0m
+
+      at [object Object]
+      at [object Object]
+      at [object Object]
+      at m (file:///app/build/server/index.js:14316:17359)
+      at EM (file:///app/build/server/assets/vendor-react-COWzGgY1.js:236:3493)
+      at zR (file:///app/build/server/assets/vendor-react-COWzGgY1.js:236:12696)
+      at [object Object]
+      at be (file:///app/build/server/assets/vendor-react-COWzGgY1.js:236:2733)
+      at m (file:///app/build/server/assets/vendor-react-COWzGgY1.js:370:2831)
+      at be (file:///app/build/server/assets/vendor-react-COWzGgY1.js:236:12933)
+      at J (file:///app/build/server/assets/vendor-react-COWzGgY1.js:370:1601)
+      at RL (file:///app/build/server/assets/vendor-react-COWzGgY1.js:308:48)
+      at TA (file:///app/build/server/assets/vendor-react-COWzGgY1.js:379:25)
+
+
+[wrangler:info] HEAD /blog 200 OK (78ms)
+[wrangler:info] GET /blog 200 OK (34ms)
+[wrangler:info] GET /assets/entry-CbLr-8bJ.css 200 OK (74ms)
+[wrangler:info] GET /assets/400-CAcA17TS.css 200 OK (51ms)
+[wrangler:info] GET /assets/500-BDyqXZ4V.css 200 OK (43ms)
+[wrangler:info] GET /assets/700-DXv_tTWP.css 200 OK (42ms)
+[wrangler:info] GET /assets/layer2-common-BMF1qqV2.css 200 OK (42ms)
+[wrangler:info] GET /assets/layer2-posts-U5R2Jt7n.css 200 OK (51ms)
+[wrangler:info] GET /assets/entry.client-GQ4qSq-H.js 200 OK (72ms)
+[wrangler:info] GET /assets/vendor-react-CTXNTGxc.js 200 OK (81ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 200 OK (341ms)
+[wrangler:info] GET /assets/vendor-BPzT_75d.js 200 OK (351ms)
+[wrangler:info] GET /assets/root-D_mmlWwA.js 200 OK (352ms)
+[wrangler:info] GET /assets/formatPublishedDate-DztV96_s.js 200 OK (352ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2 200 OK (20ms)
+[wrangler:info] GET /assets/layer2-common-3ae8RUIP.js 200 OK (59ms)
+[wrangler:info] GET /assets/deepMerge-CJaSxpBg.js 200 OK (32ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2 200 OK (27ms)
+[wrangler:info] GET /assets/blog._index-BUS5f5OR.js 200 OK (33ms)
+[wrangler:info] GET /assets/BlogHeader-BlJoxrvq.js 200 OK (33ms)
+[wrangler:info] GET /__manifest 200 OK (10ms)
+[wrangler:info] GET /assets/entry-CbLr-8bJ.css 304 Not Modified (11ms)
+[wrangler:info] GET /assets/700-DXv_tTWP.css 304 Not Modified (13ms)
+[wrangler:info] GET /assets/500-BDyqXZ4V.css 304 Not Modified (12ms)
+[wrangler:info] GET /assets/400-CAcA17TS.css 304 Not Modified (9ms)
+[wrangler:info] GET /assets/layer2-common-BMF1qqV2.css 304 Not Modified (14ms)
+[wrangler:info] GET /assets/layer2-posts-U5R2Jt7n.css 304 Not Modified (16ms)
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mError: No route matches URL "/robots.txt"[0m
+
+      at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+      at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+      at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+      at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+      at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+      at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+      at null.<anonymous> (async file:///app/.wrangler/tmp/dev-qiKUyT/s0132j1ibp.js:10958:14)
+      at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+      at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+      at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo routes matched location "/robots.txt" [0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mErrorResponseImpl {[0m
+
+    status: 404,
+    statusText: 'Not Found',
+    internal: true,
+    data: 'Error: No route matches URL "/robots.txt"',
+    error: Error: No route matches URL "/robots.txt"
+        at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+        at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+        at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+        at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+        at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+        at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+        at null.<anonymous> (async file:///app/.wrangler/tmp/dev-qiKUyT/s0132j1ibp.js:10958:14)
+        at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+        at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+        at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+  }
+
+
+[wrangler:info] GET /robots.txt 404 Not Found (21ms)
+[wrangler:info] GET /login 200 OK (20ms)
+[wrangler:info] GET /assets/entry-CbLr-8bJ.css 200 OK (11ms)
+[wrangler:info] GET /assets/400-CAcA17TS.css 200 OK (16ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 200 OK (15ms)
+[wrangler:info] GET /assets/500-BDyqXZ4V.css 200 OK (16ms)
+[wrangler:info] GET /assets/entry.client-GQ4qSq-H.js 200 OK (15ms)
+[wrangler:info] GET /assets/700-DXv_tTWP.css 200 OK (22ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 200 OK (34ms)
+[wrangler:info] GET /assets/vendor-react-CTXNTGxc.js 200 OK (73ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 200 OK (75ms)
+[wrangler:info] GET /assets/root-D_mmlWwA.js 200 OK (66ms)
+[wrangler:info] GET /assets/deepMerge-CJaSxpBg.js 200 OK (59ms)
+[wrangler:info] GET /assets/vendor-BPzT_75d.js 200 OK (76ms)
+[wrangler:info] GET /assets/authentication-schema-y-9lVNKY.js 200 OK (66ms)
+[wrangler:info] GET /assets/login-DdeZRudf.js 200 OK (10ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2 200 OK (14ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2 200 OK (20ms)
+[wrangler:info] GET /__manifest 200 OK (8ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2 200 OK (8ms)
+[wrangler:info] GET /assets/entry-CbLr-8bJ.css 304 Not Modified (7ms)
+[wrangler:info] GET /assets/400-CAcA17TS.css 304 Not Modified (9ms)
+[wrangler:info] GET /assets/500-BDyqXZ4V.css 304 Not Modified (9ms)
+[wrangler:info] GET /assets/700-DXv_tTWP.css 304 Not Modified (13ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 304 Not Modified (14ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 304 Not Modified (14ms)
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mError: No route matches URL "/robots.txt"[0m
+
+      at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+      at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+      at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+      at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+      at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+      at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+      at null.<anonymous> (async file:///app/.wrangler/tmp/dev-qiKUyT/s0132j1ibp.js:10958:14)
+      at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+      at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+      at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo routes matched location "/robots.txt" [0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mErrorResponseImpl {[0m
+
+    status: 404,
+    statusText: 'Not Found',
+    internal: true,
+    data: 'Error: No route matches URL "/robots.txt"',
+    error: Error: No route matches URL "/robots.txt"
+        at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+        at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+        at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+        at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+        at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+        at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+        at null.<anonymous> (async file:///app/.wrangler/tmp/dev-qiKUyT/s0132j1ibp.js:10958:14)
+        at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+        at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+        at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+  }
+
+
+[wrangler:info] GET /robots.txt 404 Not Found (14ms)
+[wrangler:info] GET /register 200 OK (17ms)
+[wrangler:info] GET /assets/entry-CbLr-8bJ.css 200 OK (15ms)
+[wrangler:info] GET /assets/400-CAcA17TS.css 200 OK (24ms)
+[wrangler:info] GET /assets/500-BDyqXZ4V.css 200 OK (24ms)
+[wrangler:info] GET /assets/700-DXv_tTWP.css 200 OK (25ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 200 OK (26ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 200 OK (26ms)
+[wrangler:info] GET /assets/entry.client-GQ4qSq-H.js 200 OK (10ms)
+[wrangler:info] GET /assets/vendor-react-CTXNTGxc.js 200 OK (17ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 200 OK (91ms)
+[wrangler:info] GET /assets/vendor-BPzT_75d.js 200 OK (93ms)
+[wrangler:info] GET /assets/root-D_mmlWwA.js 200 OK (94ms)
+[wrangler:info] GET /assets/authentication-schema-y-9lVNKY.js 200 OK (93ms)
+[wrangler:info] GET /assets/deepMerge-CJaSxpBg.js 200 OK (83ms)
+[wrangler:info] GET /assets/register-CMaUwtgT.js 200 OK (11ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2 200 OK (12ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2 200 OK (10ms)
+[wrangler:info] GET /__manifest 200 OK (6ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2 200 OK (5ms)
+[wrangler:info] GET /assets/entry-CbLr-8bJ.css 304 Not Modified (11ms)
+[wrangler:info] GET /assets/400-CAcA17TS.css 304 Not Modified (10ms)
+[wrangler:info] GET /assets/700-DXv_tTWP.css 304 Not Modified (13ms)
+[wrangler:info] GET /assets/500-BDyqXZ4V.css 304 Not Modified (13ms)
+[wrangler:info] GET /assets/layer2-common-BhxVJ8V8.css 304 Not Modified (15ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 304 Not Modified (15ms)
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mError: No route matches URL "/robots.txt"[0m
+
+      at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+      at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+      at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+      at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+      at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+      at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+      at null.<anonymous> (async file:///app/.wrangler/tmp/dev-qiKUyT/s0132j1ibp.js:10958:14)
+      at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+      at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+      at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo routes matched location "/robots.txt" [0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mErrorResponseImpl {[0m
+
+    status: 404,
+    statusText: 'Not Found',
+    internal: true,
+    data: 'Error: No route matches URL "/robots.txt"',
+    error: Error: No route matches URL "/robots.txt"
+        at getInternalRouterError (file:///app/node_modules/@remix-run/router/router.ts:5580:5)
+        at Object.query (file:///app/node_modules/@remix-run/router/router.ts:3564:19)
+        at handleDocumentRequest (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:317:35)
+        at requestHandler (file:///app/node_modules/@remix-run/server-runtime/dist/server.js:171:24)
+        at null.<anonymous> (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:52:12)
+        at async handleFetch (file:///app/node_modules/@remix-run/cloudflare-pages/dist/esm/worker.js:75:18)
+        at null.<anonymous> (async file:///app/.wrangler/tmp/dev-qiKUyT/s0132j1ibp.js:10958:14)
+        at async next (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:161:22)
+        at async Object.fetch (file:///app/node_modules/wrangler/templates/pages-template-worker.ts:180:11)
+        at async jsonError (file:///app/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts:22:10)
+  }
+
+
+[wrangler:info] GET /robots.txt 404 Not Found (12ms)

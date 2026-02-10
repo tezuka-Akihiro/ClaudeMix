@@ -57,7 +57,6 @@ export interface PostDetailLoaderData {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
-  spec: BlogPostDetailSpec;
 }
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
@@ -161,7 +160,6 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
       hasActiveSubscription: subscriptionStatus.hasActiveSubscription,
     },
     thumbnailUrl,
-    spec: postDetailSpec,
   });
 }
 
@@ -201,7 +199,7 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
 };
 
 export default function BlogPostDetail() {
-  const { post, headings, config, subscriptionAccess, thumbnailUrl, spec } = useLoaderData<typeof loader>();
+  const { post, headings, config, subscriptionAccess, thumbnailUrl } = useLoaderData<typeof loader>();
 
   // Scroll to top on page navigation
   useEffect(() => {
@@ -218,7 +216,6 @@ export default function BlogPostDetail() {
         hasMermaid={post.hasMermaid}
         subscriptionAccess={subscriptionAccess}
         thumbnailUrl={thumbnailUrl}
-        spec={spec}
       />
     </BlogLayout>
   );
