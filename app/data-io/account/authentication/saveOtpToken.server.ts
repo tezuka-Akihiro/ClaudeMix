@@ -6,7 +6,7 @@
  * @responsibility KVへのOTPトークン保存（TTL付き）
  */
 
-import { loadSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 interface CloudflareEnv {

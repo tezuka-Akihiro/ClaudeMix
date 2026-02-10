@@ -14,7 +14,7 @@
  */
 
 import * as v from 'valibot';
-import { getSpec, getSharedSpec } from '~/generated/specs';
+import { getSpec, getSharedSpec } from '~/generated/specs/index';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 import type { ValidationSpec } from '~/specs/shared/types';
 
@@ -124,7 +124,7 @@ export const ForgotPasswordSchema = v.object({
  * 対応するYAML: forms.send_otp
  * Fields: email
  */
-export const SendOtpSchema = object({
+export const SendOtpSchema = v.object({
   email: EmailSchema,
 });
 
@@ -134,10 +134,10 @@ export const SendOtpSchema = object({
  * 対応するYAML: forms.otp_verify
  * Fields: otpCode, email (hidden)
  */
-export const OtpVerifySchema = object({
-  otpCode: pipe(
-    string(authSpec.validation.otp.error_messages.required),
-    regex(
+export const OtpVerifySchema = v.object({
+  otpCode: v.pipe(
+    v.string(authSpec.validation.otp.error_messages.required),
+    v.regex(
       new RegExp(authSpec.validation.otp.pattern),
       authSpec.validation.otp.error_messages.invalid_format
     )
@@ -154,8 +154,8 @@ export const OtpVerifySchema = object({
  * これにより、スキーマと型の乖離をゼロにします。
  */
 
-export type LoginFormData = InferOutput<typeof LoginSchema>;
-export type RegisterFormData = InferOutput<typeof RegisterSchema>;
-export type ForgotPasswordFormData = InferOutput<typeof ForgotPasswordSchema>;
-export type SendOtpFormData = InferOutput<typeof SendOtpSchema>;
-export type OtpVerifyFormData = InferOutput<typeof OtpVerifySchema>;
+export type LoginFormData = v.InferOutput<typeof LoginSchema>;
+export type RegisterFormData = v.InferOutput<typeof RegisterSchema>;
+export type ForgotPasswordFormData = v.InferOutput<typeof ForgotPasswordSchema>;
+export type SendOtpFormData = v.InferOutput<typeof SendOtpSchema>;
+export type OtpVerifyFormData = v.InferOutput<typeof OtpVerifySchema>;

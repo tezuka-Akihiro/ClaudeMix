@@ -6,7 +6,7 @@
  * @responsibility OTPコードのフォーマット検証
  */
 
-import { loadSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 export interface OtpFormatResult {
