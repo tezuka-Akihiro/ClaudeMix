@@ -5,7 +5,7 @@ import type { LoaderFunctionArgs, LinksFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
-import { loadSpec, loadSharedSpec } from "~/spec-utils/specLoader.server";
+import { loadSpec, loadSharedSpec } from "~/spec-loader/specLoader.server";
 import type { BlogLandingSpec, MenuItem } from "~/specs/blog/types";
 import type { ProjectSpec } from "~/specs/shared/types";
 import { resolveLegalContent } from "~/lib/blog/common/resolveLegalContent";

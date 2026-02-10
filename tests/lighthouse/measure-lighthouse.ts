@@ -136,17 +136,17 @@ async function main() {
       name: "blog-posts",
       formFactor: "desktop",
     },
-    // ログインページ（モバイル）
+    // ブログ記事詳細ページ（モバイル）
     {
-      url: `${baseUrl}/login`,
-      name: "login",
+      url: `${baseUrl}/blog/welcome`,
+      name: "blog-detail",
       formFactor: "mobile",
     },
-    // 会員登録ページ（モバイル）
+    // ブログ記事詳細ページ（デスクトップ）
     {
-      url: `${baseUrl}/register`,
-      name: "register",
-      formFactor: "mobile",
+      url: `${baseUrl}/blog/welcome`,
+      name: "blog-detail",
+      formFactor: "desktop",
     },
   ];
 

@@ -155,7 +155,7 @@ describe('LoadMoreButton', () => {
       );
 
       const button = screen.getByTestId('load-more-button');
-      expect(button).toHaveAttribute('aria-label', `${mockMessages.button_label} (${mockAriaLabel})`);
+      expect(button).toHaveAttribute('aria-label', mockAriaLabel);
     });
 
     it('ローディング中、aria-busy=trueが設定される', () => {

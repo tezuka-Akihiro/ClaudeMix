@@ -2,7 +2,6 @@ import { test, expect, type Page } from '@playwright/test';
 import { createAuthenticatedUser } from '../../utils/auth-helper';
 import { loadSpec } from '../../utils/loadSpec';
 import type { AccountCommonSpec } from '~/specs/account/types';
-import { extractTestId } from '~/spec-utils/extractTestId';
 
 /**
  * E2E Test: Account Common Section (Happy Path)
@@ -33,15 +32,15 @@ test.describe('Account Common Section - Happy Path', () => {
       await page.goto('/account');
 
       // Verify AccountLayout is rendered
-      const layout = page.getByTestId(extractTestId(spec.ui_selectors.layout.account_layout));
+      const layout = page.locator('[data-testid="account-layout"]');
       await expect(layout).toBeVisible();
 
       // Verify AccountNav is rendered
-      const nav = page.getByTestId(extractTestId(spec.ui_selectors.navigation.account_nav));
+      const nav = page.locator('[data-testid="account-nav"]');
       await expect(nav).toBeVisible();
 
       // Verify navigation items count are displayed
-      const navItems = nav.getByTestId(extractTestId(spec.ui_selectors.navigation.nav_item));
+      const navItems = nav.locator('[data-testid="nav-item"]');
       await expect(navItems).toHaveCount(spec.navigation.menu_items.length);
 
       // Verify navigation item labels from spec
@@ -51,7 +50,7 @@ test.describe('Account Common Section - Happy Path', () => {
 
       // Verify current page (first item) is highlighted
       const firstItem = spec.navigation.menu_items[0];
-      const activeItem = nav.locator(`${spec.ui_selectors.navigation.nav_item}[aria-current="page"]`);
+      const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
       await expect(activeItem).toBeVisible();
       await expect(activeItem).toContainText(firstItem.label);
     });
@@ -63,14 +62,14 @@ test.describe('Account Common Section - Happy Path', () => {
       await page.goto('/account');
 
       // Click on settings navigation item
-      const nav = page.getByTestId(extractTestId(spec.ui_selectors.navigation.account_nav));
+      const nav = page.locator('[data-testid="account-nav"]');
       await nav.locator(`text=${settingsItem.label}`).click();
 
       // Verify URL changed to /account/settings
       await expect(page).toHaveURL(settingsItem.path);
 
       // Verify settings is now highlighted
-      const activeItem = nav.locator(`${spec.ui_selectors.navigation.nav_item}[aria-current="page"]`);
+      const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
       await expect(activeItem).toContainText(settingsItem.label);
     });
 
@@ -82,7 +81,7 @@ test.describe('Account Common Section - Happy Path', () => {
       await expect(announcementHeading).toBeVisible();
 
       // Verify logout button is present
-      const logoutButton = page.getByTestId('logout-button');
+      const logoutButton = page.locator('[data-testid="logout-button"]');
       await expect(logoutButton).toBeVisible();
       await expect(logoutButton).toHaveClass(/btn-primary/);
       await expect(logoutButton).toHaveText('ログアウト');
@@ -115,14 +114,14 @@ test.describe('Account Common Section - Happy Path', () => {
       await page.goto('/account');
 
       // Click on services navigation item
-      const nav = page.getByTestId(extractTestId(spec.ui_selectors.navigation.account_nav));
+      const nav = page.locator('[data-testid="account-nav"]');
       await nav.locator(`text=${servicesItem.label}`).click();
 
       // Verify URL changed to /account/services
       await expect(page).toHaveURL(servicesItem.path);
 
       // Verify services item is now highlighted
-      const activeItem = nav.locator(`${spec.ui_selectors.navigation.nav_item}[aria-current="page"]`);
+      const activeItem = nav.locator('[data-testid="nav-item"][aria-current="page"]');
       await expect(activeItem).toContainText(servicesItem.label);
     });
   });
@@ -206,7 +205,7 @@ test.describe('Common Components', () => {
       await page.goto(`${loginPath}?message=session-expired`);
 
       // Verify flash message is displayed
-      const flashMessage = page.getByTestId('flash-message');
+      const flashMessage = page.locator('[data-testid="flash-message"]');
       await expect(flashMessage).toBeVisible();
       // Note: we check if it contains the message from common spec
       await expect(flashMessage).toContainText(sessionExpiredMessage);
@@ -230,7 +229,7 @@ test.describe('Common Components', () => {
       await page.goto('/account/settings');
 
       // Open modal (using email-change-button as test subject)
-      const modalTrigger = page.getByTestId('email-change-button');
+      const modalTrigger = page.locator('[data-testid="email-change-button"]');
       await modalTrigger.click();
 
       // Verify modal is visible

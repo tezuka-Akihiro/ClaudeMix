@@ -2,7 +2,7 @@
 // Google Fonts APIからフォントを取得し、Cache APIでキャッシュ
 // Cloudflare Workers環境での動的フォント取得を担当
 
-import { loadSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { BlogCommonSpec } from '~/specs/blog/types';
 
 /**

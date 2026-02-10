@@ -6,7 +6,7 @@
  * @responsibility Cloudflare Workers KV削除、Cookie無効化
  */
 
-import { loadSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { AccountCommonSpec } from '~/specs/account/types';
 
 /**

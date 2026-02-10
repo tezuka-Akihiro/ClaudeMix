@@ -1,7 +1,7 @@
 // loadBlogConfig.server - 🔌 副作用層
 // ブログ設定情報（タイトル、メニュー項目、コピーライト）を返す
 // spec.yamlから設定を読み込む（SSoTパターン）
-import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { BlogConfig, MenuItem, BlogCommonSpec } from '~/specs/blog/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 import { formatCopyright } from '~/lib/blog/common/copyrightFormatter';
@@ -27,5 +27,6 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
     copyright,
     siteUrl: spec.blog_config.site_url,
     siteName: spec.blog_config.title,
+    spec,
   };
 }

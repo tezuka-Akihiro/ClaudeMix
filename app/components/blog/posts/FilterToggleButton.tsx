@@ -6,25 +6,18 @@ import React from 'react';
 interface FilterToggleButtonProps {
   onClick: () => void;
   isOpen: boolean;
-  label?: string;
 }
 
-export const FilterToggleButton: React.FC<FilterToggleButtonProps> = ({
-  onClick,
-  isOpen,
-  label = 'Filter'
-}) => {
-  const statusLabel = isOpen ? 'フィルタを閉じる' : 'フィルタを開く';
-
+export const FilterToggleButton: React.FC<FilterToggleButtonProps> = ({ onClick, isOpen }) => {
   return (
     <button
       type="button"
       className="filter-toggle-button"
       onClick={onClick}
-      aria-label={`${label} (${statusLabel})`}
+      aria-label={isOpen ? 'フィルタを閉じる' : 'フィルタを開く'}
       data-testid="filter-toggle-button"
     >
-      {label}
+      Filter
     </button>
   );
 };

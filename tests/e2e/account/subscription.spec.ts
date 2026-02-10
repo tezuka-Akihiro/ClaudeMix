@@ -11,16 +11,8 @@
 
 import { test, expect, type Page } from '@playwright/test';
 import { createAuthenticatedUser } from '../../utils/auth-helper';
-import { loadSpec, type AccountSubscriptionSpec } from '../../utils/loadSpec';
-import { extractTestId } from '~/spec-utils/extractTestId';
 
 test.describe('Account Subscription Management', () => {
-  let spec: AccountSubscriptionSpec;
-
-  test.beforeAll(async () => {
-    spec = await loadSpec<AccountSubscriptionSpec>('account', 'subscription');
-  });
-
   test.describe('Subscription Page Display', () => {
     // Isolate from global setup to ensure stability
     test.use({ storageState: { cookies: [], origins: [] } });
@@ -30,24 +22,23 @@ test.describe('Account Subscription Management', () => {
       await createAuthenticatedUser(page, { prefix: 'sub-display' });
 
       // Navigate to subscription page
-      await page.goto(spec.routes.subscription.path);
+      await page.goto('/account/subscription');
 
       // Verify page title
-      const titlePattern = new RegExp(spec.routes.subscription.title);
-      await expect(page).toHaveTitle(titlePattern);
+      await expect(page).toHaveTitle(/サブスクリプション/);
 
       // Verify subscription page is displayed
-      const subscriptionPage = page.getByTestId('subscription-page');
+      const subscriptionPage = page.locator('[data-testid="subscription-page"]');
       await expect(subscriptionPage).toBeVisible();
 
       // Verify page heading
-      await expect(page.locator('h1')).toContainText(spec.routes.subscription.title);
+      await expect(page.locator('h1')).toContainText('サブスクリプション');
     });
 
     test('should redirect to login if not authenticated', async ({ page }) => {
       // Force unauthenticated state
       await page.context().clearCookies();
-      await page.goto(spec.routes.subscription.path);
+      await page.goto('/account/subscription');
 
       // Should redirect to login
       await expect(page).toHaveURL(/\/login/);
@@ -63,14 +54,14 @@ test.describe('Account Subscription Management', () => {
       await createAuthenticatedUser(page, { prefix: 'sub-inactive-1' });
 
       // Navigate to subscription page
-      await page.goto(spec.routes.subscription.path);
+      await page.goto('/account/subscription');
 
       // Verify subscription page is displayed
-      const subscriptionPage = page.getByTestId('subscription-page');
+      const subscriptionPage = page.locator('[data-testid="subscription-page"]');
       await expect(subscriptionPage).toBeVisible();
 
       // Verify plan selector is visible for inactive users
-      const planSelector = page.getByTestId(extractTestId(spec.test.selectors.plan_selector));
+      const planSelector = page.locator('[data-testid="plan-selector"]');
       await expect(planSelector).toBeVisible();
     });
 
@@ -79,20 +70,23 @@ test.describe('Account Subscription Management', () => {
       await createAuthenticatedUser(page, { prefix: 'sub-inactive-2' });
 
       // Navigate to subscription page
-      await page.goto(spec.routes.subscription.path);
+      await page.goto('/account/subscription');
 
       // Verify plan card is displayed (standard plan)
-      const planCard = page.getByTestId(extractTestId(spec.test.selectors.plan_card_standard));
+      const planCard = page.locator('[data-testid="plan-card-standard"]');
       await expect(planCard).toBeVisible();
 
       // Verify plan card content
-      await expect(planCard.locator('.plan-name')).toContainText(spec.plans.standard.name);
-      await expect(planCard.locator('.plan-price__amount')).toContainText(spec.plans.standard.price.toLocaleString());
+      await expect(planCard.locator('.plan-name')).toContainText('スタンダード');
+      await expect(planCard.locator('.plan-price__amount')).toContainText('¥980');
 
       // Verify purchase button is visible
-      const purchaseButton = page.getByTestId(extractTestId(spec.test.selectors.subscribe_standard));
+      const purchaseButton = page.locator('[data-testid="subscribe-standard"]');
       await expect(purchaseButton).toBeVisible();
-      await expect(purchaseButton).toContainText(spec.forms.create_checkout.submit_button.label);
+      await expect(purchaseButton).toContainText('購入');
+
+      // Verify "No Ads" is not displayed in features
+      await expect(planCard).not.toContainText('広告非表示');
     });
   });
 
@@ -104,27 +98,27 @@ test.describe('Account Subscription Management', () => {
       await createAuthenticatedUser(page, { prefix: 'sub-nav-1' });
 
       // Find and click subscription link in navigation
-      const subscriptionLink = page.locator(`a[href="${spec.routes.subscription.path}"]`);
+      const subscriptionLink = page.locator('a[href="/account/subscription"]');
       await subscriptionLink.click();
 
       // Verify we're on subscription page
-      await expect(page).toHaveURL(spec.routes.subscription.path);
-      await expect(page.getByTestId('subscription-page')).toBeVisible();
+      await expect(page).toHaveURL('/account/subscription');
+      await expect(page.locator('[data-testid="subscription-page"]')).toBeVisible();
     });
 
     test('should maintain session across subscription page visits', async ({ page }) => {
       await createAuthenticatedUser(page, { prefix: 'sub-nav-2' });
 
       // Visit subscription page
-      await page.goto(spec.routes.subscription.path);
-      await expect(page.getByTestId('subscription-page')).toBeVisible();
+      await page.goto('/account/subscription');
+      await expect(page.locator('[data-testid="subscription-page"]')).toBeVisible();
 
       // Navigate away and back
       await page.goto('/account');
-      await page.goto(spec.routes.subscription.path);
+      await page.goto('/account/subscription');
 
       // Should still be authenticated
-      await expect(page.getByTestId('subscription-page')).toBeVisible();
+      await expect(page.locator('[data-testid="subscription-page"]')).toBeVisible();
       await expect(page).not.toHaveURL(/\/login/);
     });
   });
@@ -138,10 +132,10 @@ test.describe('Account Subscription Management', () => {
       // Register user
       await createAuthenticatedUser(page, { prefix: 'rapid-change-user' });
 
-      await page.goto(spec.routes.subscription.path);
+      await page.goto('/account/subscription');
 
       // Click purchase button - this triggers fetcher submit then external navigation
-      const purchaseButton = page.getByTestId(extractTestId(spec.test.selectors.subscribe_standard));
+      const purchaseButton = page.locator('[data-testid="subscribe-standard"]');
       await purchaseButton.click();
 
       // After first click, button should become disabled (fetcher submitting)

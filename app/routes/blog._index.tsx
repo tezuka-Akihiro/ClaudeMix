@@ -88,6 +88,12 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     },
     pageTitle: spec.posts_config.page_title,
     metaDescription: spec.meta.description,
+    publicCategories: spec.access_control.public_categories,
+    spec: {
+      messages: spec.messages,
+      accessibility: spec.accessibility,
+      date_format: spec.date_format,
+    },
   });
 }
 
@@ -99,6 +105,9 @@ export default function BlogIndex() {
     loadMoreInfo,
     availableFilters,
     selectedFilters,
+    pageTitle,
+    publicCategories,
+    spec,
   } = useLoaderData<typeof loader>();
 
   return (
@@ -109,6 +118,11 @@ export default function BlogIndex() {
         loadMoreInfo={loadMoreInfo}
         availableFilters={availableFilters}
         selectedFilters={selectedFilters}
+        pageTitle={pageTitle}
+        publicCategories={publicCategories}
+        messages={spec.messages}
+        accessibility={spec.accessibility}
+        dateFormat={spec.date_format}
       />
     </BlogLayout>
   );

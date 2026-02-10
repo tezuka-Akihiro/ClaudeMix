@@ -106,8 +106,8 @@ Phase 4: 検証 → prompts/04-verify.md
 
 | 場所 | 使用するローダー | import文 |
 |------|-----------------|----------|
-| Route loader/action | `specLoader.server` | `import { loadSpec } from '~/spec-utils/specLoader.server'` |
-| lib層 | `specLoader.server` | `import { loadSpec } from '~/spec-utils/specLoader.server'` |
+| Route loader/action | `specLoader.server` | `import { loadSpec } from '~/spec-loader/specLoader.server'` |
+| lib層 | `specLoader.server` | `import { loadSpec } from '~/spec-loader/specLoader.server'` |
 | Vitest | `loadSpec.ts` | `import { loadSpec } from 'tests/utils/loadSpec'` |
 | Playwright E2E | `loadSpec.ts` | `import { loadSpec } from 'tests/utils/loadSpec'` |
 
@@ -147,7 +147,7 @@ Phase 4: 検証 → prompts/04-verify.md
 | `prompts/*.md` | 各フェーズの金型 |
 | `docs/adoption-patterns.md` | 導入パターン一覧と修正例 |
 | `.claude/rules/ssot/spec-loader.md` | SsoTルール定義 |
-| `app/spec-utils/specLoader.server.ts` | サーバー側ローダー実装 |
+| `app/spec-loader/specLoader.server.ts` | サーバー側ローダー実装 |
 | `tests/utils/loadSpec.ts` | テスト側ローダー実装 |
 
 ---

@@ -4,9 +4,8 @@
 import { useEffect, useState } from 'react';
 import { TableOfContents } from './TableOfContents';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
-import type { Heading, RenderedPost } from '~/specs/blog/types';
+import type { Heading, RenderedPost, BlogPostDetailSpec } from '~/specs/blog/types';
 import { Paywall } from './Paywall';
-import { data as postDetailSpec } from '~/generated/specs/blog/post-detail';
 
 // Mermaid.jsのグローバル型定義
 declare global {
@@ -31,6 +30,7 @@ interface PostDetailSectionProps {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
+  spec: BlogPostDetailSpec;
 }
 
 export function PostDetailSection({
@@ -39,9 +39,8 @@ export function PostDetailSection({
   hasMermaid = false,
   subscriptionAccess,
   thumbnailUrl,
+  spec,
 }: PostDetailSectionProps) {
-  // Specsをクライアントサイドで直接インポートすることで、HTML内のJSONを削減
-  const spec = postDetailSpec;
   const [imageError, setImageError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 

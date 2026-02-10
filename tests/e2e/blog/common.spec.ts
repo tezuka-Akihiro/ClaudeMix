@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createAuthenticatedUser } from '../../utils/auth-helper';
-import { extractTestId } from '~/spec-utils/extractTestId';
+import { extractTestId } from '~/lib/blog/common/extractTestId';
 import {
   loadSpec,
   loadSharedSpec,

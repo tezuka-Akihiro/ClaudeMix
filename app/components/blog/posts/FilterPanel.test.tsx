@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
-import FilterPanel from './FilterPanel';
+import { FilterPanel } from './FilterPanel';
 
 describe('FilterPanel', () => {
   const mockOnClose = vi.fn();

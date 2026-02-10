@@ -39,8 +39,8 @@ paths:
 ### サーバー側（実装）
 
 ```typescript
-// app/spec-utils/specLoader.server.ts を使用
-import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
+// app/spec-loader/specLoader.server.ts を使用
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 
 // 機能固有のspec
 const postsSpec = loadSpec<BlogPostsSpec>('blog/posts');
@@ -191,7 +191,7 @@ expect(categories).toContain(spec.categories[0].name);
 
 ## AIエージェントへの指示
 
-1. 実装ファイルでは `~/spec-utils/specLoader.server` を使用すること
+1. 実装ファイルでは `~/spec-loader/specLoader.server` を使用すること
 2. テストファイルでは `tests/utils/loadSpec` を使用すること
 3. 日本語文字列、数値リテラル（0, 1以外）、data-testid のハードコードを発見したら、spec loaderへの移行を検討すること
 4. テストでの `toHaveStyle()` 使用は禁止

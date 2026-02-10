@@ -18,7 +18,7 @@ import '~/styles/account/layer2-authentication.css';
 import '~/styles/account/layer3-authentication.css';
 
 // Spec loader
-import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 
@@ -273,7 +273,7 @@ export default function Register() {
               {...getInputProps(fields.passwordConfirm, { type: 'password' })}
               className="form-field__input"
               autoComplete="new-password"
-              data-testid="password-confirm-input"
+              data-testid="confirm-password-input"
             />
             {fields.passwordConfirm.errors && (
               <span id={fields.passwordConfirm.errorId} className="error-message-structure" role="alert" data-testid="error-message">

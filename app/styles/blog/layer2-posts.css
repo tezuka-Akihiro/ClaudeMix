@@ -20,15 +20,13 @@
   /* === PostCard === */
   /* Individual post card */
   .post-card {
-    /*
-     * 描画負荷軽減 (TBT削減): 大量のカードに backdrop-filter を適用すると
-     * Style & Layout 時間が増大するため、背景色のみに変更
-     */
-    background-color: var(--color-surface-dark-opaque);
+    background-color: var(--color-background-primary);
     border: none;
     cursor: pointer;
     padding: var(--spacing-5);
     text-decoration: none;
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-lg);
   }
@@ -97,7 +95,6 @@
     padding: var(--spacing-2) var(--spacing-4);
     cursor: pointer;
     width: calc(var(--layout-card-width) * 2);
-    min-height: var(--touch-target-min-height);
     text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-full);
@@ -124,7 +121,6 @@
   /* FilterToggleButton - Button to open/close filter panel */
   .filter-toggle-button {
     width: calc(var(--layout-card-width) * 2);
-    min-height: var(--touch-target-min-height);
     background-color: var(--color-interactive-primary-bg-subtle);
     border: none;
     color: var(--color-interactive-primary);
@@ -179,7 +175,8 @@
     right: var(--spacing-2);
     margin: 0 auto;
     z-index: var(--z-index-modal);
-    /* パフォーマンス重視のため背景色（不透明）のみ使用 */
+    backdrop-filter: blur(var(--blur-glass-effect));
+    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     border-radius: var(--border-radius-lg);
   }
 

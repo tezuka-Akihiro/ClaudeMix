@@ -11,7 +11,7 @@ import { PostDetailSection } from "~/components/blog/post-detail/PostDetailSecti
 import BlogLayout from "~/components/blog/common/BlogLayout";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
-import { loadSpec } from "~/spec-utils/specLoader.server";
+import { loadSpec } from "~/spec-loader/specLoader.server";
 import type { BlogCommonSpec, BlogPostsSpec, BlogPostDetailSpec } from "~/specs/blog/types";
 import { getSubscriptionStatus } from "~/data-io/blog/post-detail/getSubscriptionStatus.server";
 import { determineContentVisibility } from "~/lib/blog/post-detail/determineContentVisibility";
@@ -57,6 +57,7 @@ export interface PostDetailLoaderData {
     hasActiveSubscription: boolean;
   };
   thumbnailUrl: string | null;
+  spec: BlogPostDetailSpec;
 }
 
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
@@ -160,6 +161,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
       hasActiveSubscription: subscriptionStatus.hasActiveSubscription,
     },
     thumbnailUrl,
+    spec: postDetailSpec,
   });
 }
 
@@ -199,7 +201,7 @@ export const meta: MetaFunction<typeof loader> = ({ data, params, location }) =>
 };
 
 export default function BlogPostDetail() {
-  const { post, headings, config, subscriptionAccess, thumbnailUrl } = useLoaderData<typeof loader>();
+  const { post, headings, config, subscriptionAccess, thumbnailUrl, spec } = useLoaderData<typeof loader>();
 
   // Scroll to top on page navigation
   useEffect(() => {
@@ -216,6 +218,7 @@ export default function BlogPostDetail() {
         hasMermaid={post.hasMermaid}
         subscriptionAccess={subscriptionAccess}
         thumbnailUrl={thumbnailUrl}
+        spec={spec}
       />
     </BlogLayout>
   );

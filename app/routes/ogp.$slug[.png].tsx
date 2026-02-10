@@ -5,7 +5,7 @@ import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { loadPostMetadata } from '~/data-io/blog/common/loadPostMetadata.server';
 import { fetchOgpFont } from '~/data-io/blog/common/fetchOgpFont.server';
 import { generateOgpImage } from '~/lib/blog/common/generateOgpImage';
-import { loadSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { BlogCommonSpec } from '~/specs/blog/types';
 
 /**

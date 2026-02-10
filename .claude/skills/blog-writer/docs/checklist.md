@@ -7,9 +7,10 @@
 - [ ] spec.yamlを読み込んで既存タグを確認した
 - [ ] タグを2-5個選定した（技術要素 + 性質）
 - [ ] カテゴリを適切に選定した
-  - [ ] Claude Best Practices（トラブルシュート起因）
-  - [ ] ClaudeMix Philosophy（設計思想・まとめ）
-  - [ ] Tutorials & Use Cases（機能追加・改修）
+  - [ ] ClaudeMix ガイド
+  - [ ] ClaudeMix 記録
+  - [ ] ClaudeMix 考察
+- [ ] freeContentHeading を設定した
 - [ ] タイトルは具体的で60文字以内
 - [ ] descriptionは1-2文で120-160文字以内
 - [ ] slugはkebab-caseで意味が明確

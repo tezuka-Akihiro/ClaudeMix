@@ -22,7 +22,7 @@ import { deleteAllUserSessions } from '~/data-io/account/common/deleteAllUserSes
 import { validatePassword } from '~/lib/account/authentication/validatePassword';
 
 // Spec loader
-import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 
@@ -235,7 +235,7 @@ export default function ResetPassword() {
               aria-invalid={actionData?.fieldErrors?.newPassword ? true : undefined}
               aria-describedby={actionData?.fieldErrors?.newPassword ? 'new-password-error' : undefined}
               required
-              data-testid="password-input"
+              data-testid="new-password-input"
             />
             {actionData?.fieldErrors?.newPassword && (
               <span id="new-password-error" className="form-field__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPassword}</span>
@@ -257,7 +257,7 @@ export default function ResetPassword() {
               aria-invalid={actionData?.fieldErrors?.newPasswordConfirm ? true : undefined}
               aria-describedby={actionData?.fieldErrors?.newPasswordConfirm ? 'new-password-confirm-error' : undefined}
               required
-              data-testid="password-confirm-input"
+              data-testid="new-password-confirm-input"
             />
             {actionData?.fieldErrors?.newPasswordConfirm && (
               <span id="new-password-confirm-error" className="form-field__error" role="alert" data-testid="error-message">{actionData.fieldErrors.newPasswordConfirm}</span>
