@@ -102,7 +102,50 @@ Action
   7. Cookie設定してリダイレクト（`redirect-url`パラメータ優先、デフォルト`/account`）
 - **エラーハンドリング**: バリデーションエラーまたは認証失敗エラーをJSON形式で返却
 
-### 3. Logout Route (app/routes/logout.tsx)
+### 3. Login Route - OTP送信 (intent: send-otp)
+
+Action (intent: send-otp)
+
+- **責務**: OTPコード生成・送信処理
+- **処理フロー**:
+  1. FormDataから入力値取得（email、intent: "send-otp"）
+  2. メール形式バリデーション実行
+  3. レート制限チェック（`app/data-io/account/authentication/checkOtpRateLimit.server.ts`）
+  4. OTPコード生成（`app/lib/account/authentication/generateAuthToken.ts`）
+  5. KVに保存（`app/data-io/account/authentication/saveOtpToken.server.ts`）
+  6. Resend APIでメール送信（`app/data-io/account/authentication/sendAuthEmail.server.ts`）
+  7. `/auth/otp?email=xxx`へリダイレクト
+- **セキュリティ**: ユーザー未登録でも同一画面遷移（列挙攻撃対策）
+
+### 4. OTP Verify Route (app/routes/auth.otp.tsx)
+
+Loader
+
+- **責務**: 直接アクセス防御
+- **防衛ロジック**:
+  1. URLパラメータからemail取得
+  2. emailが未指定の場合 → `/login`へリダイレクト
+  3. KVにOTPデータが存在しない場合 → `/login`へリダイレクト
+  4. OTPデータが存在する場合 → フォーム表示（emailを渡す）
+- **データソース**:
+  - `app/data-io/account/authentication/verifyOtpToken.server.ts`: KVからOTPデータ存在確認
+- **出力**: `{ email }` またはリダイレクト
+
+Action
+
+- **責務**: OTP検証・ログイン処理
+- **処理フロー**:
+  1. FormDataから入力値取得（email: hidden、otpCode）
+  2. OTPコード形式バリデーション（`app/lib/account/authentication/validateOtpFormat.ts`）
+  3. KVからOTPデータ取得・コード照合（`app/data-io/account/authentication/verifyOtpToken.server.ts`）
+  4. 失敗時: attempts+1更新、3回超過でKVから削除
+  5. 成功時: KVから削除 → ユーザーupsert（`app/data-io/account/authentication/upsertUserByEmail.server.ts`）
+  6. セッション生成（`app/lib/account/common/createSessionData.ts`）
+  7. セッション保存（`app/data-io/account/common/saveSession.server.ts`）
+  8. Cookie設定してリダイレクト（デフォルト`/account`）
+- **エラーハンドリング**: コード不一致、期限切れ、試行回数超過をJSON形式で返却
+
+### 5. Logout Route (app/routes/logout.tsx)
 
 Loader
 
@@ -154,7 +197,7 @@ graph TD
     style Actions fill:#f0f0f0
 ```
 
-### Login Page 構造図
+### Login Page 構造図（OTPメインストリーム）
 
 ```mermaid
 graph TD
@@ -163,25 +206,62 @@ graph TD
     end
 
     Route --> Container["Container (中央寄せコンテナ)"]
-    Container --> LoginForm["LoginForm"]
+    Container --> Title["タイトル ('ログイン')"]
 
-    LoginForm --> Title["タイトル ('ログイン')"]
-    LoginForm --> FieldGroup["フォームフィールドグループ"]
-    LoginForm --> Actions["アクショングループ"]
+    Container --> OAuthSection["OAuthセクション（最優先）"]
+    OAuthSection --> GoogleButton["Link: Google でログイン"]
 
-    FieldGroup --> EmailField["FormField: メールアドレス"]
-    FieldGroup --> PasswordField["FormField: パスワード"]
+    Container --> Divider["区切り線 ('または')"]
 
-    Actions --> SubmitButton["Button: ログイン"]
-    Actions --> RegisterLink["Link: 会員登録はこちら"]
+    Container --> OtpForm["OTP送信フォーム（メインストリーム）"]
+    OtpForm --> EmailField["FormField: メールアドレス"]
+    OtpForm --> OtpSubmitButton["Button: 次へ（OTP送信）"]
+
+    Container --> SubLinks["サブリンクエリア（控えめ）"]
+    SubLinks --> PasswordLoginLink["Link: パスワードでログイン"]
+    SubLinks --> RegisterLink["Link: 新規登録"]
 
     subgraph ErrorDisplay["エラー表示エリア"]
         ErrorMessage["ErrorMessage (条件付き表示)"]
     end
 
-    LoginForm --> ErrorDisplay
+    Container --> ErrorDisplay
 
-    style LoginForm fill:#e8f5e9
+    style OAuthSection fill:#e8f5e9
+    style OtpForm fill:#e8f5e9
+    style SubLinks fill:#f0f0f0
+```
+
+### OTP Verify Page 構造図
+
+```mermaid
+graph TD
+    subgraph OtpVerifyPage["/auth/otp ページ"]
+        Route["auth.otp.tsx (Route)"]
+    end
+
+    Route --> Container["Container (中央寄せコンテナ)"]
+    Container --> OtpVerifyForm["OtpVerifyForm"]
+
+    OtpVerifyForm --> Title["タイトル ('認証コード入力')"]
+    OtpVerifyForm --> Description["説明文 ('メールに送信された6桁のコードを入力')"]
+    OtpVerifyForm --> FieldGroup["フォームフィールドグループ"]
+    OtpVerifyForm --> Actions["アクショングループ"]
+
+    FieldGroup --> HiddenEmail["hidden: メールアドレス"]
+    FieldGroup --> OtpCodeField["FormField: 認証コード (6桁、inputmode: numeric)"]
+
+    Actions --> VerifyButton["Button: 認証する"]
+    Actions --> ResendLink["Link: コードを再送信"]
+    Actions --> BackLink["Link: ログインに戻る"]
+
+    subgraph ErrorDisplay["エラー表示エリア"]
+        ErrorMessage["ErrorMessage (条件付き表示)"]
+    end
+
+    OtpVerifyForm --> ErrorDisplay
+
+    style OtpVerifyForm fill:#e8f5e9
     style FieldGroup fill:#f0f0f0
     style Actions fill:#f0f0f0
 ```
@@ -279,7 +359,42 @@ stateDiagram-v2
   - 「登録時のメールアドレスをご確認ください」
   - 「数分経っても届かない場合は、再度お試しください」
 
-### 4. ResetPasswordForm
+### 4. OtpVerifyForm
+
+**配置**: `app/components/account/authentication/OtpVerifyForm.tsx`
+
+**親子構造**:
+
+- **親**: auth.otp.tsx Route
+- **子**: FormField × 1（6桁コード入力）, hidden input（email）, Button, Link × 2
+
+**状態遷移ルール**:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Default: 初回表示
+    Default --> Filling: コード入力開始
+    Filling --> Submitting: 認証するボタンクリック
+    Submitting --> Error: コード不一致/期限切れ/試行超過
+    Submitting --> Success: 認証成功
+    Error --> Filling: 再入力
+    Error --> Expired: 期限切れ/試行超過
+    Expired --> [*]: /login へリダイレクト（メッセージ表示）
+    Success --> [*]: /account へリダイレクト
+```
+
+**並列配置ルール**:
+
+- **フォームフィールドグループ**: 縦並び（vertical stack）、6桁コード入力フィールドのみ
+- **アクショングループ**: 縦並び（Button + Link × 2）
+
+**特記事項**:
+
+- OTPコード入力: `inputmode="numeric"`, `maxlength="6"`, `autocomplete="one-time-code"`
+- emailはhidden inputで保持（loader経由で取得）
+- 「コードを再送信」リンクはresend-otp intentを実行（login.tsx actionへPOST）
+
+### 5. ResetPasswordForm
 
 **配置**: `app/components/account/authentication/ResetPasswordForm.tsx`
 
@@ -317,7 +432,7 @@ stateDiagram-v2
 
 ### 1. 中央寄せコンテナ (Centered Container)
 
-**適用対象**: register.tsx, login.tsx の最上位コンテナ
+**適用対象**: register.tsx, login.tsx, auth.otp.tsx の最上位コンテナ
 
 **構造ルール**:
 
@@ -329,7 +444,7 @@ stateDiagram-v2
 
 ### 2. フォームフィールドグループ (Form Field Group)
 
-**適用対象**: RegisterForm, LoginForm 内のフィールドグループ
+**適用対象**: RegisterForm, LoginForm, OtpVerifyForm 内のフィールドグループ
 
 **構造ルール**:
 
@@ -339,7 +454,7 @@ stateDiagram-v2
 
 ### 3. アクショングループ (Action Group)
 
-**適用対象**: RegisterForm, LoginForm 内のボタン・リンクエリア
+**適用対象**: RegisterForm, LoginForm, OtpVerifyForm 内のボタン・リンクエリア
 
 **構造ルール**:
 
@@ -372,7 +487,18 @@ stateDiagram-v2
 | **Error** | エラーメッセージ表示 | フィールド再入力 | Filling |
 | **Success** | （表示なし） | 自動リダイレクト | redirect-url または /account |
 
-### 3. フィールドレベルの状態遷移
+### 3. OtpVerifyForm の状態遷移
+
+| 状態 | 表示内容 | ユーザーアクション | 次の状態 |
+| :--- | :--- | :--- | :--- |
+| **Default** | 空の6桁コード入力フィールド + 説明文 | コード入力開始 | Filling |
+| **Filling** | 入力途中のコードフィールド | 認証するボタンクリック | Submitting |
+| **Submitting** | ローディング状態のボタン | サーバー応答待機 | Error または Success |
+| **Error** | エラーメッセージ表示（コード不一致） | コード再入力 | Filling |
+| **Expired** | エラーメッセージ表示（期限切れ/試行超過） | 「ログインに戻る」クリック | /login |
+| **Success** | （表示なし） | 自動リダイレクト | /account |
+
+### 4. フィールドレベルの状態遷移
 
 | 状態 | トリガー | UI変化 |
 | :--- | :--- | :--- |
@@ -475,13 +601,53 @@ sequenceDiagram
     end
 ```
 
-### 2. リダイレクト動作
+### 2. OTP認証フロー
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant LoginPage as login.tsx
+    participant Server as Server (Action)
+    participant OtpPage as auth.otp.tsx
+    participant KV as Workers KV
+    participant Email as Resend API
+
+    User->>LoginPage: メールアドレス入力
+    User->>LoginPage: 「次へ」ボタンクリック
+    LoginPage->>Server: POST (intent: send-otp, email)
+    Server->>KV: レート制限チェック
+    KV-->>Server: OK
+    Server->>Server: OTP生成 (6桁)
+    Server->>KV: OTP保存 (JSON, TTL: 10分)
+    Server->>Email: OTPメール送信
+    Server-->>User: リダイレクト: /auth/otp?email=xxx
+
+    User->>OtpPage: 6桁コード入力
+    User->>OtpPage: 「認証する」ボタンクリック
+    OtpPage->>Server: POST (email, otpCode)
+    Server->>KV: OTPデータ取得・照合
+    alt コード一致
+        Server->>KV: OTPデータ削除
+        Server->>Server: ユーザーupsert（名寄せ）
+        Server->>Server: セッション生成
+        Server-->>User: リダイレクト: /account
+    else コード不一致 (attempts < 3)
+        Server->>KV: attempts+1 更新
+        Server-->>OtpPage: エラーメッセージ表示
+    else 試行回数超過 (attempts >= 3)
+        Server->>KV: OTPデータ削除
+        Server-->>OtpPage: 「認証コードが無効になりました」
+    end
+```
+
+### 3. リダイレクト動作
 
 | シナリオ | リダイレクト先 | 条件 |
 | :--- | :--- | :--- |
 | **会員登録成功** | `redirect-url` または `/account` | hidden フィールド経由 |
 | **ログイン成功（redirect-url指定あり）** | クエリパラメータの`redirect-url` | パラメータが存在する場合 |
 | **ログイン成功（redirect-url指定なし）** | `/account` | デフォルト |
+| **OTP認証成功** | `/account` | デフォルト |
 | **Google OAuth成功（redirect-url指定あり）** | `oauth_redirect` Cookieの値 | Cookie が存在する場合 |
 | **Google OAuth成功（redirect-url指定なし）** | `/account` | デフォルト |
 | **既にログイン済み** | `/account` | loader時点で検出 |
@@ -501,4 +667,4 @@ sequenceDiagram
 
 ---
 
-**最終更新**: 2025-12-23
+**最終更新**: 2026-02-10

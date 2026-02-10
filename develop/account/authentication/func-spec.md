@@ -205,6 +205,91 @@ Authentication (認証)
 - トークンは1回限り有効（使用後に削除）
 - トークンのTTLは1時間
 
+#### 6. OTPコード送信 (Send OTP)
+
+**URL**: `/login` (action、intent: `send-otp`)
+
+**機能**:
+
+- メールアドレスを受け取り、6桁OTPを生成してResend API経由で送信
+- OTPをKVにJSON形式で保存（TTL: 10分）
+
+**入力データ**:
+
+- メールアドレス
+
+**処理フロー**:
+
+1. 入力バリデーション（メール形式チェック）
+2. レート制限チェック（KV、メールアドレス単位、5分間に3回まで）
+3. OTPコード生成（`generateOtp()` — lib層）
+4. KVにOTPデータ保存（JSON: `{ code, email, attempts: 0 }`、TTL: 10分）
+5. Resend APIでOTPメール送信（`sendAuthEmail.server.ts` — data-io層）
+6. `/auth/otp?email=xxx` へリダイレクト
+
+**出力データ**:
+
+- 成功時: `/auth/otp?email=xxx` へリダイレクト
+- レート制限超過時: エラーメッセージ「しばらく時間をおいてから再度お試しください」
+
+**エラーハンドリング**:
+
+- レート制限超過: 「認証コードの送信回数が上限に達しました。しばらく時間をおいてから再度お試しください」
+- メール送信失敗: 「認証コードの送信に失敗しました。もう一度お試しください」
+
+**セキュリティ要件**:
+
+- ユーザー未登録でも同一画面遷移を行う（列挙攻撃対策）
+- レート制限: メールアドレス単位、5分間に3回まで
+
+#### 7. OTP検証・ログイン (Verify OTP)
+
+**URL**: `/auth/otp`（新規ルート）
+
+**機能**:
+
+- 6桁コードを検証し、成功時にセッションを発行
+- ユーザーが存在しなければ新規作成（名寄せ: OAuth既存ユーザーとの紐付け）
+
+**入力データ**:
+
+- メールアドレス（hiddenフィールド）
+- 6桁OTPコード
+
+**loader処理**:
+
+- emailパラメータ未指定の場合: `/login`へリダイレクト（直接アクセス対策）
+- KVにOTPデータが存在しない場合: `/login`へリダイレクト
+
+**処理フロー**:
+
+1. OTPコード形式バリデーション（6桁数字チェック）
+2. KVからOTPデータ取得
+3. コード照合
+4. 失敗時: attempts+1でKV更新。3回失敗でKVからキー削除（ブルートフォース対策）
+5. 成功時: KVからOTPデータ削除
+6. ユーザーupsert（既存ユーザーに紐付け or 新規作成 — `upsertUserByEmail.server.ts`）
+7. セッション生成（`createSessionData` — lib/common）
+8. セッション保存（`saveSession.server` — data-io/common）
+9. Cookie設定してリダイレクト（`/account`へ）
+
+**出力データ**:
+
+- 成功時: セッションCookieを発行し、`/account`へリダイレクト
+- 失敗時: エラーメッセージを表示
+
+**エラーハンドリング**:
+
+- コード不一致: 「認証コードが正しくありません」
+- 期限切れ: 「認証コードの有効期限が切れています。ログイン画面から再度お試しください」
+- 試行回数超過: 「認証コードが無効になりました。ログイン画面から再度お試しください」
+
+**セキュリティ要件**:
+
+- OTPコードは1回限り有効（検証成功後にKVから即時削除）
+- 試行回数制限: 最大3回。超過でKVからキー削除
+- 有効期限: 10分（KV TTL）
+
 ## 📂 app/components要件
 
 ### UI Components
@@ -502,6 +587,83 @@ Authentication (認証)
 
 **出力**: バリデーションエラーの配列
 
+### 3.3 OTP認証
+
+#### 5. generateOtp
+
+**配置**: `app/lib/account/authentication/generateAuthToken.ts`（実装済み）
+
+**責務**: 6桁数字OTPコードの生成
+
+**入力**: なし
+
+**処理**: `crypto.getRandomValues` を使用してセキュアな6桁数字を生成
+
+**出力**: 6桁数字文字列（例: "042871"）
+
+#### 6. validateOtpFormat
+
+**配置**: `app/lib/account/authentication/validateOtpFormat.ts`
+
+**責務**: OTPコードの形式チェック
+
+**入力**: OTPコード文字列
+
+**処理**: 6桁数字（`/^\d{6}$/`）であることを検証
+
+**出力**: boolean（有効/無効）
+
+#### 5. OtpVerifyForm
+
+**配置**: `app/components/account/authentication/OtpVerifyForm.tsx`
+
+**責務**:
+
+- OTPコード入力フォームの表示
+- 6桁コード入力とバリデーションエラーの表示
+- 送信処理、再送信リンク
+
+**主要なUI要素**:
+
+- OTPコード入力（6桁、inputmode: numeric）
+- 認証ボタン（Button使用）
+- エラーメッセージ表示エリア（ErrorMessage使用）
+- 「コードを再送信」リンク
+- 「ログインに戻る」リンク
+
+**状態管理**:
+
+- フォーム送信中フラグ（ボタンのローディング状態制御）
+- バリデーションエラー表示
+
+#### 6. auth.otp.tsx
+
+**配置**: `app/routes/auth.otp.tsx`
+
+**責務**:
+
+- OTPコード入力ページのRoute定義
+- loader: emailパラメータ・KVデータ存在チェック（防衛）
+- action: OTPコード検証・セッション発行処理
+
+**loader処理**:
+
+- emailクエリパラメータ取得
+- パラメータ未指定時: `/login`へリダイレクト
+- KVにOTPデータが存在しない場合: `/login`へリダイレクト
+- 有効な場合: メールアドレスをフォームに渡す
+
+**action処理**:
+
+1. FormDataから入力値取得（email, otpCode）
+2. OTPコード形式バリデーション（6桁数字）
+3. KVからOTPデータ取得・コード照合
+4. 失敗時: attempts更新、3回超過でKV削除
+5. 成功時: KVからOTPデータ削除
+6. ユーザーupsert（名寄せ）
+7. セッション生成・保存
+8. Cookie設定してリダイレクト
+
 ## 🔌 副作用要件
 
 ### data-io層の関数
@@ -551,6 +713,16 @@ Authentication (認証)
 **処理**: D1 DatabaseでCOUNT文実行
 
 **出力**: boolean（存在する/しない）
+
+### 4.3 OTP認証
+
+| ファイル名 | パス | 責務 |
+| :--- | :--- | :--- |
+| sendAuthEmail.server.ts | app/data-io/account/authentication/sendAuthEmail.server.ts | Resend API経由のOTPメール送信（実装済み） |
+| saveOtpToken.server.ts | app/data-io/account/authentication/saveOtpToken.server.ts | KVにOTPデータをJSON保存（TTL: 10分） |
+| verifyOtpToken.server.ts | app/data-io/account/authentication/verifyOtpToken.server.ts | KVからOTPデータ取得・照合・attempts更新 |
+| upsertUserByEmail.server.ts | app/data-io/account/authentication/upsertUserByEmail.server.ts | メールでユーザー検索、存在すれば返却、なければ新規作成（名寄せ） |
+| checkOtpRateLimit.server.ts | app/data-io/account/authentication/checkOtpRateLimit.server.ts | KVでメールアドレス単位のレート制限チェック |
 
 ## 📊 データフロー
 
@@ -607,6 +779,36 @@ getSession.server (data-io/common) - セッションID取得
 destroySession.server (data-io/common) - セッション削除
     ↓
 Cookie無効化 + /login へリダイレクト
+
+### OTPメール認証フロー
+
+ユーザー入力（メールアドレス）
+    ↓
+login.tsx action (intent: send-otp)
+    ↓
+checkOtpRateLimit.server (data-io) - レート制限チェック
+    ↓
+generateOtp (lib) - 6桁OTP生成
+    ↓
+saveOtpToken.server (data-io) - KV保存（JSON, TTL: 10分）
+    ↓
+sendAuthEmail.server (data-io) - Resend APIでメール送信
+    ↓
+/auth/otp?email=xxx へリダイレクト
+    ↓
+ユーザー入力（6桁OTPコード）
+    ↓
+auth.otp.tsx action
+    ↓
+verifyOtpToken.server (data-io) - KVからOTPデータ取得・照合
+    ↓
+upsertUserByEmail.server (data-io) - ユーザーupsert（名寄せ）
+    ↓
+createSessionData (lib/common) - セッション生成
+    ↓
+saveSession.server (data-io/common) - セッション保存
+    ↓
+Cookie設定 + /account へリダイレクト
 
 ## 🔒 セキュリティ要件
 
@@ -667,11 +869,11 @@ Cookie無効化 + /login へリダイレクト
 2. ログイン（login.tsx, LoginForm）
 3. ログアウト（logout.tsx）
 
-**Phase 2**: セキュリティ強化（将来実装）
+**Phase 2**: セキュリティ強化
 
-- パスワードリセット機能
-- メール認証（確認メール送信）
-- アカウントロック（ログイン試行回数制限）
+- パスワードリセット機能（実装済み）
+- OTPメール認証（Resend API、KVトークン管理、レート制限、名寄せ）
+- アカウントロック（ログイン試行回数制限）（将来実装）
 
 **Phase 3**: OAuth連携（実装済み）
 
