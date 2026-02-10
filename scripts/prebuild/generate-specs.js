@@ -84,7 +84,7 @@ async function generateModule({ subPath, data, baseImport = null, baseData = nul
   if (baseImport) {
     const diff = getDifference(data, baseData);
     content += `import { data as base } from '${baseImport}';
-import { deepMerge } from '~/lib/utils/deepMerge';
+import { deepMerge } from '~/spec-utils/deepMerge';
 
 export const data = deepMerge(base, ${JSON.stringify(diff, null, 2)}) as any;
 export default data;

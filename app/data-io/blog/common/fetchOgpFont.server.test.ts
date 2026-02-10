@@ -10,7 +10,7 @@ const specContent = readFileSync(specPath, 'utf-8');
 const actualSpec = load(specContent) as BlogCommonSpec;
 
 // loadSpecをモック（実際の spec データを返す）
-vi.mock('~/spec-loader/specLoader.server', () => ({
+vi.mock('~/spec-utils/specLoader.server', () => ({
   loadSpec: vi.fn((): BlogCommonSpec => actualSpec),
 }));
 

@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { ThemeToggleButton } from './ThemeToggleButton';
 import { loadSpec } from 'tests/utils/loadSpec';
 import type { BlogCommonSpec } from '~/specs/blog/types';
-import { extractTestId } from '~/lib/utils/extractTestId';
+import { extractTestId } from '~/spec-utils/extractTestId';
 
 let spec: BlogCommonSpec;
 

@@ -10,7 +10,7 @@ import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { Link, useRouteLoaderData, useLoaderData } from '@remix-run/react';
 import type { loader as accountLoader } from './account';
-import { loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSharedSpec } from '~/spec-utils/specLoader.server';
 import type { ProjectSpec } from '~/specs/shared/types';
 
 // CSS imports

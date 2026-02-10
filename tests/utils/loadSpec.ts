@@ -10,7 +10,7 @@ import { readFile, readdir, access } from 'fs/promises';
 import { join } from 'path';
 import { load } from 'js-yaml';
 import matter from 'gray-matter';
-import { deepMerge } from '~/lib/utils/deepMerge';
+import { deepMerge } from '~/spec-utils/deepMerge';
 import type { BlogPostsSpec, BlogCommonSpec, BlogPostDetailSpec } from '~/specs/blog/types';
 import type {
   AccountAuthenticationSpec,

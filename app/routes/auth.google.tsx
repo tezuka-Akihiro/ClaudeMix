@@ -9,7 +9,7 @@
 import type { LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { redirect } from '@remix-run/cloudflare';
 import { generateGoogleAuthUrl } from '~/lib/account/authentication/generateGoogleAuthUrl';
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 /**

@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { loadSpec, type AccountAuthenticationSpec } from '../../utils/loadSpec';
 import { createAuthenticatedUser, generateUniqueEmail } from '../../utils/auth-helper';
-import { extractTestId } from '~/lib/utils/extractTestId';
+import { extractTestId } from '~/spec-utils/extractTestId';
 
 /**
  * E2E Test: Account Authentication Section

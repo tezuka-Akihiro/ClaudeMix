@@ -18,7 +18,7 @@ import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';
 import { getSubscriptionByUserId } from '~/data-io/account/subscription/getSubscriptionByUserId.server';
 import type { SubscriptionStatus } from '~/specs/account/types';
-import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
 import type { AccountSubscriptionSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 

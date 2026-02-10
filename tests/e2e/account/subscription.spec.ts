@@ -12,7 +12,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createAuthenticatedUser } from '../../utils/auth-helper';
 import { loadSpec, type AccountSubscriptionSpec } from '../../utils/loadSpec';
-import { extractTestId } from '~/lib/utils/extractTestId';
+import { extractTestId } from '~/spec-utils/extractTestId';
 
 test.describe('Account Subscription Management', () => {
   let spec: AccountSubscriptionSpec;

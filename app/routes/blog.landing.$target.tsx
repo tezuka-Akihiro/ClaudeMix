@@ -8,7 +8,7 @@ import { getLandingContent } from "~/data-io/blog/landing/getLandingContent.serv
 import { getMangaAssets } from "~/data-io/blog/landing/getMangaAssets.server";
 import { validateTarget } from "~/lib/blog/landing/targetValidation";
 import { resolveLegalContent } from "~/lib/blog/common/resolveLegalContent";
-import { loadSpec, loadSharedSpec } from "~/spec-loader/specLoader.server";
+import { loadSpec, loadSharedSpec } from "~/spec-utils/specLoader.server";
 import type { BlogLandingSpec, LandingContent, MangaAsset } from "~/specs/blog/types";
 import type { ProjectSpec } from '~/specs/shared/types';
 import { Link } from "@remix-run/react";

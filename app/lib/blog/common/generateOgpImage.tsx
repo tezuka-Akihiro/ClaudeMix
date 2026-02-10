@@ -4,7 +4,7 @@
 
 import { ImageResponse } from 'workers-og';
 import type { PostMetadata } from '~/data-io/blog/common/loadPostMetadata.server';
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 import type { BlogCommonSpec } from '~/specs/blog/types';
 
 /**

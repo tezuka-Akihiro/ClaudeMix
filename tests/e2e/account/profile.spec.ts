@@ -9,7 +9,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { loadSpec, type AccountProfileSpec } from '../../utils/loadSpec';
 import { createAuthenticatedUser, generateUniqueEmail } from '../../utils/auth-helper';
-import { extractTestId } from '~/lib/utils/extractTestId';
+import { extractTestId } from '~/spec-utils/extractTestId';
 
 // Spec cache for test suite
 let spec: AccountProfileSpec;

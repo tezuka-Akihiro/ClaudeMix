@@ -9,7 +9,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { createAuthenticatedUser, generateUniqueEmail } from '../../utils/auth-helper';
 import { loadSpec, type AccountAuthenticationSpec } from '../../utils/loadSpec';
-import { extractTestId } from '~/lib/utils/extractTestId';
+import { extractTestId } from '~/spec-utils/extractTestId';
 
 test.describe('Password Reset', () => {
   let spec: AccountAuthenticationSpec;

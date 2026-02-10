@@ -5,8 +5,7 @@ import React from 'react';
 import BlogHeader from '~/components/blog/common/BlogHeader';
 import BlogFooter from '~/components/blog/common/BlogFooter';
 import type { BlogConfig } from '~/data-io/blog/common/loadBlogConfig.server';
-import { extractTestId } from '~/lib/utils/extractTestId';
-import { data as commonSpec } from '~/generated/specs/blog/common';
+import { extractTestId } from '~/spec-utils/extractTestId';
 
 interface BlogLayoutProps {
   config: BlogConfig;

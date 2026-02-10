@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import BlogHeader from '~/components/blog/common/BlogHeader';
 import { loadSpec } from 'tests/utils/loadSpec';
 import type { BlogCommonSpec } from '~/specs/blog/types';
-import { extractTestId } from '~/lib/utils/extractTestId';
+import { extractTestId } from '~/spec-utils/extractTestId';
 
 let spec: BlogCommonSpec;
 

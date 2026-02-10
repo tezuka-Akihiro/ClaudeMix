@@ -4,7 +4,7 @@
 import { getAllPosts } from '~/generated/blog-posts';
 import { filterPosts } from '~/lib/blog/posts/filterPosts';
 import { buildThumbnailUrl } from '~/lib/blog/common/buildThumbnailUrl';
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 import type { FilterOptions, PostSummary, FilteredPostsResult, BlogCommonSpec, BlogPostsSpec } from '~/specs/blog/types';
 
 // 型を再エクスポート

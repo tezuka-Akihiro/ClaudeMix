@@ -88,7 +88,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 **After（導入済み）**:
 ```typescript
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 import type { BlogPostsSpec } from '~/specs/blog/types';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -167,8 +167,8 @@ test.describe('Blog', () => {
 
 | 場所 | ローダー | import文 |
 |-----|---------|----------|
-| Route loader/action | `specLoader.server` | `import { loadSpec } from '~/spec-loader/specLoader.server'` |
-| lib層 | `specLoader.server` | `import { loadSpec } from '~/spec-loader/specLoader.server'` |
+| Route loader/action | `specLoader.server` | `import { loadSpec } from '~/spec-utils/specLoader.server'` |
+| lib層 | `specLoader.server` | `import { loadSpec } from '~/spec-utils/specLoader.server'` |
 | Vitest | `loadSpec.ts` | `import { loadSpec } from 'tests/utils/loadSpec'` |
 | Playwright E2E | `loadSpec.ts` | `import { loadSpec } from 'tests/utils/loadSpec'` |
 
@@ -195,7 +195,7 @@ test.describe('Blog', () => {
 
 ```typescript
 // ❌ 間違い
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 
 // ✅ 正しい
 import { loadSpec } from 'tests/utils/loadSpec';

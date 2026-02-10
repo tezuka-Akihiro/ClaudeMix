@@ -7,7 +7,7 @@
  */
 
 import type { SessionData } from '~/specs/account/types';
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 import type { AccountCommonSpec } from '~/specs/account/types';
 
 /**

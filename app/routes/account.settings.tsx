@@ -17,7 +17,7 @@ import '~/styles/account/layer2-common.css';
 import '~/styles/account/layer2-profile.css';
 
 // Spec loader
-import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
 import type { AccountProfileSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 

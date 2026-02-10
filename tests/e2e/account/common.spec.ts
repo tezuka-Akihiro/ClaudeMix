@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { createAuthenticatedUser } from '../../utils/auth-helper';
 import { loadSpec } from '../../utils/loadSpec';
 import type { AccountCommonSpec } from '~/specs/account/types';
-import { extractTestId } from '~/lib/utils/extractTestId';
+import { extractTestId } from '~/spec-utils/extractTestId';
 
 /**
  * E2E Test: Account Common Section (Happy Path)

@@ -11,7 +11,7 @@ import { PostDetailSection } from "~/components/blog/post-detail/PostDetailSecti
 import BlogLayout from "~/components/blog/common/BlogLayout";
 import { loadBlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
 import type { BlogConfig } from "~/data-io/blog/common/loadBlogConfig.server";
-import { loadSpec } from "~/spec-loader/specLoader.server";
+import { loadSpec } from "~/spec-utils/specLoader.server";
 import type { BlogCommonSpec, BlogPostsSpec, BlogPostDetailSpec } from "~/specs/blog/types";
 import { getSubscriptionStatus } from "~/data-io/blog/post-detail/getSubscriptionStatus.server";
 import { determineContentVisibility } from "~/lib/blog/post-detail/determineContentVisibility";

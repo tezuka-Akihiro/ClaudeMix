@@ -2,7 +2,7 @@
 // コピーライト文字列をフォーマットする純粋関数
 // 年の自動更新機能
 
-import { loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSharedSpec } from '~/spec-utils/specLoader.server';
 import type { ProjectSpec } from '~/specs/shared/types';
 
 /**

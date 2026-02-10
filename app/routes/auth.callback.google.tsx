@@ -14,7 +14,7 @@ import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.
 import { createOAuthUser } from '~/data-io/account/authentication/createOAuthUser.server';
 import { saveSession } from '~/data-io/account/common/saveSession.server';
 import { createSessionData } from '~/lib/account/common/createSessionData';
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 
 /**

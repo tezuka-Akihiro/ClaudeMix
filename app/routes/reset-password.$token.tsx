@@ -22,7 +22,7 @@ import { deleteAllUserSessions } from '~/data-io/account/common/deleteAllUserSes
 import { validatePassword } from '~/lib/account/authentication/validatePassword';
 
 // Spec loader
-import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 

@@ -6,7 +6,7 @@
  * @responsibility セッションデータ生成（副作用なし）
  */
 
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 import type { SessionData } from '~/specs/account/types';
 import type { AccountCommonSpec } from '~/specs/account/types';
 

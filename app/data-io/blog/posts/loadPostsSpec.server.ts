@@ -1,6 +1,6 @@
 // app/data-io/blog/posts/loadPostsSpec.server.ts
 
-import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
 import type { BlogPostsSpec } from '~/specs/blog/types';
 import type { ProjectSpec, ServerSpec, ResponsiveSpec } from '~/specs/shared/types';
 

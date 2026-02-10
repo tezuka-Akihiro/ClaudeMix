@@ -12,7 +12,7 @@ Phase 2の分析結果に基づき、各ファイルにspec loaderを導入す�
 
 ```typescript
 // ファイル先頭に追加
-import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
 import type { BlogPostsSpec } from '~/specs/blog/types';
 ```
 

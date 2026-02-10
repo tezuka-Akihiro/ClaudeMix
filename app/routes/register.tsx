@@ -18,7 +18,7 @@ import '~/styles/account/layer2-authentication.css';
 import '~/styles/account/layer3-authentication.css';
 
 // Spec loader
-import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec, loadSharedSpec } from '~/spec-utils/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 

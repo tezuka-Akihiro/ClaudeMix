@@ -15,7 +15,7 @@ import { isSessionExpired } from '~/lib/account/common/isSessionExpired';
 import { getActiveNavItem } from '~/lib/account/common/getActiveNavItem';
 import AccountLayout from '~/components/account/common/AccountLayout';
 import type { NavItem } from '~/specs/account/types';
-import { loadSpec } from '~/spec-loader/specLoader.server';
+import { loadSpec } from '~/spec-utils/specLoader.server';
 import type { AccountCommonSpec } from '~/specs/account/types';
 
 // Import CSS (Layer 2: Common components)
