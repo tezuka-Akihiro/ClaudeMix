@@ -26,3 +26,12 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 # https://dashboard.stripe.com/apikeys
 STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxx
 STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxx
+
+# ============================================
+# Cloudflare R2 シークレット (migrate-webp-to-avif.js 用)
+# ============================================
+# Cloudflare Dashboard > R2 > Manage R2 API Tokens から取得
+R2_ACCESS_KEY_ID=your-access-key-id
+R2_SECRET_ACCESS_KEY=your-secret-access-key
+R2_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+R2_BUCKET_NAME=your-bucket-name
