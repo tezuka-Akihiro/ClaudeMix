@@ -20,6 +20,12 @@
 - redirect-urlパラメータの動作確認
 - Google OAuth認証の成功シナリオ
 - Google OAuth CSRF検証失敗時のエラー表示
+- OTPコード送信の成功シナリオ
+- OTPコード検証・ログインの成功シナリオ
+- OTPコード不一致時のエラー表示
+- OTP試行回数超過時のエラー表示
+- OTPレート制限時のエラー表示
+- /auth/otp 直接アクセス時のリダイレクト
 
 ---
 
@@ -39,6 +45,8 @@
 | forgot-password.test.tsx | app/routes/forgot-password.test.tsx | forgot-passwordルートの単体テスト |
 | reset-password.$token.tsx | app/routes/reset-password.$token.tsx | パスワードリセット実行ページのRoute定義（loader, action） |
 | reset-password.$token.test.tsx | app/routes/reset-password.$token.test.tsx | reset-passwordルートの単体テスト |
+| auth.otp.tsx | app/routes/auth.otp.tsx | OTPコード検証ページ（loader防衛 + action検証） |
+| auth.otp.test.tsx | app/routes/auth.otp.test.tsx | auth.otpルートの単体テスト |
 | auth.google.tsx | app/routes/auth.google.tsx | Google OAuth認証開始（state生成、リダイレクト） |
 | auth.callback.google.tsx | app/routes/auth.callback.google.tsx | Google OAuthコールバック処理（CSRF検証、ユーザー作成/ログイン） |
 
@@ -54,6 +62,8 @@
 | ForgotPasswordForm.test.tsx | app/components/account/authentication/ForgotPasswordForm.test.tsx | ForgotPasswordFormの単体テスト |
 | ResetPasswordForm.tsx | app/components/account/authentication/ResetPasswordForm.tsx | パスワードリセット実行フォームコンポーネント |
 | ResetPasswordForm.test.tsx | app/components/account/authentication/ResetPasswordForm.test.tsx | ResetPasswordFormの単体テスト |
+| OtpVerifyForm.tsx | app/components/account/authentication/OtpVerifyForm.tsx | OTPコード検証フォームコンポーネント |
+| OtpVerifyForm.test.tsx | app/components/account/authentication/OtpVerifyForm.test.tsx | OtpVerifyFormの単体テスト |
 
 ---
 
@@ -77,6 +87,15 @@
 | validateLogin.ts | app/lib/account/authentication/validateLogin.ts | ログインフォームのバリデーション |
 | validateLogin.test.ts | app/lib/account/authentication/validateLogin.test.ts | validateLoginの単体テスト |
 
+### 3.3 OTP認証
+
+| ファイル名 | パス | 責務 |
+| :--- | :--- | :--- |
+| generateAuthToken.ts | app/lib/account/authentication/generateAuthToken.ts | 6桁OTPコード生成（POC実装済み） |
+| generateAuthToken.test.ts | app/lib/account/authentication/generateAuthToken.test.ts | generateAuthTokenの単体テスト（POC実装済み） |
+| validateOtpFormat.ts | app/lib/account/authentication/validateOtpFormat.ts | OTPコード形式バリデーション（6桁数字） |
+| validateOtpFormat.test.ts | app/lib/account/authentication/validateOtpFormat.test.ts | validateOtpFormatの単体テスト |
+
 ---
 
 ## 4. 副作用層 (data-io層、Phase 2.1)
@@ -99,6 +118,20 @@
 | exchangeGoogleCode.server.ts | app/data-io/account/authentication/exchangeGoogleCode.server.ts | Google認可コードをトークンに交換しユーザー情報を取得 |
 | getUserByOAuth.server.ts | app/data-io/account/authentication/getUserByOAuth.server.ts | OAuthプロバイダーとIDでユーザー検索 |
 | createOAuthUser.server.ts | app/data-io/account/authentication/createOAuthUser.server.ts | OAuthユーザーの新規登録 |
+
+### 4.3 OTP認証
+
+| ファイル名 | パス | 責務 |
+| :--- | :--- | :--- |
+| sendAuthEmail.server.ts | app/data-io/account/authentication/sendAuthEmail.server.ts | Resend API経由のOTPメール送信（POC実装済み） |
+| saveOtpToken.server.ts | app/data-io/account/authentication/saveOtpToken.server.ts | KVにOTPデータをJSON保存（TTL: 10分） |
+| saveOtpToken.server.test.ts | app/data-io/account/authentication/saveOtpToken.server.test.ts | saveOtpTokenの単体テスト |
+| verifyOtpToken.server.ts | app/data-io/account/authentication/verifyOtpToken.server.ts | KVからOTPデータ取得・照合・attempts更新 |
+| verifyOtpToken.server.test.ts | app/data-io/account/authentication/verifyOtpToken.server.test.ts | verifyOtpTokenの単体テスト |
+| upsertUserByEmail.server.ts | app/data-io/account/authentication/upsertUserByEmail.server.ts | メールでユーザー検索、存在すれば返却、なければ新規作成 |
+| upsertUserByEmail.server.test.ts | app/data-io/account/authentication/upsertUserByEmail.server.test.ts | upsertUserByEmailの単体テスト |
+| checkOtpRateLimit.server.ts | app/data-io/account/authentication/checkOtpRateLimit.server.ts | メールアドレス単位のレート制限チェック（KV） |
+| checkOtpRateLimit.server.test.ts | app/data-io/account/authentication/checkOtpRateLimit.server.test.ts | checkOtpRateLimitの単体テスト |
 
 ---
 
@@ -148,11 +181,13 @@ authenticationセクションは、以下のcommonセクションのファイル
 4. **Phase 3.1**: Components実装
    - RegisterForm.tsx
    - LoginForm.tsx
+   - OtpVerifyForm.tsx
 5. **Phase 3.2**: Routes実装
    - register.tsx
-   - login.tsx
+   - login.tsx（OTP送信intent追加）
+   - auth.otp.tsx（新規）
    - logout.tsx
 
 ---
 
-**最終更新**: 2026-02-03
+**最終更新**: 2026-02-10

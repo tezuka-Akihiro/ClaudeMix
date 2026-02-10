@@ -30,6 +30,9 @@ import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.
 import { verifyPassword } from '~/data-io/account/authentication/verifyPassword.server';
 import { saveSession } from '~/data-io/account/common/saveSession.server';
 import { getSession } from '~/data-io/account/common/getSession.server';
+import { checkOtpRateLimit } from '~/data-io/account/authentication/checkOtpRateLimit.server';
+import { saveOtpToken } from '~/data-io/account/authentication/saveOtpToken.server';
+import { sendAuthEmail } from '~/data-io/account/authentication/sendAuthEmail.server';
 
 // Database User type (includes passwordHash for authentication)
 interface DatabaseUser {
@@ -45,10 +48,11 @@ interface DatabaseUser {
 import { sanitizeEmail } from '~/lib/account/authentication/sanitizeEmail';
 import { validateEmail } from '~/lib/account/authentication/validateEmail';
 import { validatePasswordDetailed } from '~/lib/account/authentication/validatePassword';
+import { generateOtp } from '~/lib/account/authentication/generateAuthToken';
 import { createSessionData } from '~/lib/account/common/createSessionData';
 
 // Schema layer (Valibot)
-import { LoginSchema } from '~/specs/account/authentication-schema';
+import { LoginSchema, SendOtpSchema } from '~/specs/account/authentication-schema';
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const projectName = data?.projectName || 'ClaudeMix';
@@ -90,6 +94,12 @@ interface LoaderData {
     };
     oauth: {
       googleLabel: string;
+    };
+    otp: {
+      emailLabel: string;
+      emailPlaceholder: string;
+      submitLabel: string;
+      submitLoadingLabel: string;
     };
   };
 }
@@ -144,17 +154,73 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       oauth: {
         googleLabel: 'Google でログイン',
       },
+      otp: {
+        emailLabel: spec.forms.send_otp.fields.email.label,
+        emailPlaceholder: spec.forms.send_otp.fields.email.placeholder,
+        submitLabel: spec.forms.send_otp.submit_button.label,
+        submitLoadingLabel: spec.forms.send_otp.submit_button.loading_label,
+      },
     },
   });
 }
 
 /**
- * Action: Handle login form submission
+ * Action: Handle login form submission and OTP send
  */
 export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
 
   const formData = await request.formData();
+  const intent = formData.get('intent') as string;
+
+  // Handle OTP send intent
+  if (intent === spec.server_io.action.intents.send_otp) {
+    const otpSubmission = parseWithValibot(formData, {
+      schema: SendOtpSchema,
+    });
+
+    if (otpSubmission.status !== 'success') {
+      return json<ActionData>(
+        { lastResult: otpSubmission.reply() },
+        { status: 400 }
+      );
+    }
+
+    const sanitizedEmail = sanitizeEmail(otpSubmission.value.email);
+
+    // Rate limit check
+    const rateLimitResult = await checkOtpRateLimit(sanitizedEmail, context as any);
+    if (!rateLimitResult.allowed) {
+      return json<ActionData>(
+        { error: spec.error_messages.otp.rate_limited },
+        { status: 429 }
+      );
+    }
+
+    // Generate OTP and save to KV
+    const otpCode = generateOtp();
+    const saved = await saveOtpToken(sanitizedEmail, otpCode, context as any);
+    if (!saved) {
+      return json<ActionData>(
+        { error: spec.error_messages.otp.send_failed },
+        { status: 500 }
+      );
+    }
+
+    // Send OTP email
+    const env = (context as any).cloudflare?.env || (context as any).env;
+    await sendAuthEmail({
+      to: sanitizedEmail,
+      type: 'otp',
+      payload: otpCode,
+      resendApiKey: env?.RESEND_API_KEY || '',
+    });
+
+    // Redirect to OTP verify page
+    return redirect(`${spec.routes.otp_verify.path}?email=${encodeURIComponent(sanitizedEmail)}`);
+  }
+
+  // Handle password login intent
   const redirectUrl = formData.get('redirectUrl');
 
   // Conform + Valibot: Parse and validate form data
@@ -287,6 +353,37 @@ export default function Login() {
 
           <button type="submit" className="btn-primary" disabled={isSubmitting} data-testid="submit-button">
             {isSubmitting ? uiSpec.submitButton.loadingLabel : uiSpec.submitButton.label}
+          </button>
+        </Form>
+
+        <div className="auth-divider" style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0', gap: '1rem' }}>
+          <hr style={{ flex: 1, border: 'none', borderTop: '1px solid var(--color-border, #e5e7eb)' }} />
+          <span style={{ color: 'var(--color-text-secondary, #6b7280)', fontSize: 'var(--font-size-sm, 0.875rem)' }}>or</span>
+          <hr style={{ flex: 1, border: 'none', borderTop: '1px solid var(--color-border, #e5e7eb)' }} />
+        </div>
+
+        <Form method="post" className="auth-form-structure" style={{ marginBottom: '1.5rem' }}>
+          <input type="hidden" name="intent" value="send-otp" />
+          <div className="form-field-structure">
+            <label htmlFor="otp-email">{uiSpec.otp.emailLabel}</label>
+            <input
+              id="otp-email"
+              name="email"
+              type="email"
+              className="form-field__input"
+              placeholder={uiSpec.otp.emailPlaceholder}
+              autoComplete="email"
+              data-testid="otp-email-input"
+            />
+          </div>
+          <button
+            type="submit"
+            className="btn-secondary"
+            disabled={isSubmitting}
+            data-testid="otp-send-button"
+            style={{ width: '100%' }}
+          >
+            {isSubmitting ? uiSpec.otp.submitLoadingLabel : uiSpec.otp.submitLabel}
           </button>
         </Form>
 

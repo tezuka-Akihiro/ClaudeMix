@@ -51,6 +51,8 @@ server_io:
       register: "register"
       login: "login"
       logout: "logout"
+      send_otp: "send-otp"
+      verify_otp: "verify-otp"
 
 # ==========================================
 # ルーティング設定
@@ -71,6 +73,9 @@ routes:
   forgot_password:
     path: "/forgot-password"
     title: "パスワードリセット"
+  otp_verify:
+    path: "/auth/otp"
+    title: "認証コード入力"
 
 # ==========================================
 # フォーム設定
@@ -140,6 +145,39 @@ forms:
 
     success_message: "パスワードリセットのメールを送信しました。メールをご確認ください。"
 
+  send_otp:
+    fields:
+      email:
+        <<: *email_field_base
+        autocomplete: "email"
+
+    submit_button:
+      label: "次へ"
+      loading_label: "送信中..."
+
+  otp_verify:
+    fields:
+      otp_code:
+        <<: *field_defaults
+        name: "otpCode"
+        label: "認証コード"
+        type: "text"
+        placeholder: "6桁の認証コードを入力"
+        inputmode: "numeric"
+        maxlength: 6
+        autocomplete: "one-time-code"
+
+    submit_button:
+      label: "認証する"
+      loading_label: "認証中..."
+
+    links:
+      resend:
+        label: "コードを再送信"
+      back:
+        label: "ログインに戻る"
+        path: "/login"
+
 # ==========================================
 # バリデーション設定
 # ==========================================
@@ -162,6 +200,15 @@ validation:
       required: "パスワード確認を入力してください"
       mismatch: "パスワードが一致しません"
 
+  otp:
+    length: 6
+    pattern: "^\\d{6}$"
+    error_messages:
+      required: "認証コードを入力してください"
+      invalid_format: "認証コードは6桁の数字で入力してください"
+      expired: "認証コードの有効期限が切れています。ログイン画面から再度お試しください"
+      max_attempts: "認証コードが無効になりました。ログイン画面から再度お試しください"
+
 # ==========================================
 # エラーメッセージ設定
 # ==========================================
@@ -175,6 +222,13 @@ error_messages:
   registration:
     email_exists: "このメールアドレスは既に登録されています"
     creation_failed: "会員登録に失敗しました。もう一度お試しください"
+
+  otp:
+    invalid_code: "認証コードが正しくありません"
+    expired: "認証コードの有効期限が切れています。ログイン画面から再度お試しください"
+    max_attempts_exceeded: "認証コードが無効になりました。ログイン画面から再度お試しください"
+    send_failed: "認証コードの送信に失敗しました。もう一度お試しください"
+    rate_limited: "認証コードの送信回数が上限に達しました。しばらく時間をおいてから再度お試しください"
 
   server:
     timeout: "処理がタイムアウトしました。もう一度お試しください"
@@ -206,6 +260,9 @@ success_messages:
     completed: "ログインしました"
   logout:
     completed: "ログアウトしました"
+  otp:
+    code_sent: "認証コードを送信しました。メールをご確認ください"
+    login_completed: "ログインしました"
 
 # ==========================================
 # Flash Messages (URL parameter経由で表示)
@@ -267,6 +324,24 @@ security:
   rate_limit:
     enabled: false
     max_requests_per_minute: 10
+
+# ==========================================
+# OTP設定
+# ==========================================
+otp_config:
+  ttl_seconds: 600  # 10分
+  max_attempts: 3
+  code_length: 6
+  kv_key_prefix: "otp"
+
+# ==========================================
+# OTPレート制限設定
+# ==========================================
+rate_limit:
+  otp_send:
+    max_requests: 3
+    window_seconds: 300  # 5分
+    kv_key_prefix: "otp-rate"
 
 # ==========================================
 # データベーススキーマ定義
@@ -360,3 +435,10 @@ test:
     password_confirm_input: "[data-testid='password-confirm-input']"
     submit_button: "[data-testid='submit-button']"
     error_message: "[data-testid='error-message']"
+    otp_email_input: "[data-testid='otp-email-input']"
+    otp_send_button: "[data-testid='otp-send-button']"
+    otp_code_input: "[data-testid='otp-code-input']"
+    otp_verify_button: "[data-testid='otp-verify-button']"
+    otp_resend_link: "[data-testid='otp-resend-link']"
+    otp_back_link: "[data-testid='otp-back-link']"
+    password_login_link: "[data-testid='password-login-link']"

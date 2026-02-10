@@ -127,6 +127,33 @@ export const ForgotPasswordSchema = object({
   email: EmailSchema,
 });
 
+/**
+ * Send OTP Form Schema
+ *
+ * 対応するYAML: forms.send_otp
+ * Fields: email
+ */
+export const SendOtpSchema = object({
+  email: EmailSchema,
+});
+
+/**
+ * OTP Verify Form Schema
+ *
+ * 対応するYAML: forms.otp_verify
+ * Fields: otpCode, email (hidden)
+ */
+export const OtpVerifySchema = object({
+  otpCode: pipe(
+    string(authSpec.validation.otp.error_messages.required),
+    regex(
+      new RegExp(authSpec.validation.otp.pattern),
+      authSpec.validation.otp.error_messages.invalid_format
+    )
+  ),
+  email: EmailSchema,
+});
+
 // ==========================================
 // 型抽出（InferOutput）
 // ==========================================
@@ -139,3 +166,5 @@ export const ForgotPasswordSchema = object({
 export type LoginFormData = InferOutput<typeof LoginSchema>;
 export type RegisterFormData = InferOutput<typeof RegisterSchema>;
 export type ForgotPasswordFormData = InferOutput<typeof ForgotPasswordSchema>;
+export type SendOtpFormData = InferOutput<typeof SendOtpSchema>;
+export type OtpVerifyFormData = InferOutput<typeof OtpVerifySchema>;

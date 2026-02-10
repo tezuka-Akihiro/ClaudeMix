@@ -11,6 +11,7 @@
 - **主要機能**:
   - 会員登録（メール/パスワード）
   - ログイン/ログアウト
+  - OTPメール認証（パスワードレス、Resend API）
   - OAuth認証（Google/Apple）
   - プロフィール情報の閲覧・編集
   - パスワード変更
@@ -22,7 +23,7 @@
 
 **開発スコープ**:
 
-- **範囲内 (In Scope)**: 会員登録、認証（メール/パスワード、OAuth）、パスワードリセット、プロフィール管理、サブスクリプション管理（Stripe）、セッション管理（Cloudflare Workers KV）
+- **範囲内 (In Scope)**: 会員登録、認証（メール/パスワード、OTPメール認証、OAuth）、パスワードリセット、プロフィール管理、サブスクリプション管理（Stripe）、セッション管理（Cloudflare Workers KV）
 - **範囲外 (Out of Scope)**: 2段階認証、プロフィール画像アップロード、ユーザー間メッセージ機能、管理者画面
 
 ---
@@ -45,13 +46,15 @@
 | :--- | :--- | :--- |
 | **Sessions** (セッション) | **Workers KV** | エッジキャッシング、超低レイテンシ (500µs-10ms)、Read-heavy最適化 |
 | **Password Reset Tokens** | **Workers KV** | 一時データ、TTL自動削除、高速アクセス |
+| **OTP Tokens** | **Workers KV** | 一時データ、TTL自動削除(10分)、JSON形式 `{ code, email, attempts }` |
+| **OTP Rate Limit** | **Workers KV** | レート制限カウンタ、TTL自動削除(5分) |
 | **Users** (ユーザー) | **D1 Database** | リレーショナルデータ、SQLクエリ、永続ストレージ |
 | **Subscriptions** (サブスクリプション) | **D1 Database** | トランザクション整合性、Stripeデータとの同期 |
 
 **KV使用時の設計原則**:
 
-- **Key命名規則**: `session:{sessionId}`, `reset-token:{email}`
-- **TTL設定**: セッション(24時間)、リセットトークン(1時間)
+- **Key命名規則**: `session:{sessionId}`, `reset-token:{email}`, `otp:{email}`, `otp-rate:{email}`
+- **TTL設定**: セッション(24時間)、リセットトークン(1時間)、OTPトークン(10分)、OTPレート制限(5分)
 - **削除方針**: 明示的削除より**TTL自動期限切れ**を優先（KV削除の伝播遅延60秒を回避）
 - **キャッシュ戦略**: 頻繁に読み取られるセッションは内部キャッシュで自動最適化
 
@@ -94,6 +97,7 @@
 | ログアウト | `logout.tsx` | `/logout` | ログアウト処理（action） |
 | パスワードリセット要求 | `forgot-password.tsx` | `/forgot-password` | メールアドレス入力フォーム |
 | パスワードリセット実行 | `reset-password.$token.tsx` | `/reset-password/:token` | 新パスワード入力フォーム |
+| OTPコード検証 | `auth.otp.tsx` | `/auth/otp` | 6桁OTPコード入力・検証 |
 | アカウントトップ | `account._index.tsx` | `/account` | マイページトップ |
 | 設定ページ | `account.settings.tsx` | `/account/settings` | プロフィール編集、パスワード変更 |
 | サブスクリプション | `account.subscription.tsx` | `/account/subscription` | プラン選択、決済管理 |
@@ -122,7 +126,7 @@
 **セクション定義** - このサービスは以下の4つのセクションで構成されます：
 
 - **`common`**: アカウントサービス全体で共有されるレイアウト、セッション管理ユーティリティ、認証保護機能、共通UIコンポーネント（フォーム部品、エラー表示等）を提供
-- **`authentication`**: 会員登録、ログイン、ログアウト、OAuth連携（Google/Apple）を実装
+- **`authentication`**: 会員登録、ログイン、ログアウト、OTPメール認証（パスワードレス）、OAuth連携（Google/Apple）を実装
 - **`profile`**: プロフィール情報の表示・編集、パスワード変更、退会処理を実装
 - **`subscription`**: Stripeによる有料プラン管理（1/3/6ヶ月）、決済処理、サブスクリプション状態の同期を実装
 
@@ -182,6 +186,7 @@ graph TD
 1. **会員登録**: Route → data-io（ユーザー作成） → lib（パスワードハッシュ化） → lib（セッション生成） → Cookie保存
 2. **ログイン**: Route → data-io（認証） → lib（セッション生成） → Cookie保存
 3. **パスワードリセット**: Route → data-io（トークン生成・KV保存） → data-io（メール送信） → Route（トークン検証） → data-io（パスワード更新） → lib（全セッション破棄）
+3.5. **OTP認証**: Route → data-io（レート制限チェック） → lib（OTP生成） → data-io（KV保存 + メール送信） → Route（OTP検証） → data-io（ユーザーupsert） → lib（セッション生成）
 4. **マイページ**: Route → lib（セッション検証） → data-io（ユーザー情報取得） → UI（表示）
 5. **サブスクリプション**: Route → data-io（Stripe API） → lib（状態更新） → UI（結果表示）
 6. **退会処理**: Route → data-io（アクティブなサブスクリプション確認） → data-io（Stripeサブスクリプション即時解約） → data-io（D1: subscriptionsテーブル削除） → data-io（D1: usersテーブル削除） → lib（全セッション破棄） → /loginへリダイレクト
@@ -199,6 +204,8 @@ graph TD
 | Session ID | セッションID | セッションを識別する一意の文字列。Cookieに保存 |
 | OAuth | OAuth認証 | Google/Appleなどの外部プロバイダーによる認証方式 |
 | Password Reset Token | パスワードリセットトークン | パスワードリセット用の一時的な認証トークン。KVに保存（TTL: 1時間） |
+| OTP | ワンタイムパスワード | メール認証用の6桁数字コード。KVにJSON形式で保存（TTL: 10分） |
+| Resend | Resend | メール送信APIサービス。OTPコード送信に使用 |
 | Subscription | サブスクリプション | 定期購読契約 |
 | Plan | プラン | 1ヶ月/3ヶ月/6ヶ月の課金プラン |
 | Stripe | Stripe | オンライン決済サービス。サブスクリプション管理に使用 |
