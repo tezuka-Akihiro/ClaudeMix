@@ -142,7 +142,7 @@ test.describe('Account Common Section - Happy Path', () => {
       await expect(page).toHaveURL(expectedUrlPattern);
 
       // Verify login page is displayed
-      const loginForm = page.locator('form');
+      const loginForm = page.locator('form').filter({ has: page.locator('input[name="password"]') });
       await expect(loginForm).toBeVisible();
     });
 
