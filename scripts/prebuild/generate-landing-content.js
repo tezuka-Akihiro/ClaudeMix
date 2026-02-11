@@ -79,7 +79,8 @@ async function generateLandingContent() {
       const mangaDir = path.join(targetPath, 'manga');
       try {
         const files = await fs.readdir(mangaDir);
-        const imageExtensions = ['.webp', '.png', '.jpg', '.jpeg'];
+        // AVIFに統一するため、.avifのみを対象とする
+        const imageExtensions = ['.avif'];
         const imageFiles = [];
 
         // public/images/blog/landing/${target}/manga ディレクトリを作成
