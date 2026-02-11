@@ -13,6 +13,7 @@ import Stripe from 'stripe'
  */
 interface CloudflareEnv {
   STRIPE_SECRET_KEY: string
+  ENABLE_STRIPE_MOCK?: string
 }
 
 interface CloudflareLoadContext {
@@ -44,6 +45,22 @@ export async function createStripeCheckoutSession(
   context: CloudflareLoadContext
 ): Promise<string> {
   const { userId, userEmail, planId, stripePriceId, successUrl, cancelUrl } = params
+
+  // ============================================
+  // Mocking for E2E Tests / Local Development
+  // ============================================
+  // If ENABLE_STRIPE_MOCK is set, or if no real Stripe key is provided
+  // in a non-production environment, return a mock success URL.
+  const isProduction = process.env.NODE_ENV === 'production';
+  const isMockEnabled = context.env.ENABLE_STRIPE_MOCK === 'true';
+  const isPlaceholderKey = !context.env.STRIPE_SECRET_KEY || context.env.STRIPE_SECRET_KEY === 'sk_test_xxxxxxxxxxxxxxxxxxxx';
+
+  if (!isProduction && (isMockEnabled || isPlaceholderKey)) {
+    console.warn('⚠️ Stripe Mocking is enabled. Returning mock checkout URL.');
+    // Return success URL as if checkout was completed (for testing UI flow)
+    const separator = successUrl.includes('?') ? '&' : '?';
+    return `${successUrl}${separator}session_id=mock_session_${Date.now()}`;
+  }
 
   // Initialize Stripe client (fetch for Cloudflare Workers compatibility)
   const stripe = new Stripe(context.env.STRIPE_SECRET_KEY, {

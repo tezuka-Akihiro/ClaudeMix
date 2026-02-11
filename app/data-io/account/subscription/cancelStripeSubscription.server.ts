@@ -10,6 +10,7 @@ import Stripe from 'stripe'
 
 interface CloudflareEnv {
   STRIPE_SECRET_KEY: string
+  ENABLE_STRIPE_MOCK?: string
 }
 
 interface CloudflareLoadContext {
@@ -31,6 +32,20 @@ export async function cancelStripeSubscription(
   stripeSubscriptionId: string,
   context: CloudflareLoadContext
 ): Promise<Stripe.Subscription> {
+  // ============================================
+  // Mocking for E2E Tests / Local Development
+  // ============================================
+  const isProduction = process.env.NODE_ENV === 'production';
+  const isMockEnabled = context.env.ENABLE_STRIPE_MOCK === 'true';
+  const isPlaceholderKey = !context.env.STRIPE_SECRET_KEY || context.env.STRIPE_SECRET_KEY === 'sk_test_xxxxxxxxxxxxxxxxxxxx';
+
+  if (!isProduction && (isMockEnabled || isPlaceholderKey)) {
+    return {
+      id: stripeSubscriptionId,
+      cancel_at_period_end: true,
+    } as Stripe.Subscription;
+  }
+
   const stripe = new Stripe(context.env.STRIPE_SECRET_KEY, {
     apiVersion: '2025-12-15.clover',
     typescript: true,
@@ -63,6 +78,20 @@ export async function reactivateStripeSubscription(
   stripeSubscriptionId: string,
   context: CloudflareLoadContext
 ): Promise<Stripe.Subscription> {
+  // ============================================
+  // Mocking for E2E Tests / Local Development
+  // ============================================
+  const isProduction = process.env.NODE_ENV === 'production';
+  const isMockEnabled = context.env.ENABLE_STRIPE_MOCK === 'true';
+  const isPlaceholderKey = !context.env.STRIPE_SECRET_KEY || context.env.STRIPE_SECRET_KEY === 'sk_test_xxxxxxxxxxxxxxxxxxxx';
+
+  if (!isProduction && (isMockEnabled || isPlaceholderKey)) {
+    return {
+      id: stripeSubscriptionId,
+      cancel_at_period_end: false,
+    } as Stripe.Subscription;
+  }
+
   const stripe = new Stripe(context.env.STRIPE_SECRET_KEY, {
     apiVersion: '2025-12-15.clover',
     typescript: true,

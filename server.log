@@ -1,0 +1,447 @@
+
+> ClaudeMix@1.0.0 dev:wrangler
+> npm run build && wrangler pages dev ./build/client
+
+
+> ClaudeMix@1.0.0 prebuild
+> npm run lint:md && npm run lint:blog-metadata && node scripts/prebuild/generate-blog-posts.js && node scripts/prebuild/generate-specs.js && node scripts/prebuild/generate-landing-content.js
+
+
+> ClaudeMix@1.0.0 lint:md
+> markdownlint "content/blog/**/*.md" --fix
+
+
+> ClaudeMix@1.0.0 lint:blog-metadata
+> node scripts/lint-blog-metadata/engine.js content/blog/posts
+
+🚀 Blog Metadata Linter を初期化中...
+📦 Frontmatterルール 2 個を登録
+🎯 Metadataルール 4 個を登録
+🔍 FreeContentHeadingルール 2 個を登録
+✅ 初期化完了
+
+📄 ファイルリストを構築中...
+📊 61 ファイルを検査します
+
+🔍 検査実行中...
+✅ 検査完了
+
+==================================================
+📈 実行サマリー
+==================================================
+検査ファイル数: 61
+検出問題数: 0
+  エラー: 0
+  警告: 0
+  情報: 0
+
+💾 Lint結果を /app/tests/lint/blog-metadata-report.md に保存しました
+📋 詳細は /app/tests/lint/blog-metadata-report.md を確認してください
+🚀 Starting blog posts generation...
+⚡ Initializing Shiki highlighter...
+✅ Shiki highlighter ready
+📝 Found 61 markdown files
+   🔄 Converting: CLAUDEmd-guide
+   ✅ Completed: CLAUDEmd-guide (141ms) [Paywall]
+   🔄 Converting: auth-foundation-web-standards
+   ✅ Completed: auth-foundation-web-standards (347ms) [Paywall]
+   🔄 Converting: best-practices
+   ✅ Completed: best-practices (27ms) [Paywall]
+   🔄 Converting: about-claudemix
+   ✅ Completed: about-claudemix (2ms)
+   🔄 Converting: blog-metadata-lint-system
+   ✅ Completed: blog-metadata-lint-system (547ms) [Paywall]
+   🔄 Converting: category
+   ✅ Completed: category (4ms)
+   🔄 Converting: claudemix-qa
+   ✅ Completed: claudemix-qa (3ms)
+   🔄 Converting: claude-md-refactoring
+   ✅ Completed: claude-md-refactoring (109ms) [Paywall]
+   🔄 Converting: cloudflare-pages-custom-domain-migration
+   ✅ Completed: cloudflare-pages-custom-domain-migration (4ms)
+   🔄 Converting: cloudflare-pages-deployment-challenge
+   ✅ Completed: cloudflare-pages-deployment-challenge (326ms) [Paywall]
+   🔄 Converting: e2e-test-wait-for-timeout-banned
+   ✅ Completed: e2e-test-wait-for-timeout-banned (106ms) [Paywall]
+   🔄 Converting: cloudflare-workers-shiki-build-time-html
+   ✅ Completed: cloudflare-workers-shiki-build-time-html (62ms) [Paywall]
+   🔄 Converting: e2e-test-wrangler-windows-token-waste
+   ✅ Completed: e2e-test-wrangler-windows-token-waste (124ms) [Paywall]
+   🔄 Converting: filling-the-void-of-why-now
+   ✅ Completed: filling-the-void-of-why-now (1ms)
+   🔄 Converting: get-off-the-bike-and-look-at-the-map
+   ✅ Completed: get-off-the-bike-and-look-at-the-map (2ms)
+   🔄 Converting: hierarchical-spec-merge-ssot
+   ✅ Completed: hierarchical-spec-merge-ssot (58ms) [Paywall]
+   🔄 Converting: jamstack-prebuild-architecture
+   ✅ Completed: jamstack-prebuild-architecture (37ms) [Mermaid] [Paywall]
+   🔄 Converting: hazimemasite
+   ✅ Completed: hazimemasite (5ms)
+   🔄 Converting: lighthouse-99-not-100-optimization-strategy
+   ✅ Completed: lighthouse-99-not-100-optimization-strategy (159ms) [Paywall]
+   🔄 Converting: lighthouse-auth-impact-results
+   ✅ Completed: lighthouse-auth-impact-results (48ms) [Paywall]
+   🔄 Converting: lighthouse-css-optimization-route-splitting
+   ✅ Completed: lighthouse-css-optimization-route-splitting (217ms) [Paywall]
+   🔄 Converting: lighthouse-impact-assessment-after-auth
+   ✅ Completed: lighthouse-impact-assessment-after-auth (35ms) [Paywall]
+   🔄 Converting: lighthouse-javascript-optimization-challenges
+   ✅ Completed: lighthouse-javascript-optimization-challenges (116ms) [Paywall]
+   🔄 Converting: link
+   ✅ Completed: link (2ms)
+   🔄 Converting: lighthouse-mobile-optimization-perfect-score
+   ✅ Completed: lighthouse-mobile-optimization-perfect-score (87ms) [Paywall]
+   🔄 Converting: mcp-guide
+   ✅ Completed: mcp-guide (33ms) [Paywall]
+   🔄 Converting: privacy
+   ✅ Completed: privacy (1ms)
+   🔄 Converting: quantify-yourself-before-divination
+   ✅ Completed: quantify-yourself-before-divination (0ms)
+   🔄 Converting: react-hooks-cloudflare-workers-challenge
+   ✅ Completed: react-hooks-cloudflare-workers-challenge (30ms) [Paywall]
+   🔄 Converting: prompts-guide
+   ✅ Completed: prompts-guide (13ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-domain-knowledge
+   ✅ Completed: refactoring-typescript-types-domain-knowledge (13ms) [Paywall]
+   🔄 Converting: refactoring-single-source-of-truth
+   ✅ Completed: refactoring-single-source-of-truth (106ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-separation-of-concerns
+   ✅ Completed: refactoring-typescript-types-separation-of-concerns (13ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-final-touches
+   ✅ Completed: refactoring-typescript-types-final-touches (41ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-single-source-of-truth
+   ✅ Completed: refactoring-typescript-types-single-source-of-truth (14ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-summary
+   ✅ Completed: refactoring-typescript-types-summary (12ms) [Paywall]
+   🔄 Converting: remix-cloudflare-workers-ogp-generation
+   ✅ Completed: remix-cloudflare-workers-ogp-generation (73ms) [Paywall]
+   🔄 Converting: remix-css-loading-issue
+   ✅ Completed: remix-css-loading-issue (72ms) [Paywall]
+   🔄 Converting: remix-resource-route-ogp-wasm-issue
+   ✅ Completed: remix-resource-route-ogp-wasm-issue (30ms) [Paywall]
+   🔄 Converting: refactoring-typescript-types-with-ai
+   ✅ Completed: refactoring-typescript-types-with-ai (12ms) [Paywall]
+   🔄 Converting: responsibility-gap-and-anti-excessive-advertising
+   ✅ Completed: responsibility-gap-and-anti-excessive-advertising (1ms)
+   🔄 Converting: remix-vite-import-meta-glob-debug
+   ✅ Completed: remix-vite-import-meta-glob-debug (44ms) [Mermaid] [Paywall]
+   🔄 Converting: rules-guide
+   ✅ Completed: rules-guide (18ms) [Paywall]
+   🔄 Converting: ai-remix-react-history-ssr
+   ✅ Completed: ai-remix-react-history-ssr (37ms) [Paywall]
+   🔄 Converting: seminar-2025-12-05
+   ✅ Completed: seminar-2025-12-05 (1ms)
+   🔄 Converting: seminar-2026-01-17
+   ✅ Completed: seminar-2026-01-17 (1ms)
+   🔄 Converting: seminar-2026-01-22
+   ✅ Completed: seminar-2026-01-22 (1ms)
+   🔄 Converting: skills-guide
+   ✅ Completed: skills-guide (59ms) [Paywall]
+   🔄 Converting: seminar-2026-01-21
+   ✅ Completed: seminar-2026-01-21 (1ms)
+   🔄 Converting: shinanai-gijutsu
+   ✅ Completed: shinanai-gijutsu (0ms)
+   🔄 Converting: starthub-prof
+   ✅ Completed: starthub-prof (1ms)
+   🔄 Converting: stripe-agent-runaway-incident
+   ✅ Completed: stripe-agent-runaway-incident (52ms) [Paywall]
+   🔄 Converting: stripe-payment-review-survival-strategy
+   ✅ Completed: stripe-payment-review-survival-strategy (12ms)
+   🔄 Converting: subagent-guide
+   ✅ Completed: subagent-guide (37ms) [Paywall]
+   🔄 Converting: terms
+   ✅ Completed: terms (1ms)
+   🔄 Converting: test-design-and-decision-making
+   ✅ Completed: test-design-and-decision-making (0ms)
+   🔄 Converting: test-e2e-no-tags
+   ✅ Completed: test-e2e-no-tags (6ms)
+   🔄 Converting: test-e2e-filter
+   ✅ Completed: test-e2e-filter (37ms) [Paywall]
+   🔄 Converting: thumbnail-repository-decoupling
+   ✅ Completed: thumbnail-repository-decoupling (23ms) [Paywall]
+   🔄 Converting: seminar-2026-01-08
+   ✅ Completed: seminar-2026-01-08 (5ms)
+   🔄 Converting: seminar-2025-12-16
+   ✅ Completed: seminar-2025-12-16 (1ms)
+✅ Parsed 61 posts
+✅ Final post count: 61
+✅ Loaded 5 categories
+✅ Generated /app/app/generated/blog-posts.ts
+📦 Bundle contains 61 posts and 5 categories
+✨ Blog posts generation completed successfully!
+
+📊 Summary:
+   - Posts: 61
+   - Categories: 5
+🚀 Starting Advanced Specs Generation...
+   ✅ Generated: shared/project.ts
+   ✅ Generated: shared/responsive.ts
+   ✅ Generated: shared/server.ts
+   ✅ Generated: shared/ui-patterns.ts
+   ✅ Generated: shared/validation.ts
+   ✅ Generated: account/common.ts
+   ✅ Generated: account/authentication.ts
+   ✅ Generated: account/profile.ts
+   ✅ Generated: account/subscription.ts
+   ✅ Generated: blog/common.ts
+   ✅ Generated: blog/landing.ts
+   ✅ Generated: blog/post-detail.ts
+   ✅ Generated: blog/posts.ts
+   ✅ Generated: index.ts
+
+✨ Advanced Specs Generation Completed!
+🚀 Starting landing content generation...
+   ✅ Loaded content: engineer
+   ✅ Loaded 8 manga assets for: engineer
+   📁 Copied 8 images to public directory
+📝 Found 1 landing targets
+✅ Generated /app/app/generated/landing-content.ts
+
+✨ Landing content generation completed successfully!
+
+📊 Summary:
+   - Targets: 1
+     - engineer: 8 manga panels
+
+> ClaudeMix@1.0.0 build
+> remix vite:build
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Using vars defined in .dev.vars
+Using vars defined in .dev.vars
+vite v6.4.1 building for production...
+transforming...
+✓ 219 modules transformed.
+Generated an empty chunk: "auth.callback.google".
+Generated an empty chunk: "api.webhooks.stripe".
+Generated an empty chunk: "ogp._slug_.png_".
+Generated an empty chunk: "auth.google".
+Generated an empty chunk: "privacy".
+Generated an empty chunk: "terms".
+rendering chunks...
+computing gzip size...
+build/client/assets/fonts/oswald-vietnamese-500-normal-hXcn5ojQ.woff2      4.18 kB
+build/client/assets/fonts/oswald-vietnamese-700-normal-_DkZZ6ID.woff2      4.19 kB
+build/client/assets/fonts/oswald-vietnamese-400-normal-BupuUjkp.woff       5.82 kB
+build/client/assets/fonts/oswald-vietnamese-700-normal-BxFoeH7J.woff       5.86 kB
+build/client/assets/fonts/oswald-vietnamese-500-normal-Bi4XG4HV.woff       5.91 kB
+build/client/assets/fonts/oswald-cyrillic-400-normal-Dakd8U79.woff2        6.70 kB
+build/client/assets/fonts/oswald-cyrillic-700-normal-BO0IwMyy.woff2        6.75 kB
+build/client/assets/fonts/oswald-cyrillic-500-normal-Dz4ZC46J.woff2        6.84 kB
+build/client/assets/fonts/oswald-cyrillic-ext-400-normal-DaQSmjrl.woff2    7.69 kB
+build/client/assets/fonts/oswald-cyrillic-ext-700-normal-CtkJES1U.woff2    7.96 kB
+build/client/assets/fonts/oswald-cyrillic-ext-500-normal-DngHVvy4.woff2    8.13 kB
+build/client/assets/fonts/oswald-cyrillic-400-normal-BUD0W5Zj.woff         8.47 kB
+build/client/assets/fonts/oswald-cyrillic-700-normal-DxuP1Pb9.woff         8.54 kB
+build/client/assets/fonts/oswald-cyrillic-500-normal-CjKr_ZfC.woff         8.61 kB
+build/client/assets/fonts/oswald-cyrillic-ext-400-normal-BkkDEomt.woff    10.26 kB
+build/client/assets/fonts/oswald-cyrillic-ext-700-normal-VKAui8kQ.woff    10.49 kB
+build/client/assets/fonts/oswald-cyrillic-ext-500-normal-Hz7kEHBT.woff    10.58 kB
+build/client/assets/fonts/oswald-latin-ext-400-normal-DbVOzfr-.woff2      11.62 kB
+build/client/assets/fonts/oswald-latin-ext-700-normal-BKErdSR5.woff2      11.98 kB
+build/client/assets/fonts/oswald-latin-ext-500-normal-QdEKgtiz.woff2      12.04 kB
+build/client/assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2          12.25 kB
+build/client/assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2          12.67 kB
+build/client/assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2          12.70 kB
+build/client/assets/fonts/oswald-latin-400-normal-D1wpMXgf.woff           15.69 kB
+build/client/assets/fonts/oswald-latin-ext-400-normal-KcyBFdGH.woff       15.85 kB
+build/client/assets/fonts/oswald-latin-700-normal-UmC9Ev9x.woff           16.08 kB
+build/client/assets/fonts/oswald-latin-ext-700-normal-CJSSDThd.woff       16.13 kB
+build/client/assets/fonts/oswald-latin-500-normal-DM85Di4w.woff           16.16 kB
+build/client/assets/fonts/oswald-latin-ext-500-normal-DcyNJhgm.woff       16.18 kB
+build/client/.vite/manifest.json                                          21.43 kB │ gzip:  2.21 kB
+build/client/assets/layer3-authentication-CB5aOdHc.css                     1.61 kB │ gzip:  0.48 kB
+build/client/assets/layer2-landing-CZV44H4q.css                            2.56 kB │ gzip:  0.70 kB
+build/client/assets/account-DuePhcLB.css                                   3.85 kB │ gzip:  0.87 kB
+build/client/assets/layer2-profile-CiNXFehO.css                            5.60 kB │ gzip:  0.88 kB
+build/client/assets/layer2-common-ByWOGxuW.css                             7.14 kB │ gzip:  1.33 kB
+build/client/assets/layer2-post-detail-BufZqsIq.css                        8.54 kB │ gzip:  1.49 kB
+build/client/assets/layer2-posts-eseRC15l.css                              9.14 kB │ gzip:  1.54 kB
+build/client/assets/layer2-common-BrufSHho.css                            10.23 kB │ gzip:  1.22 kB
+build/client/assets/vendor-DJpJPsr-.css                                   10.97 kB │ gzip:  5.03 kB
+build/client/assets/entry-Dr6T4_Kh.css                                    38.81 kB │ gzip:  6.77 kB
+build/client/assets/auth.callback.google-l0sNRNKZ.js                       0.00 kB │ gzip:  0.02 kB
+build/client/assets/api.webhooks.stripe-l0sNRNKZ.js                        0.00 kB │ gzip:  0.02 kB
+build/client/assets/ogp._slug_.png_-l0sNRNKZ.js                            0.00 kB │ gzip:  0.02 kB
+build/client/assets/auth.google-l0sNRNKZ.js                                0.00 kB │ gzip:  0.02 kB
+build/client/assets/privacy-l0sNRNKZ.js                                    0.00 kB │ gzip:  0.02 kB
+build/client/assets/terms-l0sNRNKZ.js                                      0.00 kB │ gzip:  0.02 kB
+build/client/assets/layer2-common-D76D2Wd0.js                              0.15 kB │ gzip:  0.15 kB
+build/client/assets/entry.client--GhpmNxs.js                               0.23 kB │ gzip:  0.19 kB
+build/client/assets/_index-CTn5u_lc.js                                     0.88 kB │ gzip:  0.49 kB
+build/client/assets/logout-XOvvh85x.js                                     0.91 kB │ gzip:  0.48 kB
+build/client/assets/account-TN0OB-wo.js                                    0.98 kB │ gzip:  0.48 kB
+build/client/assets/account.services-aZD1Ydlg.js                           1.01 kB │ gzip:  0.56 kB
+build/client/assets/formatPublishedDate-DLaEnyiR.js                        1.20 kB │ gzip:  0.60 kB
+build/client/assets/account._index-D0fkLl6j.js                             1.22 kB │ gzip:  0.59 kB
+build/client/assets/root-RDWy1ZTy.js                                       1.24 kB │ gzip:  0.68 kB
+build/client/assets/LandingFooter-Bp-KDAC5.js                              2.04 kB │ gzip:  0.86 kB
+build/client/assets/forgot-password-4rgF50KZ.js                            2.32 kB │ gzip:  1.02 kB
+build/client/assets/auth.otp-3Fd-dKcD.js                                   2.56 kB │ gzip:  0.99 kB
+build/client/assets/BlogHeader-CHwFZ--o.js                                 2.87 kB │ gzip:  1.05 kB
+build/client/assets/account.subscription-BYk5DmV_.js                       2.89 kB │ gzip:  1.32 kB
+build/client/assets/reset-password._token-CNotbkaM.js                      3.33 kB │ gzip:  1.07 kB
+build/client/assets/register-BZyHWFMw.js                                   3.35 kB │ gzip:  1.24 kB
+build/client/assets/landing-_B-Nuoti.js                                    3.43 kB │ gzip:  1.82 kB
+build/client/assets/blog.landing._target-CO_HSf4y.js                       3.82 kB │ gzip:  1.50 kB
+build/client/assets/common-D-Fz26OW.js                                     4.15 kB │ gzip:  1.99 kB
+build/client/assets/login-5KtcqIjQ.js                                      6.25 kB │ gzip:  2.42 kB
+build/client/assets/blog._slug-DyrX4pnQ.js                                 6.70 kB │ gzip:  2.67 kB
+build/client/assets/blog._index-3_OHBkbd.js                                8.10 kB │ gzip:  2.83 kB
+build/client/assets/account.settings-5KosIjcS.js                          14.83 kB │ gzip:  2.55 kB
+build/client/assets/vendor-Dm8L0oRJ.js                                    40.63 kB │ gzip: 13.80 kB
+build/client/assets/vendor-remix-BfkPIM39.js                              51.32 kB │ gzip: 18.02 kB
+build/client/assets/authentication-schema-CBdrz5Oz.js                     52.62 kB │ gzip: 14.48 kB
+build/client/assets/vendor-react-BMjrI7lf.js                             210.49 kB │ gzip: 66.93 kB
+✓ built in 5.96s
+Using vars defined in .dev.vars
+vite v6.4.1 building SSR bundle for production...
+transforming...
+✓ 681 modules transformed.
+rendering chunks...
+build/server/assets/fonts/oswald-vietnamese-500-normal-hXcn5ojQ.woff2        4.18 kB
+build/server/assets/fonts/oswald-vietnamese-700-normal-_DkZZ6ID.woff2        4.19 kB
+build/server/assets/fonts/oswald-vietnamese-400-normal-BupuUjkp.woff         5.82 kB
+build/server/assets/fonts/oswald-vietnamese-700-normal-BxFoeH7J.woff         5.86 kB
+build/server/assets/fonts/oswald-vietnamese-500-normal-Bi4XG4HV.woff         5.91 kB
+build/server/assets/fonts/oswald-cyrillic-400-normal-Dakd8U79.woff2          6.70 kB
+build/server/assets/fonts/oswald-cyrillic-700-normal-BO0IwMyy.woff2          6.75 kB
+build/server/assets/fonts/oswald-cyrillic-500-normal-Dz4ZC46J.woff2          6.84 kB
+build/server/assets/fonts/oswald-cyrillic-ext-400-normal-DaQSmjrl.woff2      7.69 kB
+build/server/assets/fonts/oswald-cyrillic-ext-700-normal-CtkJES1U.woff2      7.96 kB
+build/server/assets/fonts/oswald-cyrillic-ext-500-normal-DngHVvy4.woff2      8.13 kB
+build/server/assets/fonts/oswald-cyrillic-400-normal-BUD0W5Zj.woff           8.47 kB
+build/server/assets/fonts/oswald-cyrillic-700-normal-DxuP1Pb9.woff           8.54 kB
+build/server/assets/fonts/oswald-cyrillic-500-normal-CjKr_ZfC.woff           8.61 kB
+build/server/assets/fonts/oswald-cyrillic-ext-400-normal-BkkDEomt.woff      10.26 kB
+build/server/assets/fonts/oswald-cyrillic-ext-700-normal-VKAui8kQ.woff      10.49 kB
+build/server/.vite/manifest.json                                            10.56 kB
+build/server/assets/fonts/oswald-cyrillic-ext-500-normal-Hz7kEHBT.woff      10.58 kB
+build/server/assets/fonts/oswald-latin-ext-400-normal-DbVOzfr-.woff2        11.62 kB
+build/server/assets/fonts/oswald-latin-ext-700-normal-BKErdSR5.woff2        11.98 kB
+build/server/assets/fonts/oswald-latin-ext-500-normal-QdEKgtiz.woff2        12.04 kB
+build/server/assets/fonts/oswald-latin-400-normal-BAFo8sP8.woff2            12.25 kB
+build/server/assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2            12.67 kB
+build/server/assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2            12.70 kB
+build/server/assets/fonts/oswald-latin-400-normal-D1wpMXgf.woff             15.69 kB
+build/server/assets/fonts/oswald-latin-ext-400-normal-KcyBFdGH.woff         15.85 kB
+build/server/assets/fonts/oswald-latin-700-normal-UmC9Ev9x.woff             16.08 kB
+build/server/assets/fonts/oswald-latin-ext-700-normal-CJSSDThd.woff         16.13 kB
+build/server/assets/fonts/oswald-latin-500-normal-DM85Di4w.woff             16.16 kB
+build/server/assets/fonts/oswald-latin-ext-500-normal-DcyNJhgm.woff         16.18 kB
+build/server/assets/layer2-landing-CZV44H4q.css                              2.56 kB
+build/server/assets/layer2-common-ByWOGxuW.css                               7.14 kB
+build/server/assets/layer2-post-detail-BufZqsIq.css                          8.54 kB
+build/server/assets/layer2-posts-eseRC15l.css                                9.14 kB
+build/server/assets/vendor-DJpJPsr-.css                                     10.97 kB
+build/server/assets/server-build-Z7WkTK30.css                               21.29 kB
+build/server/assets/vendor-remix-B6luJRZ4.js                               133.49 kB
+build/server/assets/vendor-lIGr8DBu.js                                     700.74 kB
+build/server/assets/vendor-react-r2Nvgw6C.js                               796.62 kB
+build/server/index.js                                                    2,112.53 kB
+✓ built in 12.91s
+
+ ⛅️ wrangler 4.60.0 (update available 4.64.0)
+─────────────────────────────────────────────
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring this import because "../node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs" was marked as having no side effects[0m [ignored-bare-import]
+
+    ../build/server/index.js:1:904:
+[37m      1 │ ..."node:async_hooks";import[32m"node:console"[37m;import"node:dns";import"...
+        ╵                             [32m~~~~~~~~~~~~~~[0m
+
+  "sideEffects" is false in the enclosing "package.json" file:
+
+    ../node_modules/@cloudflare/unenv-preset/package.json:23:2:
+[37m      23 │   [32m"sideEffects"[37m: false,
+         ╵   [32m~~~~~~~~~~~~~[0m
+
+
+Using vars defined in .dev.vars
+Your Worker has access to the following bindings:
+Binding                                                                      Resource                  Mode
+env.SESSION_KV (local-dev-kv)                                                KV Namespace              local
+env.DB (claudemix-dev)                                                       D1 Database               local
+env.APP_URL ("http://localhost:3000")                                        Environment Variable      local
+env.GOOGLE_CLIENT_ID ("395752864569-ng3tot15p3ufguvcuchre6jn...")            Environment Variable      local
+env.GOOGLE_REDIRECT_URI ("http://localhost:3000/auth/callback/g...")         Environment Variable      local
+env.STRIPE_PUBLISHABLE_KEY ("pk_test_51StRLVFTLZPZU8HQHblw6Ig1B6V1...")      Environment Variable      local
+env.LEGAL_PRIVATE_INFO ("(hidden)")                                          Environment Variable      local
+env.GOOGLE_CLIENT_SECRET ("(hidden)")                                        Environment Variable      local
+env.STRIPE_SECRET_KEY ("(hidden)")                                           Environment Variable      local
+env.STRIPE_WEBHOOK_SECRET ("(hidden)")                                       Environment Variable      local
+env.R2_ACCESS_KEY_ID ("(hidden)")                                            Environment Variable      local
+env.R2_SECRET_ACCESS_KEY ("(hidden)")                                        Environment Variable      local
+env.R2_ENDPOINT ("(hidden)")                                                 Environment Variable      local
+env.R2_BUCKET_NAME ("(hidden)")                                              Environment Variable      local
+env.ENABLE_STRIPE_MOCK ("(hidden)")                                          Environment Variable      local
+
+⎔ Starting local server...
+[wrangler:info] Ready on http://localhost:3000
+[wrangler:info] GET / 200 OK (2731ms)
+[wrangler:info] GET /register 200 OK (24ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 200 OK (18ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 200 OK (39ms)
+[wrangler:info] GET /assets/layer2-common-BrufSHho.css 200 OK (38ms)
+[wrangler:info] GET /assets/layer3-authentication-CB5aOdHc.css 200 OK (37ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 200 OK (38ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 200 OK (47ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 200 OK (124ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 200 OK (125ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 200 OK (123ms)
+[wrangler:info] GET /assets/authentication-schema-CBdrz5Oz.js 200 OK (124ms)
+[wrangler:info] GET /assets/common-D-Fz26OW.js 200 OK (123ms)
+[wrangler:info] GET /assets/landing-_B-Nuoti.js 200 OK (18ms)
+[wrangler:info] GET /assets/register-BZyHWFMw.js 200 OK (21ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-500-normal-B-eyT0Dw.woff2 200 OK (21ms)
+[wrangler:info] GET /assets/fonts/oswald-latin-700-normal-vy6hmKSr.woff2 200 OK (20ms)
+[wrangler:info] GET /__manifest 200 OK (9ms)
+[wrangler:info] POST /register.data 202 Accepted (42ms)
+[wrangler:info] GET /__manifest 200 OK (6ms)
+[wrangler:info] GET /assets/account-TN0OB-wo.js 200 OK (7ms)
+[wrangler:info] GET /assets/account._index-D0fkLl6j.js 200 OK (9ms)
+[wrangler:info] GET /account.data 200 OK (17ms)
+[wrangler:info] GET /assets/layer2-profile-CiNXFehO.css 200 OK (9ms)
+[wrangler:info] GET /account/subscription 200 OK (43ms)
+[wrangler:info] GET /assets/account-DuePhcLB.css 200 OK (13ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 304 Not Modified (9ms)
+[wrangler:info] GET /assets/account.subscription-BYk5DmV_.js 200 OK (13ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 304 Not Modified (14ms)
+[wrangler:info] GET /assets/layer2-common-BrufSHho.css 304 Not Modified (16ms)
+[wrangler:info] GET /assets/layer2-profile-CiNXFehO.css 304 Not Modified (16ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 304 Not Modified (8ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 304 Not Modified (12ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 304 Not Modified (14ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 304 Not Modified (16ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 304 Not Modified (16ms)
+[wrangler:info] GET /assets/account-TN0OB-wo.js 304 Not Modified (16ms)
+[wrangler:info] GET /__manifest 200 OK (6ms)
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ Stripe Mocking is enabled. Returning mock checkout URL.[0m
+
+
+[wrangler:info] POST /account/subscription.data 200 OK (15ms)
+[wrangler:info] GET /account/subscription.data 200 OK (14ms)
+[wrangler:info] GET /account/subscription 200 OK (30ms)
+[wrangler:info] GET /assets/entry-Dr6T4_Kh.css 304 Not Modified (12ms)
+[wrangler:info] GET /assets/vendor-DJpJPsr-.css 304 Not Modified (8ms)
+[wrangler:info] GET /assets/layer2-common-BrufSHho.css 304 Not Modified (8ms)
+[wrangler:info] GET /assets/account-DuePhcLB.css 304 Not Modified (14ms)
+[wrangler:info] GET /assets/layer2-profile-CiNXFehO.css 304 Not Modified (15ms)
+[wrangler:info] GET /assets/entry.client--GhpmNxs.js 304 Not Modified (14ms)
+[wrangler:info] GET /assets/vendor-react-BMjrI7lf.js 304 Not Modified (17ms)
+[wrangler:info] GET /assets/vendor-remix-BfkPIM39.js 304 Not Modified (18ms)
+[wrangler:info] GET /assets/account-TN0OB-wo.js 304 Not Modified (13ms)
+[wrangler:info] GET /assets/account.subscription-BYk5DmV_.js 304 Not Modified (15ms)
+[wrangler:info] GET /assets/vendor-Dm8L0oRJ.js 304 Not Modified (19ms)
+[wrangler:info] GET /assets/root-RDWy1ZTy.js 304 Not Modified (13ms)
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mBuild failed with 1 error:[0m
+
+  [31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "../build/server/index.js"[0m
+
+      [[path]].js:2:23:
+  [37m      2 │ import * as build from [32m"../build/server/index.js"[37m;
+          ╵                        [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mFailed to build Functions at ./functions. Continuing to serve the last successfully built version of Functions.[0m

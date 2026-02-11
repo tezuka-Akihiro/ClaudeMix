@@ -27,6 +27,10 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxx
 STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxx
 
+# Stripe モック有効化フラグ (true で Stripe API を呼び出さずに成功をシミュレート)
+# 詳細は docs/setup/stripe-local-testing.md を参照
+ENABLE_STRIPE_MOCK=false
+
 # ============================================
 # Cloudflare R2 シークレット (migrate-webp-to-avif.js 用)
 # ============================================
