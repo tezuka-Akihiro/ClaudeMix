@@ -34,24 +34,24 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(page).toHaveTitle(titlePattern);
 
       // Verify form is displayed
-      const form = page.locator('form');
+      const form = page.locator('form').filter({ has: page.locator('input[name="password"]') });
       await expect(form).toBeVisible();
 
       // Verify form fields
-      const emailInput = page.locator('input[name="email"]');
+      const emailInput = form.locator('[data-testid="email-input"]');
       await expect(emailInput).toBeVisible();
       await expect(emailInput).toHaveAttribute('type', 'email');
 
-      const passwordInput = page.locator('input[name="password"]');
+      const passwordInput = form.locator('[data-testid="password-input"]');
       await expect(passwordInput).toBeVisible();
       await expect(passwordInput).toHaveAttribute('type', 'password');
 
-      const confirmPasswordInput = page.locator('input[name="passwordConfirm"]');
+      const confirmPasswordInput = form.locator('[data-testid="confirm-password-input"]');
       await expect(confirmPasswordInput).toBeVisible();
       await expect(confirmPasswordInput).toHaveAttribute('type', 'password');
 
       // Verify submit button
-      const submitButton = page.locator('button[type="submit"]');
+      const submitButton = form.locator('[data-testid="submit-button"]');
       await expect(submitButton).toBeVisible();
       await expect(submitButton).toContainText(spec.forms.register.submit_button.label);
     });
@@ -62,12 +62,12 @@ test.describe('Account Authentication - Happy Path', () => {
 
       // Fill in registration form with unique email
       const email = generateUniqueEmail('newuser');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'Password123');
-      await page.fill('input[name="passwordConfirm"]', 'Password123');
+      await page.fill('[data-testid="email-input"]', email);
+      await page.fill('[data-testid="password-input"]', 'Password123');
+      await page.fill('[data-testid="confirm-password-input"]', 'Password123');
 
       // Submit form
-      await page.click('button[type="submit"]');
+      await page.click('[data-testid="submit-button"]');
 
       // Verify redirect to account page
       await expect(page).toHaveURL('/account');
@@ -83,12 +83,12 @@ test.describe('Account Authentication - Happy Path', () => {
 
       // Fill in registration form with mismatched passwords
       const email = generateUniqueEmail('mismatch');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'Password123');
-      await page.fill('input[name="passwordConfirm"]', 'DifferentPassword123');
+      await page.fill('[data-testid="email-input"]', email);
+      await page.fill('[data-testid="password-input"]', 'Password123');
+      await page.fill('[data-testid="confirm-password-input"]', 'DifferentPassword123');
 
       // Submit form
-      await page.click('button[type="submit"]');
+      await page.click('[data-testid="submit-button"]');
 
       // Verify error message is displayed
       const errorMessage = page.locator('[data-testid="error-message"]');
@@ -110,20 +110,20 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(page).toHaveTitle(loginTitlePattern);
 
       // Verify form is displayed
-      const form = page.locator('form');
+      const form = page.locator('form').filter({ has: page.locator('input[name="password"]') });
       await expect(form).toBeVisible();
 
       // Verify form fields
-      const emailInput = page.locator('input[name="email"]');
+      const emailInput = form.locator('[data-testid="email-input"]');
       await expect(emailInput).toBeVisible();
       await expect(emailInput).toHaveAttribute('type', 'email');
 
-      const passwordInput = page.locator('input[name="password"]');
+      const passwordInput = form.locator('[data-testid="password-input"]');
       await expect(passwordInput).toBeVisible();
       await expect(passwordInput).toHaveAttribute('type', 'password');
 
       // Verify submit button
-      const submitButton = page.locator('button[type="submit"]');
+      const submitButton = form.locator('[data-testid="submit-button"]');
       await expect(submitButton).toBeVisible();
       await expect(submitButton).toContainText(spec.forms.login.submit_button.label);
     });
@@ -140,11 +140,11 @@ test.describe('Account Authentication - Happy Path', () => {
 
       // Now test login
       await page.goto('/login');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', password);
+      await page.fill('[data-testid="email-input"]', email);
+      await page.fill('[data-testid="password-input"]', password);
 
       // Submit form
-      await page.click('button[type="submit"]');
+      await page.click('[data-testid="submit-button"]');
 
       // Verify redirect to account page
       await expect(page).toHaveURL('/account');
@@ -160,11 +160,11 @@ test.describe('Account Authentication - Happy Path', () => {
 
       // Fill in login form with invalid credentials (non-existent user)
       const email = generateUniqueEmail('nonexistent');
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'Wrong123');
+      await page.fill('[data-testid="email-input"]', email);
+      await page.fill('[data-testid="password-input"]', 'Wrong123');
 
       // Submit form
-      await page.click('button[type="submit"]');
+      await page.click('[data-testid="submit-button"]');
 
       // Verify error message is displayed
       const errorMessage = page.locator('[data-testid="error-message"]');
@@ -188,9 +188,9 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(page).toHaveURL(/\/login\?redirect-url=%2Faccount%2Fsettings$/);
 
       // Login
-      await page.fill('input[name="email"]', email);
-      await page.fill('input[name="password"]', 'Password123');
-      await page.click('button[type="submit"]');
+      await page.fill('[data-testid="email-input"]', email);
+      await page.fill('[data-testid="password-input"]', 'Password123');
+      await page.click('[data-testid="submit-button"]');
 
       // Verify redirect to original page
       await expect(page).toHaveURL('/account/settings');
