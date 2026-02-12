@@ -8,7 +8,7 @@ INSERT OR IGNORE INTO users (
   updated_at
 ) VALUES (
   'tezuke-001',
-  'tizuhanpen8@gmail.com',
+  'tizuhanpen8+preview@gmail.com',
   '487aa73a-6df1-4c0d-8229-8c9a6411cfa1:b4eb17875c3a4f5a6b4aaf77094820030b73ce978210d10b3d57b2f129fcaa45',
   'active',
   'cus_test_dev_001',
