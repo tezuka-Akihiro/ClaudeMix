@@ -6,6 +6,9 @@
  * @responsibility メール送信（外部API通信）
  */
 
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
+
 export interface SendAuthEmailParams {
   to: string;
   type: 'magic-link' | 'otp' | 'password-reset';
@@ -23,15 +26,25 @@ export async function sendAuthEmail({
   payload,
   resendApiKey
 }: SendAuthEmailParams): Promise<boolean> {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const {
+    subject: prSubject,
+    body_template: prBody,
+    from: emailFrom,
+    ttl_display: prTtlDisplay
+  } = spec.password_reset_email;
+
   const subjectMap: Record<SendAuthEmailParams['type'], string> = {
     'magic-link': 'ログインリンクのご案内',
     'otp': '認証コードのご案内',
-    'password-reset': 'パスワードリセットのご案内',
+    'password-reset': prSubject,
   };
   const contentMap: Record<SendAuthEmailParams['type'], string> = {
     'magic-link': `以下のリンクをクリックしてログインしてください：\n\n${payload}\n\nこのリンクは10分間有効です。`,
     'otp': `以下の認証コードを入力してください：\n\n${payload}\n\nこのコードは10分間有効です。`,
-    'password-reset': `以下のリンクをクリックしてパスワードをリセットしてください：\n\n${payload}\n\nこのリンクは1時間有効です。\n心当たりのない場合は、このメールを無視してください。`,
+    'password-reset': prBody
+      .replace('{reset_link}', payload)
+      .replace('{ttl_display}', prTtlDisplay),
   };
   const subject = subjectMap[type];
   const content = contentMap[type];
@@ -44,7 +57,7 @@ export async function sendAuthEmail({
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'ClaudeMix Auth <onboarding@resend.dev>', // Should be a verified domain in production
+        from: emailFrom,
         to,
         subject,
         text: content,
