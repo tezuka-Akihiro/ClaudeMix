@@ -6,6 +6,9 @@
  * @responsibility KV書き込み、トークン生成
  */
 
+import { loadSpec } from '~/spec-loader/specLoader.server';
+import type { AccountAuthenticationSpec } from '~/specs/account/types';
+
 /**
  * AppLoadContext type for Cloudflare Workers environment
  */
@@ -38,7 +41,7 @@ function generateSecureToken(): string {
  *
  * Security:
  * - Token is cryptographically random (128-bit entropy)
- * - Token is stored with 1-hour TTL (auto-expiration)
+ * - Token is stored with TTL defined in spec (auto-expiration)
  * - Key format: reset-token:{email}
  *
  * Note:
@@ -49,12 +52,15 @@ export async function generatePasswordResetToken(
   email: string,
   context: CloudflareLoadContext
 ): Promise<string> {
+  const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const ttlSeconds = spec.password_reset_email.ttl_seconds;
+
   try {
     const kv = context.env.SESSION_KV;
     const token = generateSecureToken();
     const key = `reset-token:${email}`;
 
-    // Store token with 1-hour TTL (3600 seconds)
+    // Store token with TTL from spec
     await kv.put(
       key,
       JSON.stringify({
@@ -63,7 +69,7 @@ export async function generatePasswordResetToken(
         createdAt: new Date().toISOString(),
       }),
       {
-        expirationTtl: 3600, // 1 hour
+        expirationTtl: ttlSeconds,
       }
     );
 

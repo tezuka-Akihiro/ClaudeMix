@@ -650,6 +650,7 @@ export interface AccountAuthenticationSpec {
     body_template: string;
     from: string;
     ttl_display: string;
+    ttl_seconds: number;
   };
   otp_config: {
     ttl_seconds: number;
