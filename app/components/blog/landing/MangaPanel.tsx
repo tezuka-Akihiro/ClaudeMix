@@ -8,15 +8,22 @@ interface MangaPanelProps {
   asset: MangaAsset;
   loading?: 'lazy' | 'eager';
   altLabel?: string;
+  fetchpriority?: 'high' | 'low' | 'auto';
 }
 
-const MangaPanel: React.FC<MangaPanelProps> = ({ asset, loading = 'lazy', altLabel = '漫画パネル' }) => {
+const MangaPanel: React.FC<MangaPanelProps> = ({
+  asset,
+  loading = 'lazy',
+  altLabel = '漫画パネル',
+  fetchpriority = 'auto',
+}) => {
   return (
     <div className="manga-panel" data-testid="manga-panel">
       <img
         src={asset.path}
         alt={`${altLabel} ${asset.order}`}
         loading={loading}
+        fetchpriority={fetchpriority}
         decoding="async"
         width="400"
         height="300"

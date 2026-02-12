@@ -187,7 +187,7 @@ export interface BlogConfig {
   copyright: string;
   siteUrl: string;
   siteName: string;
-  spec: BlogCommonSpec;
+  spec?: BlogCommonSpec;
 }
 
 /**

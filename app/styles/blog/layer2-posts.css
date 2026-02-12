@@ -14,7 +14,6 @@
     font-weight: var(--font-weight-normal);
     font-size: var(--font-size-2xl);
     color: var(--color-text-primary);
-    text-shadow: 0 0 var(--spacing-2) var(--color-interactive-primary-bg);
   }
 
   /* === PostCard === */
@@ -25,8 +24,6 @@
     cursor: pointer;
     padding: var(--spacing-5);
     text-decoration: none;
-    backdrop-filter: blur(var(--blur-glass-effect));
-    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-lg);
   }
@@ -74,7 +71,6 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     margin-top: var(--spacing-1);
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
   }
 
   /* === LoadMoreButton === */
@@ -95,7 +91,6 @@
     padding: var(--spacing-2) var(--spacing-4);
     cursor: pointer;
     width: calc(var(--layout-card-width) * 2);
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-full);
   }
@@ -129,7 +124,6 @@
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     position: relative;
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-full);
     padding: var(--spacing-3) var(--spacing-5);
@@ -173,8 +167,6 @@
     right: var(--spacing-2);
     margin: 0 auto;
     z-index: var(--z-index-modal);
-    backdrop-filter: blur(var(--blur-glass-effect));
-    -webkit-backdrop-filter: blur(var(--blur-glass-effect));
     border-radius: var(--border-radius-lg);
   }
 
@@ -199,7 +191,6 @@
     text-align: left;
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     min-height: var(--touch-target-min-height);
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
   }
 
   .category-selector__button:hover {
@@ -292,7 +283,6 @@
     font-weight: var(--font-weight-medium);
     padding: var(--spacing-2) var(--spacing-4);
     text-align: center;
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-full);
   }
@@ -326,7 +316,6 @@
     font-weight: var(--font-weight-medium);
     padding: var(--spacing-4) var(--spacing-6);
     width: 100%;
-    text-shadow: 0 0 var(--shadow-blur-xs) var(--color-interactive-primary-bg);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
     border-radius: var(--border-radius-full);
   }

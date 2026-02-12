@@ -6,6 +6,7 @@ import BlogHeader from '~/components/blog/common/BlogHeader';
 import BlogFooter from '~/components/blog/common/BlogFooter';
 import type { BlogConfig } from '~/data-io/blog/common/loadBlogConfig.server';
 import { extractTestId } from '~/lib/blog/common/extractTestId';
+import { data as defaultSpec } from '~/generated/specs/blog/common';
 
 interface BlogLayoutProps {
   config: BlogConfig;
@@ -13,7 +14,7 @@ interface BlogLayoutProps {
 }
 
 const BlogLayout: React.FC<BlogLayoutProps> = ({ config, children }) => {
-  const { spec } = config;
+  const spec = config.spec || defaultSpec;
 
   return (
     <div

@@ -19,6 +19,9 @@ import MangaPanelGrid from "~/components/blog/landing/MangaPanelGrid";
 import CTASection from "~/components/blog/landing/CTASection";
 import LandingFooter from "~/components/blog/landing/LandingFooter";
 
+// ハイドレーション制御 (Lighthouse最適化: JS読み込みを抑制)
+export const handle = { hydrate: false };
+
 // Landing page専用のCSS
 import layer2LandingStyles from "~/styles/blog/layer2-landing.css?url";
 import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
@@ -99,6 +102,10 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
       validatedTarget,
       footerLinks,
       legalContent,
+    }, {
+      headers: {
+        "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+      }
     });
   } catch (error) {
     // エラー内容をログ出力
