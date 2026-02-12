@@ -489,8 +489,8 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TEST_SLUG = testArticleSlug;
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
-    // 1. 記事詳細ページにアクセス（画像ロード完了まで待機）
-    await page.goto(TARGET_URL, { waitUntil: 'load' });
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. PostDetailSectionが表示されること
     await expect(page.locator('[data-testid="post-detail-section"]')).toBeVisible();
@@ -505,13 +505,16 @@ test.describe('E2E Test for Blog - Post Detail', () => {
       // 4. サムネイル画像が表示されている
       await expect(thumbnailImg).toBeVisible();
 
-      // 6. loading="lazy"属性が設定されている（CLS対策）
-      await expect(thumbnailImg).toHaveAttribute('loading', 'lazy');
+      // 6. loading="eager"属性が設定されている（LCP最適化）
+      await expect(thumbnailImg).toHaveAttribute('loading', 'eager');
 
-      // 7. decoding="async"属性が設定されている（パフォーマンス最適化）
+      // 7. fetchpriority="high"属性が設定されている
+      await expect(thumbnailImg).toHaveAttribute('fetchpriority', 'high');
+
+      // 8. decoding="async"属性が設定されている（パフォーマンス最適化）
       await expect(thumbnailImg).toHaveAttribute('decoding', 'async');
 
-      // 8. src属性がR2のURLパターンに一致する
+      // 9. src属性がR2のURLパターンに一致する
       const src = await thumbnailImg.getAttribute('src');
       expect(src).toBeTruthy();
       // R2のブログ画像パスパターン: {base_url}/blog/{slug}/thumbnail.webp
@@ -521,7 +524,7 @@ test.describe('E2E Test for Blog - Post Detail', () => {
       );
       expect(src).toMatch(expectedPattern);
 
-      // 9. alt属性が設定されている（アクセシビリティ）
+      // 10. alt属性が設定されている（アクセシビリティ）
       const alt = await thumbnailImg.getAttribute('alt');
       expect(alt).toBeTruthy();
       expect(alt).toContain('サムネイル');
@@ -537,8 +540,8 @@ test.describe('E2E Test for Blog - Post Detail', () => {
     const TEST_SLUG = testArticleSlug;
     const TARGET_URL = `/blog/${TEST_SLUG}`;
 
-    // 1. 記事詳細ページにアクセス（画像ロード完了まで待機）
-    await page.goto(TARGET_URL, { waitUntil: 'load' });
+    // 1. 記事詳細ページにアクセス
+    await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
 
     // 2. サムネイルコンテナが存在するか確認
     const thumbnailContainer = page.locator('[data-testid="article-thumbnail-container"]');

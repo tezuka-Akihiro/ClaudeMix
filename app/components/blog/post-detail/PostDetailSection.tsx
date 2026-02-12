@@ -6,6 +6,7 @@ import { TableOfContents } from './TableOfContents';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
 import type { Heading, RenderedPost, BlogPostDetailSpec } from '~/specs/blog/types';
 import { Paywall } from './Paywall';
+import { data as defaultSpec } from '~/generated/specs/blog/post-detail';
 
 // Mermaid.jsのグローバル型定義
 declare global {
@@ -118,7 +119,8 @@ export function PostDetailSection({
           <img
             src={thumbnailUrl}
             alt={`${post.title}のサムネイル`}
-            loading="lazy"
+            loading="eager"
+            fetchpriority="high"
             decoding="async"
             onLoad={() => setIsLoaded(true)}
             onError={() => setImageError(true)}

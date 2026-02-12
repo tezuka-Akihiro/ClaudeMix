@@ -21,11 +21,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ catchCopy, heroMangaAssets, m
         {catchCopy}
       </h1>
       <div className="hero-manga-panels">
-        {heroMangaAssets.map((asset) => (
+        {heroMangaAssets.map((asset, index) => (
           <MangaPanel
             key={asset.fileName}
             asset={asset}
             loading="eager"
+            fetchpriority={index === 0 ? "high" : "auto"}
             altLabel={mangaPanelAltLabel}
           />
         ))}

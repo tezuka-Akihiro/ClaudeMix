@@ -58,7 +58,11 @@ test.describe.serial('E2E Section Test for blog - posts', () => {
       const thumbnail = card.getByTestId('thumbnail-container');
       if (await thumbnail.count() > 0) {
         const thumbnailImg = card.getByTestId('thumbnail-image');
-        await expect(thumbnailImg).toHaveAttribute('loading', 'lazy');
+        // 最初の1件はLCP最適化のためeager、それ以降はlazy
+        await expect(thumbnailImg).toHaveAttribute('loading', i === 0 ? 'eager' : 'lazy');
+        if (i === 0) {
+          await expect(thumbnailImg).toHaveAttribute('fetchpriority', 'high');
+        }
         await expect(thumbnailImg).toHaveAttribute('decoding', 'async');
       }
     }

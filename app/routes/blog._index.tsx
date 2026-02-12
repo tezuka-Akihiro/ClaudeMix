@@ -94,6 +94,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       accessibility: spec.accessibility,
       date_format: spec.date_format,
     },
+  }, {
+    headers: {
+      "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+      "Vary": "Cookie",
+    }
   });
 }
 
@@ -106,8 +111,8 @@ export default function BlogIndex() {
     availableFilters,
     selectedFilters,
     pageTitle,
-    publicCategories,
     spec,
+    publicCategories,
   } = useLoaderData<typeof loader>();
 
   return (
@@ -119,10 +124,10 @@ export default function BlogIndex() {
         availableFilters={availableFilters}
         selectedFilters={selectedFilters}
         pageTitle={pageTitle}
-        publicCategories={publicCategories}
         messages={spec.messages}
         accessibility={spec.accessibility}
         dateFormat={spec.date_format}
+        publicCategories={publicCategories}
       />
     </BlogLayout>
   );

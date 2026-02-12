@@ -8,6 +8,7 @@ import LoadMoreButton from '~/components/blog/posts/LoadMoreButton';
 import { FilterToggleButton } from '~/components/blog/posts/FilterToggleButton';
 import { FilterPanel } from '~/components/blog/posts/FilterPanel';
 import type { PostsPageData, PostSummary, BlogPostsSpec } from '~/specs/blog/types';
+import { data as defaultSpec } from '~/generated/specs/blog/posts';
 
 interface PostsSectionProps extends PostsPageData {
   isAuthenticated: boolean;
@@ -110,6 +111,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
                   isLocked={isLocked}
                   lockMessage={messages.lock_message}
                   dateSeparator={dateFormat.display_separator}
+                  isPriority={posts.indexOf(post) === 0}
                 />
               );
             })}

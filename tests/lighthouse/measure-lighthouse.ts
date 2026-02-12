@@ -138,14 +138,26 @@ async function main() {
     },
     // ブログ記事詳細ページ（モバイル）
     {
-      url: `${baseUrl}/blog/welcome`,
+      url: `${baseUrl}/blog/about-claudemix`,
       name: "blog-detail",
       formFactor: "mobile",
     },
     // ブログ記事詳細ページ（デスクトップ）
     {
-      url: `${baseUrl}/blog/welcome`,
+      url: `${baseUrl}/blog/about-claudemix`,
       name: "blog-detail",
+      formFactor: "desktop",
+    },
+    // ランディングページ（モバイル）
+    {
+      url: `${baseUrl}/blog/landing/engineer`,
+      name: "blog-landing",
+      formFactor: "mobile",
+    },
+    // ランディングページ（デスクトップ）
+    {
+      url: `${baseUrl}/blog/landing/engineer`,
+      name: "blog-landing",
       formFactor: "desktop",
     },
   ];
