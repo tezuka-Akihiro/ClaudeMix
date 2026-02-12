@@ -66,10 +66,10 @@ export default function Index() {
   } = useLoaderData<typeof loader>();
 
   return (
-    <div className="home-page">
+    <div className="home-page home-page-structure">
       <BlogHeader blogTitle={blogTitle} menuItems={menuItems as MenuItem[]} />
 
-      <main className="home-main" data-testid="home-main">
+      <main className="home-main home-main-structure" data-testid="home-main">
         <h1 className="home-title">{projectName}</h1>
         <p className="home-description">{serviceName}</p>
         <Link to="/blog" className="home-cta-button" data-testid="home-cta">

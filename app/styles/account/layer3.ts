@@ -269,6 +269,21 @@ export const accountLayer3Plugin = plugin(function ({ addComponents }) {
       flexWrap: "wrap",
       gap: "var(--spacing-3)",
     },
+
+    /**
+     * Plan Grid Structure
+     * - Responsive grid layout for subscription plans
+     * - Desktop: 2 columns
+     * - Mobile: 1 column
+     */
+    ".plan-grid-structure": {
+      display: "grid",
+      gridTemplateColumns: "repeat(2, 1fr)",
+      gap: "var(--spacing-4)",
+      "@media (max-width: 767px)": {
+        gridTemplateColumns: "1fr",
+      },
+    },
   });
 });
 

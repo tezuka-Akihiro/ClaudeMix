@@ -14,9 +14,24 @@ import plugin from "tailwindcss/plugin";
 
 export const blogLayer4Plugin = plugin(function ({ addComponents }) {
   addComponents({
-    // Layer 4の責務: 例外的な構造（疑似要素、子孫セレクタ、アニメーション）
-    // 現時点ではblogサービスに例外的な構造は不要
-    // 必要になった場合（::before, ::after, カスタムアニメーションなど）、ここに追加
+    "@keyframes dropdownFadeIn": {
+      from: {
+        opacity: "0",
+        transform: "translateY(calc(-1 * var(--spacing-1)))",
+      },
+      to: {
+        opacity: "1",
+        transform: "translateY(0)",
+      },
+    },
+    ".navigation-menu": {
+      animation:
+        "dropdownFadeIn var(--transition-duration-fast) var(--transition-timing-function-default)",
+    },
+    ".category-selector__menu": {
+      animation:
+        "dropdownFadeIn var(--transition-duration-fast) var(--transition-timing-function-default)",
+    },
   });
 });
 

@@ -137,7 +137,7 @@ export function ProfileDisplay({
             <div className="profile-info__item">
               <div className="profile-info__label">{subscriptionSpec.fields.status.label}</div>
               <div className="profile-info__value">
-                <div className="flex flex-col gap-2">
+                <div className="profile-actions-structure">
                   <span data-testid="renewal-status">
                     {isRenewalOn ? subscriptionSpec.fields.status.values.on : subscriptionSpec.fields.status.values.off}
                   </span>
@@ -151,7 +151,7 @@ export function ProfileDisplay({
                     {isRenewalOn ? subscriptionSpec.buttons.interrupt : subscriptionSpec.buttons.resume}
                   </button>
                   {isRenewalOff && (
-                    <p className="text-sm text-gray-600" data-testid="next-billing-notice">
+                    <p className="profile-info__notice" data-testid="next-billing-notice">
                       {subscriptionSpec.messages.resume_notice.replace('{date}', nextBillingDate)}
                     </p>
                   )}
@@ -162,7 +162,7 @@ export function ProfileDisplay({
             <div className="profile-info__item">
               <div className="profile-info__label">{subscriptionSpec.fields.card.label}</div>
               <div className="profile-info__value">
-                <div className="flex flex-col gap-2">
+                <div className="profile-actions-structure">
                   <button
                     type="button"
                     onClick={() => {
@@ -179,7 +179,7 @@ export function ProfileDisplay({
                     {subscriptionSpec.buttons.delete_card}
                   </button>
                   {isRenewalOn && (
-                    <p className="text-sm text-red-600" data-testid="card-deletion-disabled-notice">
+                    <p className="profile-info__error" data-testid="card-deletion-disabled-notice">
                       {subscriptionSpec.messages.delete_card_restriction}
                     </p>
                   )}

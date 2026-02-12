@@ -103,7 +103,7 @@ const TAILWIND_PATTERNS = [
 /**
  * 許可するクラス名プレフィックス
  */
-const ALLOWED_PREFIXES = ['custom-', 'component-', 'flow-', 'blog-', 'post-', 'navigation-', 'tag-', 'filter-', 'category-'];
+const ALLOWED_PREFIXES = ['custom-', 'component-', 'flow-', 'blog-', 'post-', 'navigation-', 'tag-', 'filter-', 'category-', 'page-', 'profile-', 'form-'];
 
 /**
  * クラス名が許可されたプレフィックスで始まるかチェック

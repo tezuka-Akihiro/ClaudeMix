@@ -245,7 +245,7 @@ export default function AccountSubscription() {
       {/* Plan Selection Section */}
       <div data-testid="plan-selector">
           <h2 className="profile-section__title">プランを選択</h2>
-          <div className="plan-grid">
+          <div className="plan-grid plan-grid-structure">
             {plans.map((plan) => (
               <div
                 key={plan.id}
