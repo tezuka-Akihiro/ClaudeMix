@@ -40,8 +40,8 @@ describe('MangaPanelGrid', () => {
     render(<MangaPanelGrid mangaAssets={mockAssets} />);
 
     const grid = screen.getByTestId('manga-panel-grid');
-    expect(grid).toHaveClass('manga-panel-grid');
-    expect(grid).toHaveClass('manga-panel-grid-structure');
+    expect(grid).toHaveClass('page-manga-panel-grid');
+    expect(grid).toHaveClass('page-manga-panel-grid-structure');
   });
 
   it('should use eager loading for first 2 panels (hero)', () => {
