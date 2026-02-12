@@ -123,7 +123,7 @@
 
 | ファイル名 | パス | 責務 |
 | :--- | :--- | :--- |
-| sendAuthEmail.server.ts | app/data-io/account/authentication/sendAuthEmail.server.ts | Resend API経由のOTPメール送信（POC実装済み） |
+| sendAuthEmail.server.ts | app/data-io/account/authentication/sendAuthEmail.server.ts | Resend API経由のメール送信（OTP・パスワードリセット対応） |
 | saveOtpToken.server.ts | app/data-io/account/authentication/saveOtpToken.server.ts | KVにOTPデータをJSON保存（TTL: 10分） |
 | saveOtpToken.server.test.ts | app/data-io/account/authentication/saveOtpToken.server.test.ts | saveOtpTokenの単体テスト |
 | verifyOtpToken.server.ts | app/data-io/account/authentication/verifyOtpToken.server.ts | KVからOTPデータ取得・照合・attempts更新 |

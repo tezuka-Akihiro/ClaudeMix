@@ -20,6 +20,7 @@ import type { ProjectSpec } from '~/specs/shared/types';
 // Data-IO layer
 import { generatePasswordResetToken } from '~/data-io/account/authentication/generatePasswordResetToken.server';
 import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.server';
+import { sendAuthEmail } from '~/data-io/account/authentication/sendAuthEmail.server';
 
 // Pure logic layer
 import { sanitizeEmail } from '~/lib/account/authentication/sanitizeEmail';
@@ -130,15 +131,18 @@ export async function action({ request, context }: ActionFunctionArgs) {
       // Generate and store token in KV
       const token = await generatePasswordResetToken(sanitizedEmail, context as any);
 
-      // TODO: Send email with reset link
-      // In production: await sendPasswordResetEmail(sanitizedEmail, token);
-      // For MVP/development: Log the reset link
-      const resetLink = `http://localhost:8788/reset-password/${token}`;
-      console.log('========================================');
-      console.log('PASSWORD RESET LINK (MVP - Check console):');
-      console.log(`Email: ${sanitizedEmail}`);
-      console.log(`Link: ${resetLink}`);
-      console.log('========================================');
+      // Build reset link from request origin (works in dev/preview/production)
+      const origin = new URL(request.url).origin;
+      const resetLink = `${origin}/reset-password/${token}`;
+
+      // Send password reset email via Resend API
+      const env = (context as any).env;
+      await sendAuthEmail({
+        to: sanitizedEmail,
+        type: 'password-reset',
+        payload: resetLink,
+        resendApiKey: env?.RESEND_API_KEY || '',
+      });
     } catch (error) {
       console.error('Error generating password reset token:', error);
       // Still show success message to user (security)

@@ -215,7 +215,7 @@ graph TD
             FindUser -- "存在しない" --> SilentSuccess["成功レスポンス<br/>（セキュリティのため）"]
             FindUser -- "存在する" --> GenerateToken["トークン生成<br/>(crypto.randomUUID)"]
             GenerateToken --> SaveToken["savePasswordResetToken.server<br/>(Workers KV, TTL: 1時間)"]
-            SaveToken --> SendEmail["sendPasswordResetEmail.server<br/>(メール送信)"]
+            SaveToken --> SendEmail["sendAuthEmail.server<br/>(type: password-reset)"]
             SendEmail --> ActionEnd["成功メッセージ"]
         end
 
@@ -452,7 +452,7 @@ graph TD
 | **register.tsx** | 会員登録ページのRoute定義、loader/action処理 | RegisterForm, validateRegistration, createUser.server, hashPassword |
 | **login.tsx** | ログインページのRoute定義、loader/action処理 | LoginForm, validateLogin, findUserByEmail.server, verifyPassword |
 | **logout.tsx** | ログアウト処理専用Route（actionのみ） | destroySession.server |
-| **forgot-password.tsx** | パスワードリセットメール送信ページのRoute定義、loader/action処理 | ForgotPasswordForm, findUserByEmail.server, sendPasswordResetEmail.server |
+| **forgot-password.tsx** | パスワードリセットメール送信ページのRoute定義、loader/action処理 | ForgotPasswordForm, findUserByEmail.server, sendAuthEmail.server (type: password-reset) |
 | **reset-password.$token.tsx** | パスワードリセット実行ページのRoute定義、loader/action処理 | ResetPasswordForm, getPasswordResetToken.server, updateUserPassword.server, hashPassword |
 | **auth.otp.tsx** | OTP検証ページのRoute定義、loader防衛/action処理 | OtpVerifyForm, validateOtpFormat, verifyOtpToken.server, upsertUserByEmail.server |
 | **RegisterForm** | 会員登録フォームUI、バリデーションエラー表示 | FormField, Button, ErrorMessage (common) |
@@ -538,7 +538,7 @@ graph TD
     FF --> GG["GET カウント → 上限チェック"]
 
     HH[sendAuthEmail.server] --> II[Resend API]
-    II --> JJ["OTPコードメール送信"]
+    II --> JJ["OTP/パスワードリセットメール送信"]
 ```
 
 ### 副作用層の責務
@@ -555,7 +555,7 @@ graph TD
 | **verifyOtpToken.server** | KV読み取り・書き込み | Workers KV | email, code | OtpVerifyResult |
 | **upsertUserByEmail.server** | DB読み取り・書き込み | D1 Database | email | User |
 | **checkOtpRateLimit.server** | KV読み取り・書き込み | Workers KV | email | boolean |
-| **sendAuthEmail.server** | 外部API呼び出し | Resend API | email, code | void |
+| **sendAuthEmail.server** | 外部API呼び出し | Resend API | email, type (otp/password-reset), payload | boolean |
 
 ---
 

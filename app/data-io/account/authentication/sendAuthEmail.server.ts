@@ -8,8 +8,8 @@
 
 export interface SendAuthEmailParams {
   to: string;
-  type: 'magic-link' | 'otp';
-  payload: string; // URL for magic link, or 6-digit code for OTP
+  type: 'magic-link' | 'otp' | 'password-reset';
+  payload: string; // URL for magic link/password-reset, or 6-digit code for OTP
   resendApiKey: string;
 }
 
@@ -23,10 +23,18 @@ export async function sendAuthEmail({
   payload,
   resendApiKey
 }: SendAuthEmailParams): Promise<boolean> {
-  const subject = type === 'magic-link' ? 'ログインリンクのご案内' : '認証コードのご案内';
-  const content = type === 'magic-link'
-    ? `以下のリンクをクリックしてログインしてください：\n\n${payload}\n\nこのリンクは10分間有効です。`
-    : `以下の認証コードを入力してください：\n\n${payload}\n\nこのコードは10分間有効です。`;
+  const subjectMap: Record<SendAuthEmailParams['type'], string> = {
+    'magic-link': 'ログインリンクのご案内',
+    'otp': '認証コードのご案内',
+    'password-reset': 'パスワードリセットのご案内',
+  };
+  const contentMap: Record<SendAuthEmailParams['type'], string> = {
+    'magic-link': `以下のリンクをクリックしてログインしてください：\n\n${payload}\n\nこのリンクは10分間有効です。`,
+    'otp': `以下の認証コードを入力してください：\n\n${payload}\n\nこのコードは10分間有効です。`,
+    'password-reset': `以下のリンクをクリックしてパスワードをリセットしてください：\n\n${payload}\n\nこのリンクは1時間有効です。\n心当たりのない場合は、このメールを無視してください。`,
+  };
+  const subject = subjectMap[type];
+  const content = contentMap[type];
 
   try {
     const response = await fetch('https://api.resend.com/emails', {

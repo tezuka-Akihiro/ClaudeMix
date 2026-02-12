@@ -645,6 +645,12 @@ export interface AccountAuthenticationSpec {
       max_requests_per_minute: number;
     };
   };
+  password_reset_email: {
+    subject: string;
+    body_template: string;
+    from: string;
+    ttl_display: string;
+  };
   otp_config: {
     ttl_seconds: number;
     max_attempts: number;
