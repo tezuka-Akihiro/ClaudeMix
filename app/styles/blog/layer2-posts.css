@@ -231,7 +231,6 @@
     z-index: var(--z-index-dropdown);
     max-height: var(--dropdown-max-height);
     overflow-y: auto;
-    animation: dropdownFadeIn var(--transition-duration-fast) var(--transition-timing-function-default);
   }
 
   /* Menu Overlay */
