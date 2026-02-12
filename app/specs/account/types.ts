@@ -358,7 +358,13 @@ export interface AccountAuthenticationSpec {
     login: {
       path: string;
       title: string;
+      subtitle: string;
       redirect_param: string;
+      terms_text: string;
+      terms_link_label: string;
+      terms_link_path: string;
+      privacy_link_label: string;
+      privacy_link_path: string;
     };
     logout: {
       path: string;

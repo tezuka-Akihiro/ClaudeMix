@@ -64,8 +64,15 @@ routes:
   login:
     path: "/login"
     title: "ログイン"
+    subtitle: "アカウントをお持ちでないですか？"
     # リダイレクトURLパラメータ名
     redirect_param: "redirect-url"
+    # 利用規約同意文言
+    terms_text: "ログインにより、{terms_link}と{privacy_link}に同意したことになります。"
+    terms_link_label: "利用規約"
+    terms_link_path: "/terms"
+    privacy_link_label: "個人情報の取り扱い"
+    privacy_link_path: "/privacy"
   logout:
     path: "/logout"
     # ログアウト後のリダイレクト先

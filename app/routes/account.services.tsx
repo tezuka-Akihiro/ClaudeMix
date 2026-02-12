@@ -6,16 +6,21 @@
  * @responsibility サービス一覧の表示
  */
 
-import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/cloudflare';
+import type { MetaFunction, LoaderFunctionArgs, LinksFunction } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { Link, useRouteLoaderData, useLoaderData } from '@remix-run/react';
 import type { loader as accountLoader } from './account';
 import { loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { ProjectSpec } from '~/specs/shared/types';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-profile.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import profileStyles from '~/styles/account/layer2-profile.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: profileStyles },
+];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const projectName = data?.projectName || 'ClaudeMix';

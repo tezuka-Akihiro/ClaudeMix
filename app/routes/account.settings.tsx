@@ -6,15 +6,20 @@
  * @responsibility ユーザープロフィール設定の表示と更新
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, LinksFunction } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { useActionData, useRouteLoaderData, useLoaderData } from '@remix-run/react';
 import { useState, useEffect } from 'react';
 import type { loader as accountLoader } from './account';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-profile.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import profileStyles from '~/styles/account/layer2-profile.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: profileStyles },
+];
 
 // Data-IO layer
 import { loadAccountSettingsData } from '~/data-io/account/profile/loadAccountSettingsData.server';

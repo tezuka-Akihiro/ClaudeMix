@@ -26,7 +26,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ catchCopy, heroMangaAssets, m
             key={asset.fileName}
             asset={asset}
             loading="eager"
-            fetchpriority={index === 0 ? "high" : "auto"}
+            fetchPriority={index === 0 ? "high" : "auto"}
             altLabel={mangaPanelAltLabel}
           />
         ))}

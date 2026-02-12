@@ -120,7 +120,7 @@ export function PostDetailSection({
             src={thumbnailUrl}
             alt={`${post.title}のサムネイル`}
             loading="eager"
-            fetchpriority="high"
+            fetchPriority="high"
             decoding="async"
             onLoad={() => setIsLoaded(true)}
             onError={() => setImageError(true)}

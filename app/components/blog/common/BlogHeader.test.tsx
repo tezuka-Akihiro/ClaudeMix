@@ -139,7 +139,7 @@ describe('BlogHeader', () => {
   });
 
   describe('User Interactions', () => {
-    it('should open menu when menu button is clicked', () => {
+    it('should toggle checkbox checked when menu button is clicked', () => {
       // Act
       render(
         <BrowserRouter>
@@ -150,20 +150,20 @@ describe('BlogHeader', () => {
           />
         </BrowserRouter>
       );
+      const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
       const menuButton = screen.getByTestId(
         extractTestId(spec.ui_selectors.header.menu_button)
       );
-      fireEvent.click(menuButton);
 
-      // Assert
-      expect(
-        screen.getByTestId(
-          extractTestId(spec.ui_selectors.navigation.navigation_menu)
-        )
-      ).toBeInTheDocument();
+      // Initially unchecked
+      expect(checkbox.checked).toBe(false);
+
+      // Click to open menu
+      fireEvent.click(menuButton);
+      expect(checkbox.checked).toBe(true);
     });
 
-    it('should close menu when menu button is clicked again', () => {
+    it('should uncheck checkbox when menu button is clicked again', () => {
       // Act
       render(
         <BrowserRouter>
@@ -174,27 +174,18 @@ describe('BlogHeader', () => {
           />
         </BrowserRouter>
       );
+      const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
       const menuButton = screen.getByTestId(
         extractTestId(spec.ui_selectors.header.menu_button)
       );
 
       // Open menu
       fireEvent.click(menuButton);
-      expect(
-        screen.getByTestId(
-          extractTestId(spec.ui_selectors.navigation.navigation_menu)
-        )
-      ).toBeInTheDocument();
+      expect(checkbox.checked).toBe(true);
 
       // Close menu
       fireEvent.click(menuButton);
-
-      // Assert
-      expect(
-        screen.queryByTestId(
-          extractTestId(spec.ui_selectors.navigation.navigation_menu)
-        )
-      ).not.toBeInTheDocument();
+      expect(checkbox.checked).toBe(false);
     });
   });
 });

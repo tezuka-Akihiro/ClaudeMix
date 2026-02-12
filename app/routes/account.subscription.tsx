@@ -6,7 +6,7 @@
  * @responsibility サブスクリプション管理画面の表示
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, LinksFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { useRouteLoaderData, useLoaderData, useFetcher } from '@remix-run/react';
 import { useEffect } from 'react';
@@ -67,10 +67,16 @@ function getPlansFromSpec(): Record<string, PlanForUI> {
   return plans;
 }
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-profile.css';
-import '~/styles/account/layer2-subscription.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import profileStyles from '~/styles/account/layer2-profile.css?url';
+import subscriptionStyles from '~/styles/account/layer2-subscription.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: profileStyles },
+  { rel: "stylesheet", href: subscriptionStyles },
+];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const projectName = data?.projectName || 'ClaudeMix';

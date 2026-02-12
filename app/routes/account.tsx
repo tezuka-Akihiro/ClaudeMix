@@ -6,7 +6,7 @@
  * @responsibility 認証保護、レイアウト提供、セッション管理
  */
 
-import type { LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs, LinksFunction } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { getSession } from '~/data-io/account/common/getSession.server';
@@ -18,8 +18,12 @@ import type { NavItem } from '~/specs/account/types';
 import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { AccountCommonSpec } from '~/specs/account/types';
 
-// Import CSS (Layer 2: Common components)
-import '~/styles/account/layer2-common.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+];
 
 /**
  * Loader: Authentication guard and data provider

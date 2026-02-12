@@ -50,3 +50,78 @@
 .auth-link:hover {
   color: var(--color-text-primary);
 }
+
+/* === Password Label Row === */
+/* Row containing password label and forgot password link */
+.auth-password-label-row {
+  font-family: var(--font-stack-system-ui);
+  font-size: var(--font-size-sm);
+}
+
+.auth-password-label-row a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-duration-fast) var(--transition-timing-function-default);
+}
+
+.auth-password-label-row a:hover {
+  color: var(--color-text-primary);
+}
+
+/* === Terms Text === */
+/* Legal agreement text at bottom of login card */
+.auth-terms-text {
+  color: var(--color-text-secondary);
+  font-family: var(--font-stack-system-ui);
+  font-size: var(--font-size-xs);
+  text-align: center;
+}
+
+.auth-terms-text a {
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+  transition: color var(--transition-duration-fast) var(--transition-timing-function-default);
+}
+
+.auth-terms-text a:hover {
+  color: var(--color-text-primary);
+}
+
+/* === OAuth Button === */
+/* Google/social login button appearance */
+.auth-oauth-button {
+  background-color: white;
+  color: #3c4043;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 9999px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+/* === OAuth Button Icon === */
+.auth-oauth-button__icon {
+  margin-right: 0.75rem;
+}
+
+/* === Brand Icon Image === */
+.auth-brand-icon__img {
+  object-fit: contain;
+  height: calc(var(--layout-card-width)*2);
+  width: calc(var(--layout-card-width)*2);
+}
+
+/* === Success Message === */
+/* Variant of error-message for success states */
+.success-message {
+  background-color: var(--color-status-success-bg);
+  border-color: var(--color-status-success);
+  color: var(--color-status-success);
+}
+
+/* === Auth Footer Prompt === */
+/* Login prompt text at bottom of register card */
+.auth-footer__prompt {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}

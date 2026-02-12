@@ -6,13 +6,18 @@
  * @responsibility アカウント概要の表示
  */
 
-import type { MetaFunction } from '@remix-run/node';
+import type { MetaFunction, LinksFunction } from '@remix-run/node';
 import { Form, useRouteLoaderData } from '@remix-run/react';
 import type { loader as accountLoader } from './account';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-profile.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import profileStyles from '~/styles/account/layer2-profile.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: profileStyles },
+];
 
 export const meta: MetaFunction = () => {
   return [

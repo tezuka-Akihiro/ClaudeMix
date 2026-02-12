@@ -6,7 +6,7 @@
  * @responsibility パスワードリセット実行の処理
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, LinksFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { Form, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
 
@@ -26,10 +26,16 @@ import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
 import type { AccountAuthenticationSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-authentication.css';
-import '~/styles/account/layer3-authentication.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import authStyles from '~/styles/account/layer2-authentication.css?url';
+import authStructureStyles from '~/styles/account/layer3-authentication.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: authStyles },
+  { rel: "stylesheet", href: authStructureStyles },
+];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const projectName = data?.projectName || 'ClaudeMix';
@@ -196,7 +202,7 @@ export default function ResetPassword() {
             <br />
             パスワードリセットを再度リクエストしてください。
           </p>
-          <p className="auth-link" style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
+          <p className="auth-link auth-footer-structure">
             <a href="/forgot-password">
               パスワードリセットに戻る
             </a>
@@ -274,7 +280,7 @@ export default function ResetPassword() {
           </button>
         </Form>
 
-        <p className="auth-link" style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
+        <p className="auth-link auth-footer-structure">
           <a href="/login">
             ログインに戻る
           </a>

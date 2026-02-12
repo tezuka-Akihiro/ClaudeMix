@@ -6,14 +6,20 @@
  * @responsibility OTP認証コード入力・検証ページ
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, LinksFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { useActionData, useLoaderData, useNavigation, useSearchParams } from '@remix-run/react';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-authentication.css';
-import '~/styles/account/layer3-authentication.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import authStyles from '~/styles/account/layer2-authentication.css?url';
+import authStructureStyles from '~/styles/account/layer3-authentication.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: authStyles },
+  { rel: "stylesheet", href: authStructureStyles },
+];
 
 // UI Components
 import { OtpVerifyForm } from '~/components/account/authentication/OtpVerifyForm';

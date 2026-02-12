@@ -140,10 +140,15 @@ graph TD
 
         LoginRoute -- "4. props渡し" --> LoginForm
 
+        LoginForm --> Icon["ブランドアイコン"]
+        LoginForm --> Title["タイトル: ClaudeMixへログイン"]
+        LoginForm --> Subtitle["サブタイトル + RegisterLink"]
+        LoginForm --> GoogleBtn["Link: Google でログイン"]
+        LoginForm --> Divider["区切り線 (or)"]
         LoginForm --> EmailField["FormField: email"]
-        LoginForm --> PasswordField["FormField: password"]
+        LoginForm --> PasswordField["FormField: password + ForgotLink"]
         LoginForm --> SubmitBtn["Button: ログイン"]
-        LoginForm --> RegisterLink["Link: 会員登録はこちら"]
+        LoginForm --> TermsText["利用規約同意文言"]
 
         SubmitBtn -- "9. ローディング状態" --> SubmitBtn
         ActionEnd -- "10. リダイレクト<br/>(redirect-url優先)" --> Browser
@@ -309,11 +314,13 @@ graph TD
 
 ### OTPコード送信フロー
 
+> **注**: OTP送信フォームはログインページのUIには表示されない。ユーザーは `/forgot-password` 経由でOTP認証フローを開始する。login.tsx の action 内の `send-otp` intent は OtpVerifyForm の「コードを再送信」機能で引き続き使用される。
+
 ```mermaid
 graph TD
     subgraph Browser["ブラウザ"]
-        User((ユーザー)) -- "1. /login アクセス" --> LoginRoute["Route (login.tsx)"]
-        User -- "3. メール入力・「次へ」クリック" --> OtpForm["OTP送信フォーム"]
+        User((ユーザー)) -- "1. /forgot-password 経由" --> LoginRoute["Route (login.tsx)"]
+        User -- "3. コード再送信クリック" --> OtpForm["OTP再送信 (OtpVerifyFormから)"]
     end
 
     subgraph Server["サーバー"]

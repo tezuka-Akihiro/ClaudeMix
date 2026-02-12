@@ -8,14 +8,14 @@ interface MangaPanelProps {
   asset: MangaAsset;
   loading?: 'lazy' | 'eager';
   altLabel?: string;
-  fetchpriority?: 'high' | 'low' | 'auto';
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
 const MangaPanel: React.FC<MangaPanelProps> = ({
   asset,
   loading = 'lazy',
   altLabel = '漫画パネル',
-  fetchpriority = 'auto',
+  fetchPriority = 'auto',
 }) => {
   return (
     <div className="manga-panel" data-testid="manga-panel">
@@ -23,7 +23,7 @@ const MangaPanel: React.FC<MangaPanelProps> = ({
         src={asset.path}
         alt={`${altLabel} ${asset.order}`}
         loading={loading}
-        fetchpriority={fetchpriority}
+        fetchPriority={fetchPriority}
         decoding="async"
         width="400"
         height="300"

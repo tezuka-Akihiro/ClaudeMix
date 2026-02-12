@@ -72,6 +72,7 @@ Authentication (認証)
 
 - 既存ユーザーの認証とセッション生成
 - メールアドレス/パスワードによる認証
+- Google OAuth認証（上部に優先配置）
 - リダイレクトURL対応（`?redirect-url=/account/settings`形式）
 
 **入力データ**:
@@ -87,6 +88,20 @@ Authentication (認証)
 3. パスワード検証（ハッシュ比較）
 4. セッション生成（commonのユーティリティ使用）
 5. Cookie設定とリダイレクト（指定URLまたは`/account`へ）
+
+**UI構成**（ワイヤーフレーム準拠、上から順に）:
+
+1. ブランドアイコン
+2. タイトル「ClaudeMixへログイン」
+3. サブタイトル「アカウントをお持ちでないですか？」（`/register`へのリンク）
+4. Google でログインボタン
+5. 「or」区切り線
+6. メールアドレス入力
+7. パスワード入力 +「パスワードをお忘れですか？」リンク（`/forgot-password`へ）
+8. ログインボタン
+9. 利用規約同意文言（「ログインにより、利用規約と個人情報の取り扱いに同意したことになります。」）
+
+> **注**: OTPフォームはログインページには配置しない。OTP認証は `/forgot-password` → `/auth/otp` の導線で利用可能。
 
 **出力データ**:
 
@@ -208,6 +223,8 @@ Authentication (認証)
 #### 6. OTPコード送信 (Send OTP)
 
 **URL**: `/login` (action、intent: `send-otp`)
+
+> **注**: OTP送信フォームはログインページのUIには表示されない。ユーザーは `/forgot-password` 経由でOTP認証フローを開始する。ただし、login.tsx の action 内の `send-otp` intent は OtpVerifyForm の「コードを再送信」機能で引き続き使用されるため、サーバーサイドコードは維持する。
 
 **機能**:
 

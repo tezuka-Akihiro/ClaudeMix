@@ -6,16 +6,22 @@
  * @responsibility ユーザーログインフォーム表示と処理
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, LinksFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParams } from '@remix-run/react';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithValibot } from '@conform-to/valibot';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-authentication.css';
-import '~/styles/account/layer3-authentication.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import authStyles from '~/styles/account/layer2-authentication.css?url';
+import authStructureStyles from '~/styles/account/layer3-authentication.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: authStyles },
+  { rel: "stylesheet", href: authStructureStyles },
+];
 
 // UI Components
 import { FlashMessage } from '~/components/account/common/FlashMessage';
@@ -89,17 +95,15 @@ interface LoaderData {
     };
     links: {
       forgotPassword: string;
-      registerPrompt: string;
-      registerLink: string;
     };
     oauth: {
       googleLabel: string;
     };
-    otp: {
-      emailLabel: string;
-      emailPlaceholder: string;
-      submitLabel: string;
-      submitLoadingLabel: string;
+    terms: {
+      termsLinkLabel: string;
+      termsLinkPath: string;
+      privacyLinkLabel: string;
+      privacyLinkPath: string;
     };
   };
 }
@@ -130,8 +134,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     projectName: projectSpec.project.name,
     flashMessage,
     uiSpec: {
-      title: spec.routes.login.title,
-      subtitle: `${projectSpec.project.name}に${spec.routes.login.title.toLowerCase()}`,
+      title: `${projectSpec.project.name}へ${spec.routes.login.title}`,
+      subtitle: spec.routes.login.subtitle,
       fields: {
         email: {
           label: spec.forms.login.fields.email.label,
@@ -148,17 +152,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       },
       links: {
         forgotPassword: 'パスワードをお忘れですか？',
-        registerPrompt: 'アカウントをお持ちでないですか？',
-        registerLink: '新規登録',
       },
       oauth: {
         googleLabel: 'Google でログイン',
       },
-      otp: {
-        emailLabel: spec.forms.send_otp.fields.email.label,
-        emailPlaceholder: spec.forms.send_otp.fields.email.placeholder,
-        submitLabel: spec.forms.send_otp.submit_button.label,
-        submitLoadingLabel: spec.forms.send_otp.submit_button.loading_label,
+      terms: {
+        termsLinkLabel: spec.routes.login.terms_link_label,
+        termsLinkPath: spec.routes.login.terms_link_path,
+        privacyLinkLabel: spec.routes.login.privacy_link_label,
+        privacyLinkPath: spec.routes.login.privacy_link_path,
       },
     },
   });
@@ -298,9 +300,28 @@ export default function Login() {
   return (
     <main className="auth-container auth-container-structure" data-testid="login-page">
       <div className="auth-card auth-card-structure">
-        <h1 className="auth-header__title">{uiSpec.title}</h1>
-        <p className="auth-header__subtitle">{uiSpec.subtitle}</p>
+        {/* Brand Icon */}
+        <div className="auth-brand-icon-structure">
+          <img
+            src="/core-matrix-emblem.avif"
+            alt="ClaudeMix"
+            className="auth-brand-icon__img"
+            data-testid="brand-icon"
+          />
+        </div>
 
+        {/* Title + Subtitle (register link) */}
+        <h1 className="auth-header__title">{uiSpec.title}</h1>
+        <p className="auth-header__subtitle">
+          <Link
+            to={`/register?redirect-url=${encodeURIComponent(redirectUrl)}`}
+            data-testid="register-link"
+          >
+            {uiSpec.subtitle}
+          </Link>
+        </p>
+
+        {/* Flash Message */}
         {loaderData.flashMessage && (
           <FlashMessage
             message={loaderData.flashMessage}
@@ -310,12 +331,36 @@ export default function Login() {
           />
         )}
 
+        {/* Error Message */}
         {actionData?.error && (
           <div className="error-message-structure" role="alert" data-testid="error-message">
             <span>{actionData.error}</span>
           </div>
         )}
 
+        {/* Google OAuth Button */}
+        <a
+          href={`/auth/google?redirect-url=${encodeURIComponent(redirectUrl)}`}
+          className="auth-oauth-button auth-oauth-button-structure"
+          data-testid="google-login-button"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18" className="auth-oauth-button__icon">
+            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.183l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+            <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
+            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+          </svg>
+          {uiSpec.oauth.googleLabel}
+        </a>
+
+        {/* Divider */}
+        <div className="auth-divider-structure">
+          <hr />
+          <span>or</span>
+          <hr />
+        </div>
+
+        {/* Email/Password Login Form */}
         <Form method="post" className="auth-form-structure" {...getFormProps(form)}>
           <input type="hidden" name="redirectUrl" value={redirectUrl} />
 
@@ -336,7 +381,12 @@ export default function Login() {
           </div>
 
           <div className="form-field-structure">
-            <label htmlFor={fields.password.id}>{uiSpec.fields.password.label}</label>
+            <div className="auth-password-label-row auth-password-label-row-structure">
+              <label htmlFor={fields.password.id}>{uiSpec.fields.password.label}</label>
+              <Link to="/forgot-password" data-testid="forgot-password-link">
+                {uiSpec.links.forgotPassword}
+              </Link>
+            </div>
             <input
               {...getInputProps(fields.password, { type: 'password' })}
               className="form-field__input"
@@ -356,85 +406,10 @@ export default function Login() {
           </button>
         </Form>
 
-        <div className="auth-divider" style={{ display: 'flex', alignItems: 'center', margin: '1.5rem 0', gap: '1rem' }}>
-          <hr style={{ flex: 1, border: 'none', borderTop: '1px solid var(--color-border, #e5e7eb)' }} />
-          <span style={{ color: 'var(--color-text-secondary, #6b7280)', fontSize: 'var(--font-size-sm, 0.875rem)' }}>or</span>
-          <hr style={{ flex: 1, border: 'none', borderTop: '1px solid var(--color-border, #e5e7eb)' }} />
-        </div>
-
-        <Form method="post" className="auth-form-structure" style={{ marginBottom: '1.5rem' }}>
-          <input type="hidden" name="intent" value="send-otp" />
-          <div className="form-field-structure">
-            <label htmlFor="otp-email">{uiSpec.otp.emailLabel}</label>
-            <input
-              id="otp-email"
-              name="email"
-              type="email"
-              className="form-field__input"
-              placeholder={uiSpec.otp.emailPlaceholder}
-              autoComplete="email"
-              data-testid="otp-email-input"
-            />
-          </div>
-          <button
-            type="submit"
-            className="btn-secondary"
-            disabled={isSubmitting}
-            data-testid="otp-send-button"
-            style={{ width: '100%' }}
-          >
-            {isSubmitting ? uiSpec.otp.submitLoadingLabel : uiSpec.otp.submitLabel}
-          </button>
-        </Form>
-
-        <div className="auth-oauth-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-          <a
-            href={`/auth/google?redirect-url=${encodeURIComponent(redirectUrl)}`}
-            className="auth-oauth-button"
-            data-testid="google-login-button"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '1rem 2rem',
-              border: 'none',
-              borderRadius: '9999px',
-              backgroundColor: 'white',
-              color: '#3c4043',
-              textDecoration: 'none',
-              fontWeight: 500,
-              transition: 'background-color 0.2s',
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 18 18" style={{ marginRight: '0.75rem' }}>
-              <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-              <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.183l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
-              <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
-              <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-            </svg>
-            {uiSpec.oauth.googleLabel}
-          </a>
-        </div>
-
-        <p className="auth-link">
-          <Link to="/forgot-password" data-testid="forgot-password-link">
-            {uiSpec.links.forgotPassword}
-          </Link>
+        {/* Terms of Service */}
+        <p className="auth-terms-text auth-terms-text-structure" data-testid="terms-text">
+          ログインにより、<Link to={uiSpec.terms.termsLinkPath}>{uiSpec.terms.termsLinkLabel}</Link>と<Link to={uiSpec.terms.privacyLinkPath}>{uiSpec.terms.privacyLinkLabel}</Link>に同意したことになります。
         </p>
-
-        <div style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
-          <p style={{ color: 'var(--color-text-primary)', marginBottom: 'var(--spacing-2)', fontSize: 'var(--font-size-sm)' }}>
-            {uiSpec.links.registerPrompt}
-          </p>
-          <Link
-            to={`/register?redirect-url=${encodeURIComponent(redirectUrl)}`}
-            className="btn-secondary"
-            data-testid="register-link"
-            style={{ display: 'inline-block', textDecoration: 'none' }}
-          >
-            {uiSpec.links.registerLink}
-          </Link>
-        </div>
       </div>
     </main>
   );

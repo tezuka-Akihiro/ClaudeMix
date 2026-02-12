@@ -88,9 +88,26 @@
     color: var(--color-interactive-primary);
   }
 
+  /* CSS-only toggle support */
+  .u-menu-checkbox {
+    display: none;
+  }
+
+  .u-menu-checkbox:checked ~ .navigation-menu,
+  .u-menu-checkbox:checked ~ .navigation-menu__overlay {
+    display: block !important;
+  }
+
+  .u-menu-open-label { display: block; }
+  .u-menu-close-label { display: none; }
+
+  .u-menu-checkbox:checked ~ .u-menu-open-label { display: none; }
+  .u-menu-checkbox:checked ~ .u-menu-close-label { display: block; }
+
   /* === NavigationMenu === */
   /* Menu container styling */
   .navigation-menu {
+    display: none;
     background-color: var(--color-surface-dark-opaque);
     border: none;
     box-shadow: 0 0 var(--shadow-blur-lg) var(--color-interactive-primary-bg);
@@ -107,6 +124,7 @@
 
   /* Menu overlay for mobile */
   .navigation-menu__overlay {
+    display: none;
     background-color: var(--color-overlay-strong);
     inset: 0;
     position: fixed;

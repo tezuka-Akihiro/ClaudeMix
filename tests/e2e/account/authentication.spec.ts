@@ -109,6 +109,18 @@ test.describe('Account Authentication - Happy Path', () => {
       const loginTitlePattern = new RegExp(spec.routes.login.title);
       await expect(page).toHaveTitle(loginTitlePattern);
 
+      // Verify brand icon
+      const brandIcon = page.locator('[data-testid="brand-icon"]');
+      await expect(brandIcon).toBeVisible();
+
+      // Verify Google login button (above form)
+      const googleButton = page.locator('[data-testid="google-login-button"]');
+      await expect(googleButton).toBeVisible();
+
+      // Verify register link in subtitle
+      const registerLink = page.locator('[data-testid="register-link"]');
+      await expect(registerLink).toBeVisible();
+
       // Verify form is displayed
       const form = page.locator('form').filter({ has: page.locator('input[name="password"]') });
       await expect(form).toBeVisible();
@@ -122,10 +134,18 @@ test.describe('Account Authentication - Happy Path', () => {
       await expect(passwordInput).toBeVisible();
       await expect(passwordInput).toHaveAttribute('type', 'password');
 
+      // Verify forgot password link next to password field
+      const forgotPasswordLink = page.locator('[data-testid="forgot-password-link"]');
+      await expect(forgotPasswordLink).toBeVisible();
+
       // Verify submit button
       const submitButton = form.locator('[data-testid="submit-button"]');
       await expect(submitButton).toBeVisible();
       await expect(submitButton).toContainText(spec.forms.login.submit_button.label);
+
+      // Verify terms text
+      const termsText = page.locator('[data-testid="terms-text"]');
+      await expect(termsText).toBeVisible();
     });
 
     test('should login existing user successfully', async ({ page }) => {

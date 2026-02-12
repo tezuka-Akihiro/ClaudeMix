@@ -57,7 +57,7 @@ const PostCard: React.FC<PostCardProps> = ({
             width={1200}
             height={630}
             loading={isPriority ? "eager" : "lazy"}
-            fetchpriority={isPriority ? "high" : "auto"}
+            fetchPriority={isPriority ? "high" : "auto"}
             decoding="async"
             onLoad={() => setIsLoaded(true)}
             onError={() => setImageError(true)}

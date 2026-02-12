@@ -6,16 +6,22 @@
  * @responsibility ユーザー登録フォーム表示と処理
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, LinksFunction } from '@remix-run/cloudflare';
 import { json, redirect } from '@remix-run/cloudflare';
 import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParams } from '@remix-run/react';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithValibot } from '@conform-to/valibot';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-authentication.css';
-import '~/styles/account/layer3-authentication.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import authStyles from '~/styles/account/layer2-authentication.css?url';
+import authStructureStyles from '~/styles/account/layer3-authentication.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: authStyles },
+  { rel: "stylesheet", href: authStructureStyles },
+];
 
 // Spec loader
 import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
@@ -287,15 +293,14 @@ export default function Register() {
           </button>
         </Form>
 
-        <div style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
-          <p style={{ color: 'var(--color-text-primary)', marginBottom: 'var(--spacing-2)', fontSize: 'var(--font-size-sm)' }}>
+        <div className="auth-footer-structure">
+          <p className="auth-footer__prompt auth-footer__prompt-structure">
             {uiSpec.links.loginPrompt}
           </p>
           <Link
             to={`/login?redirect-url=${encodeURIComponent(redirectUrl)}`}
             className="btn-secondary"
             data-testid="login-link"
-            style={{ display: 'inline-block', textDecoration: 'none' }}
           >
             {uiSpec.links.loginLink}
           </Link>

@@ -6,15 +6,21 @@
  * @responsibility ユーザーログアウト処理
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, LinksFunction } from '@remix-run/cloudflare';
 import { redirect } from '@remix-run/cloudflare';
 import { Form, useNavigation } from '@remix-run/react';
 import { useEffect, useRef } from 'react';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-authentication.css';
-import '~/styles/account/layer3-authentication.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import authStyles from '~/styles/account/layer2-authentication.css?url';
+import authStructureStyles from '~/styles/account/layer3-authentication.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: authStyles },
+  { rel: "stylesheet", href: authStructureStyles },
+];
 
 // Spec loader
 import { loadSpec } from '~/spec-loader/specLoader.server';

@@ -197,7 +197,7 @@ graph TD
     style Actions fill:#f0f0f0
 ```
 
-### Login Page 構造図（OTPメインストリーム）
+### Login Page 構造図（ワイヤーフレーム準拠）
 
 ```mermaid
 graph TD
@@ -206,20 +206,10 @@ graph TD
     end
 
     Route --> Container["Container (中央寄せコンテナ)"]
-    Container --> Title["タイトル ('ログイン')"]
-
-    Container --> OAuthSection["OAuthセクション（最優先）"]
-    OAuthSection --> GoogleButton["Link: Google でログイン"]
-
-    Container --> Divider["区切り線 ('または')"]
-
-    Container --> OtpForm["OTP送信フォーム（メインストリーム）"]
-    OtpForm --> EmailField["FormField: メールアドレス"]
-    OtpForm --> OtpSubmitButton["Button: 次へ（OTP送信）"]
-
-    Container --> SubLinks["サブリンクエリア（控えめ）"]
-    SubLinks --> PasswordLoginLink["Link: パスワードでログイン"]
-    SubLinks --> RegisterLink["Link: 新規登録"]
+    Container --> Icon["ブランドアイコン"]
+    Container --> Title["タイトル ('ClaudeMixへログイン')"]
+    Container --> Subtitle["サブタイトル ('アカウントをお持ちでないですか？')"]
+    Subtitle --> RegisterLink["Link: /register へ遷移"]
 
     subgraph ErrorDisplay["エラー表示エリア"]
         ErrorMessage["ErrorMessage (条件付き表示)"]
@@ -227,9 +217,23 @@ graph TD
 
     Container --> ErrorDisplay
 
+    Container --> OAuthSection["OAuthセクション"]
+    OAuthSection --> GoogleButton["Link: Google でログイン"]
+
+    Container --> Divider["区切り線 ('or')"]
+
+    Container --> LoginForm["LoginForm (Email/Password)"]
+    LoginForm --> EmailField["FormField: メールアドレス"]
+    LoginForm --> PasswordRow["Password行"]
+    PasswordRow --> PasswordField["FormField: パスワード"]
+    PasswordRow --> ForgotLink["Link: パスワードをお忘れですか？ → /forgot-password"]
+    LoginForm --> SubmitButton["Button: ログイン"]
+
+    Container --> TermsText["利用規約同意文言（小フォント）"]
+
     style OAuthSection fill:#e8f5e9
-    style OtpForm fill:#e8f5e9
-    style SubLinks fill:#f0f0f0
+    style LoginForm fill:#e8f5e9
+    style TermsText fill:#f0f0f0
 ```
 
 ### OTP Verify Page 構造図
@@ -304,7 +308,7 @@ stateDiagram-v2
 **親子構造**:
 
 - **親**: login.tsx Route
-- **子**: FormField × 2, Button, ErrorMessage, Link
+- **子**: Icon, Title, Subtitle(RegisterLink), GoogleButton, Divider, FormField × 2, ForgotPasswordLink, Button, TermsText, ErrorMessage
 
 **状態遷移ルール**:
 
@@ -321,8 +325,12 @@ stateDiagram-v2
 
 **並列配置ルール**:
 
+- **ヘッダーグループ**: 縦並び（Icon + Title + Subtitle）、中央寄せ
+- **OAuthセクション**: Google loginボタン、全幅
 - **フォームフィールドグループ**: 縦並び（vertical stack）、等間隔
-- **アクショングループ**: 縦並び（Button + Link）
+- **Passwordラベル行**: 横並び（flex、space-between）— ラベルとForgotPasswordLinkを左右に配置
+- **アクショングループ**: 縦並び（Button）
+- **フッター**: 利用規約同意文言、小フォント、中央寄せ
 
 ### 3. ForgotPasswordForm
 

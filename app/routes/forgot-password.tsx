@@ -6,7 +6,7 @@
  * @responsibility パスワードリセット要求の処理
  */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/cloudflare';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, LinksFunction } from '@remix-run/cloudflare';
 import { json } from '@remix-run/cloudflare';
 import { Form, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
 import { getFormProps, getInputProps, useForm } from '@conform-to/react';
@@ -29,10 +29,16 @@ import { validateEmail } from '~/lib/account/authentication/validateEmail';
 // Schema layer (Valibot)
 import { ForgotPasswordSchema } from '~/specs/account/authentication-schema';
 
-// CSS imports
-import '~/styles/account/layer2-common.css';
-import '~/styles/account/layer2-authentication.css';
-import '~/styles/account/layer3-authentication.css';
+// CSS imports (LinksFunction for SSR)
+import accountCommonStyles from '~/styles/account/layer2-common.css?url';
+import authStyles from '~/styles/account/layer2-authentication.css?url';
+import authStructureStyles from '~/styles/account/layer3-authentication.css?url';
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: accountCommonStyles },
+  { rel: "stylesheet", href: authStyles },
+  { rel: "stylesheet", href: authStructureStyles },
+];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const projectName = data?.projectName || 'ClaudeMix';
@@ -187,7 +193,7 @@ export default function ForgotPassword() {
         </p>
 
         {actionData?.success && (
-          <div className="error-message-structure" role="alert" data-testid="success-message" style={{ backgroundColor: 'var(--color-status-success-bg)', borderColor: 'var(--color-status-success)', color: 'var(--color-status-success)' }}>
+          <div className="error-message-structure success-message" role="alert" data-testid="success-message">
             {actionData.success}
           </div>
         )}
@@ -224,7 +230,7 @@ export default function ForgotPassword() {
           </button>
         </Form>
 
-        <p className="auth-link" style={{ textAlign: 'center', marginTop: 'var(--spacing-3)' }}>
+        <p className="auth-link auth-footer-structure">
           <a href={uiSpec.links.loginPath}>
             {uiSpec.links.loginLabel}
           </a>

@@ -1,7 +1,7 @@
 // BlogHeader - Component (components層)
 // ブログヘッダー（タイトル、テーマ切り替えボタン、メニューボタン）
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from '@remix-run/react';
 import NavigationMenu from './NavigationMenu';
 import { ThemeToggleButton } from './ThemeToggleButton';
@@ -21,16 +21,6 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
   menuItems,
   spec = defaultSpec
 }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
   const { ui_selectors, accessibility, navigation } = spec;
 
   return (
@@ -38,7 +28,6 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
       className="blog-header blog-header-structure"
       data-testid={extractTestId(ui_selectors.header.blog_header)}
     >
-      {/* prefetch="none": 他ルートのバンドルをプリフェッチせず、未使用JSを削減 */}
       <Link
         to="/blog"
         className="blog-header__title"
@@ -52,25 +41,39 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
         data-testid={extractTestId(ui_selectors.header.header_actions)}
       >
         <ThemeToggleButton spec={spec} />
-        <button
-          className="blog-header__menu-button"
-          onClick={toggleMenu}
+        <input type="checkbox" id="menu-toggle" className="u-menu-checkbox" />
+        <label
+          htmlFor="menu-toggle"
+          className="blog-header__menu-button u-menu-open-label"
           data-testid={extractTestId(ui_selectors.header.menu_button)}
-          aria-label={
-            isMenuOpen
-              ? accessibility.aria_labels.menu_button_open
-              : accessibility.aria_labels.menu_button
-          }
+          aria-label={accessibility.aria_labels.menu_button}
         >
-          {navigation.menu_icon}
-        </button>
+          <span aria-hidden="true">{navigation.menu_icon}</span>
+        </label>
+        <label
+          htmlFor="menu-toggle"
+          className="blog-header__menu-button u-menu-close-label"
+          aria-label={accessibility.aria_labels.menu_button_open}
+        >
+          <span aria-hidden="true">{navigation.menu_icon}</span>
+        </label>
+        <NavigationMenu
+          menuItems={menuItems}
+          spec={spec}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                  const cb = document.getElementById('menu-toggle');
+                  if (cb) cb.checked = false;
+                }
+              });
+            `
+          }}
+        />
       </div>
-      <NavigationMenu
-        menuItems={menuItems}
-        isOpen={isMenuOpen}
-        onClose={closeMenu}
-        spec={spec}
-      />
     </header>
   );
 };

@@ -56,3 +56,64 @@
   flex-direction: column;
   gap: var(--spacing-2);
 }
+
+/* === Password Label Row Structure === */
+/* Horizontal layout for password label and forgot link */
+.auth-password-label-row-structure {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* === Terms Text Structure === */
+/* Bottom-positioned legal text */
+.auth-terms-text-structure {
+  margin-top: var(--spacing-4);
+}
+
+/* === Auth Divider Structure === */
+/* Horizontal divider with centered text */
+.auth-divider-structure {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin: var(--spacing-4) 0;
+}
+
+.auth-divider-structure hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+.auth-divider-structure span {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* === Auth Brand Icon Structure === */
+/* Centered brand icon at top of card */
+.auth-brand-icon-structure {
+  display: flex;
+  justify-content: center;
+}
+
+/* === OAuth Button Structure === */
+.auth-oauth-button-structure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+}
+
+/* === Auth Footer Structure === */
+/* Footer section below auth forms */
+.auth-footer-structure {
+  text-align: center;
+  margin-top: var(--spacing-3);
+}
+
+/* === Auth Footer Prompt Structure === */
+.auth-footer__prompt-structure {
+  margin-bottom: var(--spacing-2);
+}
