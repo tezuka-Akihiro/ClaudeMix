@@ -18,7 +18,7 @@ const MangaPanelGrid: React.FC<MangaPanelGridProps> = ({
 }) => {
   return (
     <section
-      className="manga-panel-grid manga-panel-grid-structure"
+      className="blog-manga-panel-grid blog-manga-panel-grid-structure"
       data-testid="manga-panel-grid"
     >
       {mangaAssets.map((asset, index) => (

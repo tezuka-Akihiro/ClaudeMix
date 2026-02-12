@@ -42,7 +42,7 @@ export const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ spec = def
         aria-hidden="true"
         data-testid={extractTestId(spec.ui_selectors.header.theme_toggle_button)}
       >
-        <div className="w-5 h-5" />
+        <div className="blog-header__theme-placeholder" />
       </button>
     );
   }

@@ -55,7 +55,7 @@
 
   /* Thumbnail - CLS対策でアスペクト比を固定、カード端まで広げる */
   .post-card__thumbnail {
-    aspect-ratio: 1200 / 630;
+    aspect-ratio: var(--ratio-blog-width) / var(--ratio-blog-height);
     width: calc(100% + var(--spacing-5) * 2);
     margin: calc(-1 * var(--spacing-5)) calc(-1 * var(--spacing-5)) 0;
     overflow: hidden;

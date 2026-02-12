@@ -81,9 +81,6 @@
 
 /* Plan Grid */
 .plan-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-4);
   margin-top: var(--spacing-4);
 }
 
@@ -99,7 +96,7 @@
 
 .plan-card:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 var(--shadow-offset-sm) var(--shadow-blur-sm) var(--color-overlay-subtle);
 }
 
 .plan-badge {
@@ -190,7 +187,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .subscription-container {
     padding: var(--spacing-3);
   }
@@ -198,9 +195,5 @@
   .btn-primary,
   .btn-secondary {
     width: 100%;
-  }
-
-  .plan-grid {
-    grid-template-columns: 1fr;
   }
 }

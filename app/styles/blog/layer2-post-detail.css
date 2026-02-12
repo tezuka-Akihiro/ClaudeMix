@@ -30,7 +30,7 @@
 
   /* Article thumbnail - CLS対策でアスペクト比を固定 */
   .post-detail-section__thumbnail {
-    aspect-ratio: 1200 / 630;
+    aspect-ratio: var(--ratio-blog-width) / var(--ratio-blog-height);
     width: 100%;
     max-width: var(--layout-page-container-width);
     margin: 0 auto var(--spacing-4);

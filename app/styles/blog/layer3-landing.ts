@@ -46,7 +46,7 @@ export const landingLayer3Plugin = plugin(function ({ addComponents }) {
      * - CSS Grid layout
      * - Single column layout for all devices
      */
-    ".manga-panel-grid-structure": {
+    ".blog-manga-panel-grid-structure": {
       display: "grid",
       gridTemplateColumns: "1fr",
       gap: "var(--spacing-6)",

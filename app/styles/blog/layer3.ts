@@ -349,6 +349,27 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
       justifyContent: "space-between",
       alignItems: "center",
     },
+
+    /**
+     * Home Page Structure
+     * - Vertical stack layout for the simple home page
+     */
+    ".home-page-structure": {
+      display: "flex",
+      flexDirection: "column",
+    },
+
+    /**
+     * Home Main Structure
+     * - Centered vertical layout for home page main content
+     */
+    ".home-main-structure": {
+      flex: "1",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+    },
   });
 });
 

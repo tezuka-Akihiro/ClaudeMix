@@ -71,6 +71,11 @@
     font-size: var(--font-size-xl);
   }
 
+  .blog-header__theme-placeholder {
+    width: var(--font-size-xl);
+    height: var(--font-size-xl);
+  }
+
   /* Menu button in header */
   .blog-header__menu-button {
     background-color: transparent;
@@ -296,16 +301,9 @@
     background-color: var(--color-background-primary);
     color: var(--color-text-primary);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
   }
 
   .home-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     padding: var(--spacing-8);
     margin-top: var(--layout-header-height);
   }
