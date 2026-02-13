@@ -18,6 +18,10 @@ import authStyles from '~/styles/account/layer2-authentication.css?url';
 import authStructureStyles from '~/styles/account/layer3-authentication.css?url';
 
 export const links: LinksFunction = () => [
+  // Lighthouse最適化: レンダリングブロック軽減のためpreload
+  { rel: "preload", href: accountCommonStyles, as: "style" },
+  { rel: "preload", href: authStyles, as: "style" },
+  { rel: "preload", href: authStructureStyles, as: "style" },
   { rel: "stylesheet", href: accountCommonStyles },
   { rel: "stylesheet", href: authStyles },
   { rel: "stylesheet", href: authStructureStyles },
@@ -305,6 +309,11 @@ export default function Login() {
           <img
             src="/core-matrix-emblem.avif"
             alt="ClaudeMix"
+            width={352}
+            height={352}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="auth-brand-icon__img"
             data-testid="brand-icon"
           />
