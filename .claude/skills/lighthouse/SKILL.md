@@ -45,12 +45,11 @@ PSI APIを使用して自動でLighthouseスコアを取得し、基準未達時
        ▼                            │
 ┌──────────────────┐                │
 │ Phase 4           │               │
-│ 品質チェック      │               │
-│ + push            │               │
+│ commit & push     │               │
+│ + 再測定          │               │
 └──────┬───────────┘                │
-       │                            │
-       ▼                            │
-  オペレータに再測定依頼 ───────────┘
+       │ 基準未達                   │
+       └────────────────────────────┘
 ```
 
 ## フェーズ概要
@@ -60,7 +59,7 @@ PSI APIを使用して自動でLighthouseスコアを取得し、基準未達時
 | 1 | スコア確認 | Automated Score Receiver | スコアレポート（合否判定） | `prompts/01-measure.md` |
 | 2 | 分析・方針 | Performance Analyst | 修正方針書 | `prompts/02-analyze.md` |
 | 3 | 修正実施 | Performance Optimizer | 修正済みファイル | `prompts/03-fix.md` |
-| 4 | 品質チェック+push | Quality Gate | 品質チェック結果 + 自動再測定 | `prompts/04-verify.md` |
+| 4 | commit & push & 再測定 | Deployer | push完了 + 再測定結果 | `prompts/04-verify.md` |
 
 ## ガードレール
 
