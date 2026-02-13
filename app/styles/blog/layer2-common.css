@@ -18,9 +18,10 @@
     right: 0;
     z-index: var(--z-index-fixed);
     padding: var(--spacing-3) var(--spacing-4);
-    background-color: var(--color-interactive-primary);
-    border: none;
-    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg-subtle);
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
+    border-bottom: var(--border-width-sm) solid var(--color-interactive-primary-bg-faint);
+    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg-faint);
   }
 
   /* Header layout structure (title left, actions right) */
@@ -30,16 +31,21 @@
 
   /* Title area in header */
   .blog-header__title {
-    font-family: var(--font-heading-primary);
-    font-weight: var(--font-weight-normal);
-    font-size: var(--font-size-2xl);
-    color: var(--color-background-primary);
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    transition: opacity var(--transition-duration-fast) var(--transition-timing-function-default);
   }
 
   .blog-header__title:hover {
-    color: var(--color-text-primary);
+    opacity: 0.8;
+  }
+
+  /* Logo styling in header */
+  .blog-header__logo {
+    height: var(--spacing-5);
+    width: auto;
+    object-fit: contain;
   }
 
   /* Header actions container (theme button + menu button) */
@@ -76,7 +82,7 @@
   .blog-header__menu-button {
     background-color: transparent;
     border: none;
-    color: var(--color-background-primary);
+    color: var(--color-interactive-primary);
     cursor: pointer;
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-normal);
