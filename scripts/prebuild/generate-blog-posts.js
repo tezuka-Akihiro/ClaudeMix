@@ -165,12 +165,10 @@ function splitContentByHeading(htmlContent, cutoffHeadingId) {
  */
 async function getHighlighter() {
   if (!highlighter) {
-    console.log('⚡ Initializing Shiki highlighter...');
     highlighter = await createHighlighter({
       themes: [theme],
       langs: ['javascript', 'typescript', 'html', 'css', 'markdown', 'bash', 'json', 'tsx', 'diff', 'yaml', 'xml'],
     });
-    console.log('✅ Shiki highlighter ready');
   }
   return highlighter;
 }
@@ -331,7 +329,6 @@ async function generateBlogPosts() {
 
         // ビルド時にHTML変換と見出し抽出（並列処理）
         const startTime = Date.now();
-        console.log(`   🔄 Converting: ${slug}`);
 
         const headings = extractHeadings(finalContent);
         const { html: htmlContent, hasMermaid } = await convertMarkdownToHtml(finalContent);
@@ -353,7 +350,6 @@ async function generateBlogPosts() {
         }
 
         const duration = Date.now() - startTime;
-        console.log(`   ✅ Completed: ${slug} (${duration}ms)${hasMermaid ? ' [Mermaid]' : ''}${freeContentHeading ? ' [Paywall]' : ''}`);
 
         return {
           slug,
