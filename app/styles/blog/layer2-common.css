@@ -10,7 +10,7 @@
   }
 
   /* === BlogHeader === */
-  /* Header container styling */
+  /* Header container styling (Primary Identity Rail) */
   .blog-header {
     position: fixed;
     top: 0;
@@ -18,9 +18,9 @@
     right: 0;
     z-index: var(--z-index-fixed);
     padding: var(--spacing-3) var(--spacing-4);
-    background-color: var(--color-interactive-primary-bg-faint);
+    background-color: var(--color-interactive-primary);
     border: none;
-    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
+    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg-subtle);
   }
 
   /* Header layout structure (title left, actions right) */
@@ -33,7 +33,7 @@
     font-family: var(--font-heading-primary);
     font-weight: var(--font-weight-normal);
     font-size: var(--font-size-2xl);
-    color: var(--color-interactive-primary);
+    color: var(--color-background-primary);
     text-decoration: none;
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
   }
@@ -60,7 +60,7 @@
   }
 
   .blog-header__theme-button:hover {
-    background-color: var(--color-interactive-primary-bg-subtle);
+    background-color: var(--color-overlay-subtle);
   }
 
   .blog-header__theme-icon {
@@ -76,7 +76,7 @@
   .blog-header__menu-button {
     background-color: transparent;
     border: none;
-    color: var(--color-text-secondary);
+    color: var(--color-background-primary);
     cursor: pointer;
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-normal);
@@ -85,7 +85,7 @@
   }
 
   .blog-header__menu-button:hover {
-    color: var(--color-interactive-primary);
+    color: var(--color-text-primary);
   }
 
   /* CSS-only toggle support */
