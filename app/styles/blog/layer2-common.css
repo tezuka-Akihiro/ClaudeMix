@@ -20,8 +20,6 @@
     padding: var(--spacing-3) var(--spacing-4);
     background-color: var(--color-background-primary);
     color: var(--color-text-primary);
-    border-bottom: var(--border-width-sm) solid var(--color-interactive-primary-bg-faint);
-    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg-faint);
   }
 
   /* Header layout structure (title left, actions right) */
@@ -43,7 +41,7 @@
 
   /* Logo styling in header */
   .blog-header__logo {
-    height: var(--spacing-5);
+    height: var(--spacing-6);
     width: auto;
     object-fit: contain;
   }
@@ -57,7 +55,6 @@
   .blog-header__theme-button {
     width: var(--spacing-6);
     height: var(--spacing-6);
-    /* Layout defined in Layer 3 (Tailwind classes) */
     border-radius: var(--border-radius-full);
     background-color: transparent;
     border: none;
@@ -94,7 +91,6 @@
     color: var(--color-text-primary);
   }
 
-  /* CSS-only toggle support */
   .u-menu-checkbox {
     display: none;
   }
@@ -114,7 +110,6 @@
   .u-menu-checkbox:checked ~ .u-menu-close-label { display: block; }
 
   /* === NavigationMenu === */
-  /* Menu container styling */
   .navigation-menu {
     display: none;
     background-color: var(--color-surface-dark-opaque);
@@ -172,10 +167,8 @@
   /* Footer container styling */
   .blog-footer {
     height: var(--layout-footer-height);
-    background-color: var(--color-interactive-primary-bg-faint);
+    background-color: var(--color-background-primary);
     border: none;
-    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
-    font-size: var(--font-size-sm);
   }
 
   /* Footer links container */
