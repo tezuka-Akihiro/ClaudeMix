@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
 import PostCard from '~/components/blog/posts/PostCard';
@@ -156,6 +156,30 @@ describe('PostCard', () => {
       // Assert
       const thumbnailContainer = screen.queryByTestId('thumbnail-container');
       expect(thumbnailContainer).not.toBeInTheDocument();
+    });
+
+    it('should fallback to default image when thumbnailUrl fails to load', () => {
+      // Arrange
+      const category = spec.categories[spec.categories.length - 1].name; // 'インフォメーション'
+      const fallbackUrl = spec.thumbnail.display.default_mapping![category];
+
+      const props: React.ComponentProps<typeof PostCard> = {
+        ...baseProps,
+        slug: 'error-thumbnail-test',
+        category,
+        thumbnailUrl: 'https://invalid-url.com/image.avif',
+      };
+
+      // Act
+      renderWithRouter(<PostCard {...props} />);
+      const thumbnailImage = screen.getByTestId('thumbnail-image');
+
+      // Simulating error
+      fireEvent.error(thumbnailImage);
+
+      // Assert
+      const updatedThumbnailImage = screen.getByTestId('thumbnail-image');
+      expect(updatedThumbnailImage).toHaveAttribute('src', fallbackUrl);
     });
   });
 

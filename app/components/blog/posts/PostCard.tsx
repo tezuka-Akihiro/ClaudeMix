@@ -1,9 +1,11 @@
 // PostCard - Component (components層)
 // 個別記事の表示カード（サムネイル、タイトル、投稿日を表示）
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from '@remix-run/react';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
+import { getFallbackThumbnailUrl } from '~/lib/blog/common/getFallbackThumbnailUrl';
+import { data as postsSpec } from '~/generated/specs/blog/posts';
 import type { PostSummary } from '~/specs/blog/types';
 
 interface PostCardProps extends PostSummary {
@@ -17,6 +19,7 @@ const PostCard: React.FC<PostCardProps> = ({
   slug,
   title,
   publishedAt,
+  category,
   description,
   tags,
   thumbnailUrl,
@@ -25,16 +28,36 @@ const PostCard: React.FC<PostCardProps> = ({
   dateSeparator = '.',
   isPriority = false,
 }) => {
-  const [imageError, setImageError] = useState(false);
+  const [currentThumbnailUrl, setCurrentThumbnailUrl] = useState<string | null>(thumbnailUrl);
+  const [hasFallbackError, setHasFallbackError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // PropとしてのthumbnailUrlが変更された場合に同期（SSRとClientでの不整合防止）
+  useEffect(() => {
+    setCurrentThumbnailUrl(thumbnailUrl);
+    setHasFallbackError(false);
+  }, [thumbnailUrl]);
 
   // 日付をフォーマット（ISO形式 → 日本語形式）
   const formattedDate = formatPublishedDate(publishedAt, dateSeparator);
 
+  // エラーハンドラー
+  const handleImageError = () => {
+    if (hasFallbackError) return;
+
+    const fallbackUrl = getFallbackThumbnailUrl(category, postsSpec);
+
+    if (fallbackUrl && fallbackUrl !== currentThumbnailUrl) {
+      setCurrentThumbnailUrl(fallbackUrl);
+    } else {
+      setHasFallbackError(true);
+    }
+  };
+
   // サムネイル表示判定
-  // 1. URLが存在すること
-  // 2. 読み込みエラーが発生していないこと
-  const shouldShowThumbnail = thumbnailUrl && !imageError;
+  // 1. URLが存在すること（初期またはフォールバック後）
+  // 2. フォールバックも含めてエラーになっていないこと
+  const shouldShowThumbnail = currentThumbnailUrl && !hasFallbackError;
 
   return (
     <Link
@@ -48,11 +71,12 @@ const PostCard: React.FC<PostCardProps> = ({
         <div
           className="post-card__thumbnail"
           data-testid="thumbnail-container"
-          // エラー時は空間ごと消去する（spec: fallback="hide" に準拠）
-          style={imageError ? { display: 'none' } : {}}
+          // 全てのエラー時は空間ごと消去する（spec: fallback="hide" または最終的なフォールバック失敗）
+          style={hasFallbackError ? { display: 'none' } : {}}
         >
           <img
-            src={thumbnailUrl}
+            key={currentThumbnailUrl!}
+            src={currentThumbnailUrl!}
             alt={`${title}のサムネイル`}
             width={1200}
             height={630}
@@ -60,7 +84,7 @@ const PostCard: React.FC<PostCardProps> = ({
             fetchPriority={isPriority ? "high" : "auto"}
             decoding="async"
             onLoad={() => setIsLoaded(true)}
-            onError={() => setImageError(true)}
+            onError={handleImageError}
             data-testid="thumbnail-image"
             className="post-card__thumbnail-img"
             // 読み込み完了まで不可視にすることで、エラー時のALTテキスト一瞬表示を防止

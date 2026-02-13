@@ -1,7 +1,7 @@
 // PostDetailSection.test - Component Tests
 
 import { describe, it, expect, beforeAll } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { PostDetailSection } from './PostDetailSection';
 import { extractHeadings } from '~/lib/blog/post-detail/extractHeadings';
 import { BrowserRouter } from 'react-router-dom';
@@ -89,6 +89,32 @@ describe('PostDetailSection', () => {
 
       // Hidden content should not be rendered
       expect(screen.queryByTestId('post-content-hidden')).not.toBeInTheDocument();
+    });
+
+    it('should fallback to default image when thumbnailUrl fails to load', () => {
+      // Arrange
+      const category = 'インフォメーション';
+      const fallbackUrl = spec.thumbnail.display.default_mapping![category];
+      const post = createMockPost({ category });
+
+      // Act
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl="https://invalid-url.com/image.avif"
+          spec={spec}
+        />
+      );
+      const thumbnailImage = screen.getByTestId('article-thumbnail-image');
+
+      // Simulating error
+      fireEvent.error(thumbnailImage);
+
+      // Assert
+      const updatedThumbnailImage = screen.getByTestId('article-thumbnail-image');
+      expect(updatedThumbnailImage).toHaveAttribute('src', fallbackUrl);
     });
   });
 

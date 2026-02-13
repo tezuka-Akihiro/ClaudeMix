@@ -29,6 +29,7 @@ export interface BlogPostsSpec {
       enabled: boolean;
       fallback: string;
       suppressed_categories: string[];
+      default_mapping?: Record<string, string>;
     };
     performance: {
       aspect_ratio: string;
@@ -516,6 +517,7 @@ export interface BlogPostDetailSpec {
       enabled: boolean;
       fallback: string;
       position: string;
+      default_mapping?: Record<string, string>;
     };
     performance: {
       aspect_ratio: string;
