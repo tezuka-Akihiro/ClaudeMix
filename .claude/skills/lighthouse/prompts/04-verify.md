@@ -15,11 +15,15 @@ Phase 3 の修正をコミット・pushし、デプロイ後に PSI 再測定を
 
 ## ⚙️ 実行手順
 
-### ステップ 1: コミット & push
+### ステップ 1: 品質チェック & コミット & push
 
-1. 変更をコミット
-2. リモートに push
-3. オペレータに push 完了を通知
+1. 品質チェックを実行（全て通過必須）:
+   - `npm run typecheck` - TypeScript型検証
+   - `npm test -- --run` - ユニットテスト
+   - `npm run lint:all` - 全リンター（Markdown, Blog Metadata, CSS Architecture, Template）
+2. 全チェック通過後、変更をコミット
+3. リモートに push
+4. オペレータに push 完了を通知
 
 ### ステップ 2: デプロイ完了確認
 
@@ -49,6 +53,7 @@ node scripts/psi-measure.mjs
 
 ## ✅ 完了条件
 
+- [ ] 品質チェック通過（typecheck, test, lint:all）
 - [ ] コミット & push 完了
 - [ ] デプロイ完了確認後の PSI 自動測定が完了
 
