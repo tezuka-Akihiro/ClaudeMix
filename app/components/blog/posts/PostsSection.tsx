@@ -111,7 +111,7 @@ const PostsSection: React.FC<PostsSectionProps> = ({
                   isLocked={isLocked}
                   lockMessage={messages.lock_message}
                   dateSeparator={dateFormat.display_separator}
-                  isPriority={false}
+                  isPriority={posts.indexOf(post) === 0}
                 />
               );
             })}
