@@ -1,6 +1,6 @@
 # 測定対象パスリスト（オペレータ向け）
 
-base_url: <https://lighthouse-skill.claudemix.pages.dev>
+base_url: <https://lighthouse.claudemix.pages.dev>
 
 ## 測定方法
 

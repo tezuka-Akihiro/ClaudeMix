@@ -140,6 +140,8 @@ export function PostDetailSection({
             key={currentThumbnailUrl!}
             src={currentThumbnailUrl!}
             alt={`${post.title}のサムネイル`}
+            width={1200}
+            height={630}
             loading="eager"
             fetchPriority="high"
             decoding="async"

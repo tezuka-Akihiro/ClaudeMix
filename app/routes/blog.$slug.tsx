@@ -24,14 +24,11 @@ import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
 import layer2PostDetailStyles from "~/styles/blog/layer2-post-detail.css?url";
 
 export const links: LinksFunction = () => [
-  {
-    rel: "stylesheet",
-    href: layer2CommonStyles,
-  },
-  {
-    rel: "stylesheet",
-    href: layer2PostDetailStyles,
-  },
+  // Lighthouse最適化: レンダリングブロック軽減のためpreload
+  { rel: "preload", href: layer2CommonStyles, as: "style" },
+  { rel: "preload", href: layer2PostDetailStyles, as: "style" },
+  { rel: "stylesheet", href: layer2CommonStyles },
+  { rel: "stylesheet", href: layer2PostDetailStyles },
 ];
 
 export interface PostDetailLoaderData {
