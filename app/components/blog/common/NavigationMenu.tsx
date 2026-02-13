@@ -34,7 +34,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({
           <Link
             key={`${item.path}-${index}`}
             to={item.path}
-            className="navigation-menu__item"
+            className="navigation-menu__item navigation-menu__item-structure"
             data-testid={extractTestId(ui_selectors.navigation.menu_item)}
             prefetch="none"
           >

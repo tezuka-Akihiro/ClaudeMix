@@ -75,6 +75,16 @@ export const blogLayer3Plugin = plugin(function ({ addComponents }) {
     },
 
     /**
+     * NavigationMenu Item Structure
+     * - Horizontal layout for menu items
+     * - Centered vertically
+     */
+    ".navigation-menu__item-structure": {
+      display: "flex",
+      alignItems: "center",
+    },
+
+    /**
      * BlogFooter Structure
      * - Vertical stack layout
      * - Centered content
