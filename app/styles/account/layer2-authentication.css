@@ -37,6 +37,16 @@
   text-align: center;
 }
 
+.auth-header__subtitle a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-duration-fast) var(--transition-timing-function-default);
+}
+
+.auth-header__subtitle a:hover {
+  color: var(--color-text-primary);
+}
+
 /* === Authentication Link === */
 .auth-link {
   color: var(--color-interactive-primary);
