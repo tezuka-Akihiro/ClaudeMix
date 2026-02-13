@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { TableOfContents } from './TableOfContents';
 import { formatPublishedDate } from '~/lib/blog/posts/formatPublishedDate';
+import { getFallbackThumbnailUrl } from '~/lib/blog/common/getFallbackThumbnailUrl';
 import type { Heading, RenderedPost, BlogPostDetailSpec } from '~/specs/blog/types';
 import { Paywall } from './Paywall';
 import { data as defaultSpec } from '~/generated/specs/blog/post-detail';
@@ -42,11 +43,30 @@ export function PostDetailSection({
   thumbnailUrl,
   spec,
 }: PostDetailSectionProps) {
-  const [imageError, setImageError] = useState(false);
+  const [currentThumbnailUrl, setCurrentThumbnailUrl] = useState<string | null>(thumbnailUrl);
+  const [hasFallbackError, setHasFallbackError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // PropとしてのthumbnailUrlが変更された場合に同期
+  useEffect(() => {
+    setCurrentThumbnailUrl(thumbnailUrl);
+    setHasFallbackError(false);
+  }, [thumbnailUrl]);
 
   // publishedAtをフォーマット
   const formattedDate = formatPublishedDate(post.publishedAt);
+
+  // エラーハンドラー
+  const handleImageError = () => {
+    if (hasFallbackError) return;
+
+    const fallbackUrl = getFallbackThumbnailUrl(post.category, spec);
+    if (fallbackUrl && fallbackUrl !== currentThumbnailUrl) {
+      setCurrentThumbnailUrl(fallbackUrl);
+    } else {
+      setHasFallbackError(true);
+    }
+  };
 
   useEffect(() => {
     // Mermaidダイアグラムが含まれる場合のみ動的にロード
@@ -110,20 +130,21 @@ export function PostDetailSection({
       </header>
 
       {/* サムネイル画像（存在する場合のみ表示） */}
-      {thumbnailUrl && !imageError && (
+      {currentThumbnailUrl && !hasFallbackError && (
         <div
           className="post-detail-section__thumbnail"
           data-testid="article-thumbnail-container"
-          style={imageError ? { display: 'none' } : {}}
+          style={hasFallbackError ? { display: 'none' } : {}}
         >
           <img
-            src={thumbnailUrl}
+            key={currentThumbnailUrl!}
+            src={currentThumbnailUrl!}
             alt={`${post.title}のサムネイル`}
             loading="eager"
             fetchPriority="high"
             decoding="async"
             onLoad={() => setIsLoaded(true)}
-            onError={() => setImageError(true)}
+            onError={handleImageError}
             data-testid="article-thumbnail-image"
             style={{
               opacity: isLoaded ? 1 : 0,
