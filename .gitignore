@@ -35,3 +35,4 @@ coverage-output.txt
 scripts/_local/
 .claude/key
 .claude/settings.local.json
+.claude/skills/lighthouse/reports/
