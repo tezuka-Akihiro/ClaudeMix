@@ -3,7 +3,37 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import path from "path";
 
-export default defineConfig({
+/**
+ * Wranglerの[ignored-bare-import]警告を解消するためのプラグイン
+ * Node.jsのビルドインモジュールの空のimport文をSSRバンドルから削除する。
+ * ソースマップを壊さないよう、削除した文字数分だけスペースで埋める。
+ */
+const removeNodeBareImports = () => ({
+  name: 'remove-node-bare-imports',
+  renderChunk(code: string) {
+    const nodeModules = [
+      "util", "crypto", "events", "http", "https", "child_process",
+      "node:assert", "node:net", "node:http", "node:stream", "node:buffer",
+      "node:util", "node:querystring", "node:events", "node:diagnostics_channel",
+      "node:tls", "node:zlib", "node:perf_hooks", "node:util/types",
+      "node:worker_threads", "node:url", "node:async_hooks", "node:console", "node:dns",
+      "string_decoder", "stream", "zlib", "fs", "buffer", "url",
+      "node:crypto", "node:fs", "node:path", "node:fs/promises", "node:os"
+    ];
+    // import"node:console"; のような形式にマッチ
+    const regex = new RegExp(`import["'](${nodeModules.join('|')})["'];`, 'g');
+
+    // 文字数を維持しながら置換することでソースマップのズレを防ぐ
+    const newCode = code.replace(regex, (match) => ' '.repeat(match.length));
+
+    return {
+      code: newCode,
+      map: null, // 文字数が同じなので既存のソースマップがそのまま有効
+    };
+  },
+});
+
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
     cloudflareDevProxyVitePlugin(),
     remix({
@@ -18,6 +48,8 @@ export default defineConfig({
       serverModuleFormat: "esm",
     }),
     tsconfigPaths(),
+    // SSRビルド時のみ、Wranglerの警告を抑制するプラグインを適用
+    isSsrBuild ? removeNodeBareImports() : null,
   ],
   resolve: {
     alias: {
@@ -49,7 +81,8 @@ export default defineConfig({
       ],
       output: {
         // Lighthouse最適化: ベンダーとコンポーネントを分割してキャッシュ効率化
-        manualChunks: (id) => {
+        // SSRビルドでは1つのファイルにまとめることでCloudflare Workersの起動速度を最適化
+        manualChunks: isSsrBuild ? undefined : (id) => {
           // node_modulesを別チャンクに分離
           if (id.includes('node_modules')) {
             // React関連を専用チャンクに
@@ -95,4 +128,4 @@ export default defineConfig({
     external: ["workers-og"],  // Exclude workers-og due to WASM
     noExternal: true,  // Bundle all other dependencies for Cloudflare Workers
   },
-});
+}));
