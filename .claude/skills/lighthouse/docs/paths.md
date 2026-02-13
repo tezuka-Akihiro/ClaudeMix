@@ -1,5 +1,7 @@
 # 測定対象パスリスト（オペレータ向け）
 
+base_url: https://claudemix.dev
+
 ## 測定方法
 
 1. **PageSpeed Insights**: https://pagespeed.web.dev/ にデプロイ済みURLを入力
