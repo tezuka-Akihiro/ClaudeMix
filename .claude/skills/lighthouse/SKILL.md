@@ -1,65 +1,66 @@
 ---
 name: lighthouse
-description: Lighthouseスコア測定と改善を実行する。スコアが基準値（Performance≥95, Accessibility=100, Best Practices=100, SEO=100）を下回った場合、ガードレールを遵守しながら自動修正する。Use when Lighthouse scores need checking or performance optimization is needed.
+description: Lighthouseスコア改善を実行する。オペレータがPageSpeed Insightsで測定したスコアを受け取り、基準値（Performance≥95, Accessibility=100, Best Practices=100, SEO=100）を下回る場合にガードレールを遵守しながら修正する。Use when Lighthouse scores need improvement or performance optimization is needed.
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash, AskUserQuestion
 ---
 
 # Lighthouse改善スキル
 
-Lighthouseスコアの測定、基準値との比較、基準未達時の自動修正、品質チェックを一貫して実行するスキル。
+オペレータが測定したLighthouseスコアを受け取り、基準未達時にガードレールを遵守しながらコード修正を行うスキル。
 
 ## When to Use
 
 - `/lighthouse` で明示的に呼び出された時
-- Lighthouseスコアの測定・改善が必要な時
+- オペレータからLighthouseスコアの改善依頼があった時
 - 機能追加後のパフォーマンス品質確認時
-- Performance、Accessibility、Best Practices、SEO の改善依頼時
 
 ## コアミッション
 
 - **基準値の維持**: 95, 100, 100, 100 を全ページで達成・維持する
 - **最小限の修正**: スコア改善に必要最小限の変更のみ実施する
 - **ガードレール遵守**: CSSアーキテクチャとVite設定のガードレールを厳守する
-- **自律的ループ**: 測定→分析→修正→検証のサイクルを基準達成まで繰り返す
+- **オペレータ協業**: 測定はオペレータに委任し、修正に集中する
 
 ## 実行フロー
 
 ```
-┌─────────────┐    全合格    ┌──────────┐
-│ Phase 1     │───────────→│  完了     │
-│ 測定        │             │  レポート  │
-└──────┬──────┘             └──────────┘
-       │ 基準未達                ↑
-       ▼                        │
-┌─────────────┐                 │
-│ Phase 2     │                 │
-│ 分析・方針  │                 │
-└──────┬──────┘                 │
-       │                        │
-       ▼                        │
-┌─────────────┐                 │
-│ Phase 3     │                 │
-│ 修正実施    │                 │
-└──────┬──────┘                 │
-       │                        │
-       ▼                        │
-┌─────────────┐                 │
-│ Phase 4     │─── OK ─────────┘
-│ 品質チェック │
-└──────┬──────┘
-       │ NG
-       ▼
-    Phase 1へ戻る
+┌─────────────────┐    全合格    ┌──────────┐
+│ Phase 1          │───────────→│  完了     │
+│ スコア確認       │             │  レポート  │
+│ (オペレータ入力) │             └──────────┘
+└──────┬──────────┘                  ↑
+       │ 基準未達                    │
+       ▼                            │
+┌─────────────┐                     │
+│ Phase 2     │                     │
+│ 分析・方針  │                     │
+└──────┬──────┘                     │
+       │                            │
+       ▼                            │
+┌─────────────┐                     │
+│ Phase 3     │                     │
+│ 修正実施    │                     │
+└──────┬──────┘                     │
+       │                            │
+       ▼                            │
+┌──────────────────┐                │
+│ Phase 4           │               │
+│ 品質チェック      │               │
+│ + push            │               │
+└──────┬───────────┘                │
+       │                            │
+       ▼                            │
+  オペレータに再測定依頼 ───────────┘
 ```
 
 ## フェーズ概要
 
 | Phase | 名前 | 役割 | 成果物 | プロンプト |
 |-------|------|------|--------|------------|
-| 1 | 測定 | Lighthouse Measurer | スコアレポート | `prompts/01-measure.md` |
+| 1 | スコア確認 | Score Receiver | スコアレポート（合否判定） | `prompts/01-measure.md` |
 | 2 | 分析・方針 | Performance Analyst | 修正方針書 | `prompts/02-analyze.md` |
 | 3 | 修正実施 | Performance Optimizer | 修正済みファイル | `prompts/03-fix.md` |
-| 4 | 品質チェック | Quality Gate | 品質チェック結果 | `prompts/04-verify.md` |
+| 4 | 品質チェック+push | Quality Gate | 品質チェック結果 | `prompts/04-verify.md` |
 
 ## ガードレール
 
@@ -79,18 +80,18 @@ Lighthouseスコアの測定、基準値との比較、基準未達時の自動�
 
 | ファイル | 役割 |
 |----------|------|
-| `prompts/01-measure.md` | Phase 1: 測定実行プロンプト |
+| `prompts/01-measure.md` | Phase 1: スコア確認プロンプト |
 | `prompts/02-analyze.md` | Phase 2: 分析・修正方針プロンプト |
 | `prompts/03-fix.md` | Phase 3: 修正実施プロンプト |
-| `prompts/04-verify.md` | Phase 4: 品質チェックプロンプト |
+| `prompts/04-verify.md` | Phase 4: 品質チェック+pushプロンプト |
 | `docs/thresholds.md` | 基準値・合格ライン定義 |
 | `docs/guardrails.md` | 修正ガードレール（CSS/Vite） |
-| `docs/paths.md` | 測定対象パスリスト |
-| `scripts/measure.ts` | 自動測定スクリプト |
+| `docs/paths.md` | 測定対象パスリスト（オペレータ向け） |
 
 ## 注意事項
 
-1. **devサーバー前提**: 測定には `npm run dev:wrangler`（port 3000）が起動済みであること
-2. **ループ上限**: 改善ループは最大3回まで。3回で基準未達の場合はレポートして終了
-3. **修正範囲**: Lighthouseスコア改善に直接関係する修正のみ実施。無関係なリファクタリングは行わない
-4. **レポート必須**: 各Phaseの結果は必ずユーザーに報告する
+1. **測定はオペレータが実施**: PageSpeed InsightsまたはシークレットモードのChrome DevToolsで測定。ローカルdevサーバーでの測定はノイズが大きく不正確
+2. **デプロイ版が基準**: 本番/プレビュー環境のスコアが正式な判定対象
+3. **ループ上限**: 改善ループは最大3回まで。3回で基準未達の場合はレポートして終了
+4. **修正範囲**: Lighthouseスコア改善に直接関係する修正のみ実施。無関係なリファクタリングは行わない
+5. **レポート必須**: 各Phaseの結果は必ずオペレータに報告する

@@ -16,7 +16,6 @@
 
 - Phase 1 のスコアレポートが手元にある
 - `docs/guardrails.md` を参照可能
-- Lighthouse JSON レポートが `scripts/` 配下の reports/ に保存されている
 
 ## ⚙️ 実行手順
 
@@ -24,33 +23,35 @@
 
 Phase 1 のスコアレポートから、基準値を下回るページ × カテゴリの組み合わせをリスト化する。
 
-### ステップ 2: 根本原因の特定
+### ステップ 2: 根本原因の推定
 
-Lighthouse JSON レポートの `audits` セクションを分析し、カテゴリ別に原因を特定:
+オペレータから提供された情報（PageSpeed Insights の診断詳細など）と、コードベースの調査から原因を特定する。
+
+**情報が不足している場合**: `AskUserQuestion` でオペレータに追加情報を依頼する:
+- PageSpeed Insights の「診断」セクションの内容
+- 「改善できる項目」のリスト
+- 特にスコアを下げている指標（FCP, LCP, TBT, CLS等）
+
+**カテゴリ別の典型的原因**:
 
 **Performance**:
-- `render-blocking-resources`: レンダリングブロックCSS/JS
-- `unused-javascript` / `unused-css-rules`: 未使用リソース
-- `largest-contentful-paint-element`: LCPの要因
-- `total-blocking-time`: TBTの要因
-- `cumulative-layout-shift`: CLSの要因
+- レンダリングブロック CSS/JS → `<link rel="preload">` 未設定
+- 未使用 CSS/JS → 不要コードの残存
+- LCP 要素の遅延 → 画像の `loading="lazy"` / `fetchPriority` 未設定
+- 画像の過剰サイズ → srcset/sizes 未設定
 
 **Accessibility**:
-- `color-contrast`: コントラスト不足
-- `image-alt`: alt属性不足
-- `aria-*`: ARIA属性の問題
-- `heading-order`: 見出し階層
+- コントラスト不足 → Layer 2 CSS の色定義
+- aria 属性不足 → コンポーネントの属性追加
+- alt 属性不足 → img タグの修正
 
 **Best Practices**:
-- `is-on-https`: HTTPS
-- `errors-in-console`: コンソールエラー
-- セキュリティヘッダー関連
+- セキュリティヘッダー不足 → `public/_headers` に追加
+- コンソールエラー → ランタイムエラーの修正
 
 **SEO**:
-- `meta-description`: メタディスクリプション不足
-- `crawlable-anchors`: クロール不可リンク
-- `robots-txt`: robots.txt設定
-- `canonical`: canonical URL
+- meta description 不足 → ルートの meta export 追加
+- canonical URL 未設定
 
 ### ステップ 3: 修正候補の列挙
 
@@ -71,16 +72,15 @@ Lighthouse JSON レポートの `audits` セクションを分析し、カテゴ
 **分岐判定**:
 
 1. **ガードレール非抵触の修正案がある場合**:
-   - そちらを採用
-   - 承認不要で Phase 3 へ進む
+   - そちらを採用、承認不要で Phase 3 へ
 
 2. **ガードレール抵触する修正案のみの場合**:
-   - CSSガードレール抵触 → 代替案を再検討。代替案がなければスキップしてレポート
-   - Viteガードレール抵触 → `AskUserQuestion` でユーザー承認を取得
+   - CSSガードレール抵触 → 代替案を再検討
+   - Viteガードレール抵触 → `AskUserQuestion` でオペレータ承認を取得
 
 ### ステップ 6: 修正方針書の報告
 
-以下のフォーマットでユーザーに報告:
+以下のフォーマットでオペレータに報告:
 
 ```
 ## 修正方針書
@@ -88,26 +88,20 @@ Lighthouse JSON レポートの `audits` セクションを分析し、カテゴ
 ### 基準未達項目
 | ページ | カテゴリ | スコア | 基準値 | 差分 |
 |--------|----------|--------|--------|------|
-| /blog | Performance | 92 | 95 | -3 |
 
 ### 根本原因
-1. レンダリングブロックCSS: 1,050ms
-   - /assets/blog-xxx.css (2.2 KiB, 450ms)
-   - /assets/layer2-common-xxx.css (1.9 KiB, 450ms)
+1. [原因の説明]
 
 ### 修正方針
 | # | 修正内容 | ガードレール | 承認 |
 |---|----------|-------------|------|
-| 1 | CSS preload追加 | 非抵触 | 不要 |
-| 2 | 不要CSSルール削除 | 非抵触 | 不要 |
 ```
 
 ## ✅ 完了条件
 
 - [ ] 基準未達の全項目の根本原因を特定済み
 - [ ] 各修正候補のガードレール抵触判定が完了
-- [ ] 修正方針書をユーザーに報告済み
-- [ ] ガードレール抵触修正がある場合、ユーザー承認を取得済み
+- [ ] 修正方針書をオペレータに報告済み
 
 ## 🔗 次フェーズ
 
