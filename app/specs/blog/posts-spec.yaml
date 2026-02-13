@@ -253,9 +253,7 @@ thumbnail:
     # サムネイルが存在しない場合の動作
     fallback: "default"  # "hide" | "placeholder" | "default"
     # サムネイルを強制的に非表示にするカテゴリ
-    # インフォメーション: R2にサムネイルが存在しないため404回避（Best Practices対策）
-    suppressed_categories:
-      - "インフォメーション"
+    suppressed_categories: []
     # カテゴリごとのデフォルトサムネイル設定
     default_mapping:
       "ClaudeMix ガイド": "/core-matrix-emblem.avif"
