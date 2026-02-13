@@ -19,6 +19,8 @@ import layer2CommonStyles from "~/styles/blog/layer2-common.css?url";
 import layer2PostsStyles from "~/styles/blog/layer2-posts.css?url";
 
 export const links: LinksFunction = () => [
+  // Lighthouse最適化: サムネイル画像ドメインへの事前接続（DNS+TCP+TLS）
+  { rel: "preconnect", href: "https://assets.claudemix.dev" },
   // Lighthouse最適化: レンダリングブロック軽減のためpreload
   { rel: "preload", href: layer2CommonStyles, as: "style" },
   { rel: "preload", href: layer2PostsStyles, as: "style" },
