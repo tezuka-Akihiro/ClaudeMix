@@ -24,7 +24,7 @@ server_io:
 # ブログ設定定数
 # ==========================================
 blog_config:
-  title: "ClaudeMix Blog"
+  title: "Primary Identity Rail"
   home_path: "/blog"
   site_url: "https://stg.claudemix.pages.dev"
 
