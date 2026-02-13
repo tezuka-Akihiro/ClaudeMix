@@ -19,22 +19,19 @@ secrets.json
 # test
 tests/e2e/test-results/
 tests/e2e/playwright-report/
-tests\e2e\playwright.config.ts
+tests/e2e/playwright.config.ts
 tests/unit/test-results.json
 tests/unit/coverage/
 tests/unit/node_modules
 tests/lint/
 tests/scripts/generation.log
 tests/test-results/.last-run.json
-
-.cache/
+test-results/.last-run.json
 coverage-output.txt
-chat.*
+
+# tools
+.cache/
+.wrangler
 scripts/_local/
 .claude/key
 .claude/settings.local.json
-
-.wrangler
-
-test-results/.last-run.json
-delete-deploy.js
