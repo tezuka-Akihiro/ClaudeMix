@@ -20,30 +20,31 @@ html {
    * ======================================== */
 
   /* --- Background (背景) --- */
-  --color-background-primary: #111111;
-  --color-background-secondary: #1a1a1a;
+  --color-background-primary: #0C101B;
+  --color-background-secondary: #161B22;
   --color-background-subtle: #333333;
   --color-background-muted: #666666;
 
   /* --- Text (テキスト) --- */
-  --color-text-primary: #E8E8E8;
-  --color-text-secondary: #FCFCFC;
-  --color-text-muted: #BFBFBF;
+  --color-text-primary: #E6EDF3;
+  --color-text-secondary: #7D8590;
+  --color-text-muted: #7D8590;
   --color-text-disabled: #D4D4D4;
 
   /* --- Accent (アクセント) --- */
-  --color-accent-gold: #D4BC89;
+  --color-accent-gold: #FF00FF;
+  --color-accent-action: #FF5733;
 
   /* --- Surface (サーフェス) --- */
   --color-surface-dark: #0a0a0a;
   --color-surface-dark-opaque: rgb(10 10 10 / 0.95);
 
-  /* --- Interactive (インタラクティブ要素) --- */
-  --color-interactive-primary: #22d3ee;
-  --color-interactive-primary-bg: rgb(34 211 238 / 0.3);
-  --color-interactive-primary-bg-subtle: rgb(34 211 238 / 0.2);
-  --color-interactive-primary-bg-faint: rgb(34 211 238 / 0.15);
-  --color-interactive-primary-bg-opaque: #164e63;
+  /* --- Interactive --- */
+  --color-interactive-primary: #00F0FF;
+  --color-interactive-primary-bg: rgb(0 240 255 / 0.3);
+  --color-interactive-primary-bg-subtle: rgb(0 240 255 / 0.2);
+  --color-interactive-primary-bg-faint: rgb(0 240 255 / 0.15);
+  --color-interactive-primary-bg-opaque: #0B596A;
   --color-interactive-selected: #60a5fa;
   --color-interactive-selected-bg: rgb(96 165 250 / 0.2);
 
@@ -85,8 +86,8 @@ html {
   --spacing-7: 64px;
 
   /* インラインコード用の微細な間隔 */
-  --spacing-inline-code-vertical: 0.125rem;   /* 2px */
-  --spacing-inline-code-horizontal: 0.25rem;  /* 4px */
+  --spacing-inline-code-vertical: 0.125rem;
+  --spacing-inline-code-horizontal: 0.25rem;
 
   /* ページ構造 */
   --layout-page-container-width: 800px;
@@ -153,10 +154,10 @@ html {
   --offset-none: 0;
 
   /* --- Z-Index (重ね順) --- */
-  --z-index-fixed: 10;
-  --z-index-menu: 1000;
-  --z-index-modal-overlay: 1500;
-  --z-index-modal: 1510;
+  --z-index-fixed: 1;
+  --z-index-menu: 2;
+  --z-index-modal-overlay: 3;
+  --z-index-modal: 5;
 
   /* --- Opacity (不透明度) --- */
   --opacity-disabled: 0.5;
@@ -188,57 +189,6 @@ html {
    * ======================================== */
 
   /* --- Code Surface (コード表示サーフェス) --- */
-  --color-surface-code: #f5f5f5;
-  --color-surface-inline-code: #f3f4f6;
-  --color-text-code-accent: #e53e3e;
-}
-
-/* ========================================
- * Theme Support: Dark Mode (Default)
- * ========================================
- * ダークモード用の配色定義
- * デフォルトテーマとして、:root で定義された変数をそのまま使用
- * ======================================== */
-html[data-theme="dark"] {
-  /* 明示的にダークモード変数を定義（:rootと同じ値） */
-  --color-background-primary: #111111;
-  --color-background-secondary: #1a1a1a;
-  --color-background-subtle: #333333;
-  --color-background-muted: #666666;
-
-  --color-text-primary: #E8E8E8;
-  --color-text-secondary: #FCFCFC;
-  --color-text-muted: #BFBFBF;
-  --color-text-disabled: #D4D4D4;
-
-  --color-accent-gold: #D4BC89;
-
-  --color-surface-dark: #0a0a0a;
-  --color-surface-dark-opaque: rgb(10 10 10 / 0.95);
-
-  --color-interactive-primary: #22d3ee;
-  --color-interactive-primary-bg: rgb(34 211 238 / 0.3);
-  --color-interactive-primary-bg-subtle: rgb(34 211 238 / 0.2);
-  --color-interactive-primary-bg-faint: rgb(34 211 238 / 0.15);
-  --color-interactive-selected: #60a5fa;
-  --color-interactive-selected-bg: rgb(96 165 250 / 0.2);
-
-  --color-status-success: #4ade80;
-  --color-status-success-bg: rgb(74 222 128 / 0.15);
-  --color-status-success-glow: rgb(74 222 128 / 0.5);
-
-  --color-status-error: #f87171;
-  --color-status-error-bg: rgb(248 113 113 / 0.15);
-  --color-status-error-glow: rgb(248 113 113 / 0.5);
-
-  --color-status-error-strong: #ef4444;
-  --color-status-error-strong-bg: rgb(239 68 68 / 0.15);
-  --color-status-error-strong-glow: rgb(239 68 68 / 0.4);
-
-  --color-overlay-strong: rgb(0 0 0 / 0.5);
-  --color-overlay-medium: rgb(0 0 0 / 0.3);
-  --color-overlay-subtle: rgb(0 0 0 / 0.15);
-
   --color-surface-code: #2d2d2d;
   --color-surface-inline-code: #3a3a3a;
   --color-text-code-accent: #ff6b6b;
@@ -265,13 +215,12 @@ html[data-theme="light"] {
   --color-surface-dark: #f3f4f6;
   --color-surface-dark-opaque: rgb(243 244 246 / 0.95);
 
-  /* Interactive colors - 濃くしてコントラスト比向上（WCAG AA: 4.5:1以上） */
-  --color-interactive-primary: #155e75;  /* cyan-800: 白背景で6.0:1のコントラスト比 */
-  --color-interactive-primary-bg: rgb(21 94 117 / 0.15);  /* 透明度を0.1→0.15に増加 */
-  --color-interactive-primary-bg-subtle: rgb(21 94 117 / 0.1);  /* 0.05→0.1に増加 */
-  --color-interactive-primary-bg-faint: rgb(21 94 117 / 0.06);  /* 0.03→0.06に増加 */
-  --color-interactive-selected: #1e40af;  /* blue-800: より濃いブルー */
-  --color-interactive-selected-bg: rgb(30 64 175 / 0.15);  /* 0.1→0.15に増加 */
+  /* Interactive colors */
+  --color-interactive-primary: #155e75;
+  --color-interactive-primary-bg: rgb(21 94 117 / 0.15);
+  --color-interactive-primary-bg-subtle: rgb(21 94 117 / 0.1);
+  --color-interactive-selected: #1e40af;
+  --color-interactive-selected-bg: rgb(30 64 175 / 0.15);
 
   --color-status-success: #16a34a;
   --color-status-success-bg: rgb(22 163 74 / 0.1);
