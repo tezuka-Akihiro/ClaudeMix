@@ -25,6 +25,7 @@ server_io:
 # ==========================================
 blog_config:
   title: "Primary Identity Rail"
+  logo_path: "/primary-Identity-rail.avif"
   home_path: "/blog"
   site_url: "https://stg.claudemix.pages.dev"
 

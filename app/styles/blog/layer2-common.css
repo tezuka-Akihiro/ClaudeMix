@@ -18,9 +18,8 @@
     right: 0;
     z-index: var(--z-index-fixed);
     padding: var(--spacing-3) var(--spacing-4);
-    background-color: var(--color-interactive-primary);
-    border: none;
-    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg-subtle);
+    background-color: var(--color-background-primary);
+    color: var(--color-text-primary);
   }
 
   /* Header layout structure (title left, actions right) */
@@ -35,11 +34,18 @@
     font-size: var(--font-size-2xl);
     color: var(--color-background-primary);
     text-decoration: none;
-    transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    transition: opacity var(--transition-duration-fast) var(--transition-timing-function-default);
   }
 
   .blog-header__title:hover {
-    color: var(--color-text-primary);
+    opacity: 0.8;
+  }
+
+  /* Logo styling in header */
+  .blog-header__logo {
+    height: var(--spacing-6);
+    width: auto;
+    object-fit: contain;
   }
 
   /* Header actions container (theme button + menu button) */
@@ -51,7 +57,6 @@
   .blog-header__theme-button {
     width: var(--spacing-6);
     height: var(--spacing-6);
-    /* Layout defined in Layer 3 (Tailwind classes) */
     border-radius: var(--border-radius-full);
     background-color: transparent;
     border: none;
@@ -88,7 +93,6 @@
     color: var(--color-text-primary);
   }
 
-  /* CSS-only toggle support */
   .u-menu-checkbox {
     display: none;
   }
@@ -108,7 +112,6 @@
   .u-menu-checkbox:checked ~ .u-menu-close-label { display: block; }
 
   /* === NavigationMenu === */
-  /* Menu container styling */
   .navigation-menu {
     display: none;
     background-color: var(--color-surface-dark-opaque);
@@ -166,10 +169,8 @@
   /* Footer container styling */
   .blog-footer {
     height: var(--layout-footer-height);
-    background-color: var(--color-interactive-primary-bg-faint);
+    background-color: var(--color-background-primary);
     border: none;
-    box-shadow: var(--offset-none) var(--offset-none) var(--spacing-3) var(--color-interactive-primary-bg);
-    font-size: var(--font-size-sm);
   }
 
   /* Footer links container */

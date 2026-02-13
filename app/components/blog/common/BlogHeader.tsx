@@ -12,12 +12,14 @@ import { extractTestId } from '~/lib/blog/common/extractTestId';
 
 interface BlogHeaderProps {
   blogTitle: string;
+  logoPath: string;
   menuItems: MenuItem[];
   spec?: BlogCommonSpec;
 }
 
 const BlogHeader: React.FC<BlogHeaderProps> = ({
   blogTitle,
+  logoPath,
   menuItems,
   spec = defaultSpec
 }) => {
@@ -34,7 +36,13 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
         data-testid={extractTestId(ui_selectors.header.title_link)}
         prefetch="none"
       >
-        {blogTitle}
+        <img
+          src={logoPath}
+          alt={blogTitle}
+          className="blog-header__logo"
+          decoding="async"
+          fetchPriority="high"
+        />
       </Link>
       <div
         className="blog-header__actions"

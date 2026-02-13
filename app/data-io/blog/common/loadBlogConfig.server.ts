@@ -23,6 +23,7 @@ export async function loadBlogConfig(): Promise<BlogConfig> {
 
   return {
     blogTitle: spec.blog_config.title,
+    logoPath: spec.blog_config.logo_path,
     menuItems: spec.navigation.menu_items,
     copyright,
     siteUrl: spec.blog_config.site_url,

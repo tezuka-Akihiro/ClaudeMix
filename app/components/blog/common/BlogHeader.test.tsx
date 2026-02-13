@@ -56,15 +56,17 @@ describe('BlogHeader', () => {
     document.documentElement.removeAttribute('data-theme');
   });
   describe('Rendering', () => {
-    it('should render blog title', () => {
+    it('should render logo image', () => {
       // Arrange
       const blogTitle = spec.blog_config.title;
+      const logoPath = spec.blog_config.logo_path;
 
       // Act
       render(
         <BrowserRouter>
           <BlogHeader
             blogTitle={blogTitle}
+            logoPath={logoPath}
             menuItems={spec.navigation.menu_items}
             spec={spec}
           />
@@ -72,11 +74,14 @@ describe('BlogHeader', () => {
       );
 
       // Assert
-      const titleElement = screen.getByTestId(
+      const titleLink = screen.getByTestId(
         extractTestId(spec.ui_selectors.header.title_link)
       );
-      expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent(blogTitle);
+      expect(titleLink).toBeInTheDocument();
+
+      const logoImage = screen.getByAltText(blogTitle);
+      expect(logoImage).toBeInTheDocument();
+      expect(logoImage).toHaveAttribute('src', logoPath);
     });
 
     it('should render menu button', () => {
@@ -85,6 +90,7 @@ describe('BlogHeader', () => {
         <BrowserRouter>
           <BlogHeader
             blogTitle={spec.blog_config.title}
+            logoPath={spec.blog_config.logo_path}
             menuItems={spec.navigation.menu_items}
             spec={spec}
           />
@@ -105,6 +111,7 @@ describe('BlogHeader', () => {
         <BrowserRouter>
           <BlogHeader
             blogTitle={spec.blog_config.title}
+            logoPath={spec.blog_config.logo_path}
             menuItems={spec.navigation.menu_items}
             spec={spec}
           />
@@ -124,6 +131,7 @@ describe('BlogHeader', () => {
         <BrowserRouter>
           <BlogHeader
             blogTitle={spec.blog_config.title}
+            logoPath={spec.blog_config.logo_path}
             menuItems={spec.navigation.menu_items}
             spec={spec}
           />
@@ -145,6 +153,7 @@ describe('BlogHeader', () => {
         <BrowserRouter>
           <BlogHeader
             blogTitle={spec.blog_config.title}
+            logoPath={spec.blog_config.logo_path}
             menuItems={spec.navigation.menu_items}
             spec={spec}
           />
@@ -169,6 +178,7 @@ describe('BlogHeader', () => {
         <BrowserRouter>
           <BlogHeader
             blogTitle={spec.blog_config.title}
+            logoPath={spec.blog_config.logo_path}
             menuItems={spec.navigation.menu_items}
             spec={spec}
           />

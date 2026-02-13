@@ -23,6 +23,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ config, children }) => {
     >
       <BlogHeader
         blogTitle={config.blogTitle}
+        logoPath={config.logoPath}
         menuItems={config.menuItems}
         spec={spec}
       />

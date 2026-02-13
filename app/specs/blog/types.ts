@@ -183,6 +183,7 @@ export interface AvailableFilters {
  */
 export interface BlogConfig {
   blogTitle: string;
+  logoPath: string;
   menuItems: MenuItem[];
   copyright: string;
   siteUrl: string;
@@ -288,6 +289,7 @@ export interface R2AssetsConfig {
 export interface BlogCommonSpec {
   blog_config: {
     title: string;
+    logo_path: string;
     home_path: string;
     site_url: string;
   };

@@ -63,10 +63,13 @@ test.describe('E2E Screen Test for blog - Basic Layout', () => {
     const blogHeader = page.getByTestId('blog-header');
     await expect(blogHeader).toBeVisible();
 
-    // 4. タイトルリンクが表示され、正しいテキストを持つこと
+    // 4. タイトルリンクが表示され、正しいロゴ画像を持つこと
     const titleLink = page.getByTestId('blog-header-title');
     await expect(titleLink).toBeVisible();
-    await expect(titleLink).toHaveText(commonSpec.blog_config.title);
+    const logoImg = titleLink.locator('img');
+    await expect(logoImg).toBeVisible();
+    await expect(logoImg).toHaveAttribute('alt', commonSpec.blog_config.title);
+    await expect(logoImg).toHaveAttribute('src', commonSpec.blog_config.logo_path);
 
     // 5. menuボタンが表示されること
     const menuButton = page.getByTestId('blog-header-menu-button');
