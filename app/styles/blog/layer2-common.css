@@ -93,7 +93,10 @@
     display: none;
   }
 
-  .u-menu-checkbox:checked ~ .navigation-menu,
+  .u-menu-checkbox:checked ~ .navigation-menu {
+    display: flex !important;
+  }
+
   .u-menu-checkbox:checked ~ .navigation-menu__overlay {
     display: block !important;
   }
@@ -136,6 +139,7 @@
   /* Menu item styling */
   .navigation-menu__item {
     background-color: transparent;
+    border: none;
     color: var(--color-interactive-primary);
     font-family: var(--font-heading-primary);
     cursor: pointer;
@@ -145,12 +149,17 @@
     text-decoration: none;
     border-radius: var(--border-radius-full);
     transition: all var(--transition-duration-fast) var(--transition-timing-function-default);
+    width: 100%;
+    text-align: left;
+    min-height: var(--touch-target-min-height);
+    border-bottom: none;
   }
 
   .navigation-menu__item:hover,
   .navigation-menu__item:focus {
     color: var(--color-text-primary);
     outline: none;
+    border-bottom: none;
   }
 
   /* === BlogFooter === */
