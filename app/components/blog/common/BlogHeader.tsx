@@ -41,7 +41,7 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
           alt={blogTitle}
           className="blog-header__logo"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
         />
       </Link>
       <div
