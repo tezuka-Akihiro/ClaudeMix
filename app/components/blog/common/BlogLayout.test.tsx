@@ -10,6 +10,7 @@ let spec: BlogCommonSpec;
 
 const getMockConfig = (spec: BlogCommonSpec) => ({
   blogTitle: spec.blog_config.title,
+  logoPath: spec.blog_config.logo_path,
   menuItems: spec.navigation.menu_items,
   copyright: "© 2025 Test Project",
   siteUrl: spec.blog_config.site_url,
@@ -141,7 +142,13 @@ describe('BlogLayout', () => {
       const titleElement = screen.getByTestId(
         extractTestId(spec.ui_selectors.header.title_link)
       );
-      expect(titleElement).toHaveTextContent(config.blogTitle);
+      expect(titleElement).toBeInTheDocument();
+
+      // ヘッダーはロゴ画像を使用しているため、alt属性としてタイトルが含まれていることを確認
+      const logoImage = screen.getByAltText(config.blogTitle);
+      expect(logoImage).toBeInTheDocument();
+      expect(logoImage).toHaveAttribute('src', config.logoPath);
+      expect(titleElement).toContainElement(logoImage);
     });
 
     it('should pass copyright to BlogFooter', () => {

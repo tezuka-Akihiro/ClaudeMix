@@ -20,6 +20,7 @@ export const links: LinksFunction = () => [
 
 interface LoaderData {
   blogTitle: string;
+  logoPath: string;
   menuItems: MenuItem[];
   footerLinks: Array<{ label: string; href?: string; isModal: boolean }>;
   legalContent: string;
@@ -47,6 +48,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
 
   return json<LoaderData>({
     blogTitle: blogConfig.blogTitle,
+    logoPath: blogConfig.logoPath,
     menuItems: blogConfig.menuItems,
     footerLinks,
     legalContent,
@@ -58,6 +60,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
 export default function Index() {
   const {
     blogTitle,
+    logoPath,
     menuItems,
     footerLinks,
     legalContent,
@@ -67,7 +70,11 @@ export default function Index() {
 
   return (
     <div className="home-page home-page-structure">
-      <BlogHeader blogTitle={blogTitle} menuItems={menuItems as MenuItem[]} />
+      <BlogHeader
+        blogTitle={blogTitle}
+        logoPath={logoPath}
+        menuItems={menuItems as MenuItem[]}
+      />
 
       <main className="home-main home-main-structure" data-testid="home-main">
         <h1 className="home-title">{projectName}</h1>
