@@ -75,6 +75,19 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const newLoadedCount = loadedCount + posts.length;
   const loadMoreInfo = calculateLoadMore(total, newLoadedCount, postsPerLoad);
 
+  // LCP最適化: 最初の記事のサムネイルをHTTP Link headerでpreload
+  const responseHeaders: HeadersInit = {
+    "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+    "Vary": "Cookie",
+  };
+  const firstThumb = posts[0]?.thumbnailUrl;
+  if (firstThumb) {
+    const preloadUrl = typeof firstThumb === 'object' ? firstThumb.sm : firstThumb;
+    if (preloadUrl) {
+      responseHeaders["Link"] = `<${preloadUrl}>; rel=preload; as=image; type=image/avif`;
+    }
+  }
+
   return json({
     posts,
     config,
@@ -94,10 +107,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       date_format: spec.date_format,
     },
   }, {
-    headers: {
-      "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
-      "Vary": "Cookie",
-    }
+    headers: responseHeaders,
   });
 }
 
