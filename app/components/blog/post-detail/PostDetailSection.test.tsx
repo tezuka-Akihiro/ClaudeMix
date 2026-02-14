@@ -114,7 +114,8 @@ describe('PostDetailSection', () => {
 
       // Assert
       const updatedThumbnailImage = screen.getByTestId('article-thumbnail-image');
-      expect(updatedThumbnailImage).toHaveAttribute('src', fallbackUrl);
+      const expectedSrc = typeof fallbackUrl === 'string' ? fallbackUrl : fallbackUrl.lg;
+      expect(updatedThumbnailImage).toHaveAttribute('src', expectedSrc);
     });
 
     it('should display srcset when variant object is provided for thumbnailUrl', () => {

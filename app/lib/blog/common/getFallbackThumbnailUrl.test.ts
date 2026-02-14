@@ -9,25 +9,34 @@ describe('getFallbackThumbnailUrl', () => {
     spec = await loadSpec<BlogPostsSpec>('blog', 'posts');
   });
 
-  it('should return the correct default image for ClaudeMix categories', () => {
+  it('should return the correct default image object for ClaudeMix categories', () => {
     const categories = ['ClaudeMix ガイド', 'ClaudeMix 記録', 'ClaudeMix 考察'];
     const mapping = spec.thumbnail.display.default_mapping!;
 
     categories.forEach(category => {
-      expect(getFallbackThumbnailUrl(category, spec)).toBe(mapping[category]);
+      const result = getFallbackThumbnailUrl(category, spec);
+      expect(result).toEqual(mapping[category]);
+      expect(result).toHaveProperty('lg');
+      expect(result).toHaveProperty('sm');
     });
   });
 
-  it('should return the correct default image for "起業" category', () => {
+  it('should return the correct default image object for "起業" category', () => {
     const category = '起業';
     const mapping = spec.thumbnail.display.default_mapping!;
-    expect(getFallbackThumbnailUrl(category, spec)).toBe(mapping[category]);
+    const result = getFallbackThumbnailUrl(category, spec);
+    expect(result).toEqual(mapping[category]);
+    expect(result).toHaveProperty('lg');
+    expect(result).toHaveProperty('sm');
   });
 
-  it('should return the correct default image for "インフォメーション" category', () => {
+  it('should return the correct default image object for "インフォメーション" category', () => {
     const category = 'インフォメーション';
     const mapping = spec.thumbnail.display.default_mapping!;
-    expect(getFallbackThumbnailUrl(category, spec)).toBe(mapping[category]);
+    const result = getFallbackThumbnailUrl(category, spec);
+    expect(result).toEqual(mapping[category]);
+    expect(result).toHaveProperty('lg');
+    expect(result).toHaveProperty('sm');
   });
 
   it('should return null for unknown category if no default mapping exists', () => {

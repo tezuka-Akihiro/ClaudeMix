@@ -201,7 +201,8 @@ describe('PostCard', () => {
 
       // Assert
       const updatedThumbnailImage = screen.getByTestId('thumbnail-image');
-      expect(updatedThumbnailImage).toHaveAttribute('src', fallbackUrl);
+      const expectedSrc = typeof fallbackUrl === 'string' ? fallbackUrl : fallbackUrl.lg;
+      expect(updatedThumbnailImage).toHaveAttribute('src', expectedSrc);
     });
   });
 
