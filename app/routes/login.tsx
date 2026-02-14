@@ -366,7 +366,9 @@ export default function Login() {
         {/* Brand Icon */}
         <div className="auth-brand-icon-structure">
           <img
-            src="/core-matrix-emblem.avif"
+            src="/core-matrix-emblem.lg.avif"
+            srcSet="/core-matrix-emblem.sm.avif 1000w, /core-matrix-emblem.lg.avif 1200w"
+            sizes="352px"
             alt="ClaudeMix"
             width={352}
             height={352}
