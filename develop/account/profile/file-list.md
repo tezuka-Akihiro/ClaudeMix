@@ -70,8 +70,20 @@
 | updateUserEmail.server.test.ts | app/data-io/account/profile/updateUserEmail.server.test.ts | updateUserEmailの単体テスト（DBモック使用） |
 | updateUserPassword.server.ts | app/data-io/account/profile/updateUserPassword.server.ts | ユーザーのパスワードをDB更新 |
 | updateUserPassword.server.test.ts | app/data-io/account/profile/updateUserPassword.server.test.ts | updateUserPasswordの単体テスト（DBモック使用） |
-| deleteUser.server.ts | app/data-io/account/profile/deleteUser.server.ts | ユーザーをDBから削除 |
-| deleteUser.server.test.ts | app/data-io/account/profile/deleteUser.server.test.ts | deleteUserの単体テスト（DBモック使用） |
+| softDeleteUser.server.ts | app/data-io/account/profile/softDeleteUser.server.ts | ユーザーの論理削除（冬眠開始） |
+| softDeleteUser.server.test.ts | app/data-io/account/profile/softDeleteUser.server.test.ts | softDeleteUserの単体テスト（DBモック使用） |
+| restoreUser.server.ts | app/data-io/account/profile/restoreUser.server.ts | ユーザーの復旧（冬眠解除） |
+| restoreUser.server.test.ts | app/data-io/account/profile/restoreUser.server.test.ts | restoreUserの単体テスト（DBモック使用） |
+| purgeExpiredUsers.server.ts | app/data-io/account/profile/purgeExpiredUsers.server.ts | 冬眠期間超過ユーザーの物理削除 |
+| purgeExpiredUsers.server.test.ts | app/data-io/account/profile/purgeExpiredUsers.server.test.ts | purgeExpiredUsersの単体テスト |
+
+---
+
+## 5. Scheduled Worker
+
+| ファイル名 | パス | 責務 |
+| :--- | :--- | :--- |
+| scheduled.ts | app/scheduled.ts | Cloudflare Workers Cron Trigger エントリポイント |
 
 ---
 
@@ -82,11 +94,12 @@
 profileセクションの**アカウント削除機能**は、以下のsubscriptionセクションのファイルに依存します：
 
 **Side Effects (data-io/subscription)**:
-- `getSubscriptionByUserId.server.ts`: ユーザーのアクティブなサブスクリプション取得
-- `cancelStripeSubscription.server.ts`: **Stripeでサブスクリプション即時解約**（アカウント削除前に必須）
-- `deleteSubscription.server.ts`: サブスクリプションレコードをDB削除
 
-**重要**: アカウント削除時、Stripeサブスクリプションを解約せずにユーザーデータだけ削除すると、課金が継続する重大な問題が発生します。必ず`cancelStripeSubscription.server`を呼び出してください。
+- `getSubscriptionByUserId.server.ts`: ユーザーのアクティブなサブスクリプション取得
+- `cancelStripeSubscription.server.ts`: **Stripeでサブスクリプション停止（Customer保持）**（アカウント削除前に必須）
+- `deleteSubscription.server.ts`: サブスクリプションレコードをDB削除（物理抹消バッチで使用）
+
+**重要**: アカウント削除（論理削除）時、Stripeサブスクリプションを停止せずにユーザーを冬眠させると、課金が継続する重大な問題が発生します。必ず`cancelStripeSubscription.server`を呼び出してください。
 
 ### Authentication セクションへの依存
 
@@ -147,20 +160,24 @@ profileセクションは、以下のauthenticationセクションのファイ�
 5. **Phase 1-5**: Routes実装
    - account.settings.tsx（アカウント削除機能を除く）
 
-### Phase 2: アカウント削除（**subscriptionセクション完了後に実装**）
+### Phase 2: アカウント削除と3フェーズ化（**subscriptionセクション完了後に実装**）
 
-1. **Phase 2-1**: E2Eテスト更新（アカウント削除シナリオを追加）
+1. **Phase 2-1**: E2Eテスト更新（アカウント削除、復旧、物理抹消シナリオを追加）
 2. **Phase 2-2**: data-io層の実装
-   - deleteUser.server.ts
-3. **Phase 2-3**: lib層の実装
+   - softDeleteUser.server.ts
+   - restoreUser.server.ts
+   - purgeExpiredUsers.server.ts
+3. **Phase 2-3**: Scheduled Workerの実装
+   - app/scheduled.ts
+4. **Phase 2-4**: lib層の実装
    - validateAccountDeletion.ts
-4. **Phase 2-4**: ProfileDisplay更新（アカウント削除UI追加）
+5. **Phase 2-5**: ProfileDisplay更新（アカウント削除UI追加）
    - ProfileDisplay.tsxに、共通Modal（app/components/account/common/Modal.tsx）を使用したアカウント削除確認UIを追加
-5. **Phase 2-5**: Routes更新
-   - account.settings.tsx（アカウント削除actionを追加）
+6. **Phase 2-6**: Routes更新
+   - account.settings.tsx（アカウント削除actionの追加、復旧対応）
 
 **重要**: Phase 2はsubscriptionセクションの`cancelStripeSubscription.server`と`deleteSubscription.server`に依存するため、subscriptionセクション実装後に着手してください。
 
 ---
 
-**最終更新**: 2025-12-23
+**最終更新**: 2026-02-14
