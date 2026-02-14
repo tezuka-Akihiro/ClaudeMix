@@ -160,8 +160,8 @@ describe('PostCard', () => {
       // Assert
       const thumbnailImage = screen.getByTestId('thumbnail-image');
       expect(thumbnailImage).toHaveAttribute('src', variantThumbnail.lg);
-      expect(thumbnailImage).toHaveAttribute('srcSet', `${variantThumbnail.sm} 600w, ${variantThumbnail.lg} 1200w`);
-      expect(thumbnailImage).toHaveAttribute('sizes', "(max-width: 767px) 600px, 1200px");
+      expect(thumbnailImage).toHaveAttribute('srcSet', `${variantThumbnail.sm} 1000w, ${variantThumbnail.lg} 1200w`);
+      expect(thumbnailImage).toHaveAttribute('sizes', "(max-width: 767px) calc(100vw - 32px), 380px");
     });
 
     it('should not display thumbnail when thumbnailUrl is null', () => {

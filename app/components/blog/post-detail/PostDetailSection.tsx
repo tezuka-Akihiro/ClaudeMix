@@ -139,8 +139,8 @@ export function PostDetailSection({
           <img
             key={typeof currentThumbnailUrl === 'string' ? currentThumbnailUrl : currentThumbnailUrl?.lg}
             src={typeof currentThumbnailUrl === 'string' ? currentThumbnailUrl : currentThumbnailUrl?.lg}
-            srcSet={(typeof currentThumbnailUrl === 'object' && currentThumbnailUrl !== null) ? `${currentThumbnailUrl.sm} 600w, ${currentThumbnailUrl.lg} 1200w` : undefined}
-            sizes={(typeof currentThumbnailUrl === 'object' && currentThumbnailUrl !== null) ? "(max-width: 767px) 600px, 1200px" : undefined}
+            srcSet={(typeof currentThumbnailUrl === 'object' && currentThumbnailUrl !== null) ? `${currentThumbnailUrl.sm} 1000w, ${currentThumbnailUrl.lg} 1200w` : undefined}
+            sizes={(typeof currentThumbnailUrl === 'object' && currentThumbnailUrl !== null) ? "(max-width: 767px) calc(100vw - 32px), 800px" : undefined}
             alt={`${post.title}のサムネイル`}
             width={1200}
             height={630}

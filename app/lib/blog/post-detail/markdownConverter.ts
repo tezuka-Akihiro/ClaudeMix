@@ -53,8 +53,8 @@ export async function convertMarkdownToHtml(markdown: string): Promise<string> {
       // lg.avif という命名規則に一致する場合、srcsetを付与（CloudMix 画像インフラ要件）
       if (src.endsWith('.lg.avif')) {
         const smSrc = src.replace('.lg.avif', '.sm.avif');
-        srcsetAttr = `srcset="${smSrc} 600w, ${src} 1200w"`;
-        sizesAttr = `sizes="(max-width: 767px) 600px, 1200px"`;
+        srcsetAttr = `srcset="${smSrc} 1000w, ${src} 1200w"`;
+        sizesAttr = `sizes="(max-width: 767px) calc(100vw - 32px), 800px"`;
       }
 
       return `<img

@@ -32,7 +32,7 @@
     font-family: var(--font-heading-primary);
     font-weight: var(--font-weight-normal);
     font-size: var(--font-size-2xl);
-    color: var(--color-background-primary);
+    color: var(--color-text-primary);
     text-decoration: none;
     transition: opacity var(--transition-duration-fast) var(--transition-timing-function-default);
   }
@@ -81,7 +81,7 @@
   .blog-header__menu-button {
     background-color: transparent;
     border: none;
-    color: var(--color-background-primary);
+    color: var(--color-text-primary);
     cursor: pointer;
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-normal);
@@ -90,7 +90,7 @@
   }
 
   .blog-header__menu-button:hover {
-    color: var(--color-text-primary);
+    color: var(--color-interactive-primary);
   }
 
   .u-menu-checkbox {

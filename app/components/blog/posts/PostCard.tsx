@@ -65,7 +65,7 @@ const PostCard: React.FC<PostCardProps> = ({
     : currentThumbnailUrl?.lg;
 
   const srcset = (typeof currentThumbnailUrl === 'object' && currentThumbnailUrl !== null)
-    ? `${currentThumbnailUrl.sm} 600w, ${currentThumbnailUrl.lg} 1200w`
+    ? `${currentThumbnailUrl.sm} 1000w, ${currentThumbnailUrl.lg} 1200w`
     : undefined;
 
   return (
@@ -87,7 +87,7 @@ const PostCard: React.FC<PostCardProps> = ({
             key={displaySrc!}
             src={displaySrc!}
             srcSet={srcset}
-            sizes={srcset ? "(max-width: 767px) 600px, 1200px" : undefined}
+            sizes={srcset ? "(max-width: 767px) calc(100vw - 32px), 380px" : undefined}
             alt={`${title}のサムネイル`}
             width={1200}
             height={630}
