@@ -36,6 +36,7 @@ const PostCard: React.FC<PostCardProps> = ({
   useEffect(() => {
     setCurrentThumbnailUrl(thumbnailUrl);
     setHasFallbackError(false);
+    setIsLoaded(false); // URL変更時は読み込み状態をリセット
   }, [thumbnailUrl]);
 
   // 日付をフォーマット（ISO形式 → 日本語形式）
@@ -49,6 +50,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
     if (fallbackUrl && fallbackUrl !== currentThumbnailUrl) {
       setCurrentThumbnailUrl(fallbackUrl);
+      setIsLoaded(false); // フォールバック時も読み込み状態をリセット
     } else {
       setHasFallbackError(true);
     }

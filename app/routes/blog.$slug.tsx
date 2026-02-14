@@ -215,6 +215,7 @@ export default function BlogPostDetail() {
   return (
     <BlogLayout config={config}>
       <PostDetailSection
+        key={post.slug}
         post={post}
         headings={headings}
         hasMermaid={post.hasMermaid}
