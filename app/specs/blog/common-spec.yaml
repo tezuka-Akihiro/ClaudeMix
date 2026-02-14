@@ -217,7 +217,7 @@ ogp:
     # R2にサムネイルが存在しない場合: 動的OGP画像を生成
     strategy: "r2_first"
     # サムネイルURL生成パターン: {base_url}{blog_path}/{slug}/{filename}
-    url_pattern: "{base_url}{blog_path}/{slug}/thumbnail.avif"
+    url_pattern: "{base_url}{blog_path}/{slug}/lg.avif"
 
   cache:
     maxAge: 31536000  # 1年 (秒)
