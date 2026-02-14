@@ -51,6 +51,7 @@ export function PostDetailSection({
   useEffect(() => {
     setCurrentThumbnailUrl(thumbnailUrl);
     setHasFallbackError(false);
+    setIsLoaded(false); // URL変更時は読み込み状態をリセット
   }, [thumbnailUrl]);
 
   // publishedAtをフォーマット
@@ -63,6 +64,7 @@ export function PostDetailSection({
     const fallbackUrl = getFallbackThumbnailUrl(post.category, spec);
     if (fallbackUrl && fallbackUrl !== currentThumbnailUrl) {
       setCurrentThumbnailUrl(fallbackUrl);
+      setIsLoaded(false); // フォールバック時も読み込み状態をリセット
     } else {
       setHasFallbackError(true);
     }
