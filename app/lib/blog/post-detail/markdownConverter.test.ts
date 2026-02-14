@@ -106,6 +106,19 @@ describe('markdownConverter - Pure Logic Layer', () => {
       // Assert
       expect(html).toContain('alt="Sample Image"');
     });
+
+    it('.lg.avif形式の画像にsrcsetとsizesが自動付与される', async () => {
+      // Arrange
+      const markdown = '![alt text](/blog/slug/1.lg.avif)';
+
+      // Act
+      const html = await convertMarkdownToHtml(markdown);
+
+      // Assert
+      expect(html).toContain('srcset="/blog/slug/1.sm.avif 600w, /blog/slug/1.lg.avif 1200w"');
+      expect(html).toContain('sizes="(max-width: 767px) 600px, 1200px"');
+      expect(html).toContain('decoding="async"');
+    });
   });
 
   describe('XSSサニタイズ', () => {

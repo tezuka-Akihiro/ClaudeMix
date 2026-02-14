@@ -142,6 +142,28 @@ describe('PostCard', () => {
       expect(thumbnailImage).toHaveAttribute('alt', `${props.title}のサムネイル`);
     });
 
+    it('should display srcset when variant object is provided for thumbnailUrl', () => {
+      // Arrange
+      const variantThumbnail = {
+        lg: 'https://assets.example.com/blog/test/lg.avif',
+        sm: 'https://assets.example.com/blog/test/sm.avif'
+      };
+      const props: React.ComponentProps<typeof PostCard> = {
+        ...baseProps,
+        slug: 'srcset-test',
+        thumbnailUrl: variantThumbnail,
+      };
+
+      // Act
+      renderWithRouter(<PostCard {...props} />);
+
+      // Assert
+      const thumbnailImage = screen.getByTestId('thumbnail-image');
+      expect(thumbnailImage).toHaveAttribute('src', variantThumbnail.lg);
+      expect(thumbnailImage).toHaveAttribute('srcSet', `${variantThumbnail.sm} 600w, ${variantThumbnail.lg} 1200w`);
+      expect(thumbnailImage).toHaveAttribute('sizes', "(max-width: 767px) 600px, 1200px");
+    });
+
     it('should not display thumbnail when thumbnailUrl is null', () => {
       // Arrange
       const props: React.ComponentProps<typeof PostCard> = {
