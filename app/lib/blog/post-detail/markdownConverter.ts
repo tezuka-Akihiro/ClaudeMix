@@ -46,11 +46,25 @@ export async function convertMarkdownToHtml(markdown: string): Promise<string> {
       const src = href ?? '';
       const alt = text || '';
       const titleAttr = title ? `title="${title}"` : '';
+
+      let srcsetAttr = '';
+      let sizesAttr = '';
+
+      // lg.avif という命名規則に一致する場合、srcsetを付与（CloudMix 画像インフラ要件）
+      if (src.endsWith('.lg.avif')) {
+        const smSrc = src.replace('.lg.avif', '.sm.avif');
+        srcsetAttr = `srcset="${smSrc} 1000w, ${src} 1200w"`;
+        sizesAttr = `sizes="(max-width: 767px) calc(100vw - 32px), 800px"`;
+      }
+
       return `<img
       src="${src}"
+      ${srcsetAttr}
+      ${sizesAttr}
       alt="${alt}"
       ${titleAttr}
       loading="lazy"
+      decoding="async"
       style="max-width: 100%; height: auto;"
     />`;
     },
@@ -118,7 +132,7 @@ export async function convertMarkdownToHtml(markdown: string): Promise<string> {
     ],
     allowedAttributes: {
       'a': ['href', 'target', 'rel'],
-      'img': ['src', 'alt', 'title', 'loading', 'style'],
+      'img': ['src', 'srcset', 'sizes', 'alt', 'title', 'loading', 'decoding', 'style'],
       'code': ['class', 'style'],
       'pre': ['class', 'style'],
       'div': ['class', 'style'],

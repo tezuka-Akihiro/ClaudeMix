@@ -20,6 +20,7 @@ export interface User {
   oauthProvider: string | null;
   googleId: string | null;
   subscriptionStatus: 'active' | 'inactive' | string;
+  deletedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,7 +47,7 @@ export async function getUserByOAuth(
 
     const result = await db
       .prepare(
-        'SELECT id, email, oauth_provider AS oauthProvider, google_id AS googleId, subscription_status AS subscriptionStatus, created_at AS createdAt, updated_at AS updatedAt FROM users WHERE oauth_provider = ? AND google_id = ?'
+        'SELECT id, email, oauth_provider AS oauthProvider, google_id AS googleId, subscription_status AS subscriptionStatus, deleted_at AS deletedAt, created_at AS createdAt, updated_at AS updatedAt FROM users WHERE oauth_provider = ? AND google_id = ?'
       )
       .bind(provider, googleId)
       .first<User>();

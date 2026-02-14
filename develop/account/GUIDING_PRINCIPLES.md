@@ -71,9 +71,10 @@
 1. ログイン成功 → D1でユーザー検証 → KVにセッション保存 → Cookie発行
 2. ページアクセス → CookieからセッションID取得 → KVでセッション検証 → D1からユーザー情報取得
 
-退会フロー:
-1. アカウント削除要求 → D1でサブスクリプション確認・削除 → D1でユーザー削除 (CASCADE)
-2. KVからセッション削除 → Cookieクリア
+退会フロー（3フェーズ制）:
+1. 退会実行: アカウント削除要求 → D1でサブスクリプション確認 → Stripeサブスクリプション停止（Customer保持）→ D1でusers.deleted_atに現在時刻を記録（論理削除）→ KVから全セッション削除 → Cookieクリア
+2. 冬眠（1〜30日間）: ログイン拒否、同一メール再登録ブロック（Unique制約）、Stripe Webhook受信継続
+3. 物理抹消（31日目〜）: Scheduled Workerがdeleted_at < 30日前のレコードを物理DELETE → Stripe Customer削除
 ```
 
 **技術的根拠**:
@@ -189,7 +190,9 @@ graph TD
 3.5. **OTP認証**: Route → data-io（レート制限チェック） → lib（OTP生成） → data-io（KV保存 + メール送信） → Route（OTP検証） → data-io（ユーザーupsert） → lib（セッション生成）
 4. **マイページ**: Route → lib（セッション検証） → data-io（ユーザー情報取得） → UI（表示）
 5. **サブスクリプション**: Route → data-io（Stripe API） → lib（状態更新） → UI（結果表示）
-6. **退会処理**: Route → data-io（アクティブなサブスクリプション確認） → data-io（Stripeサブスクリプション即時解約） → data-io（D1: subscriptionsテーブル削除） → data-io（D1: usersテーブル削除） → lib（全セッション破棄） → /loginへリダイレクト
+6. **退会処理（論理削除）**: Route → data-io（アクティブなサブスクリプション確認） → data-io（Stripeサブスクリプション停止、Customer保持） → data-io（D1: users.deleted_atに現在時刻を記録） → lib（全セッション破棄） → /loginへリダイレクト
+7. **物理抹消（バッチ）**: Scheduled Worker → data-io（deleted_at < 30日前のユーザー取得） → data-io（Stripe Customer削除） → data-io（D1: subscriptions物理DELETE） → data-io（D1: users物理DELETE） → ログ出力
+8. **アカウント復旧**: Route → data-io（findUserByEmail） → UI（復旧確認表示） → Route → data-io（restoreUser） → lib（セッション生成） → /accountへリダイレクト
 
 ---
 
@@ -323,3 +326,7 @@ graph TD
 4. **参考**: [`spec.yaml`](spec.yaml), [`file-list.md`](file-list.md) - 実装詳細
 
 **重要**: 上位のドキュメントに記載されていない事項について、下位のドキュメントで独自に定義することは許可されます。しかし、上位のドキュメントと矛盾する定義は禁止されます。
+
+---
+
+**最終更新**: 2026-02-14

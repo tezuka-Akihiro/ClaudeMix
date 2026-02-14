@@ -52,6 +52,7 @@ export async function upsertUserByEmail(
         stripe_customer_id AS stripeCustomerId,
         oauth_provider AS oauthProvider,
         google_id AS googleId,
+        deleted_at AS deletedAt,
         created_at AS createdAt,
         updated_at AS updatedAt
       FROM users
@@ -85,6 +86,7 @@ export async function upsertUserByEmail(
         stripe_customer_id AS stripeCustomerId,
         oauth_provider AS oauthProvider,
         google_id AS googleId,
+        deleted_at AS deletedAt,
         created_at AS createdAt,
         updated_at AS updatedAt
       FROM users

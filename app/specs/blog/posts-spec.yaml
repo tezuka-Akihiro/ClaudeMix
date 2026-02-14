@@ -256,11 +256,21 @@ thumbnail:
     suppressed_categories: []
     # カテゴリごとのデフォルトサムネイル設定
     default_mapping:
-      "ClaudeMix ガイド": "/core-matrix-emblem.avif"
-      "ClaudeMix 記録": "/core-matrix-emblem.avif"
-      "ClaudeMix 考察": "/core-matrix-emblem.avif"
-      "起業": "/category-entrepreneurship.avif"
-      "インフォメーション": "/category-information.avif"
+      "ClaudeMix ガイド":
+        lg: "/core-matrix-emblem.lg.avif"
+        sm: "/core-matrix-emblem.sm.avif"
+      "ClaudeMix 記録":
+        lg: "/core-matrix-emblem.lg.avif"
+        sm: "/core-matrix-emblem.sm.avif"
+      "ClaudeMix 考察":
+        lg: "/core-matrix-emblem.lg.avif"
+        sm: "/core-matrix-emblem.sm.avif"
+      "起業":
+        lg: "/category-entrepreneurship.lg.avif"
+        sm: "/category-entrepreneurship.sm.avif"
+      "インフォメーション":
+        lg: "/category-information.lg.avif"
+        sm: "/category-information.sm.avif"
 
   # CLS対策（レイアウトシフト防止）
   performance:
@@ -270,6 +280,12 @@ thumbnail:
     loading: "lazy"
     # 非同期デコード
     decoding: "async"
+
+  # レスポンシブ画像sizes属性（ブラウザの画像選択に使用）
+  image_sizes:
+    mobile_breakpoint: 767   # px（responsive-spec breakpoints.mobile - 1）
+    mobile_padding: 32       # px（container padding）
+    default_width: 380       # px（カード画像のデフォルト表示幅）
 
   # スタイル設定
   styles:

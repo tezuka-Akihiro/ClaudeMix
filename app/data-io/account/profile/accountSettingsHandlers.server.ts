@@ -8,7 +8,7 @@ import { loadSpec } from '~/spec-loader/specLoader.server';
 import type { AccountProfileSpec } from '~/specs/account/types';
 import { getSession } from '~/data-io/account/common/getSession.server';
 import { getUserById } from '~/data-io/account/common/getUserById.server';
-import { deleteUser } from '~/data-io/account/profile/deleteUser.server';
+import { softDeleteUser } from '~/data-io/account/profile/softDeleteUser.server';
 import { updateUserEmail } from '~/data-io/account/profile/updateUserEmail.server';
 import { updateUserPassword } from '~/data-io/account/profile/updateUserPassword.server';
 import { getSubscriptionByUserId } from '~/data-io/account/subscription/getSubscriptionByUserId.server';
@@ -182,31 +182,37 @@ export async function handleAccountSettingsAction(request: Request, context: any
       );
     }
 
-    // Check for active subscription
-    if (currentUser.subscriptionStatus === 'active') {
-      const subscription = await getSubscriptionByUserId(session.userId, context);
-      if (subscription?.status === 'active' && !subscription.canceledAt) {
+    // 3-Phase Deletion: Phase 1 (Soft Delete)
+
+    // 1. Stop Stripe subscription if exists (but keep Customer)
+    const subscription = await getSubscriptionByUserId(session.userId, context);
+    if (subscription && subscription.stripeSubscriptionId && subscription.status === 'active') {
+      try {
+        await cancelStripeSubscription(subscription.stripeSubscriptionId, context);
+        await updateSubscriptionCancellation(subscription.stripeSubscriptionId, subscription.currentPeriodEnd, context);
+      } catch (error) {
+        console.error('Failed to stop subscription during account deletion:', error);
         return json<ActionData>(
-          { error: '自動更新がONの状態では退会できません。先に自動更新を中断してください。' },
-          { status: 400 }
+          { error: 'サブスクリプションの停止に失敗しました。再度お試しください' },
+          { status: 500 }
         );
       }
     }
 
-    // Delete all user sessions
+    // 2. Delete all user sessions
     await deleteAllUserSessions(session.userId, context);
 
-    // Delete user (CASCADE will delete subscriptions)
-    const userDeleted = await deleteUser(session.userId, context);
-    if (!userDeleted) {
+    // 3. Logical deletion (mark as hibernating)
+    const userSoftDeleted = await softDeleteUser(session.userId, context);
+    if (!userSoftDeleted) {
       return json<ActionData>(
         { error: spec.error_messages.delete_account.delete_failed },
         { status: 500 }
       );
     }
 
-    // Redirect to login with cleared session cookie
-    return redirect('/login', {
+    // Redirect to login with cleared session cookie and success message
+    return redirect(`/login?message=delete-account-success`, {
       headers: {
         'Set-Cookie': 'session_id=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
       },

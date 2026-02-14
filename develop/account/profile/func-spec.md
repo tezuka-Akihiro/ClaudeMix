@@ -129,13 +129,13 @@ Profile Management (プロフィール管理)
 - パスワード変更後、すべてのセッションを削除
 - 新しいセッションを自動生成（ログアウトさせない）
 
-#### 4. アカウント削除 (Account Deletion)
+#### 4. アカウント削除 (Account Deletion) - 3フェーズ制
 
-**URL**: `/account/settings/delete` (モーダル)
+**URL**: `/account/settings` (モーダル)
 
 **機能**:
 
-- アカウント削除（退会処理）
+- アカウント削除（論理削除・冬眠開始）
 - パスワード確認による本人確認
 - 削除前の確認ダイアログ
 
@@ -143,22 +143,17 @@ Profile Management (プロフィール管理)
 
 - 現在のパスワード（本人確認用）
 - 削除確認チェックボックス
-- 残存期間放棄確認チェックボックス（サブスクリプション期間中のみ）
 
 **処理フロー**:
 
 1. 削除確認ダイアログ表示
-2. **アクティブなサブスクリプションの確認**（D1: subscriptionsテーブル）
-3. **サブスクリプション期間中の場合、強力な警告を表示**:
-   - 「有効期間が残っています（残り○日）。退会すると即座に利用できなくなり、返金もされません」
-   - 赤背景で視覚的に強調
-   - 「残存期間を放棄することを理解しました」チェックボックスを追加
+2. アクティブなサブスクリプションの確認（D1: subscriptionsテーブル）
+3. サブスクリプション期間中の場合、強力な警告を表示（既存と同じ）
 4. パスワード検証
-5. **サブスクリプションが存在する場合、Stripeで即時解約**（`cancelStripeSubscription.server`）
-6. **サブスクリプションレコード削除**（D1: subscriptionsテーブル）
-7. ユーザーデータ削除（D1: usersテーブル）
-8. すべてのセッション削除（Workers KV）
-9. `/login`へリダイレクト
+5. サブスクリプションが存在する場合、Stripeサブスクリプション停止（`cancel_at_period_end = true` または即時停止。**Customer オブジェクトは削除しない**）
+6. `users` テーブルの `deleted_at` に現在時刻を記録（**物理削除しない**）
+7. すべてのセッション削除（Workers KV）
+8. `/login`へリダイレクト + 「退会手続きを受け付けました。30日後にデータが完全に削除されます」メッセージ
 
 **出力データ**:
 
@@ -169,16 +164,50 @@ Profile Management (プロフィール管理)
 
 - パスワード不正: 「パスワードが正しくありません」
 - 削除未確認: 「削除を確認してください」
-- **Stripe解約失敗**: 「サブスクリプションの解約に失敗しました。再度お試しください」
+- **Stripe停止失敗**: 「サブスクリプションの停止に失敗しました。再度お試しください」
 
 **セキュリティ要件**:
 
-- 削除は取り消し不可能であることを明示
+- 「30日間の冬眠期間後にデータが完全削除される」ことを明示
 - パスワード確認必須
-- 削除後、すべてのセッションを破棄
-- **Stripeサブスクリプションを完全に解約してからユーザーデータを削除**（課金継続を防止）
+- 論理削除後は全セッション破棄、ログイン拒否
+- **Stripeサブスクリプションを停止（Customerは保持）してから論理削除を実行**（課金継続を防止）
 
-**重要**: アカウント削除時に**Stripeサブスクリプションの即時解約**を必ず実行してください。これを怠ると、ユーザーが退会後も課金が継続する重大な問題が発生します。
+**重要**: アカウント削除（論理削除）時に**Stripeサブスクリプションの停止**を必ず実行してください。これを怠ると、ユーザーが退会後も課金が継続する重大な問題が発生します。
+
+#### 新規機能: 物理抹消バッチ処理
+
+- Cloudflare Workers Scheduled Handler（Cron Trigger）として実装
+- 実行間隔: 1日1回（深夜帯推奨）
+- 処理内容:
+  1. `SELECT * FROM users WHERE deleted_at < datetime('now', '-30 days')` でレコード取得
+  2. 各ユーザーに対して Stripe Customer 削除（`stripe.customers.del(stripe_customer_id)`）
+  3. D1: `DELETE FROM subscriptions WHERE user_id = ?`
+  4. D1: `DELETE FROM users WHERE id = ?`
+  5. 実行結果をログ出力（成功件数、失敗件数）
+  6. 失敗時はアラート（将来的にメール通知等）
+
+#### 新規機能: アカウント復旧（冬眠中のみ）
+
+冬眠中ユーザーがログインを試みた際に、アカウントを復旧できる「優しい防衛」導線。
+
+- **トリガー**: ログインページでメール/パスワードを入力し、該当ユーザーของ `deleted_at` が非NULL
+- **UI**: ログインフォーム上に専用メッセージ「このアカウントは退会手続き中です。復旧しますか？」+ 「アカウントを復旧する」ボタンを表示
+- **復旧処理フロー**:
+  1. パスワード検証（ログイン時に既に入力済み）
+  2. `restoreUser.server`（`UPDATE users SET deleted_at = NULL WHERE id = ?`）
+  3. セッション生成 → `/account` へリダイレクト
+- **Stripeサブスクリプション**: 自動再開はしない。ユーザーが必要であれば `/account/subscription` から再契約
+
+#### authentication セクションへの波及
+
+1. **ログイン処理** — `findUserByEmail` で取得したユーザーの `deleted_at` が非NULLの場合、通常のログインを拒否。専用メッセージ「このアカウントは退会手続き中です。復旧しますか？」を表示し、復旧ボタン（intent=`restore-account`）を提供
+
+2. **会員登録処理** — `checkEmailExists` で取得したメールアドレスの `deleted_at` が非NULLの場合、「退会手続き中のアカウントが存在します」メッセージを表示し、ログインページへの導線を提供（復旧はログインページから行う）
+
+#### subscription セクションへの波及
+
+- **Webhook処理** — `user_id` で検索してユーザーが物理削除済み（レコード不在）の場合、404ではなく200を返し「対象ユーザー不在」をログに記録する（べき等性の確保）
 
 ## 📂 app/components要件
 
@@ -392,17 +421,46 @@ Profile Management (プロフィール管理)
 
 **出力**: 更新されたUser型
 
-#### 3. deleteUser.server.ts
+#### 3. softDeleteUser.server.ts
 
-**配置**: `app/data-io/account/profile/deleteUser.server.ts`
+**配置**: `app/data-io/account/profile/softDeleteUser.server.ts`
 
-**責務**: ユーザーをDBから削除
+**責務**: ユーザーの論理削除（冬眠開始）
 
 **入力**: ユーザーID
 
-**処理**: D1 DatabaseでDELETE文実行
+**処理**: D1 Databaseで `deleted_at` に現在時刻を記録
 
 **出力**: void
+
+#### 4. restoreUser.server.ts
+
+**配置**: `app/data-io/account/profile/restoreUser.server.ts`
+
+**責務**: ユーザーの復旧（冬眠解除）
+
+**入力**: ユーザーID
+
+**処理**: D1 Databaseで `deleted_at` を NULL に更新
+
+**出力**: void
+
+#### 5. purgeExpiredUsers.server.ts
+
+**配置**: `app/data-io/account/profile/purgeExpiredUsers.server.ts`
+
+**責務**: 冬眠期間超過ユーザーの物理削除
+
+**入力**: なし（内部で30日前以前のデータを検索）
+
+**処理**:
+
+1. 対象ユーザー取得
+2. Stripe Customer削除
+3. `subscriptions` レコード物理削除
+4. `users` レコード物理削除
+
+**出力**: 処理結果サマリー（成功・失敗件数）
 
 ## 📊 データフロー
 
@@ -452,7 +510,7 @@ saveSession.server (data-io/common) - セッション保存
     ↓
 成功メッセージ表示
 
-### アカウント削除フロー
+### アカウント削除フロー（論理削除）
 
 ユーザー入力
     ↓
@@ -466,11 +524,13 @@ findUserByEmail.server (data-io/auth) - ユーザー取得
     ↓
 verifyPassword (lib/auth) - パスワード検証
     ↓
+Stripeサブスクリプション停止（Customer保持）
+    ↓
+softDeleteUser.server (data-io) - 論理削除（deleted_at記録）
+    ↓
 deleteAllUserSessions.server (data-io/common) - すべてのセッション削除
     ↓
-deleteUser.server (data-io) - ユーザー削除
-    ↓
-Cookie無効化 + /login へリダイレクト
+Cookie無効化 + /login へリダイレクト（冬眠開始メッセージ）
 
 ## 🔒 セキュリティ要件
 
@@ -491,7 +551,7 @@ Cookie無効化 + /login へリダイレクト
 
 - **削除確認チェックボックス必須**
 - パスワード確認必須
-- 削除は取り消し不可能であることを明示
+- 「30日間の冬眠期間後にデータが完全削除される」ことを明示
 
 ### 4. メールアドレス変更の検証
 
@@ -512,7 +572,9 @@ Cookie無効化 + /login へリダイレクト
 - メールアドレス重複時のエラー表示
 - パスワード変更の成功シナリオ
 - パスワード変更後のセッション再生成確認
-- アカウント削除の成功シナリオ
+- アカウント削除（論理削除）の成功シナリオ
+- アカウント復旧の成功シナリオ
+- 物理抹消バッチの動作確認
 - パスワード不正時のエラー表示
 
 ### 単体テスト
@@ -524,7 +586,9 @@ Cookie無効化 + /login へリダイレクト
 - `validateAccountDeletion.test.ts`
 - `updateUserEmail.server.test.ts`（DBモック使用）
 - `updateUserPassword.server.test.ts`（DBモック使用）
-- `deleteUser.server.test.ts`（DBモック使用）
+- `softDeleteUser.server.test.ts`（DBモック使用）
+- `restoreUser.server.test.ts`（DBモック使用）
+- `purgeExpiredUsers.server.test.ts`（DBモック/Stripeモック使用）
 - `deleteAllUserSessions.server.test.ts`（KVモック使用）
 
 ## 🚀 実装の優先順位
@@ -568,4 +632,4 @@ Cookie無効化 + /login へリダイレクト
 
 ---
 
-**最終更新**: 2025-12-23
+**最終更新**: 2026-02-14

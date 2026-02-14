@@ -128,6 +128,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       }
     }
 
+    // Check for hibernation (soft delete)
+    if (user.deletedAt) {
+      const headers = new Headers();
+      clearOAuthCookies(headers);
+      return redirect(`${loginPath}?hibernating=true&email=${encodeURIComponent(user.email)}`, { headers });
+    }
+
     // Create session
     const sessionId = crypto.randomUUID();
     const sessionData = createSessionData(user.id, sessionId);

@@ -29,12 +29,17 @@ export interface BlogPostsSpec {
       enabled: boolean;
       fallback: string;
       suppressed_categories: string[];
-      default_mapping?: Record<string, string>;
+      default_mapping?: Record<string, string | { lg: string; sm: string }>;
     };
     performance: {
       aspect_ratio: string;
       loading: string;
       decoding: string;
+    };
+    image_sizes: {
+      mobile_breakpoint: number;
+      mobile_padding: number;
+      default_width: number;
     };
     styles: Record<string, string>;
   };
@@ -159,7 +164,7 @@ export type PostSummary = Pick<
   Post,
   'slug' | 'title' | 'publishedAt' | 'category' | 'description' | 'tags'
 > & {
-  thumbnailUrl: string | null;
+  thumbnailUrl: string | { lg: string; sm: string } | null;
 };
 
 /**
@@ -265,8 +270,11 @@ export type RenderedPost = Omit<Post, 'content' | 'summary' | 'testOnly'> & {
 export interface R2AssetsConfig {
   base_url: string;
   blog_path: string;
+  variants: {
+    lg: string;
+    sm: string;
+  };
   thumbnail: {
-    filename: string;
     width: number;
     height: number;
     aspect_ratio: string;
@@ -517,12 +525,17 @@ export interface BlogPostDetailSpec {
       enabled: boolean;
       fallback: string;
       position: string;
-      default_mapping?: Record<string, string>;
+      default_mapping?: Record<string, string | { lg: string; sm: string }>;
     };
     performance: {
       aspect_ratio: string;
       loading: string;
       decoding: string;
+    };
+    image_sizes: {
+      mobile_breakpoint: number;
+      mobile_padding: number;
+      default_width: number;
     };
     styles: Record<string, string>;
   };

@@ -100,18 +100,18 @@
 /* === OAuth Button === */
 /* Google/social login button appearance */
 .auth-oauth-button {
-  background-color: white;
-  color: #3c4043;
-  border: 1px solid var(--color-border, #e5e7eb);
-  border-radius: 9999px;
-  font-weight: 500;
+  background-color: var(--color-background-light);
+  color: var(--color-text-dark);
+  border: var(--border-width-sm) solid var(--color-border-light);
+  border-radius: var(--border-radius-full);
+  font-weight: var(--font-weight-medium);
   text-decoration: none;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-duration-fast);
 }
 
 /* === OAuth Button Icon === */
 .auth-oauth-button__icon {
-  margin-right: 0.75rem;
+  margin-right: var(--spacing-2);
 }
 
 /* === Brand Icon Image === */

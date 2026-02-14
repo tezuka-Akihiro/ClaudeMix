@@ -29,7 +29,7 @@ export const links: LinksFunction = () => [
 
 // Spec loader
 import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
-import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import type { AccountAuthenticationSpec, AccountProfileSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 
 // Data-IO layer
@@ -136,6 +136,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  */
 export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const profileSpec = loadSpec<AccountProfileSpec>('account/profile');
 
   const formData = await request.formData();
   const redirectUrl = formData.get('redirectUrl');
@@ -160,8 +161,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const sanitizedEmail = sanitizeEmail(email);
 
   // Check if user already exists
-  const existingUser = await getUserByEmail(sanitizedEmail, context as any);
+  const existingUser = (await getUserByEmail(sanitizedEmail, context as any)) as any;
   if (existingUser) {
+    if (existingUser.deletedAt) {
+      return json<ActionData>(
+        { error: profileSpec.error_messages.hibernation.registration_blocked },
+        { status: 400 }
+      );
+    }
     return json<ActionData>(
       { error: spec.error_messages.registration.email_exists },
       { status: 400 }

@@ -20,7 +20,7 @@
 
 | 項目 | 責務の対象 | 規律 |
 | :--- | :--- | :--- |
-| **サービススコープ** | セクション固有のコンポーネント、ロジック | Route/Componentの責務分離、セクション固有の構造（親子、並列）、セクション固有の状態遷移のルールを明確に定義します。 |
+| **サービススコープ** | セクション固有のコンポーネント、ロジック | Route/Componentের 責務分離、セクション固有の構造（親子、並列）、セクション固有の状態遷移のルールを明確に定義します。 |
 | **CSS抽象レイヤー** | 構造と配置の論理 | コンポーネント間の親子構造、並列配置（flex/grid）の論理、例外構造のルール（疑似要素など）といった、UIの骨格となる抽象的なルールのみを記載します。 |
 
 #### 2. 🚫 外部スコープ：コードまたは別ドキュメントに委ねるもの（具体）
@@ -216,7 +216,7 @@ stateDiagram-v2
 
 - **モーダルラッパー**: Modal (common)
 - **モーダルコンテンツ**: 警告メッセージ（通常 + サブスクリプション期間中の特別警告）, FormField (common), Checkbox, Button (common) × 2
-  - 警告メッセージ1: 「この操作は取り消しできません」
+  - 警告メッセージ1: 「退会すると即座にアクセスできなくなります。30日後にすべてのデータが完全に削除されます。」
   - 警告メッセージ2（条件付き）: **有効なサブスクリプションがある場合**、「有効期間が残っています（残り○日）が、退会すると即座に利用できなくなります。返金もされません」という強力な警告を赤背景で表示
   - FormField: 現在のパスワード（本人確認用）
   - Checkbox: 削除を確認（+ サブスクリプション期間中は「残存期間を放棄することを理解しました」）
@@ -233,9 +233,9 @@ stateDiagram-v2
     ShowingWarning --> Confirming: 警告を確認（特別チェックボックス）
     Confirming --> Submitting: 削除ボタンクリック
     Submitting --> Error: 認証失敗
-    Submitting --> Success: 削除成功
+    Submitting --> Success: 退会手続き完了（論理削除）
     Error --> Confirming: 再入力
-    Success --> [*]: /login へリダイレクト
+    Success --> [*]: /login へリダイレクト + 冬眠メッセージ
     Open --> Closed: キャンセル
     ShowingWarning --> Closed: キャンセル
 ```
@@ -341,7 +341,7 @@ stateDiagram-v2
 | **Confirming** | 入力完了状態 | 削除ボタンクリック | Submitting |
 | **Submitting** | ローディング状態 | サーバー応答待機 | Error または Success |
 | **Error** | エラーメッセージ表示 | 再入力 | Confirming |
-| **Success** | （リダイレクト） | 自動的にリダイレクト | /login |
+| **Success** | （リダイレクト） | /login へリダイレクト + 冬眠開始メッセージ | /login |
 
 ---
 
@@ -415,7 +415,7 @@ stateDiagram-v2
 
 ### 2. 削除確認の表示原則
 
-- **警告メッセージ**: 「この操作は取り消しできません」を強調表示
+- **警告メッセージ**: 「30日後にデータが完全に削除される」ことを強調表示
 - **サブスクリプション期間中の特別警告**:
   - **条件**: アクティブなサブスクリプションがある場合
   - **表示内容**: 「有効期間が残っています（残り○日）。退会すると即座に利用できなくなり、返金もされません」
@@ -475,11 +475,11 @@ sequenceDiagram
     end
     User->>DeleteModal: パスワード入力 + 確認チェック
     User->>DeleteModal: 削除ボタンクリック
-    DeleteModal->>Server: DELETE リクエスト
-    Server->>Server: Stripeサブスクリプション解約（該当する場合）
-    Server->>Server: ユーザーデータ削除
-    Server-->>DeleteModal: 削除成功
-    DeleteModal->>User: /login へリダイレクト
+    DeleteModal->>Server: POST リクエスト (soft-delete)
+    Server->>Server: Stripeサブスクリプション停止 (Customer保持)
+    Server->>Server: users.deleted_atに現在時刻を記録（論理削除）
+    Server-->>DeleteModal: 成功
+    DeleteModal->>User: /login へリダイレクト + 冬眠メッセージ
 ```
 
 ---
@@ -502,4 +502,4 @@ sequenceDiagram
 
 ---
 
-**最終更新**: 2025-12-23
+**最終更新**: 2026-02-14

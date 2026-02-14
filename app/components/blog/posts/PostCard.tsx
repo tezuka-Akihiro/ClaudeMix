@@ -28,7 +28,7 @@ const PostCard: React.FC<PostCardProps> = ({
   dateSeparator = '.',
   isPriority = false,
 }) => {
-  const [currentThumbnailUrl, setCurrentThumbnailUrl] = useState<string | null>(thumbnailUrl);
+  const [currentThumbnailUrl, setCurrentThumbnailUrl] = useState<PostSummary['thumbnailUrl']>(thumbnailUrl);
   const [hasFallbackError, setHasFallbackError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -59,6 +59,15 @@ const PostCard: React.FC<PostCardProps> = ({
   // 2. フォールバックも含めてエラーになっていないこと
   const shouldShowThumbnail = currentThumbnailUrl && !hasFallbackError;
 
+  // 表示用URLとsrcsetの解決
+  const displaySrc = typeof currentThumbnailUrl === 'string'
+    ? currentThumbnailUrl
+    : currentThumbnailUrl?.lg;
+
+  const srcset = (typeof currentThumbnailUrl === 'object' && currentThumbnailUrl !== null)
+    ? `${currentThumbnailUrl.sm} 1000w, ${currentThumbnailUrl.lg} 1200w`
+    : undefined;
+
   return (
     <Link
       to={`/blog/${slug}`}
@@ -75,13 +84,15 @@ const PostCard: React.FC<PostCardProps> = ({
           style={hasFallbackError ? { display: 'none' } : {}}
         >
           <img
-            key={currentThumbnailUrl!}
-            src={currentThumbnailUrl!}
+            key={displaySrc!}
+            src={displaySrc!}
+            srcSet={srcset}
+            sizes={srcset ? `(max-width: ${postsSpec.thumbnail.image_sizes.mobile_breakpoint}px) calc(100vw - ${postsSpec.thumbnail.image_sizes.mobile_padding}px), ${postsSpec.thumbnail.image_sizes.default_width}px` : undefined}
             alt={`${title}のサムネイル`}
             width={1200}
             height={630}
             loading={isPriority ? "eager" : "lazy"}
-            fetchPriority={isPriority ? "high" : "auto"}
+            {...{ fetchpriority: isPriority ? "high" : "auto" }}
             decoding="async"
             onLoad={() => setIsLoaded(true)}
             onError={handleImageError}

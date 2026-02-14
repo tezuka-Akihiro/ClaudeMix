@@ -39,9 +39,11 @@ const BlogHeader: React.FC<BlogHeaderProps> = ({
         <img
           src={logoPath}
           alt={blogTitle}
+          width={736}
+          height={143}
           className="blog-header__logo"
           decoding="async"
-          fetchpriority="high"
+          {...{ fetchpriority: "high" }}
         />
       </Link>
       <div

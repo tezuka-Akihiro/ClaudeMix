@@ -226,8 +226,8 @@ test.describe('Account Profile Section', () => {
     // Isolate tests that modify account state
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test('should successfully delete account', async ({ page }) => {
-      const { email, password } = await createAuthenticatedUser(page, { prefix: 'delete-test', useTestId: true });
+    test('should successfully soft-delete account and show hibernation UI on login', async ({ page }) => {
+      const { email, password } = await createAuthenticatedUser(page, { prefix: 'soft-delete', useTestId: true });
 
       // Navigate to profile settings
       await page.goto('/account/settings');
@@ -236,7 +236,7 @@ test.describe('Account Profile Section', () => {
       await page.click('[data-testid="delete-account-button"]');
       await expect(page.locator('[data-testid="delete-account-modal"]')).toBeVisible();
 
-      // Verify warning message
+      // Verify warning message (3-phase deletion message)
       await expect(page.locator('[data-testid="delete-account-modal"]')).toContainText(
         spec.forms.delete_account.warning_message
       );
@@ -248,15 +248,69 @@ test.describe('Account Profile Section', () => {
       // Submit deletion
       await page.click('[data-testid="delete-button"]');
 
-      // Verify redirect to login page
-      await expect(page).toHaveURL('/login');
+      // Verify redirect to login page with success message
+      await expect(page).toHaveURL(/\/login\?message=delete-account-success/);
+      await expect(page.locator('[data-testid="flash-message"]')).toBeVisible();
 
-      // Verify cannot login with deleted account
+      // Verify login attempt shows hibernation restore panel
       await page.fill('[data-testid="email-input"]', email);
       await page.fill('[data-testid="password-input"]', password);
       await page.click('[data-testid="submit-button"]');
-      // Should show invalid credentials error (user deleted)
+
+      // Should show restore panel instead of logging in
+      await expect(page.locator('[data-testid="hibernation-restore-panel"]')).toBeVisible();
+      await expect(page.locator('[data-testid="restore-account-button"]')).toBeVisible();
+    });
+
+    test('should successfully restore account from hibernation', async ({ page }) => {
+      const { email, password } = await createAuthenticatedUser(page, { prefix: 'restore-test', useTestId: true });
+
+      // 1. Soft delete
+      await page.goto('/account/settings');
+      await page.click('[data-testid="delete-account-button"]');
+      await page.fill('[data-testid="current-password-input"]', password);
+      await page.check('[data-testid="confirmation-checkbox"]');
+      await page.click('[data-testid="delete-button"]');
+      await expect(page).toHaveURL(/\/login\?message=delete-account-success/);
+
+      // 2. Trigger hibernation UI
+      await page.fill('[data-testid="email-input"]', email);
+      await page.fill('[data-testid="password-input"]', password);
+      await page.click('[data-testid="submit-button"]');
+      await expect(page.locator('[data-testid="hibernation-restore-panel"]')).toBeVisible();
+
+      // 3. Restore
+      await page.click('[data-testid="restore-account-button"]');
+
+      // 4. Verify restored and logged in
+      await expect(page).toHaveURL('/account');
+      
+      // Verify deleted_at is cleared by accessing settings again
+      await page.goto('/account/settings');
+      await expect(page.locator('[data-testid="profile-display"]')).toBeVisible();
+    });
+
+    test('should block registration with hibernating email', async ({ page }) => {
+      const { email, password } = await createAuthenticatedUser(page, { prefix: 'reg-block', useTestId: true });
+
+      // 1. Soft delete
+      await page.goto('/account/settings');
+      await page.click('[data-testid="delete-account-button"]');
+      await page.fill('[data-testid="current-password-input"]', password);
+      await page.check('[data-testid="confirmation-checkbox"]');
+      await page.click('[data-testid="delete-button"]');
+      await page.waitForURL(/\/login/);
+
+      // 2. Try to register with same email
+      await page.goto('/register');
+      await page.fill('[data-testid="email-input"]', email);
+      await page.fill('[data-testid="password-input"]', 'NewPassword123');
+      await page.fill('[data-testid="confirm-password-input"]', 'NewPassword123');
+      await page.click('[data-testid="submit-button"]');
+
+      // 3. Verify block message
       await expect(page.locator('[data-testid="error-message"]')).toBeVisible();
+      // "退会手続き中のアカウントが存在します" is in profile-spec.yaml
     });
 
     test('should reject account deletion with incorrect password', async ({ page }) => {

@@ -31,7 +31,7 @@ interface PostDetailSectionProps {
     cutoffHeadingId: string | null;
     hasActiveSubscription: boolean;
   };
-  thumbnailUrl: string | null;
+  thumbnailUrl: string | { lg: string; sm: string } | null;
   spec: BlogPostDetailSpec;
 }
 
@@ -43,7 +43,7 @@ export function PostDetailSection({
   thumbnailUrl,
   spec,
 }: PostDetailSectionProps) {
-  const [currentThumbnailUrl, setCurrentThumbnailUrl] = useState<string | null>(thumbnailUrl);
+  const [currentThumbnailUrl, setCurrentThumbnailUrl] = useState<PostDetailSectionProps['thumbnailUrl']>(thumbnailUrl);
   const [hasFallbackError, setHasFallbackError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -137,11 +137,15 @@ export function PostDetailSection({
           style={hasFallbackError ? { display: 'none' } : {}}
         >
           <img
-            key={currentThumbnailUrl!}
-            src={currentThumbnailUrl!}
+            key={typeof currentThumbnailUrl === 'string' ? currentThumbnailUrl : currentThumbnailUrl?.lg}
+            src={typeof currentThumbnailUrl === 'string' ? currentThumbnailUrl : currentThumbnailUrl?.lg}
+            srcSet={(typeof currentThumbnailUrl === 'object' && currentThumbnailUrl !== null) ? `${currentThumbnailUrl.sm} 1000w, ${currentThumbnailUrl.lg} 1200w` : undefined}
+            sizes={(typeof currentThumbnailUrl === 'object' && currentThumbnailUrl !== null) ? `(max-width: ${defaultSpec.thumbnail.image_sizes.mobile_breakpoint}px) calc(100vw - ${defaultSpec.thumbnail.image_sizes.mobile_padding}px), ${defaultSpec.thumbnail.image_sizes.default_width}px` : undefined}
             alt={`${post.title}のサムネイル`}
+            width={1200}
+            height={630}
             loading="eager"
-            fetchPriority="high"
+            {...{ fetchpriority: "high" }}
             decoding="async"
             onLoad={() => setIsLoaded(true)}
             onError={handleImageError}

@@ -33,6 +33,7 @@
 - **3大層分離アーキテクチャ**: `CLAUDE.md` および `README.md` に記載の通り、UI層・純粋ロジック層・副作用層の責務を分離します。
 - **Outside-In TDD**: `TDD_WORK_FLOW.md` に記載された開発フローに従います。
 - **スタイリング憲章**: `docs/CSS_structure/STYLING_CHARTER.md` に基づくCSS階層アーキテクチャを遵守します。
+- **レスポンシブ画像原則**: `CloudMix 画像インフラ要件定義書.md` に基づき、デバイスサイズ（767px境界）に最適化された画像バリアント（lg/sm）を `srcset` で配信し、LCP向上と通信量削減を徹底します。
 
 ---
 

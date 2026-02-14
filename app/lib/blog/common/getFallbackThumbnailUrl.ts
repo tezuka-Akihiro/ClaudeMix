@@ -4,7 +4,7 @@
 interface ThumbnailMappingSpec {
   thumbnail: {
     display: {
-      default_mapping?: Record<string, string>;
+      default_mapping?: Record<string, string | { lg: string; sm: string }>;
     };
   };
 }
@@ -19,7 +19,7 @@ interface ThumbnailMappingSpec {
 export function getFallbackThumbnailUrl(
   category: string,
   spec: ThumbnailMappingSpec
-): string | null {
+): string | { lg: string; sm: string } | null {
   const mapping = spec.thumbnail.display.default_mapping;
 
   if (!mapping) {

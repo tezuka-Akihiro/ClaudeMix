@@ -8,7 +8,7 @@ metadata:
   feature_name: "account-profile"
   slug: "profile"
   created_date: "2025-12-23"
-  last_updated: "2025-12-23"
+  last_updated: "2026-02-14"
   version: "1.0.0"
 
 # ==========================================
@@ -95,7 +95,7 @@ forms:
 
   delete_account:
     title: "アカウント削除"
-    warning_message: "この操作は取り消しできません。すべてのデータが削除されます。"
+    warning_message: "退会すると即座にアクセスできなくなります。30日後にすべてのデータが完全に削除されます。"
     fields:
       current_password:
         name: "currentPassword"
@@ -207,6 +207,15 @@ validation:
 # エラーメッセージ設定
 # ==========================================
 error_messages:
+  hibernation:
+    login_blocked: "このアカウントは退会手続き中です"
+    registration_blocked: "退会手続き中のアカウントが存在します"
+
+  restore_account:
+    confirm_message: "このアカウントは退会手続き中です。復旧しますか？"
+    submit_button: "アカウントを復旧する"
+    success_message: "アカウントを復旧しました"
+
   email_change:
     email_exists: "このメールアドレスは既に使用されています"
     same_as_current: "現在のメールアドレスと同じです"
@@ -235,7 +244,7 @@ success_messages:
   password_change:
     completed: "パスワードを変更しました"
   delete_account:
-    completed: "アカウントを削除しました"
+    completed: "退会手続きを受け付けました。30日後にデータが完全に削除されます。"
 
 # ==========================================
 # モーダル設定
@@ -309,7 +318,8 @@ security:
   # アカウント削除時の処理
   delete_account:
     delete_all_sessions: true
-    delete_user_data: true
+    soft_delete: true
+    hibernation_days: 30
     redirect_after_delete: "/login"
 
 # ==========================================

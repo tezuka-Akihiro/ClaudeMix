@@ -32,11 +32,12 @@ import { FlashMessage } from '~/components/account/common/FlashMessage';
 
 // Spec loader
 import { loadSpec, loadSharedSpec } from '~/spec-loader/specLoader.server';
-import type { AccountAuthenticationSpec } from '~/specs/account/types';
+import type { AccountAuthenticationSpec, AccountProfileSpec } from '~/specs/account/types';
 import type { ProjectSpec } from '~/specs/shared/types';
 
 // Data-IO layer
 import { getUserByEmail } from '~/data-io/account/authentication/getUserByEmail.server';
+import { restoreUser } from '~/data-io/account/profile/restoreUser.server';
 import { verifyPassword } from '~/data-io/account/authentication/verifyPassword.server';
 import { saveSession } from '~/data-io/account/common/saveSession.server';
 import { getSession } from '~/data-io/account/common/getSession.server';
@@ -50,6 +51,7 @@ interface DatabaseUser {
   email: string;
   passwordHash: string;
   subscriptionStatus: 'active' | 'inactive';
+  deletedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -74,6 +76,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 interface ActionData {
   error?: string;
+  hibernating?: boolean;
+  hibernatingFromUrl?: boolean;
+  email?: string;
   lastResult?: any; // Conform submission result
 }
 
@@ -100,6 +105,10 @@ interface LoaderData {
     links: {
       forgotPassword: string;
     };
+    hibernation: {
+      message: string;
+      restoreButton: string;
+    };
     oauth: {
       googleLabel: string;
     };
@@ -119,6 +128,7 @@ interface LoaderData {
  */
 export async function loader({ request, context }: LoaderFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const profileSpec = loadSpec<AccountProfileSpec>('account/profile');
   const projectSpec = loadSharedSpec<ProjectSpec>('project');
 
   const session = await getSession(request, context as any);
@@ -134,7 +144,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     ? spec.flash_messages[messageKey as keyof typeof spec.flash_messages]
     : undefined;
 
-  return json<LoaderData>({
+  // Handle hibernation state from URL (for OAuth)
+  const hibernatingFromUrl = url.searchParams.get('hibernating') === 'true';
+  const hibernatingEmail = url.searchParams.get('email') || undefined;
+
+  return json<LoaderData & { hibernatingFromUrl?: boolean; hibernatingEmail?: string }>({
+    hibernatingFromUrl,
+    hibernatingEmail,
     projectName: projectSpec.project.name,
     flashMessage,
     uiSpec: {
@@ -157,6 +173,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       links: {
         forgotPassword: 'パスワードをお忘れですか？',
       },
+      hibernation: {
+        message: profileSpec.error_messages.restore_account.confirm_message,
+        restoreButton: profileSpec.error_messages.restore_account.submit_button,
+      },
       oauth: {
         googleLabel: 'Google でログイン',
       },
@@ -175,9 +195,37 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
  */
 export async function action({ request, context }: ActionFunctionArgs) {
   const spec = loadSpec<AccountAuthenticationSpec>('account/authentication');
+  const profileSpec = loadSpec<AccountProfileSpec>('account/profile');
 
   const formData = await request.formData();
   const intent = formData.get('intent') as string;
+
+  // Handle account restoration
+  if (intent === 'restore-account') {
+    const email = formData.get('email') as string;
+    const sanitizedEmail = sanitizeEmail(email);
+    const user = (await getUserByEmail(sanitizedEmail, context as any)) as DatabaseUser | null;
+
+    if (!user || !user.deletedAt) {
+      return json<ActionData>({ error: '復旧対象のユーザーが見つかりません' }, { status: 400 });
+    }
+
+    const restored = await restoreUser(user.id, context as any);
+    if (!restored) {
+      return json<ActionData>({ error: 'アカウントの復旧に失敗しました' }, { status: 500 });
+    }
+
+    // Create session
+    const sessionId = crypto.randomUUID();
+    const sessionData = createSessionData(user.id, sessionId);
+    const setCookieHeader = await saveSession(sessionData, context as any);
+
+    return redirect('/account', {
+      headers: {
+        'Set-Cookie': setCookieHeader,
+      },
+    });
+  }
 
   // Handle OTP send intent
   if (intent === spec.server_io.action.intents.send_otp) {
@@ -266,6 +314,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
     );
   }
 
+  // Check for hibernation (soft delete)
+  if (user.deletedAt) {
+    return json<ActionData>({
+      hibernating: true,
+      email: sanitizedEmail,
+    });
+  }
+
   // Create session
   const sessionId = crypto.randomUUID();
   const sessionData = createSessionData(user.id, sessionId);
@@ -285,6 +341,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
 export default function Login() {
   const loaderData = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
+
+  const hibernating = actionData?.hibernating || loaderData.hibernatingFromUrl;
+  const hibernatingEmail = actionData?.email || loaderData.hibernatingEmail;
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
   const isSubmitting = navigation.state === 'submitting';
@@ -312,7 +371,7 @@ export default function Login() {
             width={352}
             height={352}
             loading="eager"
-            fetchPriority="high"
+            {...{ fetchpriority: "high" }}
             decoding="async"
             className="auth-brand-icon__img"
             data-testid="brand-icon"
@@ -344,6 +403,20 @@ export default function Login() {
         {actionData?.error && (
           <div className="error-message-structure" role="alert" data-testid="error-message">
             <span>{actionData.error}</span>
+          </div>
+        )}
+
+        {/* Hibernation Restoration UI */}
+        {hibernating && (
+          <div className="hibernation-restore-container-structure" data-testid="hibernation-restore-panel">
+            <p className="hibernation-restore-message">{uiSpec.hibernation.message}</p>
+            <Form method="post">
+              <input type="hidden" name="intent" value="restore-account" />
+              <input type="hidden" name="email" value={hibernatingEmail} />
+              <button type="submit" className="btn-primary" data-testid="restore-account-button">
+                {uiSpec.hibernation.restoreButton}
+              </button>
+            </Form>
           </div>
         )}
 

@@ -114,7 +114,34 @@ describe('PostDetailSection', () => {
 
       // Assert
       const updatedThumbnailImage = screen.getByTestId('article-thumbnail-image');
-      expect(updatedThumbnailImage).toHaveAttribute('src', fallbackUrl);
+      const expectedSrc = typeof fallbackUrl === 'string' ? fallbackUrl : fallbackUrl.lg;
+      expect(updatedThumbnailImage).toHaveAttribute('src', expectedSrc);
+    });
+
+    it('should display srcset when variant object is provided for thumbnailUrl', () => {
+      // Arrange
+      const variantThumbnail = {
+        lg: 'https://assets.example.com/blog/test/lg.avif',
+        sm: 'https://assets.example.com/blog/test/sm.avif'
+      };
+      const post = createMockPost();
+
+      // Act
+      renderWithRouter(
+        <PostDetailSection
+          post={post}
+          headings={[]}
+          subscriptionAccess={createMockSubscriptionAccess()}
+          thumbnailUrl={variantThumbnail}
+          spec={spec}
+        />
+      );
+
+      // Assert
+      const thumbnailImage = screen.getByTestId('article-thumbnail-image');
+      expect(thumbnailImage).toHaveAttribute('src', variantThumbnail.lg);
+      expect(thumbnailImage).toHaveAttribute('srcSet', `${variantThumbnail.sm} 1000w, ${variantThumbnail.lg} 1200w`);
+      expect(thumbnailImage).toHaveAttribute('sizes', `(max-width: ${spec.thumbnail.image_sizes.mobile_breakpoint}px) calc(100vw - ${spec.thumbnail.image_sizes.mobile_padding}px), ${spec.thumbnail.image_sizes.default_width}px`);
     });
   });
 

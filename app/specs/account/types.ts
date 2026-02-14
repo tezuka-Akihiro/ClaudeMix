@@ -9,6 +9,7 @@ export interface User {
   oauthProvider: string | null;
   googleId: string | null;
   subscriptionStatus: SubscriptionStatus | string;
+  deletedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -1051,6 +1052,15 @@ export interface AccountProfileSpec {
     };
   };
   error_messages: {
+    hibernation: {
+      login_blocked: string;
+      registration_blocked: string;
+    };
+    restore_account: {
+      confirm_message: string;
+      submit_button: string;
+      success_message: string;
+    };
     email_change: {
       email_exists: string;
       same_as_current: string;

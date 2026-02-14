@@ -517,10 +517,10 @@ test.describe('E2E Test for Blog - Post Detail', () => {
       // 9. src属性がR2のURLパターンに一致する
       const src = await thumbnailImg.getAttribute('src');
       expect(src).toBeTruthy();
-      // R2のブログ画像パスパターン: {base_url}/blog/{slug}/thumbnail.webp
+      // R2のブログ画像パスパターン: {base_url}/blog/{slug}/{variant}.{format}
       const r2Config = commonSpec.r2_assets;
       const expectedPattern = new RegExp(
-        `${r2Config.base_url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${r2Config.blog_path}/.+/${r2Config.thumbnail.filename}`
+        `${r2Config.base_url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${r2Config.blog_path}/.+/${r2Config.variants.lg}\\.${r2Config.thumbnail.format}`
       );
       expect(src).toMatch(expectedPattern);
 

@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
   oauth_provider TEXT,
   google_id TEXT,
   stripe_customer_id TEXT UNIQUE,
+  deleted_at TEXT,
   created_at TEXT NOT NULL DEFAULT (DATETIME('now')),
   updated_at TEXT NOT NULL DEFAULT (DATETIME('now'))
 );
