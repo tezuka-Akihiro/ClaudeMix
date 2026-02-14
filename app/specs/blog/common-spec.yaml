@@ -162,9 +162,13 @@ r2_assets:
   # ブログ画像のパスプレフィックス
   blog_path: "/blog"
 
+  # 画像バリアント設定
+  variants:
+    lg: "lg"
+    sm: "sm"
+
   # サムネイル画像設定
   thumbnail:
-    filename: "thumbnail.avif"
     width: 1200
     height: 630
     aspect_ratio: "1200 / 630"  # CSS aspect-ratio用
@@ -173,7 +177,7 @@ r2_assets:
 
   # 記事内画像設定
   article_images:
-    pattern: "{n}.avif"  # 1.avif, 2.avif, ...
+    pattern: "{n}.{variant}.avif"  # 1.lg.avif, 1.sm.avif, ...
     max_count: 9
     max_size_kb: 200
 
