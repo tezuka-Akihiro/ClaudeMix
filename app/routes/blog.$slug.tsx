@@ -53,7 +53,7 @@ export interface PostDetailLoaderData {
     cutoffHeadingId: string | null;
     hasActiveSubscription: boolean;
   };
-  thumbnailUrl: string | null;
+  thumbnailUrl: string | { lg: string; sm: string } | null;
   spec: BlogPostDetailSpec;
 }
 

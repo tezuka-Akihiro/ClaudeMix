@@ -187,7 +187,18 @@ async function convertMarkdownToHtml(markdown) {
       const src = href ?? '';
       const alt = text || '';
       const titleAttr = title ? `title="${title}"` : '';
-      return `<img src="${src}" alt="${alt}" ${titleAttr} loading="lazy" decoding="async" style="max-width: 100%; height: auto;" />`;
+
+      let srcsetAttr = '';
+      let sizesAttr = '';
+
+      // lg.avif という命名規則に一致する場合、srcsetを付与（CloudMix 画像インフラ要件）
+      if (src.endsWith('.lg.avif')) {
+        const smSrc = src.replace('.lg.avif', '.sm.avif');
+        srcsetAttr = `srcset="${smSrc} 600w, ${src} 1200w"`;
+        sizesAttr = `sizes="(max-width: 767px) 600px, 1200px"`;
+      }
+
+      return `<img src="${src}" ${srcsetAttr} ${sizesAttr} alt="${alt}" ${titleAttr} loading="lazy" decoding="async" style="max-width: 100%; height: auto;" />`;
     },
     heading({ text, depth: level }) {
       const id = slugify(text);
@@ -227,7 +238,7 @@ async function convertMarkdownToHtml(markdown) {
     allowedTags: ['h1','h2','h3','h4','h5','h6','p','br','ul','ol','li','pre','code','blockquote','a','img','div','span','strong','em','b','i','table','thead','tbody','tr','th','td'],
     allowedAttributes: {
       'a': ['href','target','rel'],
-      'img': ['src','alt','title','loading','style'],
+      'img': ['src', 'srcset', 'sizes', 'alt', 'title', 'loading', 'decoding', 'style'],
       'code': ['class','style'],
       'pre': ['class','style'],
       'div': ['class','style'],

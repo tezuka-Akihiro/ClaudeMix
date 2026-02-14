@@ -159,7 +159,7 @@ export type PostSummary = Pick<
   Post,
   'slug' | 'title' | 'publishedAt' | 'category' | 'description' | 'tags'
 > & {
-  thumbnailUrl: string | null;
+  thumbnailUrl: string | { lg: string; sm: string } | null;
 };
 
 /**
@@ -265,8 +265,11 @@ export type RenderedPost = Omit<Post, 'content' | 'summary' | 'testOnly'> & {
 export interface R2AssetsConfig {
   base_url: string;
   blog_path: string;
+  variants: {
+    lg: string;
+    sm: string;
+  };
   thumbnail: {
-    filename: string;
     width: number;
     height: number;
     aspect_ratio: string;

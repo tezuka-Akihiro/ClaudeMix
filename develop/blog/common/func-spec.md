@@ -149,13 +149,13 @@ loaderがUIに提供すべきデータ：
    - copyrightFormatter.ts: コピーライト文字列のフォーマット
      - 年の自動更新など
 
-   - buildThumbnailUrl.ts: R2サムネイルURL生成【新規】
+   - buildThumbnailUrl.ts: R2サムネイルURL生成【更新】
      - 入力: slug（記事の識別子）
-     - 出力: R2サムネイル画像のURL文字列
+     - 出力: `{ lg: string, sm: string } | null`
      - ロジック:
-       - spec.yamlのr2_assets設定（base_url, blog_path, thumbnail.filename）を使用
-       - パターン: `{base_url}{blog_path}/{slug}/{filename}`
-       - 例: `https://assets.claudemix.dev/blog/stripe-integration/thumbnail.webp`
+       - spec.yamlのr2_assets設定（base_url, blog_path, variants）を使用
+       - パターン: `{base_url}{blog_path}/{slug}/{variant}.avif`
+       - 例: `https://assets.claudemix.dev/blog/stripe-integration/lg.avif`
      - 純粋関数（副作用なし）
 ```
 
